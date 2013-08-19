@@ -313,6 +313,8 @@ end
             div.student_contacts_container{                                     width:100%;}
             #new_row_button_STUDENT_CONTACTS{                                   float:right; font-size: xx-small !important;}
             
+            table.dataTable td.column_4{                                        text-align:center;}
+            
             div#blank.STUDENT_CONTACTS__datetime{                               float:left; margin-bottom:3px; clear:left; width:100%;}
             div#blank.STUDENT_CONTACTS__successful{                             float:left; margin-bottom:3px; clear:left; width:100%;}
             div#blank.STUDENT_CONTACTS__contact_type{                           float:left; margin-bottom:3px; clear:left; width:100%;}

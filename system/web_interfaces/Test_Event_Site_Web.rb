@@ -701,6 +701,8 @@ end
             div.STUDENT_AIMS_TESTS__requirement_for_aims_benchmark  {text-align: center;}
             div.STUDENT_AIMS_TESTS__mcap_read_to_student            {text-align: center;}
             
+            div.STUDENT_TESTS__assigned                             {text-align: center;}
+            
         "
         
         output << "</style>"

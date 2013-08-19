@@ -25,30 +25,30 @@ end
         
         ilp_tracking_fields = {
             
-            :lnf                                     => "LNF"                                   ,
-            :lnf_errors                              => "LNF Errors"                            ,
-            :lsf                                     => "LSF"                                   ,
-            :lsf_errors                              => "LSF Errors"                            ,
-            :psf                                     => "PSF"                                   ,
-            :psf_errors                              => "PSF Errors"                            ,
-            :nwf                                     => "NWF"                                   ,
-            :nwf_errors                              => "NWF Errors"                            ,
-            :rcbm                                    => "RCBM"                                  ,
-            :rcbm_errors                             => "RCBM Errors"                           ,
+            #:lnf                                     => "LNF"                                   ,
+            #:lnf_errors                              => "LNF Errors"                            ,
+            #:lsf                                     => "LSF"                                   ,
+            #:lsf_errors                              => "LSF Errors"                            ,
+            #:psf                                     => "PSF"                                   ,
+            #:psf_errors                              => "PSF Errors"                            ,
+            #:nwf                                     => "NWF"                                   ,
+            #:nwf_errors                              => "NWF Errors"                            ,
+            #:rcbm                                    => "RCBM"                                  ,
+            #:rcbm_errors                             => "RCBM Errors"                           ,
             :reading_instructional_recommendation    => "Reading Instructional Recommendation"  ,
-            :"2nd_grade_reading_comprehension_check" => "2nd Grade Reading Comprehension Check" ,
-            :ocm                                     => "OCM"                                   ,
-            :ocm_errors                              => "OCM Errors"                            ,
-            :nim                                     => "NIM"                                   ,
-            :nim_errors                              => "NIM Errors"                            ,
-            :qdm                                     => "QDM"                                   ,
-            :qdm_errors                              => "QDM Errors"                            ,
-            :mnm                                     => "MNM"                                   ,
-            :mnm_errors                              => "MNM Errors"                            ,
-            :mcap                                    => "MCAP"                                  ,
+            #:"2nd_grade_reading_comprehension_check" => "2nd Grade Reading Comprehension Check" ,
+            #:ocm                                     => "OCM"                                   ,
+            #:ocm_errors                              => "OCM Errors"                            ,
+            #:nim                                     => "NIM"                                   ,
+            #:nim_errors                              => "NIM Errors"                            ,
+            #:qdm                                     => "QDM"                                   ,
+            #:qdm_errors                              => "QDM Errors"                            ,
+            #:mnm                                     => "MNM"                                   ,
+            #:mnm_errors                              => "MNM Errors"                            ,
+            #:mcap                                    => "MCAP"                                  ,
             :math_instructional_recommendation       => "Math Instructional Recommendation"     ,
-            :notes                                   => "Notes"                                 ,
-            :mcap_read_to_student                    => "MCAP read to student"
+            #:notes                                   => "Notes"                                 ,
+            #:mcap_read_to_student                    => "MCAP read to student"
             
         }
         
@@ -153,6 +153,7 @@ end
             structure_hash["fields"]["rcbm_errors"                              ] = {"data_type"=>"int", "file_field"=>"rcbm_errors"                            } if field_order.push("rcbm_errors"                             )
             structure_hash["fields"]["reading_instructional_recommendation"     ] = {"data_type"=>"text", "file_field"=>"reading_instructional_recommendation"  } if field_order.push("reading_instructional_recommendation"    )
             structure_hash["fields"]["2nd_grade_reading_comprehension_check"    ] = {"data_type"=>"text", "file_field"=>"2nd_grade_reading_comprehension_check" } if field_order.push("2nd_grade_reading_comprehension_check"   )
+            
             structure_hash["fields"]["ocm"                                      ] = {"data_type"=>"int", "file_field"=>"ocm"                                    } if field_order.push("ocm"                                     )
             structure_hash["fields"]["ocm_errors"                               ] = {"data_type"=>"int", "file_field"=>"ocm_errors"                             } if field_order.push("ocm_errors"                              )
             structure_hash["fields"]["nim"                                      ] = {"data_type"=>"int", "file_field"=>"nim"                                    } if field_order.push("nim"                                     )

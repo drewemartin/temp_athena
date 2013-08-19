@@ -37,4 +37,4 @@ class Init < Base
 
 end
 
-Init.new(["ILP_ENTRY_TYPE"])
+Init.new(ARGV)

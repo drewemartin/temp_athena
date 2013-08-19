@@ -87,6 +87,12 @@ end
         
         output = String.new
         output << "<style>"
+            
+            output << "div.STUDENT_PSYCHOLOGICAL_EVALUATION__under_review   {text-align: center;}"
+            output << "div.STUDENT_PSYCHOLOGICAL_EVALUATION__general_ed     {text-align: center;}"
+            output << "div.STUDENT_PSYCHOLOGICAL_EVALUATION__special_ed     {text-align: center;}"
+            output << "div.STUDENT_PSYCHOLOGICAL_EVALUATION__plan_504       {text-align: center;}"
+            
         output << "</style>"
         return output
         

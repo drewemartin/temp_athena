@@ -427,6 +427,12 @@ end
         
     end
     
+    def fill_select_option_solution(field_name, field_value, pid)
+        
+        return $tables.attach("ILP_ENTRY_TYPE").by_primary_id(field_value).fields["default_solution"].value
+        
+    end
+    
     def fill_select_option_ilp_entry_type_id(field_name, field_value, pid)
         
         output      = String.new
@@ -499,7 +505,7 @@ end
         record_row.push(
             fields["ilp_entry_type_id"].web.select(
                 :dd_choices     => new_type_dd(field_value),
-                :onchange       => "fill_select_option('#{fields["description" ].web.field_id}', this  );",
+                :onchange       => ["fill_select_option('#{fields["description" ].web.field_id}', this  );","fill_select_option('#{fields["solution"    ].web.field_id}', this  );"],
                 :validate       => true
             )
         )

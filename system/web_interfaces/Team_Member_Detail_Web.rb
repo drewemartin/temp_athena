@@ -1050,7 +1050,9 @@ end
         output << "table#module_rights     div{ float:left; width:100%; margin-bottom:2px;}"
         output << "table#module_rights   input{ float:left;}"
         output << "table#module_rights   label{ width:90%; display:inline-block;}"
-      
+        
+        output << "table.dataTable {text-align: center;}"
+        
         output << "</style>"
         return output
         

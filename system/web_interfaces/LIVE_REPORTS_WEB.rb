@@ -1326,7 +1326,7 @@ end
         output = String.new
         output << "<style>"
         output << "#search_dialog_button{display: none;}"
-        output << "table.dataTable td.sorting_1{text-align: center;}"
+        output << "table.dataTable td.column_0{text-align: center;}"
         output << "</style>"
         return output
         
