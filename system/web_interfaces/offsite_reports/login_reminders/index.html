@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<link type='text/css' href='../jqueryFileTree/jqueryFileTree.css' rel='stylesheet' type='text/css' media='screen' />
+	<script type='text/javascript' src='../jquery-1.7.2.min.js'></script>
+	<script type='text/javascript' src='../jqueryFileTree/jqueryFileTree.js'></script>
+	<script type='text/javascript'>
+	$(function () {
+		$('#jquery_file_tree').fileTree({
+			root: '/home/content/59/9314259/html/athena_files/reports/Login_Reminders/',
+			script: '../jqueryFileTree/jqueryFileTree.php'
+			}, function(file) {
+				var path = file.slice(30);
+				location.href='http://dev.athena-sis.com/'+path;
+		});
+	});
+	</script>
+	<style>
+		div.jquery_file_tree{ width: 600px; height: 400px; border: solid 2px #3baae3; overflow-y: scroll; padding: 5px; margin-left:auto; margin-right:auto; background:white;}
+		div.main{ background: #f2f5f7; border: 1px solid #DDDDDD; -moz-border-radius: 6px 6px 6px 6px; padding:20px; -moz-box-shadow: inset 1px 1px 2px gray;}
+		div.heading_container{ width: 610px; padding-bottom: 5px; margin-left:auto; margin-right:auto;}
+		div.heading{ font: 18px Helvetica,Arial,sans-serif; color: #0052A3;}
+	</style>
+</head>
+<body>
+	<DIV class='main'>
+		<DIV class='jquery_file_tree' id='jquery_file_tree'></DIV>
+	</DIV>
+</body>
+</html>

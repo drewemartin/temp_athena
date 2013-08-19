@@ -1,0 +1,119 @@
+div#team_search_dialog{
+    float           :left;
+    clear           :left;
+    margin          :1px;
+}
+
+div#team_search_dialog label{
+    display         :inline-block;
+    width           :90px;
+}
+
+div#student_search_dialog{
+    float           :left;
+    clear           :left;
+    margin          :1px;
+}
+
+div#student_search_dialog label{
+    display         :inline-block;
+    width           :90px;
+}
+
+div.result_container{
+    float           :left;
+    clear           :left;
+    margin          :2px;
+    width           :325px;
+}
+
+button#student_search_button{
+    float           :left;
+    clear           :left;
+    margin-top      :5px;
+    margin-bottom   :5px;
+}
+
+div.search_result_button{
+    float           :left;
+}
+
+button.student_search_result {
+    width           :200px !important;
+}
+
+div.search_sid{
+    float           :right;
+    width           :100px;
+    text-align      :right;
+    margin-top      :4px;
+    
+}
+
+div#student_search_fields{
+    clear           :left;
+    margin-left     :auto;
+    margin-right    :auto;
+    display         :table;
+}
+
+div#student_search_results{
+    clear           :left;
+    width           :350px;
+    height          :200px;
+    padding         :10px;
+    overflow-y      :scroll;
+    border          :1px solid #3baae3;
+    border-radius   :5px;
+    margin-left     :auto;
+    margin-right    :auto;
+    box-shadow      :inset -5px 0px 15px #869bac;
+    background-color:#EDF0F2;
+}
+
+div#too_many{
+    font-size       :12px;
+    margin          :5px;
+    text-align      :center;
+    color           :#EA2626;
+}
+
+button#team_search_button{
+    float           :left;
+    clear           :left;
+    margin-top      :5px;
+    margin-bottom   :5px;
+}
+
+div.team_result_button{
+    float           :left;
+}
+
+div.search_tid{
+    float           :right;
+    width           :100px;
+    text-align      :right;
+    margin-top      :4px;
+    
+}
+
+div#team_search_fields{
+    clear           :left;
+    margin-left     :auto;
+    margin-right    :auto;
+    display         :table;
+}
+
+div#team_search_results{
+    clear           :left;
+    width           :350px;
+    height          :200px;
+    padding         :10px;
+    overflow-y      :scroll;
+    border          :1px solid #3baae3;
+    border-radius   :5px;
+    margin-left     :auto;
+    margin-right    :auto;
+    box-shadow      :inset -5px 0px 15px #869bac;
+    background-color:#EDF0F2;
+}

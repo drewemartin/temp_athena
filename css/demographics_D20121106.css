@@ -1,0 +1,71 @@
+div.demographics_container{
+    margin                  :15px auto;
+    display                 :table;
+}
+
+div.demographics_one{                             float:left;}
+div.demographics_two{                             float:left; margin-left:25px;}
+div.demographics_three{                           float:left; margin-left:25px;}
+div.demographics_four{                            float:left; margin-left:25px;}
+
+div#dem_fullname{                                 float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_sid{                                      float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_grade{                                    float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_dob{                                      float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_fid{                                      float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_current_school_year{                      float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_school_enroll_date{                       float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_specialed_teacher{                        float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_family_teacher_coach{                     float:left; clear:left; width:auto; margin-bottom:2px;}
+div.address_block{                                float:left; clear:left; width:auto; margin-bottom:2px; line-height:19px;}
+div#dem_dor{                                      float:left; clear:left; width:auto; margin-bottom:2px;}
+div#dem_phone_number{                             float:left; clear:left; width:auto; margin-bottom:2px;}
+div.enrolled_days_dem{                            float:left; clear:left; width:auto; margin-bottom:2px;}
+div.attended_days_dem{                            float:left; clear:left; width:auto; margin-bottom:2px;}
+div.excused_absences_dem{                         float:left; clear:left; width:auto; margin-bottom:2px;}
+div.unexcused_absences_dem{                       float:left; clear:left; width:auto; margin-bottom:2px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ent_perf_m{ float:left; clear:left; width:auto; margin-bottom:2px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_m{ float:left; clear:left; width:auto; margin-bottom:2px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ent_perf_r{ float:left; clear:left; width:auto; margin-bottom:2px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_r{ float:left; clear:left; width:auto; margin-bottom:2px;}
+
+div#dem_fullname label{                                 display:inline-block; width:110px;}
+div#dem_sid label{                                      display:inline-block; width:110px;}
+div#dem_grade label{                                    display:inline-block; width:110px;}
+div#dem_dob label{                                      display:inline-block; width:110px;}
+div#dem_fid label{                                      display:inline-block; width:110px;}
+div#dem_stron_entm label{                               display:inline-block; width:110px;}
+div#dem_current_school_year label{                      display:inline-block; width:110px;}
+div#dem_school_enroll_date label{                       display:inline-block; width:110px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_m label{ display:inline-block; width:110px;}
+div#dem_mailing_address label{                          display:inline-block; width:100px;}
+div#dem_mailing_address_2 label{                        display:inline-block; width:100px;}
+div#dem_mailing_city label{                             display:inline-block; width:100px;}
+div#dem_mailing_state label{                            display:inline-block; width:100px;}
+div#dem_mailing_zip label{                              display:inline-block; width:100px;}
+div#dem_phone_number label{                             display:inline-block; width:100px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ent_perf_r label{ display:inline-block; width:130px;}
+div.enrolled_days_dem label{                            display:inline-block; width:155px;}
+div.attended_days_dem label{                            display:inline-block; width:155px;}
+div.excused_absences_dem label{                         display:inline-block; width:155px;}
+div.unexcused_absences_dem label{                       display:inline-block; width:155px;}
+div.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_r label{ display:inline-block; width:155px;}
+
+label.dem_fullname_label{               width:auto !important;}
+label.dem_sid_label{                    width:auto !important;}               
+label.dem_grade_label{                  width:auto !important;}
+label.dem_stron_entm_label{             width:auto !important;}
+label.dem_school_enroll_date_label{     width:auto !important;}
+label.dem_current_school_yearlabel{     width:auto !important;}
+label.enrolled_days_dem{                width:auto !important;}
+label.attended_days_dem{                width:auto !important;}
+label.excused_absences_dem{             width:auto !important;}
+label.unexcused_absences_dem{           width:auto !important;}
+label.STUDENT_specialedteacher{         width:auto !important;}
+
+label.SCANTRON_PERFORMANCE_LEVEL__stron_ent_perf_m{width:auto !important;}
+label.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_m{width:auto !important;}
+label.SCANTRON_PERFORMANCE_LEVEL__stron_ent_perf_r{width:auto !important;}
+label.SCANTRON_PERFORMANCE_LEVEL__stron_ext_perf_r{width:auto !important;}
+
+div#filler{                             float:left; clear:left; width:auto; margin-bottom:2px; height:18px;}

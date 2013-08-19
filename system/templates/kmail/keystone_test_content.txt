@@ -1,0 +1,34 @@
+Keystone Testing Reminder 
+
+The %%site%% County %%subject%% Keystone testing site will take place on %%site_date%%.
+Arrival and estimated pick up times are as follows:
+
+Please plan to arrive by %%start_time%%.  Please accompany your child into the building if you are transporting.  
+Please plan to pick up at %%est_end_time%%.  
+*Note that dismissal times are estimates.  These tests are untimed and your child's academic performance and safety must remain our top priority while present at a testing site. We appreciate your patience as we cannot provide a solid dismissal time and we must dismiss each child individually and check photo IDs. 
+
+Your testing site is:
+%%site%%
+%%name_of_facility%%
+%%site_address%%
+%%site_url%%
+
+Specific Site Directions: 
+%%Directions%%
+
+Please Remember to Bring
+     *A drink and a light snack
+          **ALL testing sites are nut-free - please do not pack any type of nut in your student's snack 
+     *Number 2 pencils and erasers
+     *Quiet activity to do if your student ends early
+     *Completed Health Form (http://tinyurl.com/bv76adf) for all students
+     *Self Transportation Permission Form (http://tinyurl.com/cgr8zcx) if student is not being dropped off by an adult
+     *Student Self Administration of Medication (http://tinyurl.com/brrzzrt) if required 
+     *No electronic devices can be used during Keystone Exams.  Please do not bring them to the site.  Cell phones must be left with test administrators if brought to exam. This is a Pennsylvania State testing rule.
+
+The person picking-up your child will be asked to show proof of identity with photo identification.  All students must be registered and picked-up by a responsible adult. Students who may be driving themselves must have a self transportation permission slip completed. 
+
+Special Notes:
+%%Special Notes%%
+
+*All links must be copied and pasted into your browser*

@@ -1,0 +1,53 @@
+div.expansion_header{
+    clear                       :left;
+    margin-top                  :5px;
+    padding                     :5px;
+    border                      :1px solid #aed0ea;
+    border-radius               :5px;
+    color                       :#2779aa;
+    background-color            :#d7ebf9;
+    cursor                      :pointer;
+}
+
+div.expansion_header_false{
+    clear                       :left;
+    margin-top                  :5px;
+    padding                     :5px;
+    border                      :1px solid #aed0ea;
+    border-radius               :5px;
+    color                       :#2779aa;
+    background-color            :#d7ebf9;
+    cursor                      :default;
+}
+
+div.expand_text{
+    float                       :left;
+}
+
+div.expand_text label{
+    cursor                      :inherit;
+}
+
+div.record_count{
+    float                       :right;
+    padding-right               :5px;
+    padding-left                :5px;
+}
+
+div.record_count label{
+    cursor                      :inherit;
+}
+
+div.content_div{
+    position                    :relative;
+    clear                       :left;
+    margin-top                  :-1px;
+    padding-left                :10px;
+    padding-right               :10px;
+    border-left                 :1px solid #aed0ea;
+    border-right                :1px solid #aed0ea;
+    border-bottom               :1px solid #aed0ea;
+    border-bottom-left-radius   :5px;
+    border-bottom-right-radius  :5px;
+    overflow-y                  :hidden;
+}   

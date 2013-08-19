@@ -1,0 +1,24 @@
+<HTML>
+	<HEAD>
+		<script>
+			function set_page(){
+				document.getElementById('user_id').value = parent.document.getElementById('user_form').user_id.value;
+				document.getElementById('page').value = parent.document.getElementById('user_form').page.value;
+				if (parent.document.getElementById('user_form').dashboard_options != undefined){
+					document.getElementById('dashboard_options').value = parent.document.getElementById('user_form').dashboard_options.value;
+				}
+				ref_test = document.referrer;
+				document.forms.get_page.submit();
+			}
+		</script>
+	</HEAD>
+	<BODY onload= "set_page()";>
+		<form id = "get_page" name = "get_page" enctype="multipart/form-data" action="/cgi-bin/athena_cgi.rb" style="visibility: visible;" method="post"> 
+			<input type="hidden" id="user_id" 		name="user_id" 			value="">
+			<input type="hidden" id="page" 	  		name="page" 			value="">
+			<input type="hidden" id="ref_id"  		name="ref_id"  			value="">
+			<input type="hidden" id="load"    		name="load"    			value="">
+			<input type="hidden" id="dashboard_options"  	name="dashboard_options"    	value="">
+		</form>
+	</BODY>
+</HTML>

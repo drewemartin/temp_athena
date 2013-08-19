@@ -1,0 +1,141 @@
+/* css for timepicker */
+div.ui-timepicker-div .ui-widget-header{    margin-bottom: 8px; font: 62.5% 'Trebuchet MS', sans-serif; margin: 50px;}
+div.ui-timepicker-div dl{                   text-align: left; }
+div.ui-timepicker-div dl dt{                height: 25px; }
+div.ui-timepicker-div dl dd{                margin: -25px 10px 20px 65px; }
+div.ui-timepicker-div td {                  font-size: 90%; }
+div.ui-datepicker-buttonpane{               margin-top:40px !important;}
+
+.ui-button{font-size: .7em !important;}
+
+select{font-size: small !important;}
+
+#upload_status{                         text-align:center; overflow-y:scroll;}
+
+body{font-family:"Trebuchet MS", bsans-serif; font-size:.8em !important;}
+div#preload{height:0px;}
+.row0{ background-color:#FFF; border: 1px solid #e1e1e1;}
+.row1{ background-color:#e1e1e1; border: 1px solid #e1e1e1;}
+
+div.expand_text{                      float:left;}
+div.expand_text label{                cursor:inherit;}
+div.record_count{                     float:right; padding-right:5px; padding-left:5px;}
+div.record_count label{               cursor:inherit;}
+
+div.expansion_header{
+    clear                       :left;
+    margin-top                  :5px;
+    padding                     :5px;
+    border                      :1px solid #aed0ea;
+    border-radius               :5px;
+    color                       :#2779aa;
+    background-color            :#d7ebf9;
+    cursor                      :pointer;
+}
+
+div.expansion_header_false{           clear:left; margin-top:5px; padding:5px; border: 1px solid #aed0ea; border-radius:5px; color:#2779aa; background-color:#d7ebf9; cursor:default;}
+
+div.content_div{
+    position                    :relative;
+    clear                       :left;
+
+    margin-top                  :-1px;
+    padding-left                :10px;
+    padding-right               :10px;
+    border-left                 : 1px solid #aed0ea;
+    border-right                : 1px solid #aed0ea;
+    border-bottom               : 1px solid #aed0ea;
+    border-bottom-left-radius   :5px;
+    border-bottom-right-radius  :5px;
+    overflow-y                  :hidden;
+}
+
+fieldset{clear:left; border: 1px solid #e1e1e1; margin-bottom:15px;}
+legend{
+    color:#FFF;
+    background-color:#3baae3;
+    width:100%;
+    border: 1px solid #e1e1e1;
+    padding:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+}
+legend.sub{
+    color:#3baae3;
+    background:none;
+    width:auto;
+    border: 0px solid #e1e1e1;
+    -moz-border-radius:5px;
+    border-radius:5px;
+}
+
+div.demographics_container{             margin-left:auto; margin-right:auto; margin-bottom:15px; display:table;}
+div.demographics_left{                  float:left;}
+div.demographics_middle{                float:left; margin-left:20px;}
+div.demographics_right{                 float:left; margin-left:20px;}
+
+div#dem_fullname{                       float:left; clear:left; width:auto;}
+div#dem_sid{                            float:left; clear:left; width:auto;}
+div#dem_grade{                          float:left; clear:left; width:auto;}
+div#dem_current_school_year{            float:left; clear:left; width:auto;}
+div#dem_school_enroll_date{             float:left; clear:left; width:auto;}
+div#dem_specialed_teacher{              float:left; clear:left; width:auto;}
+div#dem_family_teacher_coach{           float:left; clear:left; width:auto;}
+div#dem_mailing_address{                float:left; clear:left; width:auto;}
+div#dem_mailing_address_2{              float:left; clear:left; width:auto;}
+div#dem_mailing_city{                   float:left; clear:left; width:auto;}
+div#dem_mailing_state{                  float:left; clear:left; width:auto;}
+div#dem_mailing_zip{                    float:left; clear:left; width:auto;}
+div#dem_phone_number{                   float:left; clear:left; width:auto;}
+div.enrolled_days_dem{                  float:left; clear:left; width:auto;}
+div.attended_days_dem{                  float:left; clear:left; width:auto;}
+div.excused_absences_dem{               float:left; clear:left; width:auto;}
+div.unexcused_absences_dem{             float:left; clear:left; width:auto;}
+
+div#dem_fullname label{                 display:inline-block; width:90px;}
+div#dem_sid label{                      display:inline-block; width:90px;}
+div#dem_grade label{                    display:inline-block; width:90px;}
+div#dem_school_enroll_date label{       display:inline-block; width:90px;}
+div#dem_current_school_year label{      display:inline-block; width:90px;}
+div#dem_mailing_address label{          display:inline-block; width:100px;}
+div#dem_mailing_address_2 label{        display:inline-block; width:100px;}
+div#dem_mailing_city label{             display:inline-block; width:100px;}
+div#dem_mailing_state label{            display:inline-block; width:100px;}
+div#dem_mailing_zip label{              display:inline-block; width:100px;}
+div#dem_phone_number label{             display:inline-block; width:100px;}
+div.enrolled_days_dem label{            display:inline-block; width:150px;}
+div.attended_days_dem label{            display:inline-block; width:150px;}
+div.excused_absences_dem label{         display:inline-block; width:150px;}
+div.unexcused_absences_dem label{       display:inline-block; width:150px;}
+
+label.dem_fullname_label{               width:auto !important;}
+label.dem_sid_label{                    width:auto !important;}               
+label.dem_grade_label{                  width:auto !important;}             
+label.dem_school_enroll_date_label{     width:auto !important;}
+label.dem_current_school_yearlabel{     width:auto !important;}
+label.enrolled_days_dem{                width:auto !important;}
+label.attended_days_dem{                width:auto !important;}
+label.excused_absences_dem{             width:auto !important;}
+label.unexcused_absences_dem{           width:auto !important;}
+label.STUDENT_specialedteacher{         width:auto !important;}
+
+div.bottom{               		        clear:both;}
+
+div.student_link{	                        float:left; clear:left; color:#0000FF; text-decoration:underline; display:inline-block;}
+
+div.search__STUDENT__student_id{                float:left; clear:left; margin:1px;}
+div.search__STUDENT__studentfirstname{          float:left; clear:left; margin:1px;}
+div.search__STUDENT__studentlastname{           float:left; clear:left; margin:1px;}
+div.search__STUDENT__grade{                     float:left; clear:left; margin:1px;}
+div.search__STUDENT__studentgender{             float:left; clear:left; margin:1px;}
+div.search__STUDENT__student_id label{          display:inline-block; width:90px;}
+div.search__STUDENT__studentfirstname label{    display:inline-block; width:90px;}
+div.search__STUDENT__studentlastname label{     display:inline-block; width:90px;}
+div.search__STUDENT__grade label{               display:inline-block; width:90px;}
+div.search__STUDENT__studentgender label{       display:inline-block; width:90px;}
+button#search_button{                           float:left; clear:left; margin-top:5px; margin-bottom:5px;}
+div.result_container{                           float:left; clear:left; margin:2px; width:325px;}
+div.search_sid{                                 display:inline-block; float:right;}
+
+div#search_fields{                              clear:left; margin-left:auto; margin-right:auto; display:table;}
+div#search_results{                             clear:left; width:350px; height:200px; padding:10px; overflow-y:scroll; border: 1px solid #3baae3; border-radius:5px; margin-left:auto; margin-right:auto; box-shadow: inset -5px 0px 15px #869bac;}
