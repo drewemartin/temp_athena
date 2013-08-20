@@ -212,6 +212,9 @@ end
         test_id         = field_by_pid("test_id", row_obj.primary_id).value
         test_event_id   = $tables.attach("STUDENT_TESTS").field_by_pid("test_event_id", test_id         ).value
         test_event_name = $tables.attach("TEST_EVENTS"  ).field_by_pid("name",          test_event_id   ).value
+        test_subject_id = field_by_pid("test_subject_id", row_obj.primary_id).value
+        test_subject    = $tables.attach("TEST_SUBJECTS").field_by_pid("name",          test_subject_id ).value
+        description     = "#{test_event_name} #{test_subject}"
         
         ilp_tracking_fields.each_pair{|field_name, nice_name|
            
@@ -223,7 +226,7 @@ end
                     ilp_records  = student.ilp.existing_records(
                         "WHERE ilp_entry_category_id    = '#{ilp_cat_id}'
                         AND ilp_entry_type_id           = '#{ilp_type_id}'
-                        AND description                 = '#{test_event_name}'"
+                        AND description                 = '#{description}'"
                     )
                     
                 )
@@ -235,7 +238,7 @@ end
                     ilp_record = student.ilp.new_record
                     ilp_record.fields["ilp_entry_category_id"   ].value = ilp_cat_id
                     ilp_record.fields["ilp_entry_type_id"       ].value = ilp_type_id
-                    ilp_record.fields["description"             ].value = test_event_name
+                    ilp_record.fields["description"             ].value = description
                     
                 end
                 
