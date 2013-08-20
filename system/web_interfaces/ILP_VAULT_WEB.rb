@@ -77,12 +77,13 @@ end
             #HEADERS
             [
                 "Related Types",
-                "PDF Display Order",
+                #"PDF Display Order",
                 "Name",
-                "Description",
-                "Manual Entry Allowed?",
-                "Maximum Number of Entries under this Category",
-                "Display Type",
+                "General Info",
+                #"Description",
+                #"Manual Entry Allowed?",
+                #"Maximum Number of Entries under this Category",
+                #"Display Type",
                 "Fields to Include",
                 "Grades to Include"
             ]
@@ -93,6 +94,12 @@ end
         pids.each{|pid|
             
             record = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(pid)
+            
+            this_description    = record.fields["description"   ].web.default(:label_option=>"Description:")
+            this_manual         = record.fields["manual"        ].web.default(:label_option=>"Manual Entry Allowed?")
+            this_max_entries    = record.fields["max_entries"   ].web.default(:label_option=>"Max Entries:")
+            this_display        = record.fields["display_type"  ].web.select(:label_option=>"Display Type:",:dd_choices=>display_type_dd)
+            this_pdf_order      = record.fields["pdf_order"     ].web.select(:label_option=>"PDF Display Order:",:dd_choices=>$dd.range(1,pids.length))
             
             include_fields_array = [
                 
@@ -166,12 +173,13 @@ end
                 
                 [
                     $tools.button_load_tab(2, "Types", pid),
-                    record.fields["pdf_order"               ].web.select(:dd_choices=>$dd.range(1,pids.length)),
+                    #record.fields["pdf_order"               ].web.select(:dd_choices=>$dd.range(1,pids.length)),
                     record.fields["name"                    ].web.text,
-                    record.fields["description"             ].web.default,
-                    record.fields["manual"                  ].web.default,
-                    record.fields["max_entries"             ].web.default,
-                    record.fields["display_type"            ].web.select(:dd_choices=>display_type_dd),
+                    #record.fields["description"             ].web.default,
+                    #record.fields["manual"                  ].web.default,
+                    #record.fields["max_entries"             ].web.default,
+                    #record.fields["display_type"            ].web.select(:dd_choices=>display_type_dd),
+                    "#{this_description}#{this_manual}#{this_max_entries}#{this_display}#{this_pdf_order}",
                     include_fields_table,
                     grades_included
                 ]
@@ -337,7 +345,7 @@ end
         this_name           = record.fields["name"                      ].web.text(     :label_option=>"Name:")
         this_description    = record.fields["description"               ].web.default(  :label_option=>"Description:")
         this_manual         = record.fields["manual"                    ].set(true).web.default(  :label_option=>"Manual Entry Allowed?")
-        this_max_entries    = record.fields["max_entries"               ].web.select(   :label_option=>"Max Entries?",:dd_choices=>$dd.range(1,10))
+        this_max_entries    = record.fields["max_entries"               ].web.select(   :label_option=>"Max Entries:",:dd_choices=>$dd.range(1,10))
         this_display        = record.fields["display_type"              ].web.select(   :label_option=>"Display Type:",:dd_choices=>display_type_dd)
         this_pdf_order      = record.fields["pdf_order"                 ].web.select(   :label_option=>"PDF Display Order:",:dd_choices=>$dd.range(1,(categories ? categories.length+1 : 1)))
         
@@ -503,14 +511,14 @@ end
         div.ILP_ENTRY_CATEGORY__manual                      {margin-top: 2px; margin-bottom: 2px;}
         div.ILP_ENTRY_CATEGORY__max_entries                 {margin-top: 2px; margin-bottom: 2px;}
         div.ILP_ENTRY_CATEGORY__description                 {margin-top: 2px; margin-bottom: 2px; width: 415px;}
-        div.ILP_ENTRY_CATEGORY__display_type                    {margin-top: 2px; margin-bottom: 2px;}
+        div.ILP_ENTRY_CATEGORY__display_type                {margin-top: 2px; margin-bottom: 2px;}
         div.ILP_ENTRY_CATEGORY__pdf_order                   {margin-top: 2px; margin-bottom: 2px;}
         
         div.ILP_ENTRY_CATEGORY__name                        label{font-size: 1.2em;}
         div.ILP_ENTRY_CATEGORY__manual                      label{font-size: 1.2em;}
         div.ILP_ENTRY_CATEGORY__max_entries                 label{font-size: 1.2em;}
         div.ILP_ENTRY_CATEGORY__description                 label{font-size: 1.2em; margin-bottom: 3px; }
-        div.ILP_ENTRY_CATEGORY__display_type                    label{font-size: 1.2em;}
+        div.ILP_ENTRY_CATEGORY__display_type                label{font-size: 1.2em;}
         div.ILP_ENTRY_CATEGORY__pdf_order                   label{font-size: 1.2em;}
         
         div.ILP_ENTRY_CATEGORY__description  textarea{display: block; width: 410px; height: 100px; resize: none; overflow-y: scroll;}
@@ -528,7 +536,55 @@ end
         div.ILP_ENTRY_CATEGORY__pdf_expiration_date             {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_responsible_parties         {text-align: center;}
         
-        input.ILP_ENTRY_CATEGORY__name                          {width:200px;}
+        div.ILP_ENTRY_CATEGORY__interface_ilp_entry_category_id {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_ilp_entry_type_id     {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_goal_type             {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_description           {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_solution              {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_completed             {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_progress              {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_monday                {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_tuesday               {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_wednesday             {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_thursday              {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_friday                {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day1                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day2                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day3                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day4                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day5                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day6                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_day7                  {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_expiration_date       {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_pdf_excluded          {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_responsible_parties   {text-align: center;}
+        
+        div.ILP_ENTRY_CATEGORY__pdf_ilp_entry_category_id       {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_ilp_entry_type_id           {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_goal_type                   {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_description                 {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_solution                    {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_completed                   {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_progress                    {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_monday                      {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_tuesday                     {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_wednesday                   {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_thursday                    {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_friday                      {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day1                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day2                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day3                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day4                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day5                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day6                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_day7                        {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_expiration_date             {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_pdf_excluded                {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_responsible_parties         {text-align: center;}
+        
+        div.related_classes_container {height:165px; overflow-y: scroll; resize: none; width: 460px;}
+        
+        input.ILP_ENTRY_CATEGORY__name                          {width:150px;}
         
         </style>"
         
