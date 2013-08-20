@@ -49,37 +49,48 @@ end
             
             #student doesn't already have this ilp record
             if !ilps
-                new_row = $tables.attach("student_ilp").new_row
                 
-                pattern = record.fields["pattern"].value
-                arr = pattern.partition("(")
-                per_code = arr[0].strip
-                arr2 = arr[2].partition(")")
-                days = arr2[0]
+                pattern     = record.fields["pattern"].value
+                arr         = pattern.partition("(")
+                per_code    = arr[0].strip
+                arr2        = arr[2].partition(")")
+                days        = arr2[0]
                 school_type = $tables.attach("sapphire_dictionary_periods").find_field("school_type", "WHERE period_code='#{per_code}'")
                 
-                new_row.fields["student_id"             ].value = student_id
-                new_row.fields["ilp_entry_category_id"  ].value = $tables.attach("ilp_entry_category").find_field("primary_id", "WHERE name='Sapphire Course Schedule #{school_type}'").value
+                if (
+                    
+                    ilp_type    = $tables.attach("ilp_entry_type").find_field("primary_id", "WHERE name='#{per_code}'") &&
+                    ilp_cat     = $tables.attach("ilp_entry_category").find_field("primary_id", "WHERE name='Sapphire Course Schedule#{school_type ? " #{school_type.value}" :""}'")
+                    
+                )
+                    
+                    new_row = $tables.attach("student_ilp").new_row
+                    
+                    new_row.fields["student_id"             ].value = student_id
+                    new_row.fields["ilp_entry_category_id"  ].value = ilp_cat.value
+                    
+                    new_row.fields["ilp_entry_type_id"      ].value = ilp_type.value
+                    new_row.fields["description"            ].value = "#{record.fields["course_title"].value} - #{record.fields["staff_name"].value}"
+                    new_row.fields["solution"               ].value = "#{course_id} - #{section_id}"
+                    
+                    new_row.fields["monday"                 ].value = (days.include?("M") ? true : false)
+                    new_row.fields["tuesday"                ].value = (days.include?("T") ? true : false)
+                    new_row.fields["wednesday"              ].value = (days.include?("W") ? true : false)
+                    new_row.fields["thursday"               ].value = (days.include?("R") ? true : false)
+                    new_row.fields["friday"                 ].value = (days.include?("F") ? true : false)
+                    
+                    new_row.fields["day1"                   ].value = (days.include?("1") ? true : false)
+                    new_row.fields["day2"                   ].value = (days.include?("2") ? true : false)
+                    new_row.fields["day3"                   ].value = (days.include?("3") ? true : false)
+                    new_row.fields["day4"                   ].value = (days.include?("4") ? true : false)
+                    new_row.fields["day5"                   ].value = (days.include?("5") ? true : false)
+                    new_row.fields["day6"                   ].value = (days.include?("6") ? true : false)
+                    new_row.fields["day7"                   ].value = (days.include?("7") ? true : false)
+                    
+                    new_row.save
+                    
+                end
                 
-                new_row.fields["ilp_entry_type_id"      ].value = $tables.attach("ilp_entry_type").find_field("primary_id", "WHERE name='#{per_code}'").value
-                new_row.fields["description"            ].value = "#{record.fields["course_title"].value} - #{record.fields["staff_name"].value}"
-                new_row.fields["solution"               ].value = "#{course_id} - #{section_id}"
-                
-                new_row.fields["monday"                 ].value = (days.include?("M") ? true : false)
-                new_row.fields["tuesday"                ].value = (days.include?("T") ? true : false)
-                new_row.fields["wednesday"              ].value = (days.include?("W") ? true : false)
-                new_row.fields["thursday"               ].value = (days.include?("R") ? true : false)
-                new_row.fields["friday"                 ].value = (days.include?("F") ? true : false)
-                
-                new_row.fields["day1"                   ].value = (days.include?("1") ? true : false)
-                new_row.fields["day2"                   ].value = (days.include?("2") ? true : false)
-                new_row.fields["day3"                   ].value = (days.include?("3") ? true : false)
-                new_row.fields["day4"                   ].value = (days.include?("4") ? true : false)
-                new_row.fields["day5"                   ].value = (days.include?("5") ? true : false)
-                new_row.fields["day6"                   ].value = (days.include?("6") ? true : false)
-                new_row.fields["day7"                   ].value = (days.include?("7") ? true : false)
-                
-                new_row.save
             end
         } if pids
     end
