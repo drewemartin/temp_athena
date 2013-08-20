@@ -297,16 +297,17 @@ def x______________DROP_DOWN_OPTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
     
-    def duration_dd
+    def progress_dd
         
-        duration_types = [
+        progress_types = [
             
-            "Ongoing",     
-            "Until Progress Shown"        
+            "Achieved",     
+            "In Progress",
+            "Not Met"
             
         ]
         
-        $dd.from_array(duration_types)
+        $dd.from_array(progress_types)
         
     end
     
@@ -492,7 +493,7 @@ end
         headers.push("Solution"                     ) if category_record && category_record.fields["interface_solution"           ].is_true? 
         headers.push("Completed"                    ) if category_record && category_record.fields["interface_completed"          ].is_true? 
         headers.push("Goal Type"                    ) if category_record && category_record.fields["interface_goal_type"          ].is_true? 
-        headers.push("Duration"                     ) if category_record && category_record.fields["interface_duration"           ].is_true? 
+        headers.push("Progress"                     ) if category_record && category_record.fields["interface_progress"           ].is_true? 
         headers.push("Scheduled Re-Eval Date"       ) if category_record && category_record.fields["interface_expiration_date"    ].is_true?  
         headers.push("Display as Weekly Schedule"   ) if category_record && category_record.fields["display_type"].match(/Weekly/i)
         headers.push("Display as 6 Day Schedule"    ) if category_record && category_record.fields["display_type"].match(/6 Day/i)
@@ -515,7 +516,7 @@ end
         record_row.push( fields["solution"                           ].web.default                                            ) if category_record && category_record.fields["interface_solution"           ].is_true? 
         record_row.push( fields["completed"                          ].web.default                                            ) if category_record && category_record.fields["interface_completed"          ].is_true? 
         record_row.push( fields["goal_type"                          ].web.select(:dd_choices=> goal_type_dd)                 ) if category_record && category_record.fields["interface_goal_type"          ].is_true? 
-        record_row.push( fields["duration"                           ].web.select(:dd_choices=> duration_dd)                  ) if category_record && category_record.fields["interface_duration"           ].is_true? 
+        record_row.push( fields["progress"                           ].web.select(:dd_choices=> progress_dd)                  ) if category_record && category_record.fields["interface_progress"           ].is_true? 
         record_row.push( fields["expiration_date"                    ].web.default                                            ) if category_record && category_record.fields["interface_expiration_date"    ].is_true? 
         
         if category_record.fields["display_type"].match(/Weekly/i)
@@ -649,7 +650,7 @@ end
         headers.push("Solution"                         ) if category_record && category_record.fields["interface_solution"             ].is_true? 
         headers.push("Completed"                        ) if category_record && category_record.fields["interface_completed"            ].is_true? 
         headers.push("Goal Type"                        ) if category_record && category_record.fields["interface_goal_type"            ].is_true? 
-        headers.push("Duration"                         ) if category_record && category_record.fields["interface_duration"             ].is_true? 
+        headers.push("Progress"                         ) if category_record && category_record.fields["interface_progress"             ].is_true? 
         headers.push("Scheduled Re-Eval Date"           ) if category_record && category_record.fields["interface_expiration_date"      ].is_true? 
         headers.push("Weekly Schedule"                  ) if category_record && category_record.fields["display_type"].match(/Weekly/i)
         headers.push("6 Day Schedule"                   ) if category_record && category_record.fields["display_type"].match(/6 Day/i)
@@ -683,7 +684,7 @@ end
             record_row.push( record.fields["solution"                           ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_solution"           ].is_true? 
             record_row.push( record.fields["completed"                          ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_completed"          ].is_true? 
             record_row.push( record.fields["goal_type"                          ].web.select(   :disabled=>disabled, :dd_choices=> goal_type_dd)    ) if category_record && category_record.fields["interface_goal_type"          ].is_true? 
-            record_row.push( record.fields["duration"                           ].web.select(   :disabled=>disabled, :dd_choices=> duration_dd)     ) if category_record && category_record.fields["interface_duration"           ].is_true? 
+            record_row.push( record.fields["progress"                           ].web.select(   :disabled=>disabled, :dd_choices=> progress_dd)     ) if category_record && category_record.fields["interface_progress"           ].is_true? 
             record_row.push( record.fields["expiration_date"                    ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_expiration_date"    ].is_true? 
             
             if category_record.fields["display_type"].match(/Weekly/i)
