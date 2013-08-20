@@ -67,6 +67,8 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
                     
                 when "Table"
                     display_as_table(student_ilps)
+                when "Table 2"
+                    display_as_table_two(student_ilps)
                 when "Schedule - Weekly"
                     display_schedule_weekly(student_ilps)
                 when "Schedule - 6 Day"
@@ -94,7 +96,7 @@ end
 
     def student_info_box
         
-        @pdf.text "<b>Individual Learning Plan</b>", :size => 22, :color=>"2570BA", :inline_format  => true, :align => :center
+        @pdf.text "<b>Individual Learning Plan - #{$iuser}</b>", :size => 22, :color=>"2570BA", :inline_format  => true, :align => :center
         
         @pdf.move_down 3
         
@@ -110,9 +112,9 @@ end
             :size               => 12,
             :padding            => 2,
             :align              => :center,
-            :text_color         => "FFFFFF",
-            :background_color   => "2570BA",
-            :border_colors      => "2570BA"
+            :text_color         => "2570BA",
+            :background_color   => "DEEDF7",
+            :border_colors      => "AED0EA"
         }
         
         @pdf.table [
@@ -156,7 +158,7 @@ end
             :inline_format  => true,
             :size           => 10,
             :padding        => 2,
-            :border_colors  => "297CCF",
+            :border_colors  => "AED0EA",
             :borders        => []
         }
         
@@ -239,8 +241,8 @@ end
                         :align          => :center,
                         :padding        => 2,
                         :border_width   => 1,
-                        :border_colors  => "297CCF",
-                        :background_color=>"297CCF",
+                        :border_colors  => "AED0EA",
+                        :background_color=>"AED0EA",
                         :text_color=>"FFFFFF"
                     }
                 @pdf.table field_row,
@@ -253,7 +255,7 @@ end
                         :align          => :center,
                         :padding        => 2,
                         :border_width   => 1,
-                        :border_colors  => "297CCF"
+                        :border_colors  => "AED0EA"
                     }
             end
             
@@ -307,9 +309,9 @@ end
             field_values.push(ilp_record.fields["completed"].is_true?  ? checkbox_filled : checkbox_empty )
         end
         
-        if category_record.fields["pdf_duration"       ].is_true?
-            headers.push("<b>Duration</b>")
-            field_values.push(ilp_record.fields["duration"].value ? ilp_record.fields["duration"].value : "<i>Not Selected</i>")
+        if category_record.fields["pdf_progress"       ].is_true?
+            headers.push("<b>Progress</b>")
+            field_values.push(ilp_record.fields["progress"].value ? ilp_record.fields["progress"].value : "<i>Not Selected</i>")
         end
         
         if category_record.fields["pdf_expiration_date"       ].is_true?
@@ -338,7 +340,7 @@ end
                 :align           => :left,
                 :padding         => 2,
                 :border_width    => 0,
-                :border_colors   => "297CCF",
+                :border_colors   => "AED0EA",
                 :borders         => []
             }
         }
@@ -410,9 +412,9 @@ end
                         :align          => :center,
                         :padding        => 2,
                         :border_width   => 1,
-                        :border_colors  => "297CCF",
+                        :border_colors  => "AED0EA",
                         :borders        => [:left,:right,:bottom,:top],
-                        :background_color=>"297CCF",
+                        :background_color=>"AED0EA",
                         :text_color=>"FFFFFF"
                     }
                 @pdf.table field_row,
@@ -425,7 +427,7 @@ end
                         :align          => :center,
                         :padding        => 2,
                         :border_width   => 1,
-                        :border_colors  => "297CCF",
+                        :border_colors  => "AED0EA",
                         :borders        => [:left,:right,:bottom,:top]
                     }
                 @pdf.move_down 5
@@ -448,9 +450,9 @@ end
             field_values.push(ilp_record.fields["completed"].is_true?  ? checkbox_filled : checkbox_empty )
         end
         
-        if category_record.fields["pdf_duration"       ].is_true?
-            headers.push("<b>Duration</b>")
-            field_values.push(ilp_record.fields["duration"].value)
+        if category_record.fields["pdf_progress"       ].is_true?
+            headers.push("<b>Progress</b>")
+            field_values.push(ilp_record.fields["progress"].value)
         end
         
         if category_record.fields["pdf_expiration_date"       ].is_true?
@@ -499,13 +501,17 @@ end
         table_array = Array.new
         
         headers = [""]
-        types.each{|type|headers.push($tables.attach("ILP_ENTRY_TYPE").by_primary_id(type).fields["name"].value)}
+        types.each{|type|
+            headers.push(
+                "<b>#{$tables.attach("ILP_ENTRY_TYPE").by_primary_id(type).fields["name"].value}</b>"
+            )
+        }
         table_array.push(headers)
         
         rows.each{|row|
             
             row_array = Array.new
-            row_array.push(row)
+            row_array.push("<b>#{row}</b>")
             types.each{|type|
                 
                 row_array.push(display_hash[row][type])
@@ -525,14 +531,98 @@ end
             :column_widths  => Array.new(table_length).fill(width/table_length),
             :cell_style     => {
                 :inline_format  => true,
-                :align          => :center,
+                :align          => :left,
                 :size           => 8,
                 :padding        => 2,
                 :border_width   => 1,
-                :border_colors  => "297CCF",
+                :border_colors  => "AED0EA",
                 :borders        => [:right,:left,:top,:bottom]
             }
-        )
+        ) do
+            row(0   ).background_color = "DEEDF7"
+            column(0).background_color = "DEEDF7"
+        end
+        
+    end
+
+    def display_as_table_two(student_ilps)
+        
+        ilp_settings_record = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(student_ilps[0].fields["ilp_entry_category_id"].value)
+        
+        fields_displayed = Array.new
+        ilp_settings_record.fields.each_pair{|field_name, setting|
+            
+            if (field_name.match(/pdf/) && setting.is_true?)
+                
+                if (ordered = ilp_settings_record.fields[field_name.gsub("pdf_","order_")].value)
+                    fields_displayed[ordered.to_i-1] = field_name
+                else
+                    fields_displayed.push(field_name)
+                end
+                
+            end
+            
+        }
+        
+        table_array = Array.new
+        headers = Array.new
+        
+        fields_displayed.each{|field_name|
+            
+            custom_label    = ilp_settings_record.fields[field_name.gsub("pdf_","label_")].value
+            default_label   = student_ilps[0].table.fields[field_name.gsub("pdf_","")][:label]
+            header_label    = custom_label || default_label
+            headers.push("<b>#{header_label}</b>")   
+            
+        }
+        
+        table_array.push(headers)
+        
+        student_ilps.each{|ilp|
+            
+            this_row = Array.new
+            fields_displayed.each{|field_name|
+             
+                ilp_field_name = field_name.gsub("pdf_","")
+                if ilp_field_name.match(/ilp_entry_category_id/)
+                    ilp_value = $tables.attach("ILP_ENTRY_CATEGORY" ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                elsif ilp_field_name.match(/ilp_entry_type_id/)
+                    ilp_value = $tables.attach("ILP_ENTRY_TYPE"     ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                else
+                    ilp_value = ilp.fields[ilp_field_name].to_user
+                end
+                this_row.push(ilp_value)   
+                
+            }
+            table_array.push(this_row)
+            
+        }
+        
+        width           = 520.0
+        table_length    = table_array[0].length
+        
+        if table_length > 0
+            
+            @pdf.table(
+                table_array,
+                :width          => width,
+                :position       => :center,
+                :column_widths  => Array.new(table_length).fill(width/table_length),
+                :cell_style     => {
+                    :inline_format  => true,
+                    :align          => :left,
+                    :size           => 8,
+                    :padding        => 2,
+                    :border_width   => 1,
+                    :border_colors  => "AED0EA",
+                    :borders        => [:right,:left,:top,:bottom]
+                }
+            ) do row(0).background_color = "DEEDF7"
+            end
+            
+        else
+            @pdf.text "Nothing to display."
+        end
         
     end
 
@@ -600,10 +690,14 @@ end
                 :size           => 8,
                 :padding        => 2,
                 :border_width   => 1,
-                :border_colors  => "297CCF",
+                :border_colors  => "AED0EA",
                 :borders        => [:right,:left,:top,:bottom]
             }
-        )
+        ) do
+            row(0   ).background_color  = "DEEDF7"
+            column(0).background_color  = "DEEDF7"
+            column(0).align             = :left
+        end
         
     end
     
@@ -674,10 +768,13 @@ end
                 :size           => 8,
                 :padding        => 2,
                 :border_width   => 1,
-                :border_colors  => "297CCF",
+                :border_colors  => "AED0EA",
                 :borders        => [:right,:left,:top,:bottom]
             }
-        )
+        ) do
+            row(0   ).background_color = "DEEDF7"
+            column(0).background_color = "DEEDF7"
+        end
         
     end
     
@@ -751,10 +848,13 @@ end
                 :size           => 8,
                 :padding        => 2,
                 :border_width   => 1,
-                :border_colors  => "297CCF",
+                :border_colors  => "AED0EA",
                 :borders        => [:right,:left,:top,:bottom]
             }
-        )
+        ) do
+            row(0   ).background_color = "DEEDF7"
+            column(0).background_color = "DEEDF7"
+        end
         
     end
     
@@ -789,7 +889,6 @@ end
             
         end
         
-        
         @pdf.text "<b>#{attendance_mode}</b>", :size => 12, :color=>"2570BA", :inline_format  => true
         
         @pdf.move_down 5
@@ -800,7 +899,68 @@ end
             
         end
         
+        enrolled    = @student.attendance.existing_records("WHERE official_code IS NOT NULL")
+        present     = @student.attendance.existing_records("WHERE (#{official_code_sql("present")    })")
+        excused     = @student.attendance.existing_records("WHERE (#{official_code_sql("excused")    })")
+        unexcused   = @student.attendance.existing_records("WHERE (#{official_code_sql("unexcused")  })")
+        
+        table_array = Array.new
+        table_array.push(
+            [
+                "Days Enrolled",
+                "Days Present",
+                "Days Excused",
+                "Days Unexcused"
+            ],
+            [
+                (enrolled   ? enrolled.length   : 0),
+                (present    ? present.length    : 0),
+                (excused    ? excused.length    : 0),
+                (unexcused  ? unexcused.length  : 0)
+            ]
+        )
+        
+        width = 520.0
+        table_length = table_array[0].length
+        @pdf.table(
+            table_array,
+            :width          => width,
+            :position       => :center,
+            :column_widths  => Array.new(table_length).fill(width/table_length),
+            :cell_style     => {
+                :inline_format  => true,
+                :align          => :center,
+                :size           => 8,
+                :padding        => 2,
+                :border_width   => 1,
+                :border_colors  => "AED0EA",
+                :borders        => [:bottom]
+            }
+        ) #do
+        #    row(0   ).background_color = "DEEDF7"
+        #    column(0).background_color = "DEEDF7"
+        #end
+        
         @pdf.move_down 15
+        
+    end
+    
+    def official_code_sql(code_type)
+        
+        code_sql_string = String.new
+        
+        codes = $db.get_data_single(
+            "SELECT
+                code
+            FROM attendance_codes
+            WHERE code_type = '#{code_type}'"
+        )
+        
+        codes.each{|code|
+            code_sql_string << (code_sql_string.empty? ? "official_code = '#{code}'" : " OR official_code = '#{code}'")
+        }
+        
+        return code_sql_string
         
     end
     
