@@ -96,13 +96,29 @@ end
             
             include_fields_array = [
                 
-                ["<b>Field Name</b>",       "<b>Interface?</b>",                                          "<b>PDF?</b>"                                         ],
-                ["Solution",                record.fields["interface_solution"             ].web.default, record.fields["pdf_solution"             ].web.default],
-                ["Completed?",              record.fields["interface_completed"            ].web.default, record.fields["pdf_completed"            ].web.default],
-                ["Goal Type",               record.fields["interface_goal_type"            ].web.default, record.fields["pdf_goal_type"            ].web.default],
-                ["Duration",                record.fields["interface_duration"             ].web.default, record.fields["pdf_duration"             ].web.default],
-                ["Scheduled Re-Eval Date",  record.fields["interface_expiration_date"      ].web.default, record.fields["pdf_expiration_date"      ].web.default],
-                ["Responsible Parties",     record.fields["interface_responsible_parties"  ].web.default, record.fields["pdf_responsible_parties"  ].web.default]
+                ["<b>Field Name</b>",       "<b>Custom Field Label</b>",                                          "<b>Interface?</b>",                                           "<b>PDF?</b>",                                          "<b>Order</b>"                                          ],
+                ["Category",                record.fields["label_ilp_entry_category_id" ].web.default,record.fields["interface_ilp_entry_category_id" ].web.default, record.fields["pdf_ilp_entry_category_id"].web.default, record.fields["order_ilp_entry_category_id"].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Type",                    record.fields["label_ilp_entry_type_id"     ].web.default,record.fields["interface_ilp_entry_type_id"     ].web.default, record.fields["pdf_ilp_entry_type_id"    ].web.default, record.fields["order_ilp_entry_type_id"    ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Goal Type",               record.fields["label_goal_type"             ].web.default,record.fields["interface_goal_type"             ].web.default, record.fields["pdf_goal_type"            ].web.default, record.fields["order_goal_type"            ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Description",             record.fields["label_description"           ].web.default,record.fields["interface_description"           ].web.default, record.fields["pdf_description"          ].web.default, record.fields["order_description"          ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Solution",                record.fields["label_solution"              ].web.default,record.fields["interface_solution"              ].web.default, record.fields["pdf_solution"             ].web.default, record.fields["order_solution"             ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Completed?",              record.fields["label_completed"             ].web.default,record.fields["interface_completed"             ].web.default, record.fields["pdf_completed"            ].web.default, record.fields["order_completed"            ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Progress",                record.fields["label_progress"              ].web.default,record.fields["interface_progress"              ].web.default, record.fields["pdf_progress"             ].web.default, record.fields["order_progress"             ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Monday",                  record.fields["label_monday"                ].web.default,record.fields["interface_monday"                ].web.default, record.fields["pdf_monday"               ].web.default, record.fields["order_monday"               ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Tuesday",                 record.fields["label_tuesday"               ].web.default,record.fields["interface_tuesday"               ].web.default, record.fields["pdf_tuesday"              ].web.default, record.fields["order_tuesday"              ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Wednesday",               record.fields["label_wednesday"             ].web.default,record.fields["interface_wednesday"             ].web.default, record.fields["pdf_wednesday"            ].web.default, record.fields["order_wednesday"            ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Thursday",                record.fields["label_thursday"              ].web.default,record.fields["interface_thursday"              ].web.default, record.fields["pdf_thursday"             ].web.default, record.fields["order_thursday"             ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Friday",                  record.fields["label_friday"                ].web.default,record.fields["interface_friday"                ].web.default, record.fields["pdf_friday"               ].web.default, record.fields["order_friday"               ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 1",                   record.fields["label_day1"                  ].web.default,record.fields["interface_day1"                  ].web.default, record.fields["pdf_day1"                 ].web.default, record.fields["order_day1"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 2",                   record.fields["label_day2"                  ].web.default,record.fields["interface_day2"                  ].web.default, record.fields["pdf_day2"                 ].web.default, record.fields["order_day2"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 3",                   record.fields["label_day3"                  ].web.default,record.fields["interface_day3"                  ].web.default, record.fields["pdf_day3"                 ].web.default, record.fields["order_day3"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 4",                   record.fields["label_day4"                  ].web.default,record.fields["interface_day4"                  ].web.default, record.fields["pdf_day4"                 ].web.default, record.fields["order_day4"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 5",                   record.fields["label_day5"                  ].web.default,record.fields["interface_day5"                  ].web.default, record.fields["pdf_day5"                 ].web.default, record.fields["order_day5"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 6",                   record.fields["label_day6"                  ].web.default,record.fields["interface_day6"                  ].web.default, record.fields["pdf_day6"                 ].web.default, record.fields["order_day6"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Day 7",                   record.fields["label_day7"                  ].web.default,record.fields["interface_day7"                  ].web.default, record.fields["pdf_day7"                 ].web.default, record.fields["order_day7"                 ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Re-Eval Date",            record.fields["label_expiration_date"       ].web.default,record.fields["interface_expiration_date"       ].web.default, record.fields["pdf_expiration_date"      ].web.default, record.fields["order_expiration_date"      ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["PDF Excluded?",           record.fields["label_pdf_excluded"          ].web.default,record.fields["interface_pdf_excluded"          ].web.default, record.fields["pdf_pdf_excluded"         ].web.default, record.fields["order_pdf_excluded"         ].web.select(:dd_choices=>$dd.range(1,20))],
+                ["Responsible Parties",     record.fields["label_responsible_parties"   ].web.default,record.fields["interface_responsible_parties"   ].web.default, record.fields["pdf_responsible_parties"  ].web.default, record.fields["order_responsible_parties"  ].web.select(:dd_choices=>$dd.range(1,20))]
                
             ]
             
@@ -282,12 +298,26 @@ end
         include_fields_array = [
            
             ["<b>Field Name</b>",       "<b>Interface?</b>",                                          "<b>PDF?</b>"                                         ],
-            ["Solution",                record.fields["interface_solution"             ].web.default, record.fields["pdf_solution"             ].web.default],
-            ["Completed?",              record.fields["interface_completed"            ].web.default, record.fields["pdf_completed"            ].web.default],
-            ["Goal Type",               record.fields["interface_goal_type"            ].web.default, record.fields["pdf_goal_type"            ].web.default],
-            ["Duration",                record.fields["interface_duration"             ].web.default, record.fields["pdf_duration"             ].web.default],
-            ["Scheduled Re-Eval Date",  record.fields["interface_expiration_date"      ].web.default, record.fields["pdf_expiration_date"      ].web.default],
-            ["Responsible Parties",     record.fields["interface_responsible_parties"  ].web.default, record.fields["pdf_responsible_parties"  ].web.default]
+            ["Goal Type",               record.fields["interface_goal_type"             ].web.default, record.fields["pdf_goal_type"            ].web.default],
+            ["Description",             record.fields["interface_description"           ].web.default, record.fields["pdf_description"          ].web.default],
+            ["Solution",                record.fields["interface_solution"              ].web.default, record.fields["pdf_solution"             ].web.default],
+            ["Completed?",              record.fields["interface_completed"             ].web.default, record.fields["pdf_completed"            ].web.default],
+            ["Progress",                record.fields["interface_progress"              ].web.default, record.fields["pdf_progress"             ].web.default],
+            ["Monday",                  record.fields["interface_monday"                ].web.default, record.fields["pdf_monday"               ].web.default],
+            ["Tuesday",                 record.fields["interface_tuesday"               ].web.default, record.fields["pdf_tuesday"              ].web.default],
+            ["Wednesday",               record.fields["interface_wednesday"             ].web.default, record.fields["pdf_wednesday"            ].web.default],
+            ["Thursday",                record.fields["interface_thursday"              ].web.default, record.fields["pdf_thursday"             ].web.default],
+            ["Friday",                  record.fields["interface_friday"                ].web.default, record.fields["pdf_friday"               ].web.default],
+            ["Day 1",                   record.fields["interface_day1"                  ].web.default, record.fields["pdf_day1"                 ].web.default],
+            ["Day 2",                   record.fields["interface_day2"                  ].web.default, record.fields["pdf_day2"                 ].web.default],
+            ["Day 3",                   record.fields["interface_day3"                  ].web.default, record.fields["pdf_day3"                 ].web.default],
+            ["Day 4",                   record.fields["interface_day4"                  ].web.default, record.fields["pdf_day4"                 ].web.default],
+            ["Day 5",                   record.fields["interface_day5"                  ].web.default, record.fields["pdf_day5"                 ].web.default],
+            ["Day 6",                   record.fields["interface_day6"                  ].web.default, record.fields["pdf_day6"                 ].web.default],
+            ["Day 7",                   record.fields["interface_day7"                  ].web.default, record.fields["pdf_day7"                 ].web.default],
+            ["Re-Eval Date",            record.fields["interface_expiration_date"       ].web.default, record.fields["pdf_expiration_date"      ].web.default],
+            ["PDF Excluded?",           record.fields["interface_pdf_excluded"          ].web.default, record.fields["pdf_pdf_excluded"         ].web.default],
+            ["Responsible Parties",     record.fields["interface_responsible_parties"   ].web.default, record.fields["pdf_responsible_parties"  ].web.default]
            
         ]
         
@@ -449,7 +479,7 @@ end
     end
     
     def display_type_dd
-        $dd.from_array(["Default","Table","Schedule - Weekly","Schedule - 6 Day","Schedule - 7 Day"])
+        $dd.from_array(["Default","Table","Table 2","Schedule - Weekly","Schedule - 6 Day","Schedule - 7 Day"])
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -488,13 +518,13 @@ end
         div.ILP_ENTRY_CATEGORY__interface_solution              {text-align: center;}
         div.ILP_ENTRY_CATEGORY__interface_completed             {text-align: center;}
         div.ILP_ENTRY_CATEGORY__interface_goal_type             {text-align: center;}
-        div.ILP_ENTRY_CATEGORY__interface_duration              {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__interface_progress              {text-align: center;}
         div.ILP_ENTRY_CATEGORY__interface_expiration_date       {text-align: center;}
         div.ILP_ENTRY_CATEGORY__interface_responsible_parties   {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_solution                    {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_completed                   {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_goal_type                   {text-align: center;}
-        div.ILP_ENTRY_CATEGORY__pdf_duration                    {text-align: center;}
+        div.ILP_ENTRY_CATEGORY__pdf_progress                    {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_expiration_date             {text-align: center;}
         div.ILP_ENTRY_CATEGORY__pdf_responsible_parties         {text-align: center;}
         
