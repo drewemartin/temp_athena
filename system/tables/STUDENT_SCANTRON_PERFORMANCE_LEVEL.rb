@@ -41,7 +41,54 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    
+    def after_change(row_obj)
+        
+        ilp_tracking_fields = {
+            
+            :stron_ent_perf_m   => "Math Entrance",
+            :stron_ext_perf_m   => "Math Exit",
+            :stron_ent_perf_r   => "Reading Entrance",
+            :stron_ext_perf_r   => "Reading Exit"
+            
+        }
+        
+        sid             = field_by_pid("student_id", row_obj.primary_id).value
+        student         = $students.get(sid)
+        ilp_cat_id      = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'Scantron Results'")[0]
+        
+        ilp_tracking_fields.each_pair{|field_name, nice_name|
+           
+            if row_obj.fields.keys.find{|x|x==field_name.to_s}
+                
+                ilp_type_id = $tables.attach("ILP_ENTRY_TYPE").primary_ids("WHERE name = '#{nice_name}' AND category_id = #{ilp_cat_id}")[0]
+                if (
+                    
+                    ilp_records  = student.ilp.existing_records(
+                        "WHERE ilp_entry_category_id    = '#{ilp_cat_id}'
+                        AND ilp_entry_type_id           = '#{ilp_type_id}'"
+                    )
+                    
+                )
+                    
+                    ilp_record = ilp_records[0]
+                    
+                else
+                    
+                    ilp_record = student.ilp.new_record
+                    ilp_record.fields["ilp_entry_category_id"   ].value = ilp_cat_id
+                    ilp_record.fields["ilp_entry_type_id"       ].value = ilp_type_id
+                    
+                end
+                
+                ilp_record.fields["description"].value = row_obj.fields[field_name.to_s].value
+                ilp_record.save
+                
+            end
+            
+        } if ilp_cat_id
+        
+    end
+
     def after_load_scantron_performance_extended
         
         subjects = ["math","reading","science"]
