@@ -319,6 +319,7 @@ end
                     "NWF Errors",
                     "R-CBM",
                     "R-CBM Errors",
+                    "Reading Instructional Recommendation",
                     "OCM",
                     "OCM Errors",
                     "NIM",
@@ -329,7 +330,8 @@ end
                     "MNM Errors",
                     "M-CAP",
                     "M-CAP Read to Student",
-                    "Requirement for AIMS Benchmark"
+                    "Requirement for AIMS Benchmark",
+                    "Math Instructional Recommendation"
                 ]
                 
             #else#if grade == "3rd Grade" || grade == "4th Grade" || grade == "5th Grade" || grade == "6th Grade"# || grade == "10th Grade"
@@ -368,27 +370,30 @@ end
             
             #if grade == "Kindergarten" || grade == "1st Grade" || grade == "2nd Grade"# || grade == "10th Grade"
                 
-                row.push(test.fields["lnf"                              ].web.default() )
-                row.push(test.fields["lnf_errors"                       ].web.default() )
-                row.push(test.fields["lsf"                              ].web.default() )
-                row.push(test.fields["lsf_errors"                       ].web.default() )
-                row.push(test.fields["psf"                              ].web.default() )
-                row.push(test.fields["psf_errors"                       ].web.default() )
-                row.push(test.fields["nwf"                              ].web.default() )
-                row.push(test.fields["nwf_errors"                       ].web.default() )
-                row.push(test.fields["rcbm"                             ].web.default() )
-                row.push(test.fields["rcbm_errors"                      ].web.default() )
-                row.push(test.fields["ocm"                              ].web.default() )
-                row.push(test.fields["ocm_errors"                       ].web.default() )
-                row.push(test.fields["nim"                              ].web.default() )
-                row.push(test.fields["nim_errors"                       ].web.default() )
-                row.push(test.fields["qdm"                              ].web.default() )
-                row.push(test.fields["qdm_errors"                       ].web.default() )
-                row.push(test.fields["mnm"                              ].web.default() )
-                row.push(test.fields["mnm_errors"                       ].web.default() )
-                row.push(test.fields["mcap"                             ].web.default() )
-                row.push(test.fields["mcap_read_to_student"             ].web.default() )
-                row.push(test.fields["requirement_for_aims_benchmark"   ].web.default() )
+                row.push(test.fields["lnf"                                      ].web.default() )
+                row.push(test.fields["lnf_errors"                               ].web.default() )
+                row.push(test.fields["lsf"                                      ].web.default() )
+                row.push(test.fields["lsf_errors"                               ].web.default() )
+                row.push(test.fields["psf"                                      ].web.default() )
+                row.push(test.fields["psf_errors"                               ].web.default() )
+                row.push(test.fields["nwf"                                      ].web.default() )
+                row.push(test.fields["nwf_errors"                               ].web.default() )
+                row.push(test.fields["rcbm"                                     ].web.default() )
+                row.push(test.fields["rcbm_errors"                              ].web.default() )
+                row.push(test.fields["reading_instructional_recommendation"     ].web.default() ) 
+                
+                row.push(test.fields["ocm"                                      ].web.default() )
+                row.push(test.fields["ocm_errors"                               ].web.default() )
+                row.push(test.fields["nim"                                      ].web.default() )
+                row.push(test.fields["nim_errors"                               ].web.default() )
+                row.push(test.fields["qdm"                                      ].web.default() )
+                row.push(test.fields["qdm_errors"                               ].web.default() )
+                row.push(test.fields["mnm"                                      ].web.default() )
+                row.push(test.fields["mnm_errors"                               ].web.default() )
+                row.push(test.fields["mcap"                                     ].web.default() )
+                row.push(test.fields["mcap_read_to_student"                     ].web.default() )
+                row.push(test.fields["requirement_for_aims_benchmark"           ].web.default() )
+                row.push(test.fields["math_instructional_recommendation"        ].web.default() ) 
                 
             #else#if grade == "3rd Grade" || grade == "4th Grade" || grade == "5th Grade" || grade == "6th Grade"# || grade == "10th Grade"
                 
