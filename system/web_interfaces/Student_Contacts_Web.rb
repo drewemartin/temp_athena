@@ -188,48 +188,54 @@ end
             
             record = $focus_student.contacts.new_record
             
+            output << $tools.legend_open("sub", "Notes")
+                
+                output << record.fields["notes"].web.default(:div_id=>"blank")
+                
+            output << $tools.legend_close()
+            
             output << $tools.legend_open("sub", "Contact Details")
                 
                 output << record.fields["student_id"                  ].web.hidden()
-                output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,              :div_id=>"blank")
-                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time",     :div_id=>"blank", :validate=>true)
-                output << record.fields["contact_type"                ].web.select(  {:label_option=>"Contact Type",            :div_id=>"blank", :validate=>true, :dd_choices=>type_dd}, true)
-                output << record.fields["notes"                       ].web.default( :label_option=>"Notes",                    :div_id=>"blank")
+                output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,       :div_id=>"blank")
+                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",     :div_id=>"blank", :validate=>true)
+                output << record.fields["contact_type"                ].web.select(  {:label_option=>"Contact Type:",            :div_id=>"blank", :validate=>true, :dd_choices=>type_dd}, true)
                 
             output << $tools.legend_close()
             
             output << $tools.legend_open("sub", "Reason for Contact - Please select all that apply from the following:")
                 
-                output << record.fields["tep_initial"                   ].web.default( :label_option=>"TEP Initiated",                        :div_id=>"blank")
-                output << record.fields["tep_followup"                  ].web.default( :label_option=>"TEP Follow-up",                        :div_id=>"blank")
-                output << record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank") 
-                output << record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank")
-                output << record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank")
-                output << record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank")
-                output << record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank")
-                output << record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank")
-                output << record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank")
-                output << record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank")
-                output << record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank")
-                output << record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank")
-                output << record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank")
-                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Home Visit",                   :div_id=>"blank")
-                output << record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank")
-                output << record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank")
-                output << record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank")
-                output << record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank")
-                output << record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank")
-                output << record.fields["residency"                     ].web.default( :label_option=>"Residency",                            :div_id=>"blank")
-                output << record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank")
-                output << record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank")
-                output << record.fields["sap_follow-up"                 ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank")
-                output << record.fields["evaluation_request_psych"      ].web.default( :label_option=>"Evaluation Request - Psychology",      :div_id=>"blank")
-                output << record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank")
-                output << record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank")
-                output << record.fields["csy"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank")
-                output << record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank")
                 output << record.fields["aircard"                       ].web.default( :label_option=>"Aircard",                              :div_id=>"blank")
+                output << record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank")
+                output << record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank")
                 output << record.fields["court_district_go"             ].web.default( :label_option=>"Court/district/Go",                    :div_id=>"blank")
+                output << record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank")
+                output << record.fields["csy"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank")
+                output << record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank")
+                output << record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank")
+                output << record.fields["evaluation_request_psych"      ].web.default( :label_option=>"Evaluation Request - Psychology",      :div_id=>"blank")
+                output << record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank")
+                output << record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank")
+                output << record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank")
+                output << record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank")
+                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Home Visit",                   :div_id=>"blank")
+                output << record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank")
+                output << record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank")
+                output << record.fields["residency"                     ].web.default( :label_option=>"Residency",                            :div_id=>"blank")
+                output << record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank")
+                output << record.fields["sap_follow-up"                 ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank")
+                output << record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank")
+                output << record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank")
+                output << record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank")
+                output << record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank")
+                output << record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank")
+                output << record.fields["tep_followup"                  ].web.default( :label_option=>"TEP Follow-up",                        :div_id=>"blank")
+                output << record.fields["tep_initial"                   ].web.default( :label_option=>"TEP Initiated",                        :div_id=>"blank")
+                output << record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank")
+                output << record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank")
+                output << record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank")
+                output << record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank")
+                
                 output << record.fields["other"                         ].web.default( :label_option=>"'Other'",                              :div_id=>"blank")
                 output << record.fields["other_description"             ].web.text(    :label_option=>"Details (if 'other')",                 :div_id=>"blank")
                 
@@ -280,7 +286,6 @@ end
         return [
             {:name=>"ADO - Agora Day Out",      :value=>"ADO - Agora Day Out"       },
             {:name=>"E-Mail",                   :value=>"E-Mail"                    },
-            {:name=>"Home Visit",               :value=>"Home Visit"                },
             {:name=>"Home Visit (Unscheduled)", :value=>"Home Visit (Unscheduled)"  },
             {:name=>"Individual Face to Face",  :value=>"Individual Face to Face"   },
             {:name=>"IM - Instant Message",     :value=>"IM - Instant Message"      },
@@ -315,18 +320,16 @@ end
             
             table.dataTable td.column_4{                                        text-align:center;}
             
-            div#blank.STUDENT_CONTACTS__datetime{                               float:left; margin-bottom:3px; clear:left; width:100%;}
-            div#blank.STUDENT_CONTACTS__successful{                             float:left; margin-bottom:3px; clear:left; width:100%;}
-            div#blank.STUDENT_CONTACTS__contact_type{                           float:left; margin-bottom:3px; clear:left; width:100%;}
-            div#blank.STUDENT_CONTACTS__notes{                                  position:absolute;; width:500px; margin:4px; right:250px; top:30px;}
+            div#blank.STUDENT_CONTACTS__datetime{                               float:left; margin-bottom:3px; width:400px;}
+            div#blank.STUDENT_CONTACTS__successful{                             float:left; margin-bottom:3px; width:200px;}
+            div#blank.STUDENT_CONTACTS__contact_type{                           float:left; margin-bottom:3px; width:400px;}
             
-            #datetime_1{width:190px;}                                           
+            #datetime_1{                                                        width:183px;}                                           
             div#blank.STUDENT_CONTACTS__datetime label{                         width:160px; display:inline-block;}
-            div#blank.STUDENT_CONTACTS__successful label{                       width:160px; display:inline-block;} 
-            div#blank.STUDENT_CONTACTS__contact_type label{                     width:160px; display:inline-block; vertical-align:top;}
-            div#blank.STUDENT_CONTACTS__notes label{                            width:210px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__successful label{                       width:135px; display:inline-block;} 
+            div#blank.STUDENT_CONTACTS__contact_type label{                     width:100px; display:inline-block; vertical-align:top;}
             
-            div#blank.STUDENT_CONTACTS__notes textarea{                         width:648px; height:58px; resize:none;}
+            div#blank.STUDENT_CONTACTS__notes textarea{                         resize:none;}
             div#blank.STUDENT_CONTACTS__contact_type textarea{                  width:500px; height:100px; resize:none;}
             
             div#blank.STUDENT_CONTACTS__tep_followup{                           float:left; width:25%; margin-bottom:2px;}
@@ -435,7 +438,7 @@ end
             input.STUDENT_CONTACTS__successful{                                 margin-left:0px;}
             input.datetimepick{                                                 width:145px; font-size:11px;}
             div.STUDENT_CONTACTS__notes textarea{                               width:648px; height:75px;}
-             
+            
             div.STUDENT_CONTACTS__contact_type{                                 width:100px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__successful{                                   width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__tep_initial{                                  width:20px; margin-left:auto; margin-right:auto;}
