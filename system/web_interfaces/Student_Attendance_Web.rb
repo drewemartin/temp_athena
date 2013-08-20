@@ -44,7 +44,7 @@ end
     def response
         if $kit.params[:student_id]
             sid = $kit.params[:student_id]
-            student_record(sid)
+            student_record
         elsif $kit.params[:refresh]
             working_list(false)
         end
