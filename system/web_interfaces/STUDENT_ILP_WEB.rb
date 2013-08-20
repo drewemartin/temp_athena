@@ -894,7 +894,7 @@ end
             font-size: x-small;
         }"
         
-        output << "div.related_classes_container                            {width: 400px; height: 100px; resize: none; overflow-y: scroll;}"
+        output << "div.related_classes_container                            {width: 600px; height: 100px; resize: none; overflow-y: scroll;}"
         output << "div.STUDENT_ILP__description                     textarea{width: 300px; height: 100px; resize: none; overflow-y: scroll;}"
         output << "div.STUDENT_ILP__solution                        textarea{width: 300px; height: 100px; resize: none; overflow-y: scroll;}"
         output << "div.STUDENT_ILP_RESPONSIBLE_PARTIES__completed      input{display: block; margin-left: auto; margin-right: auto;}"
