@@ -77,6 +77,13 @@ end
             "This report includes all RTII Behavior records that exist. Only students with contacts will be included."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_rtii_behavior.is_true?
         
+        #MY STUDENTS GENERAL
+        tables_array.push([
+            $tools.button_new_csv("my_students_general", additional_params_str = nil),
+            "My Students General",
+            "This report includes general information about your students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_my_students_general.is_true?
+        
         #STUDENT_SCANTRON_PARTICIPATION
         tables_array.push([
             $tools.button_new_csv("student_scantron_participation", additional_params_str = nil),
@@ -513,6 +520,102 @@ end
             "other_description",
             "created_by",
             "created_date"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_my_students_general(options = nil)
+        
+        sql_str =
+        "SELECT
+            student_id,
+            studentlastname,
+            studentfirstname,
+            studentmiddlename,
+            studentgender,
+            districtofresidence,
+            grade,
+            birthday,
+            mailingaddress1,
+            mailingaddress2,
+            mailingcity,
+            mailingzip,
+            mailingstate,
+            studenthomephone,
+            shippingaddress1,
+            shippingaddress2,
+            shippingcity,
+            shippingzip,
+            shippingstate,
+            physicaladdress1,
+            physicaladdress2,
+            physicalregion,
+            physicalcity,
+            pcounty,
+            physicalzip,
+            physicalstate,
+            lclastname,
+            lcfirstname,
+            lcrelationship,
+            lcemail,
+            lglastname,
+            lgfirstname,
+            lgrelationship,
+            lgemail,
+            studentemail
+        FROM student
+        LEFT JOIN student_relate
+            ON student.student_id = student_relate.studentid
+        WHERE (
+            student_relate.team_id = '#{$team_member.primary_id.value}'
+        )"
+        
+        headers =
+        [
+            "student_id",
+            "studentlastname",
+            "studentfirstname",
+            "studentmiddlename",
+            "studentgender",
+            "districtofresidence",
+            "grade",
+            "birthday",
+            "mailingaddress1",
+            "mailingaddress2",
+            "mailingcity",
+            "mailingzip",
+            "mailingstate",
+            "studenthomephone",
+            "shippingaddress1",
+            "shippingaddress2",
+            "shippingcity",
+            "shippingzip",
+            "shippingstate",
+            "physicaladdress1",
+            "physicaladdress2",
+            "physicalregion",
+            "physicalcity",
+            "pcounty",
+            "physicalzip",
+            "physicalstate",
+            "lclastname",
+            "lcfirstname",
+            "lcrelationship",
+            "lcemail",
+            "lglastname",
+            "lgfirstname",
+            "lgrelationship",
+            "lgemail",
+            "studentemail"
         ]
         
         results = $db.get_data(sql_str)

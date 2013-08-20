@@ -1018,7 +1018,7 @@ end
                 end
                 
                 class_row = class_row == "even" ? "odd" : "even"
-                output << " <td #{title_string} class='#{class_row}'>#{td_value}</td>\n"
+                output << " <td #{title_string} class='column_#{td_index}'>#{td_value}</td>\n"
                 td_index+=1
             }
             output << "</tr>\n"
