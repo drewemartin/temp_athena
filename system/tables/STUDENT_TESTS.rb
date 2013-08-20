@@ -197,6 +197,57 @@ end
         
     end
     
+    def after_change(row_obj)
+        
+        ilp_tracking_fields = {
+            
+            :test_results   => "Test Results"
+            
+        }
+        
+        sid             = field_by_pid("student_id", row_obj.primary_id).value
+        student         = $students.get(sid)
+        ilp_cat_id      = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'State Tests'")[0]
+        
+        test_id         = field_by_pid("test_id", row_obj.primary_id).value
+        test_event_id   = $tables.attach("STUDENT_TESTS").field_by_pid("test_event_id", test_id         ).value
+        test_event_name = $tables.attach("TEST_EVENTS"  ).field_by_pid("name",          test_event_id   ).value
+        
+        ilp_tracking_fields.each_pair{|field_name, nice_name|
+           
+            if row_obj.fields.keys.find{|x|x==field_name.to_s}
+                
+                ilp_type_id = $tables.attach("ILP_ENTRY_TYPE").primary_ids("WHERE name = '#{nice_name}' AND category_id = #{ilp_cat_id}")[0]
+                if (
+                    
+                    ilp_records  = student.ilp.existing_records(
+                        "WHERE ilp_entry_category_id    = '#{ilp_cat_id}'
+                        AND ilp_entry_type_id           = '#{ilp_type_id}'
+                        AND description                 = '#{test_event_name}'"
+                    )
+                    
+                )
+                    
+                    ilp_record = ilp_records[0]
+                    
+                else
+                    
+                    ilp_record = student.ilp.new_record
+                    ilp_record.fields["ilp_entry_category_id"   ].value = ilp_cat_id
+                    ilp_record.fields["ilp_entry_type_id"       ].value = ilp_type_id
+                    ilp_record.fields["description"             ].value = test_event_name
+                    
+                end
+                
+                ilp_record.fields["solution"].value = row_obj.fields[field_name.to_s].value
+                ilp_record.save
+                
+            end
+            
+        } if ilp_cat_id
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
