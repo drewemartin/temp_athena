@@ -32,6 +32,7 @@ end
         pre_reqs = Array.new
         
         aims_assessment_results(pre_reqs)
+        state_test_results(pre_reqs)
         sapphire_periods(pre_reqs)
         
         return pre_reqs
@@ -125,6 +126,31 @@ end
         
     end
     
+    def state_test_results(pre_reqs)
+        
+        cat_id = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'State Tests'")[0]
+        grade_hash  = {
+            :grade_k => true, :grade_1st=>true,     :grade_2nd=>true,   :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true,
+            :grade_6th=>true, :grade_7th=>true,     :grade_8th=>true,
+            :grade_9th=>true, :grade_10th=>true,    :grade_11th=>true,  :grade_12th=>true,
+        }                
+        pre_reqs.push({:category_id=>cat_id, :name=>"Test Results"}.merge(grade_hash))
+        
+        max = pre_reqs.length
+        (0...max).each{|i|
+            
+            if primary_ids("WHERE category_id = '#{pre_reqs[i][:category_id]}' AND name = '#{pre_reqs[i][:name]}'")
+                pre_reqs[i] = nil
+            end
+            
+        }
+        
+        pre_reqs.compact!
+        
+        return pre_reqs
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
