@@ -117,6 +117,9 @@ end
             :border_colors      => "AED0EA"
         }
         
+        gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor'")
+        gc          = (gc_record ? gc_record[0].fields["team_id"].to_name(:full_name) : "")
+        
         @pdf.table [
             
             [
@@ -141,7 +144,7 @@ end
                 "<b>Grade Level:</b>",
                 "#{@student.grade.value.gsub(" Grade","")}",
                 "<b>Counselor:</b>",
-                @student.grade.value
+                gc
             ],
             [
                 "<b>Enroll Date:</b>",
@@ -889,7 +892,7 @@ end
             
         end
         
-        @pdf.text "<b>#{attendance_mode}</b>", :size => 12, :color=>"2570BA", :inline_format  => true
+        @pdf.text "<b>Educational Path: #{attendance_mode}</b>", :size => 12, :color=>"2570BA", :inline_format  => true
         
         @pdf.move_down 5
         
