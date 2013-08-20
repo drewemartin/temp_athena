@@ -32,8 +32,9 @@ end
         pre_reqs = Array.new
         
         aims_assessment_results(pre_reqs)
-        state_test_results(pre_reqs)
         sapphire_periods(pre_reqs)
+        scantron_results(pre_reqs)
+        state_test_results(pre_reqs)
         
         return pre_reqs
         
@@ -89,7 +90,7 @@ end
     
     def sapphire_periods(pre_reqs)
         
-        sapphire_periods        = $tables.attach("SAPPHIRE_DICTIONARY_PERIODS"  ).primary_ids("WHERE start_time IS NOT NULL AND end_time IS NOT NULL")
+        sapphire_periods        = $tables.attach("SAPPHIRE_DICTIONARY_PERIODS"  ).primary_ids()
         sapphire_courses_cat_id = $tables.attach("ILP_ENTRY_CATEGORY"           ).primary_ids("WHERE name = 'Sapphire Course Schedule'")
         
         if sapphire_periods && sapphire_courses_cat_id
@@ -100,9 +101,10 @@ end
                 
                 record      = $tables.attach("SAPPHIRE_DICTIONARY_PERIODS").by_primary_id(pid)
                 period_code = record.fields["period_code"       ].value
-                start_time  = record.fields["start_time"        ].to_user
-                end_time    = record.fields["end_time"          ].to_user
-                description = "#{record.fields["period_decription" ].value} #{start_time} to #{end_time}"
+                start_time  = record.fields["start_time"        ]
+                end_time    = record.fields["end_time"          ]
+                time_frame  = (start_time.value&&end_time.value ? "#{start_time.to_user} to #{end_time.to_user}" : "")
+                description = "#{record.fields["period_decription" ].value}#{time_frame}"
                 
                 if !primary_ids("WHERE name = '#{period_code}' AND default_description = '#{description}'")
                     
@@ -126,6 +128,34 @@ end
         
     end
     
+    def scantron_results(pre_reqs)
+        
+        cat_id = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'Scantron Results'")[0]
+        grade_hash  = {
+            :grade_k => true, :grade_1st=>true,     :grade_2nd=>true,   :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true,
+            :grade_6th=>true, :grade_7th=>true,     :grade_8th=>true,
+            :grade_9th=>true, :grade_10th=>true,    :grade_11th=>true,  :grade_12th=>true,
+        }                
+        pre_reqs.push({:category_id=>cat_id, :name=>"Math Entrance"     }.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Math Exit"         }.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Reading Entrance"  }.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Reading Exit"      }.merge(grade_hash))
+        
+        max = pre_reqs.length
+        (0...max).each{|i|
+            
+            if primary_ids("WHERE category_id = '#{pre_reqs[i][:category_id]}' AND name = '#{pre_reqs[i][:name]}'")
+                pre_reqs[i] = nil
+            end
+            
+        }
+        
+        pre_reqs.compact!
+        
+        return pre_reqs
+        
+    end
+
     def state_test_results(pre_reqs)
         
         cat_id = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'State Tests'")[0]
