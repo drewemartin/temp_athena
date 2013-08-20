@@ -51,6 +51,12 @@ end
             },
             {
                 :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
+                :name                       => "Scantron Results",
+                :display_type               => "Table",
+                :manual                     => false
+            },
+            {
+                :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
                 :name                       => "State Tests",
                 :display_type               => "Table",
                 :manual                     => false
