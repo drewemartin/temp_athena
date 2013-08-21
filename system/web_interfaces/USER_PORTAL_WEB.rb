@@ -44,6 +44,16 @@ end
         
         $kit.output << "<div class='menu_buttons_container'>"
         
+        #SEARCH ALL TEAM MEMBERS
+        if $team_member.rights.team_search.is_true?
+            $kit.output << "<button class='team_search_button' id='team_search_dialog_button'>Team Search</button>#{team_search}"
+        end
+        
+        #SEARCH ALL STUDENTS
+        if $team_member.rights.student_search.is_true?
+            $kit.output << "<button class='student_search_button' id='student_search_dialog_button'>Student Search</button>#{student_search}"
+        end 
+      
         $kit.output << $tools.breakaway_button(
             
             :button_text        => "Attendance Admin",
@@ -241,6 +251,66 @@ end
 def x______________SUPPORT_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def student_search
+        
+        dlg_string      = String.new
+        search_params   = String.new
+        
+        dlg_string << "<div id='student_search_fields'>"
+        searchable_fields = [
+            "student_id:Student ID",
+            "studentfirstname:First Name",
+            "studentlastname:Last Name",
+            "familyid:Family ID",
+            "grade:Grade"
+        ]
+        fields = $tables.attach("STUDENT").new_row.fields
+        searchable_fields.each{|field_details|
+            field_name      = field_details.split(":")[0]
+            label           = field_details.split(":")[1]
+            dlg_string      << fields[field_name].web.text(:search=>true, :label_option=>"#{label}:")
+            html_field_id   = fields[field_name].web.field_id(:search=>true)
+            search_params   << (search_params.empty? ? html_field_id : ",#{html_field_id}")
+        }
+        dlg_string << "<button id='student_search_button' type='button' onclick=\"send('#{search_params}');\"></button>"
+        dlg_string << "</div>"
+        dlg_string << "<div id='student_search_results'></div>"
+        dlg_string << "</div>"
+        dlg_string.insert(0, "<div id='student_search_dialog'><div class='js_error'>Javacript Error!</div>")
+        
+        return dlg_string
+        
+    end
+    
+    def team_search
+        
+        dlg_string      = String.new
+        search_params   = String.new
+        
+        dlg_string << "<div id='team_search_fields'>"
+        searchable_fields = [
+            "primary_id:Team ID",
+            "legal_first_name:First Name",
+            "legal_last_name:Last Name"     
+        ]
+        fields = $tables.attach("TEAM").new_row.fields
+        searchable_fields.each{|field_details|
+            field_name      = field_details.split(":")[0]
+            label           = field_details.split(":")[1]
+            dlg_string      << fields[field_name].web.text(:search=>true, :label_option=>"#{label}:")
+            html_field_id   = fields[field_name].web.field_id(:search=>true)
+            search_params   << (search_params.empty? ? html_field_id : ",#{html_field_id}")
+        }
+        dlg_string << "<button id='team_search_button' type='button' onclick=\"send('#{search_params}');\"></button>"
+        dlg_string << "</div>"
+        dlg_string << "<div id='team_search_results'></div>"
+        dlg_string << "</div>"
+        dlg_string.insert(0, "<div id='team_search_dialog'><div class='js_error'>Javacript Error!</div>")
+        
+        return dlg_string
+        
+    end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS 
