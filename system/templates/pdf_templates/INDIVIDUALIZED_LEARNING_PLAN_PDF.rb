@@ -83,9 +83,68 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
             
         } if categories
         
+        conference_notes
+        
         @pdf.render_file "#{file_path}#{file_name}" if render_required
         
         return "#{file_path}#{file_name}"
+        
+    end
+    
+    def conference_notes
+        
+        if (
+            
+            ilp_conference_records = @student.contacts.existing_records("WHERE ilp_conference IS TRUE AND successful IS TRUE")
+            
+        )
+            
+            @pdf.text "<b>Conference Details</b>", :size => 12, :color=>"2570BA", :inline_format  => true
+            @pdf.move_down 5
+            
+            table_array = Array.new
+            
+            table_array.push(
+                
+                headers = [
+                    "Conference Date",
+                    "Notes"
+                ]
+                
+            )
+            
+            ilp_conference_records.each{|record|
+                
+                row_array = Array.new
+                row_array.push(record.fields["datetime" ].to_user)
+                row_array.push(record.fields["notes"    ].to_user)
+                
+                table_array.push(row_array)
+                
+            }
+            
+            width = 520.0
+            table_length = table_array[0].length
+            
+            @pdf.table(
+                table_array,
+                :width          => width,
+                :position       => :center,
+                :column_widths  => Array.new(table_length).fill(width/table_length),
+                :cell_style     => {
+                    :inline_format  => true,
+                    :align          => :left,
+                    :size           => 8,
+                    :padding        => 2,
+                    :border_width   => 1,
+                    :border_colors  => "AED0EA",
+                    :borders        => [:right,:left,:top,:bottom]
+                }
+            ) do
+                row(0   ).background_color = "DEEDF7"
+            end
+            
+        end
         
     end
     
