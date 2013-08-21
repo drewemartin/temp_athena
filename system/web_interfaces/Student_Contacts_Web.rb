@@ -17,9 +17,9 @@ class STUDENT_CONTACTS_WEB
             save_params             = "sid"
         )
         
-        how_to_button_contacts = $tools.button_how_to("How To: Contacts")
+        how_to_button_contacts = $tools.button_how_to("How To: Notes")
         
-        "Contacts #{how_to_button_contacts}#{new_contact_button}"
+        "Notes #{how_to_button_contacts}#{new_contact_button}"
         
     end
     
@@ -198,8 +198,8 @@ end
                 
                 output << record.fields["student_id"                  ].web.hidden()
                 output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,       :div_id=>"blank")
-                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",     :div_id=>"blank", :validate=>true)
-                output << record.fields["contact_type"                ].web.select(  {:label_option=>"Contact Type:",            :div_id=>"blank", :validate=>true, :dd_choices=>type_dd}, true)
+                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",     :div_id=>"blank")
+                output << record.fields["contact_type"                ].web.select(  {:label_option=>"Contact Type:",            :div_id=>"blank", :dd_choices=>type_dd}, true)
                 
             output << $tools.legend_close()
             
