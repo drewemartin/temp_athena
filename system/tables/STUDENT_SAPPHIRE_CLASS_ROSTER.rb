@@ -59,8 +59,8 @@ end
                 
                 if (
                     
-                    ilp_type    = $tables.attach("ilp_entry_type").find_field("primary_id", "WHERE name='#{per_code}'") &&
-                    ilp_cat     = $tables.attach("ilp_entry_category").find_field("primary_id", "WHERE name='Sapphire Course Schedule#{school_type ? " #{school_type.value}" :""}'")
+                    (ilp_type    = $tables.attach("ilp_entry_type"      ).find_field("primary_id", "WHERE name='#{per_code}'")) &&
+                    (ilp_cat     = $tables.attach("ilp_entry_category"  ).find_field("primary_id", "WHERE name='Sapphire Course Schedule#{school_type ? " #{school_type.value}" :""}'"))
                     
                 )
                     
