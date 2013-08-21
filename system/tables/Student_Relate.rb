@@ -397,16 +397,14 @@ end
     
     def after_load_k12_ecollege_detail
         #Update/Create Active Student Relationships
-        
-            
             high_school_teachers
             guidance_counselors
     end
     
     def guidance_counselors
         params = field_params
-        params[:role            ] = "Guidance Couselor"
-        params[:role_details    ] = "Guidance Couselor"
+        params[:role            ] = "Guidance Counselor"
+        params[:role_details    ] = "Guidance Counselor"
         params[:source          ] = "K12_Ecollege_Detail"
         get_existing_records
         
@@ -520,12 +518,10 @@ end
 
     def after_load_k12_omnibus
         #Update/Create Active Student Relationships
-            puts "FTC"
             family_teacher_coaches
-            #puts "teacher"
-            #primary_teachers
-            #puts "spec ed teacher"
-            #special_education_teachers
+            home_room_teachers
+            primary_teachers
+            special_education_teachers
     end
     
     def family_teacher_coaches
@@ -533,12 +529,12 @@ end
         params[:role            ] = "Family Teacher Coach"
         params[:role_details    ] = "Family Teacher Coach"
         params[:source          ] = "K12_Omnibus"
-        get_existing_records #23692
+        get_existing_records 
         sids = $students.list(:complete_enrolled=>true)#current_students
         sids.each{|sid|
             params[:sid]    = sid
-            team_member     = $team.find(:sams_id=>$students.get(sid).primaryteacherid.value)
-            staff_id        = $students.get(sid).primaryteacherid.value
+            staff_id        = $students.get(sid).title1teacherid.value
+            team_member     = $team.find(:sams_id=>staff_id)
             if team_member
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
@@ -549,17 +545,37 @@ end
         deactivate_existing_records
     end
     
+    def home_room_teachers
+        params = field_params
+        params[:role            ] = "Homeroom Teacher"
+        params[:role_details    ] = "Homeroom Teacher"
+        params[:source          ] = "K12_Omnibus"
+        get_existing_records
+        sids = $students.list(:complete_enrolled=>true,:grade=>"6th|7th|8th|9th|10th|11th|12th")
+        sids.each{|sid|
+            params[:sid]    = sid
+            staff_id        = $students.get(sid).primaryteacherid.value
+            team_member     = $team.find(:sams_id=>staff_id)
+            if team_member
+                params[:team_id ] = team_member.primary_id.value
+                params[:staff_id] = staff_id
+                active_record
+            end         
+        } if sids
+        deactivate_existing_records
+    end
+    
     def primary_teachers
         params = field_params
         params[:role            ] = "Primary Teacher"
         params[:role_details    ] = "Primary Teacher"
         params[:source          ] = "K12_Omnibus"
         get_existing_records
-        sids = $students.list(:complete_enrolled=>true,:grade=>"K|1st|2nd|3rd|4th|5th|6th")#$students.current_students
+        sids = $students.list(:complete_enrolled=>true,:grade=>"K|1st|2nd|3rd|4th|5th")#$students.current_students
         sids.each{|sid|
             params[:sid]    = sid
-            team_member     = $team.find(:sams_id=>$students.get(sid).primaryteacherid.value)
-            staff_id        = $students.get(sid).title1teacherid.value
+            staff_id        = $students.get(sid).primaryteacherid.value
+            team_member     = $team.find(:sams_id=>staff_id)
             if team_member
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
