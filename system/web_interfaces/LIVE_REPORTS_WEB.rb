@@ -577,7 +577,8 @@ end
             ON student.student_id = student_relate.studentid
         WHERE (
             student_relate.team_id = '#{$team_member.primary_id.value}'
-        )"
+        )
+        GROUP BY student.student_id"
         
         headers =
         [
