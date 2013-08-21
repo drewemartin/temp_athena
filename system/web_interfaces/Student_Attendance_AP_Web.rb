@@ -107,8 +107,8 @@ end
     
     def working_list
         
-        if $tables.attach("STUDENT_ATTENDANCE_AP").studentids_by_staffid($team_member.sams_ids.field_values(field_name = "sams_id", where_clause = nil))
-            
+        if $team_member.enrolled_students(:ap_attendance_dates=>@dates)
+           
             output = Array.new
             
             how_to_button_ap_attendance = $tools.button_how_to("How To: AP Attendance")
