@@ -507,12 +507,21 @@ end
         table_array = [
             
             [
-                (
-                    this_field = $focus_team_member.rights.super_user_group
-                    this_field.web.checkbox(
-                        :label_option   => "Super User",
-                        :disabled       => disabled("super_user_group")
-                    )
+                $focus_team_member.rights.super_user_group.web.checkbox(
+                    :label_option   => "Super User",
+                    :disabled       => disabled("super_user_group")
+                )
+            ],
+            [
+                $focus_team_member.rights.student_search.web.checkbox(
+                    :label_option   => "Search All Students",
+                    :disabled       => disabled("student_search")
+                )
+            ],
+            [
+                $focus_team_member.rights.team_search.web.checkbox(
+                    :label_option   => "Search All Team Members",
+                    :disabled       => disabled("team_search")
                 )
             ]
             
@@ -524,7 +533,7 @@ end
             :footers        => false,
             :head_section   => false,
             :title          => false,
-            :caption        => "Right Groups"
+            :caption        => "Admin Rights"
         )
         
     end
@@ -856,7 +865,7 @@ end
             [tep_agreements],
             [withdraw_requests]
             
-        ]
+        ] 
         
         return $tools.table(
             :table_array    => table_array,
