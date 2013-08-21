@@ -251,15 +251,19 @@ end
             options         = {:value_only=>true}
         )
         
-        output = Array.new
-        
-        output.push(
-            :name       => "MyEvents (#{sites ? sites.length : 0})",
-            :content    => working_list_css+expand_mytestevents
+        if sites
             
-        )
-        
-        return output
+            output = Array.new
+            
+            output.push(
+                :name       => "MyEvents (#{sites ? sites.length : 0})",
+                :content    => working_list_css+expand_mytestevents
+                
+            )
+            
+            return output
+            
+        end
         
     end 
     
