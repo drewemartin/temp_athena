@@ -102,19 +102,25 @@ class TEAM_MEMBER_RECORD_WEB
         
         output = Array.new
       
-        team_search_button = "<button class='team_search_button' id='team_search_dialog_button' style='position:absolute; right:10px; top:10px;'>Team Search</button>"
-        output.push(
-            :name       => "MyTeam (#{$team_member.supervisor_of ? $team_member.supervisor_of.length : 0})",
-            :content    => "#{team_search_button}#{expand_myteam}#{team_search}"
+        if $team_member.supervisor_of
             
-        )
+            output.push(
+                :name       => "MyTeam (#{$team_member.supervisor_of ? $team_member.supervisor_of.length : 0})",
+                :content    => "#{expand_myteam}"
+                
+            )
+            
+        end
         
-        student_search_button = "<button class='student_search_button' id='student_search_dialog_button' style='position:absolute; right:10px; top:10px;'>Student Search</button>"
-        output.push(
-            :name       => "MyStudents (#{$team_member.enrolled_students ? $team_member.enrolled_students.length : 0})",
-            :content    => "#{student_search_button}#{expand_mystudents_enrolled}#{student_search}"
+        if $team_member.enrolled_students
             
-        ) 
+            output.push(
+                :name       => "MyStudents (#{$team_member.enrolled_students ? $team_member.enrolled_students.length : 0})",
+                :content    => "#{expand_mystudents_enrolled}"
+                
+            )
+            
+        end
         
         return (output.empty? ? nil : output)
         
