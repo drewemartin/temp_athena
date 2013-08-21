@@ -75,6 +75,10 @@ end
             
             structure_hash["fields"]["team_id"                                          ] = {"data_type"=>"int",  "file_field"=>"team_id"                                               } if field_order.push("team_id"                                                 )
             
+            #SPECIAL RIGHTS
+            structure_hash["fields"]["student_search"                                   ] = {"data_type"=>"bool", "file_field"=>"student_search"                                        } if field_order.push("student_search"                                          )
+            structure_hash["fields"]["team_search"                                      ] = {"data_type"=>"bool", "file_field"=>"team_search"                                           } if field_order.push("team_search"                                             )
+            
             #RIGHT_GROUPS
             structure_hash["fields"]["super_user_group"                                 ] = {"data_type"=>"bool", "file_field"=>"super_user_group"                                      } if field_order.push("super_user_group"                                        )
             
