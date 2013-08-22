@@ -17,6 +17,157 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+  
     
+    def expand_mystudents
+        #return expand_mystudents_enrolled
+        tabs = Array.new
+        tabs.push(["Enrolled",              expand_mystudents_enrolled  ])
+        tabs.push(["Withdrawn",             expand_mystudents_withdrawn ])
+        
+        css = "<style>div#tabs_my_students .ui-tabs-nav {
+            font-size: x-small;
+        }</style>"
+        
+        content = $kit.tools.tabs(
+            tabs,
+            selected_tab    = 0,
+            tab_id          = "my_students",
+            search          = false
+        )
+        
+        return css+content
+        
+    end
+    
+    def expand_mystudents_enrolled
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+             
+                "Student ID"                ,
+                "Last Name"                 ,
+                "First Name"                ,
+                "Grade Level"               ,
+                "Family ID"                 ,
+                "Birthday"                  ,
+                "Family Coach"              ,
+                "Enroll Date"               ,
+                "Special Ed Teacher"        ,
+                "District of Residence"     ,
+                "SI Level"                  ,
+                "Attendance Mode"           ,
+                "Scantron Ent Math"         ,
+                "Scantron Exit Math"        ,
+                "Scantron Ent Reading"      ,
+                "Scantron Exit Reading"
+                
+            ]
+            
+        ]
+        
+        sids = self.enrolled_students
+        
+        sids.each{|sid|
+            
+            s = $students.get(sid)
+            row = Array.new
+            
+            row.push(s.student_id.value                                 ) 
+            row.push(s.studentlastname.value                            ) 
+            row.push(s.studentfirstname.value                           ) 
+            row.push(s.grade.value                                      ) 
+            row.push(s.familyid.value                                   ) 
+            row.push(s.birthday.value                                   ) 
+            row.push(s.primaryteacher.value                             ) 
+            row.push(s.schoolenrolldate.to_user                         ) 
+            row.push(s.specialedteacher.value                           ) 
+            row.push(s.districtofresidence.value                        )
+            
+            si_level = s.study_island_level.color_code
+            row.push(!si_level ?  "" : si_level.web.label(:style=>"color:#{(si_level.value.nil? ? "" : si_level.value.downcase)};") )
+            
+            row.push(s.attendance_mode.existing_record ? s.attendance_mode.existing_record.fields["attendance_mode"].value : "" )
+            
+            scantron_exists = s.scantron_performance_level.existing_record
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ent_perf_m.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ext_perf_m.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ent_perf_r.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ext_perf_r.value : "" )
+            
+            tables_array.push(row)
+            
+        } if sids
+        
+        return $kit.tools.data_table(tables_array, "my_enrolled_students")
+        
+    end
+    
+    def expand_mystudents_withdrawn
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+             
+                "Student ID"                ,
+                "Last Name"                 ,
+                "First Name"                ,
+                "Grade Level"               ,
+                "Family ID"                 ,
+                "Birthday"                  ,
+                "Family Coach"              ,
+                "Enroll Date"               ,
+                "Special Ed Teacher"        ,
+                "District of Residence"     ,
+                "SI Level"                  ,
+                "Attendance Mode"           ,
+                "Scantron Ent Math"         ,
+                "Scantron Exit Math"        ,
+                "Scantron Ent Reading"      ,
+                "Scantron Exit Reading"
+                
+            ]
+            
+        ]
+        
+        sids = self.withdrawn_students
+        
+        sids.each{|sid|
+            
+            s = $students.get(sid)
+            row = Array.new
+            
+            row.push(s.student_id.value                                 ) 
+            row.push(s.studentlastname.value                            ) 
+            row.push(s.studentfirstname.value                           ) 
+            row.push(s.grade.value                                      ) 
+            row.push(s.familyid.value                                   ) 
+            row.push(s.birthday.value                                   ) 
+            row.push(s.primaryteacher.value                             ) 
+            row.push(s.schoolenrolldate.value                           ) 
+            row.push(s.specialedteacher.value                           ) 
+            row.push(s.districtofresidence.value                        )
+            
+            si_level = s.study_island_level.color_code
+            row.push(!si_level ?  "" : si_level.web.label(:style=>"color:#{(si_level.value.nil? ? "" : si_level.value.downcase)};") )
+            
+            row.push(s.attendance_mode.existing_record ? s.attendance_mode.existing_record.fields["attendance_mode"].value : "" )
+            
+            scantron_exists = s.scantron_performance_level.existing_record
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ent_perf_m.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ext_perf_m.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ent_perf_r.value : "" )
+            row.push(scantron_exists ?  s.scantron_performance_level.stron_ext_perf_r.value : "" )
+            
+            tables_array.push(row)
+            
+        } if sids
+        
+       return $kit.tools.data_table(tables_array, "my_withdrawn_students")
+        
+    end
+    
     def department_record
         $tables.attach("DEPARTMENT").by_primary_id(self.department_id.value)
     end
