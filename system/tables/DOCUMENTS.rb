@@ -42,7 +42,7 @@ end
         
         sql_str << "AND documents.created_date = '#{created_date}' " if created_date
         
-        sql_str << "ORDER BY created_date #{sort}" 
+        sql_str << "ORDER BY documents.created_date #{sort}" 
         
         $db.get_data(sql_str)
     end
