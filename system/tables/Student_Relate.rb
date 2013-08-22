@@ -1559,6 +1559,13 @@ end
         
     end
     
+    def team_id(arg)
+        
+        where_addon = " AND student_relate.team_id = '#{arg}' "
+        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+        
+    end
+    
     def test_event_site(arg)
         
         join_addon =
