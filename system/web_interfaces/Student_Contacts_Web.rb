@@ -148,7 +148,7 @@ end
                     row.push(f["evaluation_request_psych"      ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["evaluation_request_psych"      ].to_user()+">/div>")
                     row.push(f["ell"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["ell"                           ].to_user()+">/div>")
                     row.push(f["phlote_identification"         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["phlote_identification"         ].to_user()+">/div>")
-                    row.push(f["csy"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["csy"                           ].to_user()+">/div>")
+                    row.push(f["cys"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["cys"                           ].to_user()+">/div>")
                     row.push(f["homeless"                      ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["homeless"                      ].to_user()+">/div>")
                     row.push(f["aircard"                       ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["aircard"                       ].to_user()+">/div>")
                     row.push(f["court_district_go"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["court_district_go"             ].to_user()+">/div>")
@@ -206,35 +206,35 @@ end
             output << $tools.legend_open("sub", "Reason for Contact - Please select all that apply from the following:")
                 
                 output << record.fields["aircard"                       ].web.default( :label_option=>"Aircard",                              :div_id=>"blank")
-                output << record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank")
-                output << record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank")
-                output << record.fields["court_district_go"             ].web.default( :label_option=>"Court/district/Go",                    :div_id=>"blank")
-                output << record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank")
-                output << record.fields["csy"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank")
-                output << record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank")
-                output << record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank")
                 output << record.fields["evaluation_request_psych"      ].web.default( :label_option=>"Evaluation Request - Psychology",      :div_id=>"blank")
-                output << record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank")
-                output << record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank")
-                output << record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank")
-                output << record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank")
-                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Home Visit",                   :div_id=>"blank")
-                output << record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank")
-                output << record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank")
                 output << record.fields["residency"                     ].web.default( :label_option=>"Residency",                            :div_id=>"blank")
-                output << record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank")
-                output << record.fields["sap_follow-up"                 ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank")
-                output << record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank")
-                output << record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank")
-                output << record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank")
-                output << record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank")
                 output << record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank")
+                output << record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank")
+                output << record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank")
+                output << record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank")
                 output << record.fields["tep_followup"                  ].web.default( :label_option=>"TEP Follow-up",                        :div_id=>"blank")
+                output << record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank")
+                output << record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank")
+                output << record.fields["sap_follow-up"                 ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank")
                 output << record.fields["tep_initial"                   ].web.default( :label_option=>"TEP Initiated",                        :div_id=>"blank")
+                output << record.fields["court_district_go"             ].web.default( :label_option=>"Court/district/Go",                    :div_id=>"blank")
+                output << record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank")
+                output << record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank")
                 output << record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank")
+                output << record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank")
+                output << record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank")
+                output << record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank")
                 output << record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank")
+                output << record.fields["cys"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank")
+                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Home Visit",                   :div_id=>"blank")
+                output << record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank")
                 output << record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank")
+                output << record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank")
+                output << record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank")
+                output << record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank")
                 output << record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank")
+                output << record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank")
+                output << record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank")
                 
                 output << record.fields["other"                         ].web.default( :label_option=>"'Other'",                              :div_id=>"blank")
                 output << record.fields["other_description"             ].web.text(    :label_option=>"Details (if 'other')",                 :div_id=>"blank")
@@ -360,7 +360,7 @@ end
             div#blank.STUDENT_CONTACTS__evaluation_under_review_psych{          float:left; width:25%; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__ell{                                    float:left; width:25%; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__phlote_identification{                  float:left; width:25%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__csy{                                    float:left; width:25%; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__cys{                                    float:left; width:25%; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__homeless{                               float:left; width:25%; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__aircard{                                float:left; width:25%; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__court_district_go{                      float:left; width:25%; margin-bottom:2px;}
@@ -397,7 +397,7 @@ end
             div#blank.STUDENT_CONTACTS__evaluation_under_review_psych input{    float:left;}
             div#blank.STUDENT_CONTACTS__ell input{                              float:left;}
             div#blank.STUDENT_CONTACTS__phlote_identification input{            float:left;}
-            div#blank.STUDENT_CONTACTS__csy input{                              float:left;}
+            div#blank.STUDENT_CONTACTS__cys input{                              float:left;}
             div#blank.STUDENT_CONTACTS__homeless input{                         float:left;}
             div#blank.STUDENT_CONTACTS__aircard input{                          float:left;}
             div#blank.STUDENT_CONTACTS__court_district_go input{                float:left;}
@@ -430,7 +430,7 @@ end
             div#blank.STUDENT_CONTACTS__evaluation_under_review_psych label{    width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__ell label{                              width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__phlote_identification label{            width:250px; display:inline-block;}
-            div#blank.STUDENT_CONTACTS__csy label{                              width:250px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__cys label{                              width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__homeless label{                         width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__aircard label{                          width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__court_district_go label{                width:250px; display:inline-block;}
@@ -468,7 +468,7 @@ end
             div.STUDENT_CONTACTS__evaluation_under_review_psych{                width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__ell{                                          width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__phlote_identification{                        width:20px; margin-left:auto; margin-right:auto;}
-            div.STUDENT_CONTACTS__csy{                                          width:20px; margin-left:auto; margin-right:auto;}
+            div.STUDENT_CONTACTS__cys{                                          width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__homeless{                                     width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__aircard{                                      width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__court_district_go{                            width:20px; margin-left:auto; margin-right:auto;}

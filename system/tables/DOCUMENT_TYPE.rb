@@ -82,6 +82,7 @@ end
         
         cat_id_athena = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Athena'")
         pre_reqs.push({:name=>"Converted SID To PID CSV" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
+        pre_reqs.push({:name=>"Mass Kmail Students List" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         
         cat_id_k12_reports = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='K12 Reports'")
         pre_reqs.push({:name=>"Aggregate Progress"          , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports

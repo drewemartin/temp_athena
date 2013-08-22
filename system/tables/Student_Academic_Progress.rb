@@ -201,7 +201,13 @@ end
                     teacher_staff_id    = team_member.samsid.value if team_member
                 end
                 
-                progress_record = new_row_if_none_exists(sid, course_code, data_source, $school.current_term.value)
+                curr_term = $school.current_term
+                
+                if curr_term
+                    curr_term = $school.current_term.value
+                end
+                
+                progress_record = new_row_if_none_exists(sid, course_code, data_source, curr_term)
                     
                     progress_record.fields["classroom_name"               ].value = nil                    
                     progress_record.fields["course_name"                  ].value = course_name             

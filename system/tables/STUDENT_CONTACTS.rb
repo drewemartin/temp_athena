@@ -120,7 +120,7 @@ end
             structure_hash["fields"]["evaluation_request_psych"      ] = {"data_type"=>"bool", "file_field"=>"evaluation_request_psych"      } if field_order.push("evaluation_request_psych")
             structure_hash["fields"]["ell"                           ] = {"data_type"=>"bool", "file_field"=>"ell"                           } if field_order.push("ell")
             structure_hash["fields"]["phlote_identification"         ] = {"data_type"=>"bool", "file_field"=>"phlote_identification"         } if field_order.push("phlote_identification")
-            structure_hash["fields"]["csy"                           ] = {"data_type"=>"bool", "file_field"=>"csy"                           } if field_order.push("csy")
+            structure_hash["fields"]["cys"                           ] = {"data_type"=>"bool", "file_field"=>"cys"                           } if field_order.push("cys")
             structure_hash["fields"]["homeless"                      ] = {"data_type"=>"bool", "file_field"=>"homeless"                      } if field_order.push("homeless")
             structure_hash["fields"]["aircard"                       ] = {"data_type"=>"bool", "file_field"=>"aircard"                       } if field_order.push("aircard")
             structure_hash["fields"]["court_district_go"             ] = {"data_type"=>"bool", "file_field"=>"court_district_go"             } if field_order.push("court_district_go")

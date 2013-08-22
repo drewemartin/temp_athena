@@ -51,7 +51,7 @@ class KMAIL_UPLOAD_WEB
         output = String.new
         begin
             recipients = Array.new
-            file_path  = $config.init_path("#{$paths.imports_path}kmail/#{$ifilestamp}.csv")
+            file_path  = $config.init_path("#{$paths.imports_path}kmail")
             serverFile = "#{file_path}#{$ifilestamp}.csv"
             i=1
             CSV.open(serverFile, "wb") do |csv|
@@ -67,6 +67,7 @@ class KMAIL_UPLOAD_WEB
                     i+=1
                 end
             end
+            $reports.save_document({:category_name=>"Athena", :type_name=>"Mass Kmail Students List", :file_path=>serverFile})
         rescue
             output = "Failed to parse and upload csv to Athena<br>"
         end
