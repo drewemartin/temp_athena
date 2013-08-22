@@ -381,7 +381,8 @@ end
                 "source_type"       => "k12_report",
                 "download_times"    => nil,
                 "trigger_events"    => true,
-                "audit"             => nil
+                "audit"             => nil,
+                "nice_name"         => "Omnibus"
             }
             @table_structure = set_fields(structure_hash)
         end

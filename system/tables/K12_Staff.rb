@@ -200,6 +200,7 @@ end
                 "download_times"    => nil,
                 "trigger_events"    => true,
                 "audit"             => nil,
+                "nice_name"         => "Staff List"
             }
             @table_structure = set_fields(structure_hash)
         end

@@ -97,7 +97,7 @@ end
             .even         {background-color:#EEEEEE; padding:2px 10px;;}
             .odd          {background-color:#F2F5F7; padding:2px 10px;;}
             
-            .ui-accordion-content{padding:0em !important}
+            .ui-accordion-content{padding:0em !important; max-height:600px;} 
             
         "
         output << "</style>"

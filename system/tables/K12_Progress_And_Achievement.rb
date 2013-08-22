@@ -44,7 +44,8 @@ end
                 "source_type"       => "k12_report",
                 "download_times"    => nil,
                 "trigger_events"    => nil,
-                "audit"             => nil
+                "audit"             => nil,
+                "nice_name"         => "Progress And Achievement"
             }
             @table_structure = set_fields(structure_hash)
         end
