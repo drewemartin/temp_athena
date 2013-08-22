@@ -43,7 +43,8 @@ end
                 "file_location"     => "k12_reports",
                 "source_address"    => "https://reports.k12.com/agora/agora_ECollegeActivityDuration.csv",
                 "source_type"       => "k12_report",
-                "audit"             => nil
+                "audit"             => nil,
+                "nice_name"         => "ECollege Activity Duration"
             }
             @table_structure = set_fields(structure_hash)
         end

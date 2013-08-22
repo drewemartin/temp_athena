@@ -74,7 +74,7 @@ end
         return file.path
     end
     
-    def save_document(document_hash) #:category_name, :type_name, :csv_rows
+    def save_document(document_hash) #:category_name, :type_name, :csv_rows, :file_path
         
         new_row = $tables.attach("documents").new_row
         
@@ -123,6 +123,14 @@ end
             end
             
             return pdf.path
+            
+        elsif document_hash[:file_path]
+            
+            file_path   = document_hash[:file_path]
+            ext         = file_path.split(".").last
+            new_path    = "#{$paths.documents_path}#{new_document_pid}.#{ext}"
+            
+            FileUtils.cp(file_path,new_path)
             
         end
         
