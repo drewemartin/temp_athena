@@ -1,6 +1,5 @@
 #!/usr/local/bin/ruby
 
-
 class TEAM_MEMBER_DETAIL_WEB
     
     #---------------------------------------------------------------------------
@@ -62,11 +61,12 @@ end
         
         
         tabs = Array.new
-        tabs.push(["Basic Information",     identity        ])
-        tabs.push(["Team Assignement",      team_assignment ])
-        tabs.push(["Students",              students        ])
-        tabs.push(["Team",                  team            ])
-        tabs.push(["Athena Access",         rights          ])
+        tabs.push(["Basic Information",     identity                ])
+        tabs.push(["Team Assignement",      team_assignment         ])
+        tabs.push(["Student Management",    student_management      ])
+        tabs.push(["Team Member Students",  team_member_students    ])
+        tabs.push(["Team",                  team                    ])
+        tabs.push(["Athena Access",         rights                  ])
        
         $kit.tools.tabs(
             tabs,
@@ -153,7 +153,7 @@ end
         
     end
     
-    def students
+    def student_management
         
         if department_record = $focus_team_member.department_record
             department_category = department_record.fields["type"].value
@@ -250,6 +250,12 @@ end
         } if pids
         
         return $tools.data_table(tables_array, "my_students")
+        
+    end
+    
+    def team_member_students
+        
+        $focus_team_member.expand_mystudents_enrolled
         
     end
 
