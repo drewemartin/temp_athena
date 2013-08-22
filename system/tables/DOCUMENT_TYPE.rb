@@ -94,6 +94,7 @@ end
         pre_reqs.push({:name=>"EITR V2"                     , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
         pre_reqs.push({:name=>"Elluminate Session"          , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
         pre_reqs.push({:name=>"Highschool Classroom"        , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
+        pre_reqs.push({:name=>"Home Language"               , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
         pre_reqs.push({:name=>"Learning Coach Report"       , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
         pre_reqs.push({:name=>"Lessons Count Daily"         , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
         pre_reqs.push({:name=>"Logins"                      , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports

@@ -15,6 +15,7 @@ class Upload_Documents < Base
         upload_sapphire_returning_students     #ok
         upload_sapphire_invalid_districts      #ok
         upload_sapphire_withdrawn_students     #ok
+        upload_scantron_participation_overall  #ok 
         upload_sid_to_pid                      #ok
         upload_snap_update                     #ok
         upload_team_evaluations                #ok
@@ -81,6 +82,12 @@ class Upload_Documents < Base
         file_loop("Sapphire_Update/Withdrawn_Students", "Sapphire Withdrawn Students", "Sapphire Imports")
         
     end
+    
+    def upload_scantron_participation_overall
+        
+        file_loop("Scantron/Participation_Notifications/Overall", "Scantron Participation Completion Overall Report", "Scantron")
+        
+    end 
     
     def upload_sid_to_pid
         
@@ -234,9 +241,9 @@ class Upload_Documents < Base
                             type_id     = $tables.attach("document_type").find_field("primary_id",  "WHERE name='Truancy Elimination Plan' AND category_id='#{category_id}'").value
                             
                             time_stamp   = entry_file.split("_").last.split(".").first
-                            new_created_date = set_created_date(time_stamp) if time_stamp[0,2] == "D1"
+                            new_created_date = set_created_date(time_stamp) if time_stamp[0,2] == "D2"
                             
-                            if time_stamp[0,2] == "D1" && !$tables.attach("documents").document_exists_by_time(type_id, new_created_date)
+                            if time_stamp[0,2] == "D2" && !$tables.attach("documents").document_exists_by_time(type_id, new_created_date)
                                 
                                 name = File.basename(entry_file)
                                 

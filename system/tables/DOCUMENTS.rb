@@ -24,7 +24,7 @@ end
         )
     end
     
-    def document_pids(type_id, table=nil, key_field=nil, key_field_value=nil, created_date=nil)
+    def document_pids(type_id, table=nil, key_field=nil, key_field_value=nil, created_date=nil, sort="DESC") 
         
         check_doc_relate = (table && key_field && key_field_value) ? true : false
         
@@ -40,7 +40,9 @@ end
             sql_str << "WHERE documents.type_id = '#{type_id}' "
         end
         
-        sql_str << "AND documents.created_date = '#{created_date}'" if created_date
+        sql_str << "AND documents.created_date = '#{created_date}' " if created_date
+        
+        sql_str << "ORDER BY created_date #{sort}" 
         
         $db.get_data(sql_str)
     end

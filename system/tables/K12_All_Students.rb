@@ -93,6 +93,7 @@ end
                 "download_times"    => nil,
                 "trigger_events"    => nil,
                 "audit"             => nil,
+                "nice_name"         => "All Students" 
             }
             @table_structure = set_fields(structure_hash)
         end

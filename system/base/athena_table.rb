@@ -73,6 +73,10 @@ end
         table["name"]
     end
     
+    def nice_name
+        table["nice_name"]
+    end 
+    
     def primary_pre_reqs
         ["DB_CONFIG","SYSTEM_LOG","USER_LOG","USER_LOG_CREDENTIAL_ERRORS","TEAM_LOG"]
     end
@@ -272,20 +276,17 @@ end
                             file_1.puts csv_text
                             file_1.close
                             
-                            if table_name == "k12_all_students"
+                            if ENV["COMPUTERNAME"] == "ATHENA" && table_name == "k12_all_students"
                                 
                                 begin
                                     
                                     out_file_path = "I:/all_students.csv"
                                     
-                                    if File.exists?(out_file_path)
-                                        
-                                        File.open(out_file_path) do |file|
-                                            # access file 
-                                        end
-                                        
-                                        File.delete(out_file_path)
-                                        
+                                    if !File.directory?( "I:/" )
+                                        net = WIN32OLE.new('WScript.Network')
+                                        user_name = "Administrator"
+                                        password  = "Ag0ra2013"
+                                        net.MapNetworkDrive( 'I:', "\\\\10.1.10.100\\intactstorage", nil,  user_name, password )
                                     end
                                     
                                     FileUtils.cp("#{import_path}#{file_name}", out_file_path)
@@ -301,7 +302,6 @@ end
                                 end                            
                                 
                             end
-                            
                             
                             db_config_record(
                                 field_name  = "last_import_status",
@@ -519,6 +519,8 @@ end
             )
             
             if import_file_exists?
+                
+                $reports.save_document({:category_name=>"K12 Reports", :type_name=>nice_name, :file_path=>file_path}) if source_type == "k12_report" && nice_name
                 
                 processed_filename = file_name.gsub(".csv","_#{$ifilestamp}.csv")
                 FileUtils.cp(file_path, "#{report_path}#{processed_filename}")
