@@ -302,12 +302,12 @@ end
         if options.nil?
             
             options = {
-                :staff_samsids          => self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+                :team_id                => self.primary_id.value
             }
             
         else
             
-            options[:staff_samsids          ] = self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+            options[:team_id                ] = self.primary_id.value
             
         end
         
@@ -340,13 +340,13 @@ end
             
             options = {
                 :student_relate_active  => true,
-                :staff_samsids          => self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+                :team_id                => self.primary_id.value
             }
             
         else
             
             options[:student_relate_active  ] = true
-            options[:staff_samsids          ] = self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+            options[:team_id                ] = self.primary_id.value
             
         end
         
@@ -379,13 +379,13 @@ end
             
             options = {
                 :withdrawn              => true,
-                :staff_samsids          => self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+                :team_id                => self.primary_id.value
             }
             
         else
             
             options[:withdrawn              ] = true
-            options[:staff_samsids          ] = self.sams_ids.existing_fields("sams_id", {:value_only=>true})
+            options[:team_id                ] = self.primary_id.value
             
         end
         
