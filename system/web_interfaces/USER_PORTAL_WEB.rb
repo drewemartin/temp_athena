@@ -45,13 +45,13 @@ end
         $kit.output << "<div class='menu_buttons_container'>"
         
         #SEARCH ALL TEAM MEMBERS
-        if $team_member.rights.team_search.is_true?
-            $kit.output << "<button class='team_search_button' id='team_search_dialog_button'>Team Search</button>#{team_search}"
+        if $team_member.super_user? || $team_member.rights.team_search.is_true?
+            $kit.output << "<button class='new_breakaway_button' id='team_search_dialog_button'>Team Search</button>#{team_search}"
         end
         
         #SEARCH ALL STUDENTS
-        if $team_member.rights.student_search.is_true?
-            $kit.output << "<button class='student_search_button' id='student_search_dialog_button'>Student Search</button>#{student_search}"
+        if $team_member.super_user? || $team_member.rights.student_search.is_true?
+            $kit.output << "<button class='new_breakaway_button' id='student_search_dialog_button'>Student Search</button>#{student_search}"
         end 
       
         $kit.output << $tools.breakaway_button(
