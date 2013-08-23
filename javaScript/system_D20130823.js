@@ -2,6 +2,36 @@
 function x___________________GENERAL_WEBPAGE_FUNCTIONS(){}
 //------------------------------------------------------------------------------
 
+var action_group = undefined;
+function add_student(element, sid){
+	if(element.value == 1){
+                
+		if(action_group == undefined){
+			action_group = sid
+		}else{
+			included = action_group.split(':')
+			if(included.indexOf(sid) == -1){
+				action_group = action_group + ':' + sid;
+			}
+		}
+		
+	}else{
+		if(action_group != undefined){
+			included = action_group.split(':')
+			if(included.indexOf(sid) != -1){
+				action_group = action_group.replace(':'+sid,	''	);
+				action_group = action_group.replace(sid,	''	);	
+			}
+			if(action_group.length == 0){
+				action_group = undefined;
+			}
+		}
+	}
+}
+function group_action_request(action){
+	send(action+",action_group="+action_group);
+}
+
 //Adds new HTML content to the end of parent
 function appendInnerHTML(id, newContent){
 	

@@ -533,9 +533,8 @@ end
         sids = $students.list(:complete_enrolled=>true)#current_students
         sids.each{|sid|
             params[:sid]    = sid
-            staff_id        = $students.get(sid).title1teacherid.value
-            team_member     = $team.find(:sams_id=>staff_id)
-            if team_member
+            staff_id        = $students.get(sid).title1teacherid.value  
+            if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
                 active_record
@@ -555,8 +554,7 @@ end
         sids.each{|sid|
             params[:sid]    = sid
             staff_id        = $students.get(sid).primaryteacherid.value
-            team_member     = $team.find(:sams_id=>staff_id)
-            if team_member
+            if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
                 active_record
@@ -575,8 +573,7 @@ end
         sids.each{|sid|
             params[:sid]    = sid
             staff_id        = $students.get(sid).primaryteacherid.value
-            team_member     = $team.find(:sams_id=>staff_id)
-            if team_member
+            if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
                 active_record
@@ -596,8 +593,7 @@ end
         sids.each{|sid|
             params[:sid]    = sid
             staff_id        = $students.get(sid).specialedteacherid.value
-            team_member     = $team.find(:sams_id=>staff_id) 
-            if team_member
+            if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                 params[:team_id ] = team_member.primary_id.value
                 params[:staff_id] = staff_id
                 active_record

@@ -35,6 +35,7 @@ end
         sapphire_periods(pre_reqs)
         scantron_results(pre_reqs)
         state_test_results(pre_reqs)
+        student_information_survey(pre_reqs)
         
         return pre_reqs
         
@@ -181,6 +182,41 @@ end
         
     end
 
+    def student_information_survey(pre_reqs)
+        
+        cat_id = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'Student Information Survey'")[0]
+        grade_hash  = {
+            :grade_k => true, :grade_1st=>true,     :grade_2nd=>true,   :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true,
+            :grade_6th=>true, :grade_7th=>true,     :grade_8th=>true,
+            :grade_9th=>true, :grade_10th=>true,    :grade_11th=>true,  :grade_12th=>true,
+        }                
+        pre_reqs.push({:category_id=>cat_id, :name=>"Why did you choose Agora?"                                         ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What is the most helpful thing Agora can do to support you?"       ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What extracurricular activities are you involved in?"              ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What is your favorite school subject?"                             ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What do you enjoy learning about?"                                 ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What do you think you are especially good at?"                     ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Who do you live with in your home? "                               ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What are your dreams for the future?"                              ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What careers interest you the most?"                               ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"What skills are necessary for success in your future career?"      ,:required=>true}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Previous School Experience"                                        ,:required=>true}.merge(grade_hash))
+        
+        max = pre_reqs.length
+        (0...max).each{|i|
+            
+            if primary_ids("WHERE category_id = '#{pre_reqs[i][:category_id]}' AND name = '#{pre_reqs[i][:name]}'")
+                pre_reqs[i] = nil
+            end
+            
+        }
+        
+        pre_reqs.compact!
+        
+        return pre_reqs
+     
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end

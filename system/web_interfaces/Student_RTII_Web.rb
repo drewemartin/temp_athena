@@ -212,7 +212,7 @@ end
                         "Retention Risk",
                         "Escalation",
                         "Welcome Call",
-                        "Initial Home Visit",
+                        "Initial Face-to-Face",
                         "Other",
                         "Details (if 'other')"
                     ]
@@ -448,7 +448,7 @@ end
                         "Retention Risk",
                         "Escalation",
                         "Welcome Call",
-                        "Initial Home Visit",
+                        "Initial Face-to-Face",
                         "Other",
                         "Details (if 'other')",
                         "RTII Behavior"
