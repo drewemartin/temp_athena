@@ -84,7 +84,7 @@ end
                         "Retention Risk",
                         "Escalation",
                         "Welcome Call",
-                        "Initial Home Visit",
+                        "Initial Face-to-Face",
                         "Technical Issue",
                         "ILP Conference",
                         "Low Engagement",
@@ -226,7 +226,7 @@ end
                 output << record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank")
                 output << record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank")
                 output << record.fields["cys"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank")
-                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Home Visit",                   :div_id=>"blank")
+                output << record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Face-to-Face",                   :div_id=>"blank")
                 output << record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank")
                 output << record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank")
                 output << record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank")
