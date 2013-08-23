@@ -1632,9 +1632,8 @@ end
         
         unless @re_initialize || table_only
             load if import_file_exists?
+            pre_reqs_load
         end
-        
-        pre_reqs_load
         
     end
     
