@@ -7,7 +7,8 @@ class STUDENT_ILP_WEB
     def initialize()
       
         @ilp_categories = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids(
-            "WHERE #{$focus_student.grade.to_grade_field} IS TRUE"
+            "WHERE #{$focus_student.grade.to_grade_field} IS TRUE
+            ORDER BY name ASC"
         )
       
     end
@@ -106,7 +107,13 @@ end
             records_filled_count    = records_filled ? records_filled.length : 0
             category_name           = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(pid).fields["name"].value
             
-            tabs.push(["#{category_name} (#{records_filled_count}/#{records_count})", ilp_details(records, category_name.downcase)    ]) 
+            if $tables.attach("ILP_ENTRY_CATEGORY").field_by_pid("manual",pid).is_true? 
+                label_with_indicator = "<span class='ui-icon ui-icon-unlocked' style='display:inline-block;height: 12px;'></span>#{category_name}(#{records_filled_count}/#{records_count})"
+            else
+                label_with_indicator = "<span class='ui-icon ui-icon-locked'   style='display:inline-block;height: 12px;'></span>#{category_name}(#{records_filled_count}/#{records_count})"
+            end
+            
+            tabs.push([label_with_indicator, ilp_details(records, category_name.downcase)    ]) 
             
         }
         
