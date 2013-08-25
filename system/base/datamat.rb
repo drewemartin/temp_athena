@@ -158,7 +158,7 @@ end
             when "datetime"
                 prep_datetime
             when "time"
-                mathable.strftime("%I:%M:%S %p")
+                mathable.strftime("%l:%M %p")
             when "year"
                 prep_year
             when "decimal(5,4)"
