@@ -85,6 +85,8 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
         
         conference_notes
         
+        signatures
+        
         @pdf.render_file "#{file_path}#{file_name}" if render_required
         
         return "#{file_path}#{file_name}"
@@ -145,6 +147,20 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
             end
             
         end
+        
+    end
+    
+    def signatures
+        
+        @pdf.move_down 20
+        @pdf.text "Please sign below."
+        @pdf.move_down 20
+        @pdf.text "<b>Student:</b>________________________________________________<b>Date:</b>________________________", :inline_format=>true
+        @pdf.move_down 15                                                                      
+        @pdf.text "<b>Learning Coach:</b>________________________________________<b>Date:</b>________________________", :inline_format=>true
+        @pdf.move_down 15                                                                     
+        @pdf.text "<b>Agora Representative:</b>___________________________________<b>Date:</b>________________________", :inline_format=>true
+        @pdf.move_down 20
         
     end
     
