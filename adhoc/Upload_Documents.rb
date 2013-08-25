@@ -6,24 +6,24 @@ class Upload_Documents < Base
     def initialize()
         
         super()
-        upload_attendance_master               #ok
-        upload_enrollment_reports              #ok
-        upload_ink_orders                      #ok
-        upload_ink_id_requests                 #ok
-        upload_login_reminders                 #ok
-        upload_sapphire_new_students           #ok
-        upload_sapphire_returning_students     #ok
-        upload_sapphire_invalid_districts      #ok
-        upload_sapphire_withdrawn_students     #ok
-        upload_scantron_participation_overall  #ok 
-        upload_sid_to_pid                      #ok
-        upload_snap_update                     #ok
-        upload_team_evaluations                #ok
-        upload_tep_documents                   #ok
-        upload_truancy_withdrawal              #ok
-        upload_withdrawal_student_documents    #ok
-        upload_withdrawal_to_registrar         #ok
-        upload_withdrawal_to_districts         #ok
+        #upload_attendance_master               #ok
+        #upload_enrollment_reports              #ok
+        #upload_ink_orders                      #ok
+        #upload_ink_id_requests                 #ok
+        #upload_login_reminders                 #ok
+        #upload_sapphire_new_students           #ok
+        #upload_sapphire_returning_students     #ok
+        #upload_sapphire_invalid_districts      #ok
+        #upload_sapphire_withdrawn_students     #ok
+        #upload_scantron_participation_overall  #ok 
+        #upload_sid_to_pid                      #ok
+        #upload_snap_update                     #ok
+        #upload_team_evaluations                #ok
+        #upload_tep_documents                   #ok
+        #upload_truancy_withdrawal              #ok
+        #upload_withdrawal_student_documents    #ok
+        #upload_withdrawal_to_registrar         #ok
+        #upload_withdrawal_to_districts         #ok
         upload_k12_reports
         
     end
@@ -486,8 +486,8 @@ class Upload_Documents < Base
     end
     
     def upload_k12_reports
-        
-        rootpath = "#{$paths.reports_path}k12_reports"
+        rootpath = "Y:/temporary/offsite/reports/k12_reports"
+        #rootpath = "#{$paths.reports_path}k12_reports"
         Dir.entries(rootpath).each{|report_folder|
             if !report_folder.gsub(/\.|rb/,"").empty?
                 if $reports.name_replacements.has_key?(report_folder)
