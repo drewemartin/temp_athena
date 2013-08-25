@@ -666,10 +666,14 @@ end
             
             fields_displayed.each{|field_name|
                 
-                custom_label    = category_record.fields[field_name.gsub("interface_","label_")].value
-                default_label   = student_ilps[0].table.fields[field_name.gsub("interface_","")][:label]
-                header_label    = custom_label || default_label
-                headers.push("<b>#{header_label}</b>")   
+                if field_name.match(/responsible_parties/)
+                    headers.push("<b>Responsible Parties</b>")
+                else
+                    custom_label    = category_record.fields[field_name.gsub("interface_","label_")].value
+                    default_label   = student_ilps[0].table.fields[field_name.gsub("interface_","")][:label]
+                    header_label    = custom_label || default_label
+                    headers.push("<b>#{header_label}</b>")   
+                end
                 
             }
             
