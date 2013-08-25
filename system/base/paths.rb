@@ -75,7 +75,7 @@ end
     
     def documents_path
         if !structure.has_key?(:documents_path)
-            structure[:documents_path] = $config.init_path("#{htdocs_path}documents")
+            structure[:documents_path] = $config.init_path("A:/documents")
         end
         return structure[:documents_path]
     end
