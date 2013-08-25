@@ -487,7 +487,7 @@ end
         headers.push("Type"                  )
         headers.push("Description"           )
         
-        category_record = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(field_value)
+        category_record = $tables.attach("ILP_ENTRY_CATEGORY"   ).by_primary_id(field_value)
         
         #OPTIONAL FIELDS
         headers.push("Solution"                     ) if category_record && category_record.fields["interface_solution"           ].is_true? 
@@ -503,10 +503,13 @@ end
         
         record_row = Array.new
         
+        onchange = Array.new
+        onchange.push("fill_select_option('#{fields["description" ].web.field_id}', this  );") if category_record.fields["interface_description"  ].is_true?
+        onchange.push("fill_select_option('#{fields["solution"    ].web.field_id}', this  );") if category_record.fields["interface_solution"     ].is_true?
         record_row.push(
             fields["ilp_entry_type_id"].web.select(
                 :dd_choices     => new_type_dd(field_value),
-                :onchange       => ["fill_select_option('#{fields["description" ].web.field_id}', this  );","fill_select_option('#{fields["solution"    ].web.field_id}', this  );"],
+                :onchange       => onchange,
                 :validate       => true
             )
         )
@@ -895,8 +898,8 @@ end
         }"
         
         output << "div.related_classes_container                            {width: 600px; height: 100px; resize: none; overflow-y: scroll;}"
-        output << "div.STUDENT_ILP__description                     textarea{width: 300px; height: 100px; resize: none; overflow-y: scroll;}"
-        output << "div.STUDENT_ILP__solution                        textarea{width: 300px; height: 100px; resize: none; overflow-y: scroll;}"
+        output << "div.STUDENT_ILP__description                     textarea{width: 290px; height: 100px; resize: none; overflow-y: scroll;}"
+        output << "div.STUDENT_ILP__solution                        textarea{width: 290px; height: 100px; resize: none; overflow-y: scroll;}"
         output << "div.STUDENT_ILP_RESPONSIBLE_PARTIES__completed      input{display: block; margin-left: auto; margin-right: auto;}"
         output << "div.STUDENT_ILP__pdf_excluded                            {text-align: center;}"
         output << "div.STUDENT_ILP__day1                                    {text-align: center; width: 30px;}"
