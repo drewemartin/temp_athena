@@ -636,168 +636,75 @@ def x______________SUPPORT_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
-    def ilp_details(records, section_name)
+    def ilp_details(student_ilps, section_name)
         
-        tables_array        = Array.new
-        headers             = Array.new
-        
-        category_record = nil
-        if records
-            
-            category_id     = records[0].fields["ilp_entry_category_id" ].value
-            category_record = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(category_id)
-            
-        end
+        tables_array = Array.new
+        headers = Array.new
         
         headers.push("Exclude from PDF"     )
         headers.push("Created By"           )
-        #headers.push("ILP ID"               )
-        #headers.push("Category"             )
-        headers.push("Type"                 )
-        headers.push("Description"          )
         
-        #OPTIONAL FIELDS
-        headers.push("Solution"                         ) if category_record && category_record.fields["interface_solution"             ].is_true? 
-        headers.push("Completed"                        ) if category_record && category_record.fields["interface_completed"            ].is_true? 
-        headers.push("Goal Type"                        ) if category_record && category_record.fields["interface_goal_type"            ].is_true? 
-        headers.push("Progress"                         ) if category_record && category_record.fields["interface_progress"             ].is_true? 
-        headers.push("Scheduled Re-Eval Date"           ) if category_record && category_record.fields["interface_expiration_date"      ].is_true? 
-        headers.push("Weekly Schedule"                  ) if category_record && category_record.fields["display_type"].match(/Weekly/i)
-        headers.push("6 Day Schedule"                   ) if category_record && category_record.fields["display_type"].match(/6 Day/i)
-        headers.push("7 Day Schedule"                   ) if category_record && category_record.fields["display_type"].match(/7 Day/i)
-        headers.push("Responsible Parties"              ) if category_record && category_record.fields["interface_responsible_parties"  ].is_true? 
+        if student_ilps
+            
+            category_id         = student_ilps[0].fields["ilp_entry_category_id" ].value
+            category_record = $tables.attach("ILP_ENTRY_CATEGORY").by_primary_id(category_id)
+            
+            fields_displayed = Array.new
+            category_record.fields.each_pair{|field_name, setting|
+                
+                if (field_name.match(/interface/) && setting.is_true?)
+                    
+                    if (ordered = category_record.fields[field_name.gsub("interface_","order_")].value)
+                        fields_displayed[ordered.to_i-1] = field_name
+                    else
+                        fields_displayed.push(field_name)
+                    end
+                    
+                end
+                
+            }
+            
+            fields_displayed.each{|field_name|
+                
+                custom_label    = category_record.fields[field_name.gsub("interface_","label_")].value
+                default_label   = student_ilps[0].table.fields[field_name.gsub("interface_","")][:label]
+                header_label    = custom_label || default_label
+                headers.push("<b>#{header_label}</b>")   
+                
+            }
+            
+            student_ilps.each{|ilp|
+                
+                this_row = Array.new
+                this_row.push( ilp.fields["pdf_excluded"   ].web.default                                               )
+                team_member = $team.find(:email_address=>ilp.fields["created_by"].value)
+                this_row.push( team_member ? team_member.full_name : ilp.fields["created_by"].value                    )
+                
+                fields_displayed.each{|field_name|
+                 
+                    ilp_field_name = field_name.gsub("interface_","")
+                    if ilp_field_name.match(/ilp_entry_category_id/)
+                        ilp_value = $tables.attach("ILP_ENTRY_CATEGORY" ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                    elsif ilp_field_name.match(/ilp_entry_type_id/)
+                        ilp_value = $tables.attach("ILP_ENTRY_TYPE"     ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                    else
+                        type_id = ilp.fields["ilp_entry_type_id"].value
+                        disabled = !(
+                            $tables.attach("ILP_ENTRY_CATEGORY" ).by_primary_id(category_id ).fields["manual"].is_true? &&
+                            $tables.attach("ILP_ENTRY_TYPE"     ).by_primary_id(type_id     ).fields["manual"].is_true?            
+                        )
+                        ilp_value = ilp.fields[ilp_field_name].web.default(:disabled=>disabled)
+                    end
+                    this_row.push(ilp_value)   
+                    
+                }
+                tables_array.push(this_row)
+                
+            }
+            
+        end
         
-        tables_array.push(headers)
-        
-        records.each{|record|
-            
-            record_row = Array.new
-            
-            #record_row.push("row_id:#{record.primary_id}")
-            
-            type_id = record.fields["ilp_entry_type_id"].value
-            disabled = !(
-                $tables.attach("ILP_ENTRY_CATEGORY" ).by_primary_id(category_id ).fields["manual"].is_true? &&
-                $tables.attach("ILP_ENTRY_TYPE"     ).by_primary_id(type_id     ).fields["manual"].is_true?            
-            )
-            
-            team_member = $team.find(:email_address=>record.fields["created_by"].value)
-            
-            record_row.push( record.fields["pdf_excluded"   ].web.default                                               )
-            record_row.push( team_member ? team_member.full_name : record.fields["created_by"].value                    )
-            #record_row.push( record.fields["primary_id"     ].value                                                     )
-            #record_row.push( $tables.attach("ILP_ENTRY_CATEGORY" ).by_primary_id(category_id ).fields["name"].value     )
-            record_row.push( $tables.attach("ILP_ENTRY_TYPE"     ).by_primary_id(type_id     ).fields["name"].value     )
-            record_row.push( record.fields["description"    ].web.default(:disabled=>disabled)                          )
-            
-            #OPTIONAL FIELDS
-            record_row.push( record.fields["solution"                           ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_solution"           ].is_true? 
-            record_row.push( record.fields["completed"                          ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_completed"          ].is_true? 
-            record_row.push( record.fields["goal_type"                          ].web.select(   :disabled=>disabled, :dd_choices=> goal_type_dd)    ) if category_record && category_record.fields["interface_goal_type"          ].is_true? 
-            record_row.push( record.fields["progress"                           ].web.select(   :disabled=>disabled, :dd_choices=> progress_dd)     ) if category_record && category_record.fields["interface_progress"           ].is_true? 
-            record_row.push( record.fields["expiration_date"                    ].web.default(  :disabled=>disabled)                                ) if category_record && category_record.fields["interface_expiration_date"    ].is_true? 
-            
-            if category_record.fields["display_type"].match(/Weekly/i)
-                
-                weekly_schedule_arr = Array.new
-                weekly_schedule_arr.push(["Monday","Tuesday","Wednesday","Thursday","Friday"])
-                weekly_schedule_arr.push(
-                    
-                    [
-                        record.fields["monday"   ].web.default(:disabled=>disabled),
-                        record.fields["tuesday"  ].web.default(:disabled=>disabled),
-                        record.fields["wednesday"].web.default(:disabled=>disabled),
-                        record.fields["thursday" ].web.default(:disabled=>disabled),
-                        record.fields["friday"   ].web.default(:disabled=>disabled)
-                    ]
-                    
-                )
-                
-                weekly_schedule = $tools.table(
-                    :table_array    => weekly_schedule_arr,
-                    :unique_name    => "eligible_grades",
-                    :footers        => false,
-                    :head_section   => false,
-                    :title          => false,
-                    :caption        => false
-                )
-                
-                record_row.push(weekly_schedule)
-                
-            end
-            
-            if category_record.fields["display_type"].match(/6 Day/i)
-                
-                six_day_schedule_arr = Array.new
-                six_day_schedule_arr.push(["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6"])
-                six_day_schedule_arr.push(
-                    
-                    [
-                        record.fields["day1"].web.default(:disabled=>disabled),
-                        record.fields["day2"].web.default(:disabled=>disabled),
-                        record.fields["day3"].web.default(:disabled=>disabled),
-                        record.fields["day4"].web.default(:disabled=>disabled),
-                        record.fields["day5"].web.default(:disabled=>disabled),
-                        record.fields["day6"].web.default(:disabled=>disabled)
-                    ]
-                    
-                )
-                
-                six_day_schedule = $tools.table(
-                    :table_array    => six_day_schedule_arr,
-                    :unique_name    => "eligible_grades",
-                    :footers        => false,
-                    :head_section   => false,
-                    :title          => false,
-                    :caption        => false
-                )
-                
-                record_row.push(six_day_schedule)
-                
-            end
-            
-            if category_record.fields["display_type"].match(/7 Day/i)
-                
-                seven_day_schedule_arr = Array.new
-                seven_day_schedule_arr.push(["Day 1","Day 2","Day 3","Day 4","Day 5","Day 6","Day 7"])
-                seven_day_schedule_arr.push(
-                    
-                    [
-                        record.fields["day1"].web.default(:disabled=>disabled),
-                        record.fields["day2"].web.default(:disabled=>disabled),
-                        record.fields["day3"].web.default(:disabled=>disabled),
-                        record.fields["day4"].web.default(:disabled=>disabled),
-                        record.fields["day5"].web.default(:disabled=>disabled),
-                        record.fields["day6"].web.default(:disabled=>disabled),
-                        record.fields["day7"].web.default(:disabled=>disabled)
-                    ]
-                    
-                )
-                
-                seven_day_schedule = $tools.table(
-                    :table_array    => seven_day_schedule_arr,
-                    :unique_name    => "eligible_grades",
-                    :footers        => false,
-                    :head_section   => false,
-                    :title          => false,
-                    :caption        => false
-                )
-                
-                record_row.push(seven_day_schedule)
-                
-            end
-            
-            if category_record && category_record.fields["interface_responsible_parties"].is_true? 
-                
-                record_row.push(responsible_parties(record))
-                
-            end
-            
-            tables_array.push(record_row)
-            
-        } if records
-        
-        return $tools.data_table(tables_array, section_name, "default", true)
+        return $tools.data_table(tables_array.insert(0, headers), section_name, "default", true)
         
     end
 
