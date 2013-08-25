@@ -36,6 +36,7 @@ end
         scantron_results(pre_reqs)
         state_test_results(pre_reqs)
         student_information_survey(pre_reqs)
+        student_goals(pre_reqs)
         
         return pre_reqs
         
@@ -89,31 +90,60 @@ end
         
     end
     
+    def student_goals(pre_reqs)
+        
+        cat_id = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'Student Goals'")[0]
+        grade_hash  = {
+            :grade_k => true, :grade_1st=>true,     :grade_2nd=>true,   :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true,
+            :grade_6th=>true, :grade_7th=>true,     :grade_8th=>true,
+            :grade_9th=>true, :grade_10th=>true,    :grade_11th=>true,  :grade_12th=>true,
+        }                
+        pre_reqs.push({:category_id=>cat_id, :name=>"Academic"}.merge(grade_hash))
+        pre_reqs.push({:category_id=>cat_id, :name=>"Personal"}.merge(grade_hash)) 
+        
+        max = pre_reqs.length
+        (0...max).each{|i|
+            
+            if primary_ids("WHERE category_id = '#{pre_reqs[i][:category_id]}' AND name = '#{pre_reqs[i][:name]}'")
+                pre_reqs[i] = nil
+            end
+            
+        }
+        
+        pre_reqs.compact!
+        
+        return pre_reqs
+        
+    end
+
     def sapphire_periods(pre_reqs)
         
         sapphire_periods        = $tables.attach("SAPPHIRE_DICTIONARY_PERIODS"  ).primary_ids()
-        sapphire_courses_cat_id = $tables.attach("ILP_ENTRY_CATEGORY"           ).primary_ids("WHERE name = 'Sapphire Course Schedule'")
         
-        if sapphire_periods && sapphire_courses_cat_id
-            
-            sapphire_courses_cat_id = sapphire_courses_cat_id[0]
+        if sapphire_periods
             
             sapphire_periods.each{|pid|
                 
                 record      = $tables.attach("SAPPHIRE_DICTIONARY_PERIODS").by_primary_id(pid)
+                cat_id      = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids("WHERE name = 'Sapphire Course Schedule #{record.fields["school_type"].value}'")[0]
+                
                 period_code = record.fields["period_code"       ].value
                 start_time  = record.fields["start_time"        ]
                 end_time    = record.fields["end_time"          ]
                 time_frame  = (start_time.value&&end_time.value ? "#{start_time.to_user} to #{end_time.to_user}" : "")
-                description = "#{record.fields["period_decription" ].value}#{time_frame}"
+                description = "#{record.fields["period_decription" ].value} #{time_frame}"
                 
-                if !primary_ids("WHERE name = '#{period_code}' AND default_description = '#{description}'")
+                if !primary_ids(
+                    "WHERE category_id      = '#{cat_id}'
+                    AND name                = '#{period_code}'
+                    AND default_description = '#{description}'"
+                )
                     
                     pre_reqs.push(
                      
                         {
                             :grade_k                => true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
-                            :category_id            => sapphire_courses_cat_id,
+                            :category_id            => cat_id,
                             :name                   => period_code,
                             :default_description    => description,
                             :manual                 => false
