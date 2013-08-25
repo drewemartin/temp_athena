@@ -31,6 +31,67 @@ def x______________FUNCTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(record)
+        
+        student     = $students.get(record.fields["student_id"].value)
+        
+        course_id   = record.fields["course_id" ].value
+        section_id  = record.fields["section_id"].value
+        
+        sol         = "#{course_id} - #{section_id}"
+        
+        pattern     = record.fields["pattern"].value
+        arr         = pattern.partition("(")
+        per_code    = arr[0].strip
+        arr2        = arr[2].partition(")")
+        days        = arr2[0]
+        school_type = $tables.attach("sapphire_dictionary_periods").find_field("school_type", "WHERE period_code='#{per_code}'")
+        
+        ilp_cat     = $tables.attach("ilp_entry_category"  ).find_field("primary_id", "WHERE name='Sapphire Course Schedule#{school_type ? " #{school_type.value}" :""}'")
+        ilp_type    = $tables.attach("ilp_entry_type"      ).find_field("primary_id", "WHERE category_id = '#{ilp_cat.value}' AND name='#{per_code}'")
+        
+        if ilp_cat && ilp_type
+            
+            if !(
+                
+                ilp_record = student.ilp.existing_records(
+                    "WHERE  ilp_entry_category_id   = '#{ilp_cat.value  }'
+                    AND     ilp_entry_type_id       = '#{ilp_type.value }'
+                    AND     solution                = '#{sol            }'"
+                )
+                
+            )
+                
+                ilp_record = student.ilp.new_record
+                
+            end
+            
+            ilp_record.fields["ilp_entry_category_id"  ].value = ilp_cat.value
+            ilp_record.fields["ilp_entry_type_id"      ].value = ilp_type.value
+            
+            ilp_record.fields["description"            ].value = "#{record.fields["course_title"].value} - #{record.fields["staff_name"].value}"
+            ilp_record.fields["solution"               ].value = "#{course_id} - #{section_id}"
+            
+            ilp_record.fields["monday"                 ].value = (days.include?("M") ? true : false)
+            ilp_record.fields["tuesday"                ].value = (days.include?("T") ? true : false)
+            ilp_record.fields["wednesday"              ].value = (days.include?("W") ? true : false)
+            ilp_record.fields["thursday"               ].value = (days.include?("R") ? true : false)
+            ilp_record.fields["friday"                 ].value = (days.include?("F") ? true : false)
+            
+            ilp_record.fields["day1"                   ].value = (days.include?("1") ? true : false)
+            ilp_record.fields["day2"                   ].value = (days.include?("2") ? true : false)
+            ilp_record.fields["day3"                   ].value = (days.include?("3") ? true : false)
+            ilp_record.fields["day4"                   ].value = (days.include?("4") ? true : false)
+            ilp_record.fields["day5"                   ].value = (days.include?("5") ? true : false)
+            ilp_record.fields["day6"                   ].value = (days.include?("6") ? true : false)
+            ilp_record.fields["day7"                   ].value = (days.include?("7") ? true : false)
+            
+            ilp_record.save
+            
+        end
+       
+    end
+
     def create_student_ILP_records
         #iterate through each primary_id in student_sapphire_class_roster
         pids = $tables.attach("student_sapphire_class_roster").primary_ids
