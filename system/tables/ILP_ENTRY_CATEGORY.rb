@@ -40,11 +40,11 @@ end
             {
                 :grade_k=>true, :grade_1st=>false, :grade_2nd=>false, :grade_3rd=>false, :grade_4th=>false, :grade_5th=>false, :grade_6th=>false, :grade_7th=>false, :grade_8th=>false, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
                 :name                       => "Sapphire Course Schedule HS",
-                :display_type               => "6 Day",
+                :display_type               => "Weekly",
                 :manual                     => false
             },
             {
-                :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
+                :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>false, :grade_7th=>false, :grade_8th=>false, :grade_9th=>false, :grade_10th=>false, :grade_11th=>false, :grade_12th=>false,
                 :name                       => "AIMS Assessment",
                 :display_type               => "Table",
                 :manual                     => false
@@ -66,6 +66,12 @@ end
                 :name                       => "Student Information Survey",
                 :display_type               => "Table 2",
                 :manual                     => false
+            },
+            {
+                :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
+                :name                       => "Student Goals",
+                :display_type               => "Table 2",
+                :manual                     => true
             }
             
         ]
