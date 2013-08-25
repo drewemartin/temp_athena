@@ -1673,7 +1673,7 @@ end
         
         dest_table       = audit_restore ? "zz_#{table_name}"       : table_name
         source_file      = audit_restore ? "audit_#{table_name}"    : table_name
-        source_file_path = "#{$paths.restore_path}#{table_name}/#{file_name}"
+        source_file_path = "#{$paths.restore_path}#{table_name}/#{source_file}.csv"
         
         if File.exists?(source_file_path)
             
