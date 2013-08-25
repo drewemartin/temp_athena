@@ -116,7 +116,7 @@ end
             structure_hash["fields"]["residency"                     ] = {"data_type"=>"bool", "file_field"=>"residency"                     } if field_order.push("residency")
             structure_hash["fields"]["ses"                           ] = {"data_type"=>"bool", "file_field"=>"ses"                           } if field_order.push("ses")
             structure_hash["fields"]["sap_invitation"                ] = {"data_type"=>"bool", "file_field"=>"sap_invitation"                } if field_order.push("sap_invitation")
-            structure_hash["fields"]["sap_followup"                  ] = {"data_type"=>"bool", "file_field"=>"sap_followup"                  } if field_order.push("sap_followup")
+            structure_hash["fields"]["sap_follow-up"                 ] = {"data_type"=>"bool", "file_field"=>"sap_follow-up"                 } if field_order.push("sap_follow-up")
             structure_hash["fields"]["evaluation_request_psych"      ] = {"data_type"=>"bool", "file_field"=>"evaluation_request_psych"      } if field_order.push("evaluation_request_psych")
             structure_hash["fields"]["ell"                           ] = {"data_type"=>"bool", "file_field"=>"ell"                           } if field_order.push("ell")
             structure_hash["fields"]["phlote_identification"         ] = {"data_type"=>"bool", "file_field"=>"phlote_identification"         } if field_order.push("phlote_identification")
