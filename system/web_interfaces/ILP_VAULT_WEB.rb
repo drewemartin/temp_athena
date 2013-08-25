@@ -78,9 +78,7 @@ end
             [
                 "Related Types",
                 "Name",
-                "General Info",
-                "Fields to Include",
-                "Grades to Include"
+                "Setting"
             ]
             
         )
@@ -161,7 +159,7 @@ end
                 :footers        => false,
                 :head_section   => false,
                 :title          => false,
-                :caption        => false
+                :caption        => "Eligible Grades"
             )
             
             table_array.push(
@@ -169,9 +167,8 @@ end
                 [
                     $tools.button_load_tab(2, "Types", pid),
                     record.fields["name"                    ].web.text,
-                    "#{this_description}#{this_manual}#{this_max_entries}#{this_pdf_order}#{this_display}",
-                    include_fields_table,
-                    grades_included
+                    "#{grades_included}#{this_description}<div id='group_container'>#{this_manual}#{this_max_entries}#{this_pdf_order}#{this_display}</div>#{include_fields_table}"
+                    
                 ]
                 
             )
@@ -489,6 +486,17 @@ end
         
         output = "<style>
         
+        #eligible_grades_container > table {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #related_classes_container{
+            float: right;
+        }
+        #group_container{
+            display: inline-block;
+            width:295px;
+        }
         div.ilp_entry_type_header{
             margin-bottom:10px;
             font-size: 1.5em;
@@ -498,20 +506,20 @@ end
         div.ILP_ENTRY_TYPE__default_solution        textarea{ clear: left; display: block; width: 350px; height: 100px; resize: none; overflow-y: scroll;}
         
         div.ILP_ENTRY_CATEGORY__name                        {margin-top: 2px; margin-bottom: 2px;}
-        div.ILP_ENTRY_CATEGORY__description                 {margin-top: 2px; margin-bottom: 2px; width: 415px;}
-        div.ILP_ENTRY_CATEGORY__manual                      {margin-top: 2px; margin-bottom: 2px; float: left; width: 170px;}
-        div.ILP_ENTRY_CATEGORY__pdf_order                   {margin-top: 2px; margin-bottom: 2px; float: left; width: 170px;}
-        div.ILP_ENTRY_CATEGORY__max_entries                 {margin-top: 2px; margin-bottom: 2px; float: left;}
-        div.ILP_ENTRY_CATEGORY__display_type                {margin-top: 2px; margin-bottom: 2px; float: left;}
+        div.ILP_ENTRY_CATEGORY__description                 {margin-top: 2px; margin-bottom: 2px; width: 100%;}
+        div.ILP_ENTRY_CATEGORY__manual                      {margin-top: 2px; margin-bottom: 2px;width: 290px;}
+        div.ILP_ENTRY_CATEGORY__pdf_order                   {margin-top: 2px; margin-bottom: 2px;width: 290px;}
+        div.ILP_ENTRY_CATEGORY__max_entries                 {margin-top: 2px; margin-bottom: 2px;width: 290px;}
+        div.ILP_ENTRY_CATEGORY__display_type                {margin-top: 2px; margin-bottom: 2px;width: 290px;}
         
-        div.ILP_ENTRY_CATEGORY__name                        label{font-size: 1.2em;}
-        div.ILP_ENTRY_CATEGORY__manual                      label{font-size: 1.2em;}
-        div.ILP_ENTRY_CATEGORY__max_entries                 label{font-size: 1.2em;}
+        div.ILP_ENTRY_CATEGORY__name                        label{font-size: 1.2em; }
         div.ILP_ENTRY_CATEGORY__description                 label{font-size: 1.2em; margin-bottom: 3px; }
-        div.ILP_ENTRY_CATEGORY__display_type                label{font-size: 1.2em;}
-        div.ILP_ENTRY_CATEGORY__pdf_order                   label{font-size: 1.2em;}
+        div.ILP_ENTRY_CATEGORY__manual                      label{font-size: 1.2em; margin-right:26px;}
+        div.ILP_ENTRY_CATEGORY__max_entries                 label{font-size: 1.2em; margin-right:36px;}
+        div.ILP_ENTRY_CATEGORY__display_type                label{font-size: 1.2em; margin-right:29px;}
+        div.ILP_ENTRY_CATEGORY__pdf_order                   label{font-size: 1.2em; margin-right:-2px;}
         
-        div.ILP_ENTRY_CATEGORY__description  textarea{display: block; width: 410px; height: 100px; resize: none; overflow-y: scroll;}
+        div.ILP_ENTRY_CATEGORY__description  textarea{display: block; width: 99.5%; height: 100px; resize: none; overflow-y: scroll;}
         
         div.ILP_ENTRY_CATEGORY__interface_solution              {text-align: center;}
         div.ILP_ENTRY_CATEGORY__interface_completed             {text-align: center;}
