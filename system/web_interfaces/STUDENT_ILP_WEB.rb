@@ -682,19 +682,35 @@ end
                 
                 fields_displayed.each{|field_name|
                  
+                    type_id = ilp.fields["ilp_entry_type_id"].value
+                    disabled = !(
+                        $tables.attach("ILP_ENTRY_CATEGORY" ).by_primary_id(category_id ).fields["manual"].is_true? &&
+                        $tables.attach("ILP_ENTRY_TYPE"     ).by_primary_id(type_id     ).fields["manual"].is_true?            
+                    )
+                    
                     ilp_field_name = field_name.gsub("interface_","")
                     if ilp_field_name.match(/ilp_entry_category_id/)
+                        
                         ilp_value = $tables.attach("ILP_ENTRY_CATEGORY" ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                        
                     elsif ilp_field_name.match(/ilp_entry_type_id/)
+                        
                         ilp_value = $tables.attach("ILP_ENTRY_TYPE"     ).field_by_pid("name", ilp.fields[ilp_field_name].value).to_user
+                        
+                    elsif ilp_field_name.match(/progress/)
+                        
+                        ilp_value = ilp.fields[ilp_field_name].web.select(:disabled=>disabled, :dd_choices=>progress_dd)
+                        
+                    elsif ilp_field_name.match(/goal_type/)
+                        
+                        ilp_value = ilp.fields[ilp_field_name].web.select(:disabled=>disabled, :dd_choices=>goal_type_dd)
+                        
                     else
-                        type_id = ilp.fields["ilp_entry_type_id"].value
-                        disabled = !(
-                            $tables.attach("ILP_ENTRY_CATEGORY" ).by_primary_id(category_id ).fields["manual"].is_true? &&
-                            $tables.attach("ILP_ENTRY_TYPE"     ).by_primary_id(type_id     ).fields["manual"].is_true?            
-                        )
+                        
                         ilp_value = ilp.fields[ilp_field_name].web.default(:disabled=>disabled)
+                        
                     end
+                    
                     this_row.push(ilp_value)   
                     
                 }
