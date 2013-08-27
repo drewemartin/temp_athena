@@ -31,10 +31,25 @@ end
     end
     
     def current_school_year
+        
         if !structure.has_key?(:current_school_year)
-            structure[:current_school_year] = $tables.attach("School_Year_Detail").current.fields["school_year"]
+            
+            if !(sy = $tables.attach("School_Year_Detail").current)
+                
+                sy = $tables.attach("School_Year_Detail").new_row
+                sy.fields["current"].value = true
+                sy.save
+                
+                sy = $tables.attach("School_Year_Detail").current
+                
+            end
+            
+            structure[:current_school_year] = sy.fields["school_year"]
+            
         end
+        
         structure[:current_school_year]
+        
     end
     
     def current_school_year_start
