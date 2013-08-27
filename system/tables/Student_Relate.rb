@@ -353,7 +353,8 @@ end
         if @existing_records
             @existing_records.each{|record_string|
                 
-                results = $db.get_data(select_sql.gsub(placeholder, "#{record_string}"))
+                results = $db.get_data(select_sql.gsub(placeholder, "#{Mysql.quote(record_string)}"))
+                
                 if results
                     results.each{|result|
                         primary_id  = result[0]
