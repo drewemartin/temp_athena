@@ -32,12 +32,14 @@ end
     end
     
     def excused_absences
-        codes = $tables.attach("Attendance_Master").attendance_codes("excused")
-        days  = Hash.new
-        enrolled_days.each_pair{|field_name, details|
-            days[field_name] = details if codes.include?(details.value)
-        } if enrolled_days
-        return days
+        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'excused'")
+        codes_arr = Array.new
+        code_fields.each do |code|
+            codes_arr.push(code.value)
+        end
+        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        
+        return pids ? pids.length : 0
     end
     
     def exists?
@@ -45,18 +47,18 @@ end
     end
     
     def unexcused_absences
-        codes = $tables.attach("Attendance_Master").attendance_codes("unexcused")
-        days  = Hash.new
-        if x=enrolled_days
-            x.each_pair{|field_name, details|
-                days[field_name] = details if codes.include?(details.value)
-            }
+        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'")
+        codes_arr = Array.new
+        code_fields.each do |code|
+            codes_arr.push(code.value)
         end
-        return days
+        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        
+        return pids ? pids.length : 0
     end
     
     def unexcused_absences_by_range(start_date, end_date)
-        codes = $tables.attach("Attendance_Master").attendance_codes("unexcused")
+        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'")
         unexcused_days   = Hash.new
         enr_days         = enrolled_days_by_range(start_date, end_date)
         if enr_days
@@ -68,7 +70,7 @@ end
     end
     
     def unexcused_absences_for_previous_x(x_schooldays)
-        codes = $tables.attach("Attendance_Master").attendance_codes("unexcused")
+        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'")
         days = Hash.new
         record = record_for_previous_x(x_schooldays)
         if record
@@ -82,23 +84,19 @@ end
     end
     
     def attended_days
-        codes = $tables.attach("Attendance_Master").attendance_codes("present")
-        if !structure.has_key?("attended_days")
-            attended_days = Hash.new
-            if enrolled_days
-                enrolled_days.each_pair{|field_name, details|
-                    attended_days[field_name] = details if codes.include?(details.value)
-                }
-            else
-                #puts "#{__FILE__} #{__LINE__} SID: #{@stu.studentid}"
-            end
-            structure["attended_days"] = attended_days
+        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'")
+        codes_arr = Array.new
+        code_fields.each do |code|
+            codes_arr.push(code.value)
         end
-        structure["attended_days"]
+        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        
+        return pids ? pids.length : 0
+        
     end
     
     def attended_days_by_range(start_date, end_date)
-        codes = $tables.attach("Attendance_Master").attendance_codes("present")
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'")
         att_days = Hash.new
         enr_days = enrolled_days_by_range(start_date, end_date)
         if enr_days
@@ -110,7 +108,7 @@ end
     end
     
     def attended_days_for_previous_x(x_schooldays)
-        codes = $tables.attach("Attendance_Master").attendance_codes("present")
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'")
         att_days = Hash.new
         enr_days = enrolled_days_for_previous_x(x_schooldays)
         enr_days.each_pair{|field_name, details|
@@ -120,17 +118,11 @@ end
     end
     
     def enrolled_days
-        enrolled_days = Hash.new
-        if record
-            record.fields.each_pair{|field_name, details|
-                unless field_name == "student_id" || field_name == "primary_id" || field_name == "created_by" || field_name == "created_date"
-                    enrolled_days[field_name] = details if !details.value.nil?
-                end 
-            }
-            return enrolled_days
-        else
-            return false
-        end
+        
+        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IS NOT NULL")
+        
+        return pids ? pids.length : 0
+        
     end
 
     def enrolled_days_by_range(start_date, end_date)
@@ -216,7 +208,7 @@ end
     end
     
     def record
-        return $tables.attach("Attendance_Master").by_studentid_old(@stu.studentid)
+        return $tables.attach("Student_Attendance_Master").by_studentid_old(@stu.studentid)
     end
     
     def record_by_range(start_date, end_date)

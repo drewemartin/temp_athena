@@ -1027,15 +1027,10 @@ end
         
         code_sql_string = String.new
         
-        codes = $db.get_data_single(
-            "SELECT
-                code
-            FROM attendance_codes
-            WHERE code_type = '#{code_type}'"
-        )
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = '#{code_type}'")
         
         codes.each{|code|
-            code_sql_string << (code_sql_string.empty? ? "official_code = '#{code}'" : " OR official_code = '#{code}'")
+            code_sql_string << (code_sql_string.empty? ? "official_code = '#{code.value}'" : " OR official_code = '#{code.value}'")
         }
         
         return code_sql_string
