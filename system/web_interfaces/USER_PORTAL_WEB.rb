@@ -187,7 +187,7 @@ end
         working_list_pages = [
             
             "TEAM_MEMBER_RECORD_WEB",
-            "STUDENT_ATTENDANCE_AP_WEB",
+            #"STUDENT_ATTENDANCE_AP_WEB",
             "TEST_EVENT_SITE_WEB",
             #"WITHDRAW_REQUESTS_WEB",
             
