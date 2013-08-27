@@ -228,15 +228,19 @@ end
         @search_options.each_pair{|k, v|
             send(k, v) if respond_to?(k, true)
         }
+        
+        select_table = "#{$tables.attach("STUDENT"          ).data_base}.student"
+        joined_table = "#{$tables.attach("STUDENT_RELATE"   ).data_base}.student_relate"
+        
         select_sql =
         "SELECT
-            student.student_id
-        FROM student 
-        LEFT JOIN student_relate ON student.student_id = #{table_name}.studentid
+            #{$tables.attach("STUDENT").data_base}.student.student_id
+        FROM #{$tables.attach("STUDENT").data_base}.student 
+        LEFT JOIN #{joined_table} ON #{select_table}.student_id = #{joined_table}.studentid
         #{@search_options[:join_addon]}
         WHERE TRUE
         #{@search_options[:where_clause_addon]}
-        GROUP BY student.studentlastname, student.studentfirstname, student.student_id
+        GROUP BY #{select_table}.studentlastname, #{select_table}.studentfirstname, #{select_table}.student_id
         #{@search_options[:order_by_addon]}"
         
         $db.get_data_single(select_sql)
@@ -349,7 +353,8 @@ end
         if @existing_records
             @existing_records.each{|record_string|
                 
-                results = $db.get_data(select_sql.gsub(placeholder, "#{record_string}"))
+                results = $db.get_data(select_sql.gsub(placeholder, "#{Mysql.quote(record_string)}"))
+                
                 if results
                     results.each{|result|
                         primary_id  = result[0]
@@ -651,6 +656,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "student_relate",
                 "file_name"         => "student_relate.csv",
                 "file_location"     => "student_relate",
@@ -688,44 +694,51 @@ end
 def x______________SID_GROUP_OPTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
+    
+    def student_id
+        return "#{$tables.attach('STUDENT').data_base}.student.student_id"
+    end
+    
     def academic_progress_course_name(arg)
         
-        join_addon = " LEFT JOIN student_academic_progress ON student_academic_progress.student_id = student.student_id "
+        joined_table = "#{$tables.attach("STUDENT_ACADEMIC_PROGRESS").data_base}.student_academic_progress"
+        join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id"
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
         where_addon =
-            "  AND student_academic_progress.course_name REGEXP '#{arg}'  "
+            "  AND #{joined_table}.course_name REGEXP '#{arg}'  "
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
     end
     
     def aims_exempt(arg)
         
+        joined_table = "#{$tables.attach("STUDENT_ASSESSMENT").data_base}.student_assessment"
         join_addon =
-            " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
         where_addon =
-            " AND ( student_assessment.aims_exempt IS NOT TRUE ) "  if arg.to_s.match(/false/)
+            " AND ( #{joined_table}.aims_exempt IS NOT TRUE ) "  if arg.to_s.match(/false/)
         where_addon =
-            " AND ( student_assessment.aims_exempt IS TRUE ) "      if arg.to_s.match(/true/)
+            " AND ( #{joined_table}.aims_exempt IS TRUE ) "      if arg.to_s.match(/true/)
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
     end
 
     def aims_growth_overall(arg)
         
-        join_addon = " LEFT JOIN student_aims_growth ON student_aims_growth.student_id = student.student_id "
+        joined_table = "#{$tables.attach("STUDENT_AIMS_GROWTH").data_base}.student_aims_growth"
+        join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
-        where_addon = "  AND student_aims_growth.#{arg}_growth_overall >= .5 "
+        where_addon = "  AND #{joined_table}.#{arg}_growth_overall >= .5 "
         
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
@@ -733,12 +746,13 @@ end
     
     def aims_growth_overall_eligible(arg)
         
-        join_addon = " LEFT JOIN student_aims_growth ON student_aims_growth.student_id = student.student_id "
+        joined_table = "#{$tables.attach("STUDENT_AIMS_GROWTH").data_base}.student_aims_growth"
+        join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
-        where_addon = "  AND student_aims_growth.#{arg}_growth_overall IS NOT NULL "
+        where_addon = "  AND #{joined_table}.#{arg}_growth_overall IS NOT NULL "
         
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
@@ -746,15 +760,16 @@ end
     
     def ap_attendance_dates(arg)
         
-        join_addon = " LEFT JOIN student_attendance_ap ON student_attendance_ap.student_id = student.student_id "
+        joined_table = "#{$tables.attach("STUDENT_ATTENDANCE_AP").data_base}.student_attendance_ap"
+        join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
         where_addon =
-            "  AND student_attendance_ap.date REGEXP '#{arg}'  "
+            "  AND #{joined_table}.date REGEXP '#{arg}'  "
         where_addon <<
-            " AND student_attendance_ap.staff_id = '#{@search_options[:staff_id]}'" if @search_options[:staff_id]
+            " AND #{joined_table}.staff_id = '#{@search_options[:staff_id]}'" if @search_options[:staff_id]
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
     end
@@ -762,13 +777,14 @@ end
     def active(arg)
         
         if arg == true
+            joined_table = "#{$tables.attach("K12_OMNIBUS").data_base}.k12_omnibus"
             join_addon =
-                " LEFT JOIN k12_omnibus ON k12_omnibus.student_id = student.student_id "
+                " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
             where_addon =
-                " AND k12_omnibus.student_id IS NOT NULL "
+                " AND #{joined_table}.student_id IS NOT NULL "
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         else
             raise("#{arg} is not a valid option")
@@ -788,25 +804,28 @@ end
     end
     
     def annual_assessment_eligible(arg)
+        
+        joined_table = "#{$tables.attach("ANNUAL_ASSESSMENT_GROWTH").data_base}.annual_assessment_growth"
+        
         if arg == :math
-            join_addon = " LEFT JOIN annual_assessment_growth ON annual_assessment_growth.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
             
             where_addon =
-                " AND annual_assessment_growth.student_id IS NOT NULL
-                AND annual_assessment_growth.math IS NOT NULL "
+                " AND #{joined_table}.student_id IS NOT NULL
+                AND #{joined_table}.math IS NOT NULL "
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         elsif arg == :reading
-            join_addon = " LEFT JOIN annual_assessment_growth ON annual_assessment_growth.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{joined_table} ON #{joined_table}.student_id = student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
             
             where_addon =
-                " AND annual_assessment_growth.student_id IS NOT NULL
-                AND annual_assessment_growth.reading IS NOT NULL "
+                " AND #{joined_table}.student_id IS NOT NULL
+                AND #{joined_table}.reading IS NOT NULL "
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         else
             raise("#{arg} is not a valid option")
@@ -1449,9 +1468,14 @@ end
     end
     
     def student_relate_active(arg)
-        where_addon = " AND student_relate.active IS TRUE "  if arg == true
-        where_addon = " AND student_relate.active IS FALSE " if arg == false
-        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon 
+        
+        joined_table = "#{$tables.attach("STUDENT_RELATE").data_base}.student_relate"
+        
+        where_addon = " AND #{joined_table}.active IS TRUE "  if arg == true
+        where_addon = " AND #{joined_table}.active IS FALSE " if arg == false
+        
+        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+        
     end
     
     def student_id(arg)
@@ -1557,7 +1581,9 @@ end
     
     def team_id(arg)
         
-        where_addon = " AND student_relate.team_id = '#{arg}' "
+        joined_table = "#{$tables.attach("STUDENT_RELATE").data_base}.student_relate"
+        
+        where_addon = " AND #{joined_table}.team_id = '#{arg}' "
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         
     end

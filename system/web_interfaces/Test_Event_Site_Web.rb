@@ -245,11 +245,15 @@ end
         user_sams_ids_str = $team_member.sams_ids.field_values("sams_id", where_addon = nil)
         user_sams_ids_str = user_sams_ids_str ? user_sams_ids_str.join("','") : ""
         
-        sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
+        assigned_sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
             field_name      = "test_event_site_id",
             where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
             options         = {:value_only=>true}
         )
+        
+        sites = $tables.attach("TEST_EVENT_SITES").primary_ids("WHERE all_staff IS TRUE")
+        
+        sites = (assigned_sites&&sites ? assigned_sites.concat(sites) : assigned_sites||sites)
         
         if sites
             
@@ -348,6 +352,17 @@ end
             where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
             options         = {:value_only=>true}
         )
+        
+        assigned_sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
+            field_name      = "test_event_site_id",
+            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
+            options         = {:value_only=>true}
+        )
+        
+        sites = $tables.attach("TEST_EVENT_SITES").primary_ids("WHERE all_staff IS TRUE")
+        
+        pids = (assigned_sites&&sites ? assigned_sites.concat(sites) : assigned_sites||sites)
+        
         pids.each{|pid|
             
             test_event_site_id      = pid #$tables.attach("TEST_EVENT_SITE_STAFF").by_primary_id(pid).fields["test_event_site_id"].value
@@ -376,18 +391,18 @@ end
             
             row.push(test_event_record.fields["name"                    ].web.label()    )
             
-            row.push(test_site_record.fields["region"                   ].web.label()    )
-            row.push(test_site_record.fields["facility_name"            ].web.label()    )
-            row.push(test_site_record.fields["address"                  ].web.label()    )
-            row.push(test_site_record.fields["city"                     ].web.label()    )
-            row.push(test_site_record.fields["state"                    ].web.label()    )
-            row.push(test_site_record.fields["zip_code"                 ].web.label()    )
-            row.push(test_site_record.fields["site_url"                 ].web.label()    )
-            row.push(test_site_record.fields["directions"               ].web.label()    )
-            row.push(test_site_record.fields["contact_name"             ].web.label()    )
-            row.push(test_site_record.fields["contact_phone"            ].web.label()    )
-            row.push(test_site_record.fields["contact_email"            ].web.label()    )
-            row.push(test_site_record.fields["available_hours"          ].web.label()    )
+            row.push(test_site_record ? test_site_record.fields["region"                   ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["facility_name"            ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["address"                  ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["city"                     ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["state"                    ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["zip_code"                 ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["site_url"                 ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["directions"               ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["contact_name"             ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["contact_phone"            ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["contact_email"            ].web.label() : "" )
+            row.push(test_site_record ? test_site_record.fields["available_hours"          ].web.label() : "" )
             
             row.push(test_event_site_record.fields["start_date"         ].web.label()    ) 
             row.push(test_event_site_record.fields["end_date"           ].web.label()    ) 

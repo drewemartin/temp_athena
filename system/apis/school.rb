@@ -143,15 +143,17 @@ end
     
     def school_years_dd()
         output = []
-        current_sy = $school.current_school_year.value
-        temp = current_sy.split("-")
-        max_year = temp[1].to_i
-        i = max_year
-        while i > max_year-20
-            output.push({:name=>"#{i-1}-#{i}", :value=>"#{i-1}-#{i}"})
-            i-=1
+        if current_sy = $tables.attach("School_Year_Detail").current
+            current_sy = current_sy.fields["school_year"]
+            temp = current_sy.split("-")
+            max_year = temp[1].to_i
+            i = max_year
+            while i > max_year-20
+                output.push({:name=>"#{i-1}-#{i}", :value=>"#{i-1}-#{i}"})
+                i-=1
+            end
+            return output
         end
-        return output
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

@@ -1,7 +1,7 @@
 #!/usr/local/bin/ruby
 #require "#{File.dirname(__FILE__).gsub("data_processing","base")}/base"
 
-class TEST_EVENTS_PROCESSING < Base
+class TEST_EVENTS_PROCESSING #< Base
 
     def initialize(sid = nil, date = nil)
       

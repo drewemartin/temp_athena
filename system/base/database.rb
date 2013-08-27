@@ -90,12 +90,12 @@ end
     return data
   end
 
-  def get_field(table_name, primary_id, field)
+  def get_field(table_name, primary_id, field, selected_db)
     select_sql =
       "SELECT `#{field}`
       FROM `#{table_name}`
       WHERE `primary_id` = #{primary_id}"
-    results = query(select_sql)
+    results = query(select_sql, selected_db)
     if results
       field_value = nil
       results.each{|value| field_value = value[0]}
@@ -106,64 +106,80 @@ end
   end
   
   def insert(sql, selected_db = nil)
-    begin
-      @connection.select_db(selected_db     ) if selected_db
-      results = @connection.query(sql)
-      pid     = @connection.query("SELECT LAST_INSERT_ID();").fetch_row[0]
-      @connection.select_db($config.db_name ) if selected_db
-      return pid
-    rescue Mysql::Error => e
-      content = "SQL QUERY FAILED\n"
-      content << "Error code:       #{e.errno}\n"
-      content << "Error message:    #{e.error}\n"
-      content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
-      content << "Statement Attempted: \n#{sql}\n"
-      content << "Caller:           #{caller[0]}\n"
-      content << "BACKTRACE:        #{e.backtrace}"
-      if e.errno == 2006
-        new_connection
-        retry
-      else
-        if ENV["COMPUTERNAME"] == "ATHENA"
-          $base.system_notification("SQL QUERY FAILED!",content)
-        else
-          $base.system_log(content)
-        end
-      end
-      raise e
-    end
+    query(sql, selected_db)
+    return @last_insert.fetch_row[0]
   end
   
   def query(sql, selected_db = nil)
+    tries = 0
     begin
       
-      @connection.select_db(selected_db     ) if selected_db
-      results = @connection.query(sql)
-      @connection.select_db($config.db_name ) if selected_db
+      m = Mysql::new($config.db_domain, $config.db_user, $config.db_pass)
+      m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless $config.db_name == "information_schema"
+      m.select_db(selected_db || $config.db_name)
+      
+      results         = m.query(sql)
+      
+      @last_insert    = m.query("SELECT LAST_INSERT_ID();")
+      
+      m.kill(m.thread_id)
       
       return results
       
     rescue Mysql::Error => e
-      content = "SQL QUERY FAILED\n"
-      content << "Error code:       #{e.errno}\n"
-      content << "Error message:    #{e.error}\n"
-      content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
-      content << "Statement Attempted: \n#{sql}\n"
-      content << "Caller:             #{caller[0]}\n"
-      content << "BACKTRACE:        #{e.backtrace}"
-      if e.errno == 2006
-        new_connection
+      
+      if (e.errno == 2006 || e.errno == 2003) && tries < 5
+        tries+=1
         retry
       else
         if ENV["COMPUTERNAME"] == "ATHENA"
           $base.system_notification("SQL QUERY FAILED!",content)
         else
+          content = "SQL QUERY FAILED\n"
+          content << "Error code:       #{e.errno}\n"
+          content << "Error message:    #{e.error}\n"
+          content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
+          content << "Statement Attempted: \n#{sql}\n"
+          content << "Caller:             #{caller[0]}\n"
+          content << "BACKTRACE:        #{e.backtrace}"
+          raise e
           $base.system_log(content)
         end
       end
-      raise e
+      
     end
   end
+
+  #def query(sql, selected_db = nil)
+  #  begin
+  #    
+  #    @connection.select_db(selected_db     ) if selected_db
+  #    results = @connection.query(sql)
+  #    @connection.select_db($config.db_name ) if selected_db
+  #    
+  #    return results
+  #    
+  #  rescue Mysql::Error => e
+  #    content = "SQL QUERY FAILED\n"
+  #    content << "Error code:       #{e.errno}\n"
+  #    content << "Error message:    #{e.error}\n"
+  #    content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
+  #    content << "Statement Attempted: \n#{sql}\n"
+  #    content << "Caller:             #{caller[0]}\n"
+  #    content << "BACKTRACE:        #{e.backtrace}"
+  #    if e.errno == 2006
+  #      new_connection
+  #      retry
+  #    else
+  #      if ENV["COMPUTERNAME"] == "ATHENA"
+  #        $base.system_notification("SQL QUERY FAILED!",content)
+  #      else
+  #        $base.system_log(content)
+  #      end
+  #    end
+  #    raise e
+  #  end
+  #end
   
   #def select_db(arg)
   #  @connection.select_db(arg)

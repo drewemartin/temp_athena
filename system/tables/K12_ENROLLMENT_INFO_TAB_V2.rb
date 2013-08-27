@@ -50,6 +50,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_k12",
                 "name"              => "k12_enrollment_info_tab_v2",
                 "file_name"         => "agora_eitr_version2.csv",
                 "file_location"     => "k12_reports",

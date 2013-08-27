@@ -140,6 +140,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "document_type",
                 "file_name"         => "document_type.csv",
                 "file_location"     => "document_type",

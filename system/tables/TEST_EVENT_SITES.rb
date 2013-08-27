@@ -113,6 +113,7 @@ end
             structure_hash["fields"]["special_notes"] = {"data_type"=>"text", "file_field"=>"special_notes" } if field_order.push("special_notes")
             structure_hash["fields"]["start_time"   ] = {"data_type"=>"text", "file_field"=>"start_time"    } if field_order.push("start_time")
             structure_hash["fields"]["end_time"     ] = {"data_type"=>"text", "file_field"=>"end_time"      } if field_order.push("end_time")
+            structure_hash["fields"]["all_staff"    ] = {"data_type"=>"bool", "file_field"=>"all_staff"     } if field_order.push("all_staff")
         structure_hash["field_order"] = field_order
         return structure_hash
     end

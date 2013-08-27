@@ -112,7 +112,7 @@ end
                     
                     f = record.fields
                     
-                    disabled = $user == f["created_by"].value ? false : true
+                    disabled = $kit.params[:user_id] == f["created_by"].value ? false : true
                     
                     row = Array.new
                     ########################################################################

@@ -37,6 +37,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "kmail_keywords",
                 "file_name"         => "kmail_keywords.csv",
                 "file_location"     => "kmail_keywords",

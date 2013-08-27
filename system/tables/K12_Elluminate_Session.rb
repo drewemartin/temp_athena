@@ -38,6 +38,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_k12",
                 "name"              => "k12_elluminate_session",
                 "file_name"         => "agora_elluminate_session.csv",
                 "file_location"     => "k12_reports",
