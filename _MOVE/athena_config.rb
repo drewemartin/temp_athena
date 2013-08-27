@@ -10,17 +10,6 @@ class Athena_Config
         
         self.school_name = "agora"
         
-        if school_year
-            self.school_year = school_year
-        else
-            m = DateTime.now.strftime("%m").to_i
-            if m >= 9 && m <= 12
-               self.school_year = "#{DateTime.now.strftime("%Y")}#{DateTime.now.strftime("%Y").to_i+1}"
-            else
-               self.school_year = "#{DateTime.now.strftime("%Y").to_i-1}#{DateTime.now.strftime("%Y")}" 
-            end
-        end
-        
         $sys_admin_email    = "jhalverson@agora.org"
         self.offsite_root   = "ftp.athena-sis.com"
         
