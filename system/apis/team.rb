@@ -217,12 +217,7 @@ end
     end
 
     def directors
-        $db.get_data_single(
-          "SELECT
-            primary_id
-          FROM team
-          WHERE employee_type = 'Director'"
-        )
+        $tables.attach("team").primary_ids("WHERE employee_type = 'Director'")
     end
    
     def family_coach_program_support
@@ -240,12 +235,7 @@ end
     end
     
     def principals
-        $db.get_data_single(
-          "SELECT
-            primary_id
-          FROM team
-          WHERE employee_type = 'Principal'"
-        )
+        $tables.attach("team").primary_ids("WHERE employee_type = 'Principal'")
     end
 
     def related_to_students
