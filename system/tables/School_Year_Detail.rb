@@ -71,9 +71,7 @@ end
                 "file_location"     => "school_year_detail",
                 "source_address"    => nil,
                 "source_type"       => nil,
-                "download_times"    => nil,
-                "trigger_events"    => nil,
-                "audit_table"       => false
+                "audit"             => true
             }
             @table_structure = set_fields(structure_hash)
         end

@@ -5,7 +5,8 @@ class TEAM_MEMBER_DETAIL_WEB
     #---------------------------------------------------------------------------
     def initialize()
         
-        @director   = $team.directors.include?($team_member.primary_id.value)
+        directors   = $team.directors || []
+        @director   = directors.include?($team_member.primary_id.value)
         @supervisor = ($team_member.primary_id.value == $focus_team_member.supervisor_team_id.value)
         
     end

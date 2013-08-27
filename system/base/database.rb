@@ -5,31 +5,9 @@ class Database
   #---------------------------------------------------------------------------
   def initialize
     super()
-    @connection = nil
-    new_connection
+    
   end
   #---------------------------------------------------------------------------
-
-#FNORD - MAKING THIS PUBLIC UNTIL I FIND A WAY TO ALLOW SYSTEM CONFIG TO ACCESS THIS AS A PRIVATE METHOD
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#private
-#def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
-#end
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-  def new_connection
-    begin
-      m = Mysql::new($config.db_domain, $config.db_user, $config.db_pass)
-      m.query("CREATE DATABASE IF NOT EXISTS `#{$config.db_name}`") 
-      m.select_db($config.db_name)
-      @connection = m
-    rescue Mysql::Error => e
-      puts "Error code: #{e.errno}"
-      puts "Error message: #{e.error}"
-      puts "Error SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")
-      return false
-    end
-  end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 public
@@ -149,41 +127,6 @@ end
       
     end
   end
-
-  #def query(sql, selected_db = nil)
-  #  begin
-  #    
-  #    @connection.select_db(selected_db     ) if selected_db
-  #    results = @connection.query(sql)
-  #    @connection.select_db($config.db_name ) if selected_db
-  #    
-  #    return results
-  #    
-  #  rescue Mysql::Error => e
-  #    content = "SQL QUERY FAILED\n"
-  #    content << "Error code:       #{e.errno}\n"
-  #    content << "Error message:    #{e.error}\n"
-  #    content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
-  #    content << "Statement Attempted: \n#{sql}\n"
-  #    content << "Caller:             #{caller[0]}\n"
-  #    content << "BACKTRACE:        #{e.backtrace}"
-  #    if e.errno == 2006
-  #      new_connection
-  #      retry
-  #    else
-  #      if ENV["COMPUTERNAME"] == "ATHENA"
-  #        $base.system_notification("SQL QUERY FAILED!",content)
-  #      else
-  #        $base.system_log(content)
-  #      end
-  #    end
-  #    raise e
-  #  end
-  #end
-  
-  #def select_db(arg)
-  #  @connection.select_db(arg)
-  #end
   
   def where_clause(params, multi_operator = "AND") #accepts an array of 'WHERE_PARAM' structures.
     where_clause = params.empty? ? "" : "WHERE "

@@ -63,7 +63,7 @@ class Base
     $students   = Students.new
     $team       = Team.new
     
-    $config.school_year = school_year if school_year
+    set_school_year(school_year)
     
     Struct.new( "NAME_DESC_VALUE",
       :NAME,            
@@ -1121,6 +1121,34 @@ def x______________STRUCTURE
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+  
+  def set_school_year(school_year)
+    
+    if school_year
+      
+      $config.school_year = school_year
+      
+    else
+      
+      if !$school.current_school_year.value.nil?
+        
+        $config.school_year = $school.current_school_year.value
+        
+      else
+        
+        m = DateTime.now.strftime("%m").to_i
+        if m >= 9 && m <= 12
+          $config.school_year = "#{DateTime.now.strftime("%Y")}#{DateTime.now.strftime("%Y").to_i+1}"
+        else
+          $config.school_year = "#{DateTime.now.strftime("%Y").to_i-1}#{DateTime.now.strftime("%Y")}" 
+        end
+        
+      end
+      
+    end
+    
+  end
+  
   def set_team_member
     
     if $kit

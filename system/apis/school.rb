@@ -34,13 +34,13 @@ end
         
         if !structure.has_key?(:current_school_year)
             
-            if !(sy = $tables.attach("School_Year_Detail").current)
+            if !(sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE"))
                 
                 sy = $tables.attach("School_Year_Detail").new_row
                 sy.fields["current"].value = true
                 sy.save
                 
-                sy = $tables.attach("School_Year_Detail").current
+                sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE")
                 
             end
             
