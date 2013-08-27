@@ -34,6 +34,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "sapphire_active",
                 "file_name"         => "sapphire_active.csv",
                 "file_location"     => "sapphire_active",

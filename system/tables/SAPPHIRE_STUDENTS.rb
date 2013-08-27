@@ -235,6 +235,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "sapphire_students",
                 "file_name"         => "sapphire_students.csv",
                 "file_location"     => "sapphire_students",

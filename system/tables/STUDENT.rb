@@ -236,6 +236,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "student",
                 "file_name"         => "student.csv",
                 "file_location"     => "student",
@@ -347,8 +348,7 @@ end
             structure_hash["fields"]["fundmodelcode"                    ]       = {"data_type"=>"text",         "file_field"=>"fundmodelcode"                    }       if field_order.push("fundmodelcode")
             structure_hash["fields"]["fte"                              ]       = {"data_type"=>"text",         "file_field"=>"fte"                              }       if field_order.push("fte")
             structure_hash["fields"]["cohort_year"                      ]       = {"data_type"=>"int",          "file_field"=>"cohort_year"                      }       if field_order.push("cohort_year")
-            structure_hash["fields"]["schoolenrolldate"                 ]       = {"data_type"=>"date",         "file_field"=>"schoolenrolldate"                 }       if field_order.push("schoolenrolldate")
-                                                                                                                              
+            structure_hash["fields"]["schoolenrolldate"                 ]       = {"data_type"=>"date",         "file_field"=>"schoolenrolldate"                 }       if field_order.push("schoolenrolldate")                                                                                                                  
             structure_hash["fields"]["withdrawdate"                     ]       = {"data_type"=>"date",         "file_field"=>"withdrawdate"                     }       if field_order.push("withdrawdate")
             structure_hash["fields"]["schoolwithdrawdate"               ]       = {"data_type"=>"date",         "file_field"=>"schoolwithdrawdate"               }       if field_order.push("schoolwithdrawdate")
             structure_hash["fields"]["transferring_to"                  ]       = {"data_type"=>"text",         "file_field"=>"transferring_to"                  }       if field_order.push("transferring_to")
