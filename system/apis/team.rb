@@ -133,7 +133,9 @@ end
                 
                 "SELECT team.primary_id
                 FROM team
-                #{where_clause}"
+                #{where_clause}
+                GROUP BY team.primary_id",
+                $tables.attach("TEAM").data_base
                 
             )
             

@@ -96,7 +96,7 @@ end
                 "INSERT INTO #{table.table_name}
                 (#{field_str}#{tstamp_mod})
                 VALUES(#{values_str}#{tstamp_mod_value})"
-            self.primary_id = $db.insert(insert_sql)
+            self.primary_id = $db.insert(insert_sql, table.data_base)
             table.find_and_trigger_event(event_type = :after_insert, args = self)
             validate
             
@@ -111,7 +111,7 @@ end
     end
     
     def record_exists?
-        $db.get_data_single("SELECT primary_id FROM #{table.table_name} WHERE primary_id = '#{fields["primary_id"].value}'")
+        $db.get_data_single("SELECT primary_id FROM #{table.table_name} WHERE primary_id = '#{fields["primary_id"].value}'", table.data_base)
     end
     
     def save(audit_trail = true)
@@ -217,11 +217,11 @@ end
             "INSERT INTO zz_#{table.name}
             (#{table_fields}#{tstamp_mod})
             VALUES(#{table_values}#{tstamp_mod_value})"
-        return $db.insert(insert_sql)
+        return $db.insert(insert_sql, table.data_base)
     end
     
     def get_field(field)
-        $db.get_field(table.name, fields["primary_id"].value, field)
+        $db.get_field(table.name, fields["primary_id"].value, field, table.data_base)
     end
     
     def set_fields()
@@ -258,7 +258,7 @@ end
                         "UPDATE `#{table.name}`
                         SET `#{field_name}` = #{new_value}
                         WHERE `primary_id` = '#{fields["primary_id"].value}'"
-                    $db.query(update_sql)
+                    $db.query(update_sql, table.data_base)
                     
                     table.find_and_trigger_event(event_type = :after_change_field,  args = field)
                     table.find_and_trigger_event(event_type = :after_change,        args = self)

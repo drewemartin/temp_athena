@@ -226,8 +226,9 @@ end
              WHERE staff_id REGEXP '#{sams_ids}'
              AND active = TRUE
              GROUP BY role_details
-            "
-            )
+            ",
+            $tables.attach("STUDENT_RELATE").data_base
+        )
     end
     
     def super_user?
@@ -248,8 +249,8 @@ end
             "SELECT primary_id
             FROM team_log
             WHERE team_id = '#{@team_id}'
-            ORDER BY created_date DESC "
-            
+            ORDER BY created_date DESC ",
+            $tables.attach("TEAM_LOG").data_base            
         )
         
         return x ? x[0] : x
@@ -424,7 +425,8 @@ end
             "SELECT primary_id
             FROM team
             WHERE active IS TRUE
-            AND department = '#{self.department_id.value}'"
+            AND department = '#{self.department_id.value}'",
+            $tables.attach("TEAM").data_base 
             
         )
         
@@ -438,7 +440,8 @@ end
             FROM team
             WHERE active IS TRUE
             AND department_id = '#{self.department_id.value}'
-            AND peer_group_id = '#{self.peer_group_id.value}'"
+            AND peer_group_id = '#{self.peer_group_id.value}'",
+            $tables.attach("TEAM").data_base 
             
         )
         
@@ -473,7 +476,8 @@ end
             results = $db.get_data_single(
                 "SELECT primary_id
                 FROM team
-                #{where_clause}"
+                #{where_clause}",
+                $tables.attach("TEAM").data_base
             )
             
             return !results ? results : results.shift(10) #USE THIS TO LIMIT RESULTS WHEN TESTING
@@ -484,7 +488,8 @@ end
             "SELECT primary_id
             FROM team
             #{where_clause}
-            AND primary_id != #{@team_id}"
+            AND primary_id != #{@team_id}",
+            $tables.attach("TEAM").data_base 
         )
         
     end
