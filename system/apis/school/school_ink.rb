@@ -31,7 +31,7 @@ end
             fields = ink.fields
             ink_number = fields["ink_number"].value
             results_array.push({:name=>ink_number, :value=>ink_number})
-        end
+        end if all_ink
         return results_array
     end
     
@@ -46,7 +46,7 @@ end
             fields = printer.fields
             printer_model = fields["printer_model"].value
             results_array.push({:name=>printer_model, :value=>printer_model})
-        end
+        end if all_printers
         return results_array
     end
     
