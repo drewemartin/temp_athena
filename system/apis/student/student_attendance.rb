@@ -32,14 +32,11 @@ end
     end
     
     def excused_absences
-        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'excused'")
-        codes_arr = Array.new
-        code_fields.each do |code|
-            codes_arr.push(code.value)
-        end
-        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'excused'", {:value_only=>true})
         
-        return pids ? pids.length : 0
+        dates = $tables.attach("student_attendance").find_fields("date","WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        
+        return dates || []
     end
     
     def exists?
@@ -47,14 +44,11 @@ end
     end
     
     def unexcused_absences
-        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'")
-        codes_arr = Array.new
-        code_fields.each do |code|
-            codes_arr.push(code.value)
-        end
-        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'", {:value_only=>true})
         
-        return pids ? pids.length : 0
+        dates = $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        
+        return dates || []
     end
     
     def unexcused_absences_by_range(start_date, end_date)
@@ -84,14 +78,11 @@ end
     end
     
     def attended_days
-        code_fields = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'")
-        codes_arr = Array.new
-        code_fields.each do |code|
-            codes_arr.push(code.value)
-        end
-        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes_arr.join("','")}'\)")
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'", {:value_only=>true})
         
-        return pids ? pids.length : 0
+        dates = $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        
+        return dates || []
         
     end
     
@@ -119,9 +110,9 @@ end
     
     def enrolled_days
         
-        pids = $tables.attach("student_attendance").primary_ids("WHERE student_id = #{@stu.studentid} AND official_code IS NOT NULL")
+        dates = $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IS NOT NULL", {:value_only=>true})
         
-        return pids ? pids.length : 0
+        return dates || []
         
     end
 

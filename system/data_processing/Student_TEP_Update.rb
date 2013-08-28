@@ -41,7 +41,7 @@ class Student_TEP_Update < Base
   
   def update_tep_absences
     
-    unexcused_codes   = $tables.attach("ATTENDANCE_CODES").code_array("WHERE code_type = 'unexcused'")
+    unexcused_codes   = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'unexcused'", {:value_only=>true})
     
     pids = $tables.attach("STUDENT_TEP_ABSENCE_REASONS").primary_ids
     pids.each{|pid|

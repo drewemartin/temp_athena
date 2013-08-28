@@ -376,10 +376,10 @@ end
             
             att_array = Array.new
             a1, b1 = "Enroll Date:"     , s.schoolenrolldate.value
-            a2, b2 = "Days Enrolled:"   , student.attendance.enrolled_days
-            a3, b3 = "Days Attended:"   , student.attendance.attended_days
-            a4, b4 = "Days Excused:"    , student.attendance.excused_absences
-            a5, b5 = "Days Unexcused:"  , student.attendance.unexcused_absences
+            a2, b2 = "Days Enrolled:"   , student.attendance.enrolled_days.length
+            a3, b3 = "Days Attended:"   , student.attendance.attended_days.length
+            a4, b4 = "Days Excused:"    , student.attendance.excused_absences.length
+            a5, b5 = "Days Unexcused:"  , student.attendance.unexcused_absences.length
             att_array.push([a1.to_s,b1.to_s])
             att_array.push([a2.to_s,b2.to_s])
             att_array.push([a3.to_s,b3.to_s])

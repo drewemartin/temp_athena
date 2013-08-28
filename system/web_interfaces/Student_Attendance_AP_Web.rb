@@ -6,7 +6,7 @@ class STUDENT_ATTENDANCE_AP_WEB
     #---------------------------------------------------------------------------
     def initialize()
         
-        dates = $school.school_days(cutoff_date = $base.today, order_option = "DESC")   
+        dates = $school.school_days(cutoff_date = $base.today.to_db.split(" ").first, order_option = "DESC")   
         @dates = dates ? dates.shift(2) : []
         
         sids  = $team_member.assigned_students(:ap_attendance_dates=>@dates.join("|")) if !@dates.empty?

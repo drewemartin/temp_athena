@@ -12,7 +12,8 @@ class Login_Reminders_Report #< Base
         dnc = $tables.attach("DNC_STUDENTS").students_with_records || []
         
         attendance_day = (Date.today).strftime("%Y-%m-%d") #today
-        excused_codes     = $tables.attach("ATTENDANCE_CODES").code_array("WHERE code_type = 'excused' OR code_type = 'present'")
+        
+        excused_codes     = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'excused' OR code_type = 'present'", {:value_only=>true})
         is_att_day = $tables.attach("Attendance_Master").schooldays.include?(attendance_day)
         if is_att_day
             students = $students.current_students

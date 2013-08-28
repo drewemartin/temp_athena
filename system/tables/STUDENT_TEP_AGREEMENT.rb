@@ -73,7 +73,7 @@ end
         absences = $students.attach(sid).attendance.unexcused_absences
         most_recent_schoolday = $school.school_days($idate, order_option = "DESC")[0]
         absences.delete(most_recent_schoolday)
-        absences.each_key{|school_day|
+        absences.each{|school_day|
             
             record = $tables.attach("STUDENT_TEP_ABSENCE_REASONS").by_studentid_old(sid, school_day)
             
@@ -87,7 +87,7 @@ end
                 
             end
             
-        }
+        } if absences
        
     end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

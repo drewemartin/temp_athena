@@ -8,8 +8,8 @@ class Attendance_Processing
         
         #start = Time.new
         
-        @excused_codes     = $tables.attach("ATTENDANCE_CODES"  ).code_array("WHERE code_type = 'excused'")
-        @unexcused_codes   = $tables.attach("ATTENDANCE_CODES"  ).code_array("WHERE code_type = 'unexcused'")
+        @excused_codes     = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'excused'", {:value_only=>true})
+        @unexcused_codes   = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'unexcused'", {:value_only=>true})
         @activity_sources  = $tables.attach("ATTENDANCE_SOURCES").source_array("activity")
         @live_sources      = $tables.attach("ATTENDANCE_SOURCES").source_array("live")
         
@@ -353,11 +353,12 @@ end
     end
   
     def temporarily_mark_as_flex(sid = nil)
-        
-        query = "UPDATE `student_attendance`
-            LEFT JOIN student ON student_attendance.student_id = student.student_id
+        student_attendance_data_base = $tables.attach("student_attendance").data_base
+        student_data_base = $tables.attach("student").data_base
+        query = "UPDATE #{student_attendance_data_base}.student_attendance
+            LEFT JOIN #{student_data_base}.student ON #{student_attendance_data_base}.student_attendance.student_id = #{student_data_base}.student.student_id
             SET mode = 'Flex'
-            WHERE date >= '2013-09-01'
+            WHERE date >= '2013-09-03'
             AND mode REGEXP 'HS|MS|K8'"
         
         if sid
