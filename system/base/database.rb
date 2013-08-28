@@ -96,6 +96,13 @@ end
       m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless $config.db_name == "information_schema"
       m.select_db(selected_db || $config.db_name)
       
+      test.scan(/\w*\./             ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x.chomp(".") ).data_base}.#{x}")}
+      test.scan(/FROM (.*?)\W/      ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x            ).data_base}.#{x}")}
+      test.scan(/LEFT JOIN (.*?)\W/ ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x            ).data_base}.#{x}")}
+      test.scan(/TRUNCATE (.*?)\W/  ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x            ).data_base}.#{x}")}
+      test.scan(/UPDATE (.*?)\W/    ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x            ).data_base}.#{x}")}
+      test.scan(/DELETE (.*?)\W/    ).uniq.each{|x| test.gsub!(x,"#{$tables.attach(x            ).data_base}.#{x}")}
+      
       results         = m.query(sql)
       
       @last_insert    = m.query("SELECT LAST_INSERT_ID();")
