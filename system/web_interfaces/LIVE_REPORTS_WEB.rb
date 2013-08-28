@@ -1329,9 +1329,9 @@ end
         
         attendance_codes_table = $tables.attach("Attendance_Codes")
         
-        pRegex = attendance_codes_table.code_array("WHERE code_type = 'present'"  ).join("|")
-        uRegex = attendance_codes_table.code_array("WHERE code_type = 'unexcused'").join("|")
-        eRegex = attendance_codes_table.code_array("WHERE code_type = 'excused'"  ).join("|")
+        pRegex = attendance_codes_table.find_fields("code", "WHERE code_type = 'present'", {:value_only=>true}).join("|")
+        uRegex = attendance_codes_table.find_fields("code", "WHERE code_type = 'present'", {:value_only=>true}).join("|")
+        eRegex = attendance_codes_table.find_fields("code", "WHERE code_type = 'present'", {:value_only=>true}).join("|")
         
         sql_str = "SELECT student_attendance_master.student_id,
                    student.studentlastname,
@@ -1348,12 +1348,12 @@ end
                    COUNT(case when official_code REGEXP '#{uRegex}' then 1 else NULL end),
                    COUNT(case when official_code REGEXP '#{eRegex}' then 1 else NULL end),"
         
-        codes = attendance_codes_table.code_array("WHERE code IS NOT NULL ORDER BY code_type DESC")
+        codes = attendance_codes_table.find_fields("code", "WHERE code IS NOT NULL ORDER BY code_type DESC", {:value_only=>true})
         
         codes.each do |code|
             
             code_type  = $db.get_data_single("SELECT code_type FROM attendance_codes WHERE code = '#{code}'").first
-            code_regex = attendance_codes_table.code_array("WHERE code_type = '#{code_type}'").join("|")
+            code_regex = attendance_codes_table.find_fields("code", "WHERE code_type = '#{code_type}'", {:value_only=>true}).join("|")
             
             headers.insert(-1, "#{code} -% of Enrolled Days")
             headers.insert(-1, "#{code} -% of #{code_type.capitalize}")

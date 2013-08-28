@@ -25,7 +25,7 @@ end
     
     def source_array(type = nil)
         where_clause = type ? " WHERE type = '#{type}'" : ""
-        $db.get_data_single("SELECT source FROM #{table_name} #{where_clause}")
+        $db.get_data_single("SELECT #{data_base}.source FROM #{table_name} #{where_clause}")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

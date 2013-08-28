@@ -1114,7 +1114,7 @@ function send_unsaved(send_trigger){
 	pleaseSaveIds    = [];
 	
 	if (send_bool==true && saveIds != ""){
-		
+		wait = false;
 		send(saveIds)
 		
 	}else if (send_bool==false && saveIds != ""){

@@ -11,11 +11,15 @@ class STUDENT_TESTS_WEB
     
     def page_title
         
-        new_contact_button = $tools.button_new_row(
-            table_name              = "STUDENT_TESTS",
-            additional_params_str   = "sid",
-            save_params             = "sid"
-        )
+        new_contact_button = ""
+        
+        if $tables.attach("test_events").primary_ids
+            new_contact_button = $tools.button_new_row(
+                table_name              = "STUDENT_TESTS",
+                additional_params_str   = "sid",
+                save_params             = "sid"
+            )
+        end
         
         "Test Administration#{new_contact_button}"
         

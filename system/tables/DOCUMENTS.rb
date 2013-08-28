@@ -27,26 +27,27 @@ end
     def document_pids(type_id, table=nil, key_field=nil, key_field_value=nil, created_date=nil, sort="DESC") 
         
         check_doc_relate = (table && key_field && key_field_value) ? true : false
-        
-        sql_str =  "SELECT documents.primary_id FROM `documents` "
+        sy_string = "#{$config.school_year}".insert(4,"-")
+        sql_str =  "SELECT #{data_base}.documents.primary_id FROM #{data_base}.documents "
         if check_doc_relate
-            sql_str << "LEFT JOIN document_relate
-                ON documents.primary_id = document_relate.document_id
-                WHERE document_relate.table_name = '#{table}'
-                AND document_relate.key_field = '#{key_field}'
-                AND document_relate.key_field_value = '#{key_field_value}'
-                AND documents.type_id = '#{type_id}' "
+            sql_str << "LEFT JOIN #{data_base}.document_relate
+                ON #{data_base}.documents.primary_id = #{data_base}.document_relate.document_id
+                WHERE #{data_base}.document_relate.table_name = '#{table}'
+                AND #{data_base}.document_relate.key_field = '#{key_field}'
+                AND #{data_base}.document_relate.key_field_value = '#{key_field_value}'
+                AND #{data_base}.documents.type_id = '#{type_id}' 
+                AND #{data_base}.documents.school_year = '#{sy_string}' "
         else
-            sql_str << "WHERE documents.type_id = '#{type_id}' "
+            sql_str << "WHERE #{data_base}.documents.type_id = '#{type_id}' "
         end
         
-        sql_str << "AND documents.created_date = '#{created_date}' " if created_date
+        sql_str << "AND #{data_base}.documents.created_date = '#{created_date}' " if created_date
         
-        sql_str << "ORDER BY documents.created_date #{sort}" 
+        sql_str << "ORDER BY #{data_base}.documents.created_date #{sort}" 
         
         $db.get_data(sql_str)
     end
-    
+    #change
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENTS
 end
