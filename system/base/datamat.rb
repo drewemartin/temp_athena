@@ -431,7 +431,7 @@ end
         when /2nd/i
             return "grade_2nd"
         when /3rd/i
-            return "gradde_3rd"
+            return "grade_3rd"
         when /4th/i
             return "grade_4th"
         when /5th/i
