@@ -466,7 +466,7 @@ end
     end
     
     def grade
-        $tables.attach("Student").field_bystudentid("grade", studentid)
+        $tables.attach("Student").find_field("grade", "WHERE student_id = '#{student_id}'")
     end
     
     def has_504?

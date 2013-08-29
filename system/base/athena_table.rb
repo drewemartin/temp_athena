@@ -287,6 +287,7 @@ end
                                     out_file_path = "I:/all_students.csv"
                                     
                                     if !File.directory?( "I:/" )
+                                        require 'win32ole'
                                         net = WIN32OLE.new('WScript.Network')
                                         user_name = "Administrator"
                                         password  = "Ag0ra2013"
@@ -1419,7 +1420,7 @@ end
     def primary_ids(where_clause = nil)
         $db.get_data_single(
             "SELECT #{table_name}.primary_id
-            FROM #{table_name}
+            FROM #{table[:data_base]}.#{table_name}
             #{where_clause}",
             table[:data_base]
         )

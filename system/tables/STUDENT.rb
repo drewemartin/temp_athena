@@ -77,7 +77,7 @@ end
             end
             
         sql_string << join_string    
-        sql_string << " FROM student"          
+        sql_string << " FROM #{data_base}.student"          
         sql_string << where_clause
         sql_string << where_addon
         

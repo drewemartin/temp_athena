@@ -83,7 +83,7 @@ end
         select_sql =
             "SELECT
                 staff_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE studentid = '#{student_id}'
             AND role = '3-6 Admin'
             AND active IS TRUE"
@@ -94,7 +94,7 @@ end
         select_sql =
             "SELECT
                 staff_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE studentid = '#{student_id}'
             AND role = 'K-2 Admin'
             AND active IS TRUE"
@@ -105,7 +105,7 @@ end
         select_sql =
             "SELECT
                 staff_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE studentid = '#{student_id}'
             AND role = 'Primary Teacher'
             AND active IS TRUE"
@@ -113,6 +113,7 @@ end
     end
     
     def primary_teachers_by_staffid(staff_id, student_group)
+        k12_db = $tables.attach("k12_omnibus").data_base
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("k12_omnibus.grade",              "REGEXP",   "K|1st|2nd|3rd|4th|5th|6th"    ) ) if student_group == :k6
         params.push( Struct::WHERE_PARAMS.new("staff_id",                       "=",        staff_id                       ) )
@@ -122,20 +123,21 @@ end
         where_clause = $db.where_clause(params)
         $db.get_data_single(
             "SELECT title1teacher
-            FROM #{table_name}
-            LEFT JOIN k12_omnibus
-                ON k12_omnibus.studentid = student_relate.studentid
+            FROM #{data_base}.#{table_name}
+            LEFT JOIN #{k12_db}.k12_omnibus
+                ON k12_omnibus.studentid = #{data_base}.student_relate.studentid
             #{where_clause}
             GROUP BY title1teacher ASC"
         ) 
     end
     
     def with_records_by_samsid_k6(arg)
+        k12_db = $tables.attach("all_students").data_base
         select_sql =
             "SELECT
                 student_relate.studentid
-            FROM #{table_name}
-            LEFT JOIN k12_all_students on k12_all_students.student_id = student_relate.studentid
+            FROM #{data_base}.#{table_name}
+            LEFT JOIN #{k12_db}.k12_all_students on #{k12_db}.k12_all_students.student_id = #{data_base}.student_relate.studentid
             WHERE staff_id = '#{arg}'
             AND grade REGEXP 'K|1st|2nd|3rd|4th|5th|6th'
             AND active IS TRUE ORDER BY studentlastname, studentfirstname ASC"
@@ -143,34 +145,36 @@ end
     end
     
     def with_records_by_samsid(arg)
+        k12_db = $tables.attach("all_students").data_base
         select_sql =
             "SELECT
                 student_relate.studentid
-            FROM #{table_name}
-            LEFT JOIN k12_all_students on k12_all_students.student_id = student_relate.studentid
+            FROM #{data_base}.#{table_name}
+            LEFT JOIN #{k12_db}.k12_all_students on #{k12_db}.k12_all_students.student_id = #{data_base}.student_relate.studentid
             WHERE staff_id = '#{arg}'
             AND active IS TRUE ORDER BY studentlastname, studentfirstname ASC"
         $db.get_data_single(select_sql) 
     end
     
-    def with_records_by_samsid_pssa_eligible(arg)
-        select_sql =
-            "SELECT
-                student_relate.studentid
-            FROM #{table_name}
-            LEFT JOIN k12_omnibus on k12_omnibus.studentid = student_relate.studentid
-            LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = student_relate.studentid
-            WHERE staff_id = '#{arg}'
-            AND (grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
-            AND active IS TRUE ORDER BY studentlastname, studentfirstname ASC"
-        $db.get_data_single(select_sql) 
-    end
+    #def with_records_by_samsid_pssa_eligible(arg)
+    #    k12_db = $tables.attach("all_students").data_base
+    #    select_sql =
+    #        "SELECT
+    #            student_relate.studentid
+    #        FROM #{data_base}.#{table_name}
+    #        LEFT JOIN #{k12_db}.k12_omnibus on #{k12_db}.k12_omnibus.studentid = #{data_base}.student_relate.studentid
+    #        LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = student_relate.studentid
+    #        WHERE staff_id = '#{arg}'
+    #        AND (grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
+    #        AND active IS TRUE ORDER BY studentlastname, studentfirstname ASC"
+    #    $db.get_data_single(select_sql) 
+    #end
     
     def with_records_admin
         select_sql =
             "SELECT
                 staff_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE role REGEXP '.*Admin.*'
             AND active IS TRUE
             GROUP BY staff_id "
@@ -185,9 +189,9 @@ end
     def current_team_by_role(options)
         options = parse_options(options)
         $db.get_data_single(
-            "SELECT #{table_name}.staff_id FROM #{table_name} 
-            LEFT JOIN student
-            ON student.student_id = #{table_name}.studentid
+            "SELECT #{table_name}.staff_id FROM #{data_base}.#{table_name} 
+            LEFT JOIN #{data_base}.student
+            ON #{data_base}.student.student_id = #{data_base}.#{table_name}.studentid
             #{options[:join_addon]}
             WHERE active IS TRUE
             #{options[:where_clause_addon]}
@@ -206,7 +210,7 @@ end
         where_clause = $db.where_clause(params)
         $db.get_data_single(
             "SELECT #{table_name}.staff_id
-            FROM #{table_name} 
+            FROM #{data_base}.#{table_name} 
             #{where_clause}
             GROUP BY #{table_name}.staff_id"
         )
@@ -852,15 +856,16 @@ end
     end
     
     def complete_enrolled(arg)
+        k12_database = $tables.attach("k12_omnibus").data_base
         if arg == true
             join_addon =
-                " LEFT JOIN k12_omnibus ON k12_omnibus.student_id = student.student_id "
+                " LEFT JOIN #{k12_database}.k12_omnibus ON #{k12_database}.k12_omnibus.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
             where_addon =
-                " AND k12_omnibus.schoolenrolldate IS NOT NULL
-                AND k12_omnibus.enrollapproveddate IS NOT NULL "
+                " AND #{k12_database}.k12_omnibus.schoolenrolldate IS NOT NULL
+                AND #{k12_database}.k12_omnibus.enrollapproveddate IS NOT NULL "
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         else
             raise("#{arg} is not a valid option")
@@ -868,15 +873,16 @@ end
     end
     
     def currently_enrolled(arg)
+        k12_db = $tables.attach("k12_omnibus").data_base
         join_addon =
-            " LEFT JOIN k12_omnibus ON k12_omnibus.student_id = student.student_id "
+            " LEFT JOIN #{k12_db}.k12_omnibus ON #{k12_db}.k12_omnibus.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         where_addon =
-            " AND k12_omnibus.schoolenrolldate IS NOT NULL
-            AND k12_omnibus.schoolenrolldate <= CURDATE()
-            AND k12_omnibus.enrollapproveddate IS NOT NULL "
+            " AND #{k12_db}.k12_omnibus.schoolenrolldate IS NOT NULL
+            AND #{k12_db}.k12_omnibus.schoolenrolldate <= CURDATE()
+            AND #{k12_db}.k12_omnibus.enrollapproveddate IS NOT NULL "
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
     end
     alias :current_students_only :currently_enrolled
@@ -893,9 +899,9 @@ end
     end
     
     def engagement_eligible(arg)
-        
+        sa_db = $tables.attach("student_assessment").data_base
         join_addon =
-            " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -948,9 +954,10 @@ end
     end
     
     def enrolled_before_date(arg)
+        se_db = $tables.attach("student_enrollment").data_base
         if arg == true
             join_addon =
-                " LEFT JOIN student_enrollment ON student_enrollment.student_id = student.student_id "
+                " LEFT JOIN #{se_db}.student_enrollment ON #{se_db}.student_enrollment.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -993,8 +1000,9 @@ end
     end
     
     def free_reduced(arg)
+        sd_db = $tables.attach("student_demographics").data_base
         if arg == true
-            join_addon = " LEFT JOIN student_demographics ON student_demographics.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{sd_db}.student_demographics ON #{sd_db}.student_demographics.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1017,35 +1025,36 @@ end
     end
     
     #FNORD - THIS IS A TEMPORARY FUNCTION TO GET THROUGH UNTIL THE TEST EVENT ELIGIBILITY CAN BE REFINED!!!!!
-    def keystone_eligible(arg)
-        
-        join_addon = " LEFT JOIN temp_keystone_participation ON temp_keystone_participation.student_id = student.student_id "
-        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
-            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
-        end
-        
-        where_addon = " AND temp_keystone_participation.student_id IS NOT NULL "
-        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
-        
-    end
+    #def keystone_eligible(arg)
+    #    
+    #    join_addon = " LEFT JOIN temp_keystone_participation ON temp_keystone_participation.student_id = student.student_id "
+    #    if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+    #        @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+    #    end
+    #    
+    #    where_addon = " AND temp_keystone_participation.student_id IS NOT NULL "
+    #    @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+    #    
+    #end
     
     #FNORD - THIS IS A TEMPORARY FUNCTION TO GET THROUGH UNTIL THE TEST EVENT ELIGIBILITY CAN BE REFINED!!!!!
-    def keystone_participated(arg)
-        
-        join_addon = " LEFT JOIN temp_keystone_participation ON temp_keystone_participation.student_id = student.student_id "
-        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
-            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
-        end
-        
-        where_addon =
-            " AND temp_keystone_participation.status = 'COMPLETE' "
-        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
-        
-    end
+    #def keystone_participated(arg)
+    #    
+    #    join_addon = " LEFT JOIN temp_keystone_participation ON temp_keystone_participation.student_id = student.student_id "
+    #    if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+    #        @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+    #    end
+    #    
+    #    where_addon =
+    #        " AND temp_keystone_participation.status = 'COMPLETE' "
+    #    @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+    #    
+    #end
     
     def overall_attendance_mode(arg)
+        sa_db = $tables.attach("student_attendance").data_base
         if arg
-            join_addon = " LEFT JOIN student_attendance_mode ON student_attendance_mode.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{sa_db}.student_attendance_mode ON #{sa_db}.student_attendance_mode.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1102,8 +1111,9 @@ end
     end
     
     def monthly_assessment_eligible(arg)
+        maps_db = $tables.attach("monthly_assessment_participation_summary").data_base
         if arg == :overall
-            join_addon = " LEFT JOIN monthly_assessment_participation_summary ON monthly_assessment_participation_summary.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{maps_db}.monthly_assessment_participation_summary ON #{maps_db}.monthly_assessment_participation_summary.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1123,7 +1133,7 @@ end
                  AND monthly_assessment_participation_summary.avg_math IS NOT NULL "
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon    
         elsif arg == :reading
-            join_addon = " LEFT JOIN monthly_assessment_participation_summary ON monthly_assessment_participation_summary.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{maps_db}.monthly_assessment_participation_summary ON #{maps_db}.monthly_assessment_participation_summary.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1138,8 +1148,9 @@ end
     end
     
     def participation_eligible(arg)
+        sp_db = $tables.attach("student_participation").data_base
         
-        join_addon = " LEFT JOIN student_participation ON student_participation.student_id = student.student_id "
+        join_addon = " LEFT JOIN #{sp_db}.student_participation ON #{sp_db}.student_participation.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1150,8 +1161,9 @@ end
     end
     
     def participation(arg)
+        sp_db = $tables.attach("student_participation").data_base
         
-        join_addon = " LEFT JOIN student_participation ON student_participation.student_id = student.student_id "
+        join_addon = " LEFT JOIN #{sp_db}.student_participation ON #{sp_db}.student_participation.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1163,9 +1175,10 @@ end
     end
     
     def pasa_eligible(arg)
+        sa_db = $tables.attach("student_assessment").data_base
         
         join_addon =
-            " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1176,37 +1189,37 @@ end
         
     end
     
-    def pssa_eligible(arg)
-        if arg == true
-            join_addon = " LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = student.student_id "
-            if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
-                @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
-            end
-            
-            where_addon = " AND (
-                (student.grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' AND (pssa_student_exceptions.testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR pssa_student_exceptions.testing_grade IS NULL))
-                    OR
-                (pssa_student_exceptions.testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
-            ) "
-            @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
-        else
-            raise("#{arg} is not a valid option")
-        end
-    end
+    #def pssa_eligible(arg)
+    #    if arg == true
+    #        join_addon = " LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = student.student_id "
+    #        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+    #            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+    #        end
+    #        
+    #        where_addon = " AND (
+    #            (student.grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' AND (pssa_student_exceptions.testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR pssa_student_exceptions.testing_grade IS NULL))
+    #                OR
+    #            (pssa_student_exceptions.testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
+    #        ) "
+    #        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+    #    else
+    #        raise("#{arg} is not a valid option")
+    #    end
+    #end
     
-    def pssa_participated(arg)
-        if arg == true
-            join_addon = " LEFT JOIN pssa_participation ON pssa_participation.student_id = student.student_id "
-            if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
-                @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
-            end
-            
-            where_addon = " AND pssa_participation.student_id IS NOT NULL "
-            @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
-        else
-            raise("#{arg} is not a valid option")
-        end
-    end
+    #def pssa_participated(arg)
+    #    if arg == true
+    #        join_addon = " LEFT JOIN pssa_participation ON pssa_participation.student_id = student.student_id "
+    #        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+    #            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+    #        end
+    #        
+    #        where_addon = " AND pssa_participation.student_id IS NOT NULL "
+    #        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+    #    else
+    #        raise("#{arg} is not a valid option")
+    #    end
+    #end
     
     def registering_status_text(arg)
         where_addon = " AND student.registrationstatustext = '#{arg}' "
@@ -1223,11 +1236,12 @@ end
     end
     
     def sapphire_new_students(arg)
+        ss_db = $tables.attach("sapphire_students").data_base
         if arg == true
             currently_enrolled(true)
             
             join_addon =
-                " LEFT JOIN sapphire_students ON sapphire_students.student_id = student.student_id "
+                " LEFT JOIN #{ss_db}.sapphire_students ON #{ss_db}.sapphire_students.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1244,9 +1258,9 @@ end
     end
     
     def scantron_eligible(arg = ["ent_m","ext_m","ent_r","ext_r"])
-        
+        sa_db = $tables.attach("student_assessment").data_base
         join_addon =
-            " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1266,9 +1280,10 @@ end
     end
     
     def scantron_growth(arg)
+        sspl_db = $tables.attach("student_scantron_performance_level").data_base
         
         join_addon =
-            " LEFT JOIN student_scantron_performance_level ON student_scantron_performance_level.student_id = student.student_id "
+            " LEFT JOIN #{sspl_db}.student_scantron_performance_level ON #{sspl_db}.student_scantron_performance_level.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1288,15 +1303,17 @@ end
     end
     
     def scantron_growth_eligible(arg)
+        sspl_db = $tables.attach("student_scantron_performance_level").data_base
+        cr_db   = $tables.attach("course_relate").data_base
         
         join_addon =
-            " LEFT JOIN student_scantron_performance_level ON student_scantron_performance_level.student_id = student.student_id "
+            " LEFT JOIN #{sspl_db}.student_scantron_performance_level ON #{sspl_db}.student_scantron_performance_level.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
         join_addon =
-            " LEFT JOIN course_relate ON course_relate.course_name = student_relate.role_details "
+            " LEFT JOIN #{cr_db}.course_relate ON #{cr_db}.course_relate.course_name = #{data_base}.student_relate.role_details "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1330,9 +1347,10 @@ end
     end
     
     def scantron_participated(arg) #arg must be the field where the student is expected to have participated (i.e. stron_ent_perf_m)
+        sspl_db = $tables.attach("student_scantron_performance_level").data_base
         
         join_addon =
-            " LEFT JOIN student_scantron_performance_level ON student_scantron_performance_level.student_id = student.student_id "
+            " LEFT JOIN #{sspl}.student_scantron_performance_level ON #{sspl}.student_scantron_performance_level.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1363,15 +1381,17 @@ end
     end
     
     def scantron_participation_eligible(arg = ["ent_m","ext_m","ent_r","ext_r"])
+        sa_db = $tables.attach("student_assessment").data_base
+        cr_db   = $tables.attach("course_relate").data_base
         
         join_addon =
-            " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
         
         join_addon =
-            " LEFT JOIN course_relate ON course_relate.course_name = student_relate.role_details "
+            " LEFT JOIN #{cr_db}.course_relate ON #{cr_db}.course_relate.course_name = #{data_base}.student_relate.role_details "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1452,8 +1472,9 @@ end
     end
     
     def student_communications(arg)
+        sc_db = $tables.attach("student_communications").data_base
         
-        join_addon = " LEFT JOIN student_communications ON student_communications.student_id = student.student_id "
+        join_addon = " LEFT JOIN #{sc_db}.student_communications ON #{sc_db}.student_communications.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1528,9 +1549,10 @@ end
     #end
     
     def student_test(arg)
+        st_db = $tables.attach("student_tests").data_base
         
         join_addon =
-            " LEFT JOIN student_tests ON student_tests.student_id = student.student_id "
+            " LEFT JOIN #{st_db}.student_tests ON #{st_db}.student_tests.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1541,9 +1563,10 @@ end
     end
     
     def student_test_participated(arg)
+        st_db = $tables.attach("student_tests").data_base
         
         join_addon =
-            " LEFT JOIN student_tests ON student_tests.student_id = student.student_id "
+            " LEFT JOIN #{st_db}.student_tests ON #{st_db}.student_tests.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1554,9 +1577,10 @@ end
     end
     
     def student_test_event(arg)
+        st_db = $tables.attach("student_tests").data_base
         
         join_addon =
-            " LEFT JOIN student_tests ON student_tests.student_id = student.student_id "
+            " LEFT JOIN #{st_db}.student_tests ON #{st_db}.student_tests.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1567,9 +1591,10 @@ end
     end
     
     def student_test_date(arg)
+        st_db = $tables.attach("student_tests").data_base
         
         join_addon =
-            " LEFT JOIN student_tests ON student_tests.student_id = student.student_id "
+            " LEFT JOIN #{st_db}.student_tests ON #{st_db}.student_tests.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1589,9 +1614,10 @@ end
     end
     
     def test_event_site(arg)
+        std_db = $tables.attach("student_test_dates").data_base
         
         join_addon =
-            " LEFT JOIN student_test_dates ON student_test_dates.student_id = student.student_id "
+            " LEFT JOIN #{std_db}.student_test_dates ON #{std_db}.student_test_dates.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1602,9 +1628,11 @@ end
     end
     
     def tier(arg)
+        
         if arg
+            sa_db = $tables.attach("student_assessment").data_base
             
-            join_addon = " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            join_addon = " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1625,7 +1653,9 @@ end
     def tier_math(arg)
         if arg
             
-            join_addon = " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            sa_db = $tables.attach("student_assessment").data_base
+            
+            join_addon = " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1642,7 +1672,9 @@ end
     def tier_reading(arg)
         if arg
             
-            join_addon = " LEFT JOIN student_assessment ON student_assessment.student_id = student.student_id "
+            sa_db = $tables.attach("student_assessment").data_base
+            
+            join_addon = " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1657,9 +1689,10 @@ end
     end
     
     def withdrawal_codes_excluded(arg) #accepts an array of agora withdrawal codes
+        k12_db = $tables.attach("k12_withdrawal").data_base
         
         join_addon =
-            " LEFT JOIN k12_withdrawal ON k12_withdrawal.student_id = student.student_id "
+            " LEFT JOIN #{k12_db}.k12_withdrawal ON #{k12_db}.k12_withdrawal.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1671,7 +1704,7 @@ end
         ########################################################################
         
         join_addon =
-            " LEFT JOIN k12_staff ON student_relate.staff_id = k12_staff.samspersonid "
+            " LEFT JOIN #{k12_db}.k12_staff ON #{k12_db}.k12_staff.samspersonid = #{data_base}.student_relate.staff_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1690,9 +1723,10 @@ end
     end
     
     def withdrawal_codes_included(arg) #accepts an array of agora withdrawal codes
+        k12_db = $tables.attach("k12_withdrawal").data_base
         
         join_addon =
-            " LEFT JOIN k12_withdrawal ON k12_withdrawal.student_id = student.student_id "
+            " LEFT JOIN #{k12_db}.k12_withdrawal ON #{k12_db}.k12_withdrawal.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1704,7 +1738,7 @@ end
         ########################################################################
         
         join_addon =
-            " LEFT JOIN k12_staff ON student_relate.staff_id = k12_staff.samspersonid "
+            " LEFT JOIN #{k12_db}.k12_staff ON #{k12_db}.k12_staff.samspersonid = #{data_base}.student_relate.staff_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
@@ -1734,8 +1768,10 @@ end
     def withdrawing_completed(arg)
         #(:current_students_only=>true, :withdrawal_processed=>true, :withdrawal_incomplete=>true)
         if arg == true
+            w_db = $tables.attach("withdrawing").data_base
+            
             join_addon =
-                " LEFT JOIN withdrawing ON withdrawing.student_id = student.student_id "
+                " LEFT JOIN #{w_db}.withdrawing ON #{w_db}.withdrawing.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1753,8 +1789,9 @@ end
     def withdrawing_eligible(arg)
         if arg == true
             currently_enrolled(true)
+            w_db = $tables.attach("withdrawing").data_base
             join_addon =
-                " LEFT JOIN withdrawing ON withdrawing.student_id = student.student_id "
+                " LEFT JOIN #{w_db}.withdrawing ON #{w_db}.withdrawing.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1773,8 +1810,9 @@ end
     
     def withdrawing_pending(arg)
         if arg == true
+            w_db = $tables.attach("withdrawing").data_base
             join_addon =
-                " LEFT JOIN withdrawing ON withdrawing.student_id = student.student_id "
+                " LEFT JOIN #{w_db}.withdrawing ON #{w_db}.withdrawing.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1794,8 +1832,9 @@ end
     def withdrawing_processed(arg)
         #(:current_students_only=>true, :withdrawal_processed=>true, :withdrawal_incomplete=>true)
         if arg == true
+            w_db = $tables.attach("withdrawing").data_base
             join_addon =
-                " LEFT JOIN withdrawing ON withdrawing.student_id = student.student_id "
+                " LEFT JOIN #{w_db}.withdrawing ON #{w_db}.withdrawing.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end
@@ -1814,8 +1853,9 @@ end
     def withdrawing_retracted(arg)
         if arg == true
             currently_enrolled(true)
+            w_db = $tables.attach("withdrawing").data_base
             join_addon =
-                " LEFT JOIN withdrawing ON withdrawing.student_id = student.student_id "
+                " LEFT JOIN #{w_db}.withdrawing ON #{w_db}.withdrawing.student_id = #{data_base}.student.student_id "
             if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
                 @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
             end

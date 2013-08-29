@@ -201,7 +201,6 @@ end
     def after_load_k12_omnibus
         $tables.attach("STUDENT_ATTENDANCE_MODE").create_att_mode_records
         $tables.attach("STUDENT_ATTENDANCE"     ).create_att_records
-        $tables.attach("ATTENDANCE_MASTER"      ).create_att_master_records
     end
     
     def after_load_k12_lessons_count_daily
