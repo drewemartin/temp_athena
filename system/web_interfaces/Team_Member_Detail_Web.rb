@@ -641,6 +641,15 @@ end
             ],
             [
                 (
+                    this_field = $focus_team_member.rights.sapphire_data_update_access
+                    this_field.web.checkbox(
+                        :label_option   => "Sapphire Data Management",
+                        :disabled       => disabled("sapphire_data_management_access")
+                    )
+                )
+            ]
+            [
+                (
                     this_field = $focus_team_member.rights.test_event_admin_access
                     this_field.web.checkbox(
                         :label_option   => "Test Event Site Admin",

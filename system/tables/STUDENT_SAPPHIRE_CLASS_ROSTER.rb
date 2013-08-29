@@ -172,7 +172,8 @@ end
                 "source_type"       => nil,
                 "audit"             => true,
                 :relationship       => :one_to_many,
-                :keys               => ["course_id","section_id","student_id"]
+                :keys               => ["course_id","section_id","student_id"],
+                :imports_active     => true
             }
             @table_structure = set_fields(structure_hash)
         end
@@ -183,7 +184,7 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["school_year"                      ] = {"data_type"=>"int", "file_field"=>"SCHOOL_YEAR"                    } if field_order.push("school_year"                     )
+            structure_hash["fields"]["school_year"                      ] = {"data_type"=>"int",  "file_field"=>"SCHOOL_YEAR"                   } if field_order.push("school_year"                     )
             structure_hash["fields"]["school_id"                        ] = {"data_type"=>"text", "file_field"=>"SCHOOL_ID"                     } if field_order.push("school_id"                       )
             structure_hash["fields"]["course_id"                        ] = {"data_type"=>"text", "file_field"=>"COURSE_ID"                     } if field_order.push("course_id"                       )
             structure_hash["fields"]["course_title"                     ] = {"data_type"=>"text", "file_field"=>"COURSE_TITLE"                  } if field_order.push("course_title"                    )
@@ -220,6 +221,7 @@ end
             structure_hash["fields"]["ethnicity"                        ] = {"data_type"=>"text", "file_field"=>"ETHNICITY"                     } if field_order.push("ethnicity"                       )
             structure_hash["fields"]["ethnicity_desc"                   ] = {"data_type"=>"text", "file_field"=>"ETHNICITY_DESC"                } if field_order.push("ethnicity_desc"                  )
             structure_hash["fields"]["state_ethnicity_code"             ] = {"data_type"=>"text", "file_field"=>"STATE_ETHNICITY_CODE"          } if field_order.push("state_ethnicity_code"            )
+            structure_hash["fields"]["active"                           ] = {"data_type"=>"bool", "file_field"=>"active"                        } if field_order.push("active"                          )
             
         structure_hash["field_order"] = field_order
         return structure_hash

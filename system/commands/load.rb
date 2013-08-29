@@ -73,13 +73,6 @@ class Load < Base
                                         
                                         $base.system_notification(subject, content)
                                         
-                                        secondary_alert_recipients = [
-                                                "tkreider@agora.org",
-                                                "esaddler@agora.org",
-                                                "kyoung@agora.org"
-                                        ]
-                                        $base.email.scuttle(subject, content, secondary_alert_recipients) if secondary_alert_recipients.length > 0
-                                        
                                 end
                         }
                 end
