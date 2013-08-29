@@ -551,6 +551,16 @@ end
                 last_row_first_column = nil
                 
                 begin
+                    
+                    
+                    if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                        
+                        #GET PIDS OF ALL ACTIVE RECORDS
+                        #IF THEY AREN'T FOUND IN THIS LOAD THEY WILL BE DEACTIVATED AFTER THE LOAD.
+                        active_ids = primary_ids("WHERE active IS TRUE") || []
+                        
+                    end
+                    
                     total_rows = 0
                     CSV.foreach( file_path ) do |row|
                         
@@ -561,35 +571,14 @@ end
                                 csv_field_names.push(field_from_file(field))
                             }
                             sid_row     = csv_field_names.index("student_id")
-                            #samsid_row  = csv_field_names.index("samspersonid")
+                            
                         elsif source_type == "k12_report" && last_row_first_column.match(/generated/i)
                             #SKIPPING THIS @CURRENT_ROW BECAUSE IT'S NOT VALID, JUST K12'S DATETIME GENERATION STAMP.
                         else
+                            
                             total_rows += 1
-                            @current_row.clear unless load_type == :load_by_sid
-                            if load_type == :load_by_sid
-                                sid = row[sid_row]
-                                @current_row = by_studentid(sid)
-                                if !@current_row
-                                    @current_row = new_row
-                                end
-                            #FNORD - This should never happen - we need to get the staff system up and running, we shouldn't use teammember's samsid.
-                            #elsif load_type == :load_by_samsid
-                            #    samsid = row[samsid_row]
-                            #    @current_row = by_samsid(samsid)
-                            #    if !@current_row
-                            #        @current_row = new_row
-                            #    end
-                            end
-                            index = 0  
-                            while index < row.length
-                                
-                                csv_field = csv_field_names[index]
-                                csv_value = row[index]
-                                @current_row.fields[csv_field].value = csv_value if csv_field
-                                index += 1
-                                
-                            end
+                            
+                            @current_row.clear
                             
                             if table["audit"] && table[:keys]
                                 
@@ -605,7 +594,28 @@ end
                                 
                             end
                             
+                            if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                                
+                                #MARK THE RECORD AS ACTIVE
+                                @current_row.fields["active"].value = true
+                                
+                                #REMOVE FROM THE active_ids ARRAY
+                                active_ids.delete(@current_row.primary_id) if active_ids.include?(@current_row.primary_id)
+                                
+                            end
+                            
+                            index = 0  
+                            while index < row.length
+                                
+                                csv_field = csv_field_names[index]
+                                csv_value = row[index]
+                                @current_row.fields[csv_field].value = csv_value if csv_field
+                                index += 1
+                                
+                            end
+                            
                             @current_row.fields["created_date"].value = $base.created_date if $base.created_date
+                            
                             begin
                                 @current_row.save
                             rescue=>e
@@ -635,6 +645,17 @@ end
                 rescue => e
                     load_failed(message = e.message, e)
                     raise e
+                    
+                end
+                
+                if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                    
+                    #DEACTIVATE PIDS THAT REMAIN IN THE active_ids ARRAY
+                    active_ids.each{|pid|
+                        
+                        by_primary_id(pid).fields["active"].set(false).save
+                        
+                    } if active_ids
                     
                 end
                 
