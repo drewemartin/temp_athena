@@ -45,7 +45,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate", "IS NOT", "NULL"       ) )
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate", "<=",     enroll_date  ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def current_k2_students
@@ -55,7 +55,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()"             ) )
         params.push( Struct::WHERE_PARAMS.new("enrollapproveddate", "IS NOT",   "NULL"                  ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def current_36_students
@@ -65,7 +65,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()"             ) )
         params.push( Struct::WHERE_PARAMS.new("enrollapproveddate", "IS NOT",   "NULL"                  ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def current_k6_students
@@ -75,29 +75,29 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()"  ) )
         params.push( Struct::WHERE_PARAMS.new("enrollapproveddate", "IS NOT",   "NULL"      ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
-    def current_pssa_students(sid = nil)
-        student_sql = sid ? "AND k12_omnibus.student_id = '#{sid}'" : ""
-        select_sql =
-            "SELECT student_id
-            FROM k12_omnibus
-            LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = k12_omnibus.student_id
-            WHERE
-                (
-                    (grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' AND (testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR testing_grade IS NULL))
-                        OR
-                    (testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
-                )
-            AND schoolenrolldate IS NOT NULL
-            AND schoolenrolldate <= CURDATE()
-            AND enrollapproveddate IS NOT NULL
-            #{student_sql}
-            ORDER BY studentlastname, studentfirstname ASC"
-        results = $db.get_data_single(select_sql)
-        return results
-    end
+    #def current_pssa_students(sid = nil)
+    #    student_sql = sid ? "AND k12_omnibus.student_id = '#{sid}'" : ""
+    #    select_sql =
+    #        "SELECT student_id
+    #        FROM k12_omnibus
+    #        LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = k12_omnibus.student_id
+    #        WHERE
+    #            (
+    #                (grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' AND (testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th' OR testing_grade IS NULL))
+    #                    OR
+    #                (testing_grade REGEXP '3rd|4th|5th|6th|7th|8th|11th')
+    #            )
+    #        AND schoolenrolldate IS NOT NULL
+    #        AND schoolenrolldate <= CURDATE()
+    #        AND enrollapproveddate IS NOT NULL
+    #        #{student_sql}
+    #        ORDER BY studentlastname, studentfirstname ASC"
+    #    results = $db.get_data_single(select_sql)
+    #    return results
+    #end
     
     def current_specialed_students
         params = Array.new
@@ -106,7 +106,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()" ) )
         params.push( Struct::WHERE_PARAMS.new("enrollapproveddate", "IS NOT",   "NULL"      ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause} ORDER BY studentlastname, studentfirstname ASC") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause} ORDER BY studentlastname, studentfirstname ASC") 
     end
     
     def newly_enrolled()
@@ -115,7 +115,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate", "<=",     "CURDATE()"  ) )
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate", ">=",     "DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)"  ) ) 
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def field_bystudentid(field_name, studentid)
@@ -133,7 +133,7 @@ end
                 lgfirstname,
                 lgrelationship,
                 lgemail
-            FROM k12_omnibus
+            FROM #{data_base}.k12_omnibus
             WHERE schoolenrolldate IS NOT NULL"
         $db.get_data(sql_statement) 
     end
@@ -160,7 +160,7 @@ end
                 cityofbirth,
                 schoolenrolldate,
                 isspecialed
-            FROM k12_omnibus
+            FROM #{data_base}.k12_omnibus
             WHERE schoolenrolldate IS NOT NULL"
         $db.get_data(sql_statement) 
     end
@@ -171,7 +171,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "IS NOT",   "NULL"          ) )
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()"     ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def current_students_by_primary_teacher_new(primaryteacher)
@@ -181,15 +181,15 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",       "CURDATE()"     ) )
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   ">",        $school.current_school_year_start.value     ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
     def students_by_title1teacher(teacher_name)
-        $db.get_data_single("SELECT student_id FROM #{table_name} WHERE title1teacher = '#{teacher_name}'") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} WHERE title1teacher = '#{teacher_name}'") 
     end
     
     def students_with_records
-        $db.get_data_single("SELECT student_id FROM #{table_name}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name}") 
     end
     
     def title_1_teachers(grade = nil)
@@ -198,7 +198,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "IS NOT", "NULL"       ) )
         params.push( Struct::WHERE_PARAMS.new("schoolenrolldate",   "<=",     "CURDATE()"  ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT title1teacher FROM #{table_name} #{where_clause}") 
+        $db.get_data_single("SELECT title1teacher FROM #{data_base}.#{table_name} #{where_clause}") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -208,14 +208,14 @@ end
 
     def family_teacher_coaches(grade=nil)
         grade_clause = grade ? "AND REGEXP '#{grade}'" : ""
-        $db.get_data_single("SELECT primaryteacher FROM k12_omnibus WHERE primaryteacher IS NOT NULL #{grade_clause} GROUP BY primaryteacher ORDER BY primaryteacher ASC") 
+        $db.get_data_single("SELECT primaryteacher FROM #{data_base}.k12_omnibus WHERE primaryteacher IS NOT NULL #{grade_clause} GROUP BY primaryteacher ORDER BY primaryteacher ASC") 
     end
     
     def k6_teachers(grade=nil)
         grade_clause = grade ? "AND REGEXP '#{grade}'" : ""
         $db.get_data_single(
             "SELECT title1teacher
-            FROM k12_omnibus
+            FROM #{data_base}.k12_omnibus
             WHERE grade REGEXP 'K|1st|2nd|3rd|4th|5th|6th'
             AND title1teacher IS NOT NULL
             #{grade_clause}
@@ -226,7 +226,7 @@ end
     
     def specialed_teachers(grade=nil)
         grade_clause = grade ? "AND REGEXP '#{grade}'" : ""
-        $db.get_data_single("SELECT specialedteacher FROM k12_omnibus WHERE specialedteacher IS NOT NULL #{grade_clause} GROUP BY specialedteacher ORDER BY specialedteacher ASC") 
+        $db.get_data_single("SELECT specialedteacher FROM #{data_base}.k12_omnibus WHERE specialedteacher IS NOT NULL #{grade_clause} GROUP BY specialedteacher ORDER BY specialedteacher ASC") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

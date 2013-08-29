@@ -34,7 +34,7 @@ end
         table_names.each{|table_name|
             table_uptodate = $db.get_data_single(
                 "SELECT
-                    table_name
+                    #{data_base}.table_name
                 WHERE table_name = '#{table_name}'
                 AND import_complete_datetime < LEFT(CURDATE(),)"
             )
@@ -45,7 +45,7 @@ end
     def finalize_ok
         select_sql = String.new
         select_sql << "SELECT COUNT(*)"
-        select_sql << " FROM #{table_name}"
+        select_sql << " FROM #{data_base}.#{table_name}"
         select_sql << " WHERE import_complete_datetime >= CURDATE()"
         select_sql << " AND import_complete_datetime > load_started_datetime"
         select_sql << " AND phase_completed <=> phase_total"
