@@ -54,10 +54,6 @@ end
         structure_hash["fields"] = Hash.new
             
             structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"STUDENT_ID"            } if field_order.push("student_id"      )
-            structure_hash["fields"]["last_name"        ] = {"data_type"=>"text", "file_field"=>"LAST_NAME"             } if field_order.push("last_name"       )
-            structure_hash["fields"]["first_name"       ] = {"data_type"=>"text", "file_field"=>"FIRST_NAME"            } if field_order.push("first_name"      )
-            structure_hash["fields"]["middle_name"      ] = {"data_type"=>"text", "file_field"=>"MIDDLE_NAME"           } if field_order.push("middle_name"     )
-            structure_hash["fields"]["grade_level"      ] = {"data_type"=>"text", "file_field"=>"GRADE_LEVEL"           } if field_order.push("grade_level"     )
             structure_hash["fields"]["calendar_day"     ] = {"data_type"=>"date", "file_field"=>"CALENDAR_DAY"          } if field_order.push("calendar_day"    )
             structure_hash["fields"]["attendance_code"  ] = {"data_type"=>"text", "file_field"=>"ATTENDANCE_CODE"       } if field_order.push("attendance_code" )
             structure_hash["fields"]["tardy_time"       ] = {"data_type"=>"text", "file_field"=>"TARDY_TIME"            } if field_order.push("tardy_time"      )
