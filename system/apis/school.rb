@@ -99,7 +99,10 @@ end
     end
     
     def school_days(cutoff_date = nil, order_option = "ASC")
-        $tables.attach("Attendance_Master").schooldays(cutoff_date, order_option)
+        where_clause = String.new
+        where_clause << "WHERE date <= '#{cutoff_date}' " if cutoff_date
+        where_clause << "ORDER BY `date` #{order_option}"
+        return $tables.attach("SCHOOL_DAYS").find_fields("date", where_clause, {:value_only=>true})
     end
     
     def school_days_after(start_date)
@@ -159,7 +162,7 @@ end
     def school_years_dd()
         output = []
         if current_sy = $tables.attach("School_Year_Detail").current
-            current_sy = current_sy.fields["school_year"]
+            current_sy = current_sy.fields["school_year"].value
             temp = current_sy.split("-")
             max_year = temp[1].to_i
             i = max_year

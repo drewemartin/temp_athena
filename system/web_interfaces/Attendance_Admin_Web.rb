@@ -423,7 +423,7 @@ end
             if i!=1
                 j = 1
                 while j < row.length
-                    if !$tables.attach("Attendance_Codes").code_array.include?(row[j])
+                    if !$tables.attach("ATTENDANCE_CODES").find_fields("code", nil, {:value_only=>true}).include?(row[j])
                         output << "Warning: '#{row[j]}' at line #{i} is not a valid code.<br>"
                     end
                     #if row[j] == "p"
