@@ -879,7 +879,7 @@ end
         unique_id       = "#{expansion_id}_#{@expand_iterator}#{$kit.user_log_record.primary_id}"
         interface_class = caller[0].split("/").last.split(".").first
         
-        expansion_class = (count.nil? || count == 0) ? "expansion_header_false" : "expansion_header"
+        expansion_class = (count == 0 ? "expansion_header_false" : "expansion_header")
         
         title_text      = title.gsub(title.split("<")[0], newlabel("expand_text", title.split("<")[0]))
         
