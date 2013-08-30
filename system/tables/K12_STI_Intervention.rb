@@ -25,7 +25,7 @@ end
     end
     
     def students_with_records
-        $db.get_data_single("SELECT studentid FROM #{table_name} GROUP BY student_id") 
+        $db.get_data_single("SELECT studentid FROM #{data_base}.#{table_name} GROUP BY student_id") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

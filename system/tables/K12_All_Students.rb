@@ -48,7 +48,7 @@ end
         end
         
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{join_sql} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{join_sql} #{where_clause}") 
     end
     
     def students_by_primary_teacher_new(primaryteacher, school_year = nil)
@@ -63,7 +63,7 @@ end
         end
         
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT student_id FROM #{table_name} #{join_sql} #{where_clause}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} #{join_sql} #{where_clause}") 
     end
     
     def student_with_records

@@ -60,7 +60,7 @@ end
 
     def staff_names
         output = Array.new
-        results = $db.get_data("SELECT primary_id, CONCAT(legal_last_name, ', ', legal_first_name) FROM #{table_name}")
+        results = $db.get_data("SELECT primary_id, CONCAT(legal_last_name, ', ', legal_first_name) FROM #{data_base}.#{table_name}")
         results.each_with_index do |result, i|
             output.push(i = {"name" => result[1],    "value" => result[0]})
         end

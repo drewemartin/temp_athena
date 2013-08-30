@@ -18,7 +18,7 @@ end
 
     def document_exists_by_time(type_id, created_date)
         $db.get_data(
-            "SELECT documents.primary_id FROM `documents`
+            "SELECT documents.primary_id FROM #{data_base}.documents
             WHERE documents.type_id = '#{type_id}'
             AND created_date = '#{created_date}'"
         )

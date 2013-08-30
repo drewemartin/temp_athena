@@ -48,7 +48,7 @@ end
         $db.get_data_single(
             "SELECT
                 primary_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE student_id        = '#{student_id}'
             AND test_event_site_id  = '#{test_event_site_id}'
             GROUP BY date
@@ -60,7 +60,7 @@ end
         $db.get_data_single(
             "SELECT
                 #{table_name}.student_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             LEFT JOIN student ON student.student_id = #{table_name}.student_id
             WHERE test_event_site_id = '#{test_event_site_id}'
             GROUP BY #{table_name}.student_id
@@ -71,7 +71,7 @@ end
     def test_event_site_dates(test_event_site_id)
         $db.get_data_single(
             "SELECT date
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE test_event_site_id = '#{test_event_site_id}'
             GROUP BY date
             ORDER BY date ASC"

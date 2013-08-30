@@ -17,15 +17,15 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def code_array(where_clause = nil)
-        $db.get_data_single("SELECT code FROM #{table_name} #{where_clause}")
+        $db.get_data_single("SELECT code FROM #{data_base}.#{table_name} #{where_clause}")
     end
     
     def override_codes
-        $db.get_data_single("SELECT code FROM `attendance_codes` WHERE code IN ('e','me','pr','ur','t')")
+        $db.get_data_single("SELECT code FROM #{data_base}.attendance_codes WHERE code IN ('e','me','pr','ur','t')")
     end
     
     def present
-        $db.get_data_single("SELECT code FROM #{table_name} WHERE code_type REGEXP 'present'")
+        $db.get_data_single("SELECT code FROM #{data_base}.#{table_name} WHERE code_type REGEXP 'present'")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

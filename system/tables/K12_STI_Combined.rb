@@ -32,15 +32,15 @@ end
     end
     
     def missed_by_studentid(arg)
-        $db.get_data_single("SELECT `total_missed_interventions` FROM #{table_name} WHERE `studentid` = '#{arg}'")
+        $db.get_data_single("SELECT `total_missed_interventions` FROM #{data_base}.#{table_name} WHERE `studentid` = '#{arg}'")
     end
     
     def attended_by_studentid(arg) 
-        $db.get_data_single("SELECT `total_interventions` FROM #{table_name} WHERE `studentid` = '#{arg}'") 
+        $db.get_data_single("SELECT `total_interventions` FROM #{data_base}.#{table_name} WHERE `studentid` = '#{arg}'") 
     end
     
     def students_with_records
-        $db.get_data_single("SELECT studentid FROM #{table_name}") 
+        $db.get_data_single("SELECT studentid FROM #{data_base}.#{table_name}") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

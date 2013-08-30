@@ -45,16 +45,18 @@ end
     end
     
     def ink_check(sid)
+        ipm_db = $tables.attach("ink_printer_models").data_base
+        sh_db = $tables.attach("sams_hardware").data_base
         select_sql="
         SELECT DISTINCT
             sams_hardware.student_id,
             printer_model, 
             ink_number  
-        FROM ink_printer_models
-        RIGHT OUTER JOIN sams_hardware
-        ON printer_make_model = sams_model
-        LEFT JOIN ink_orders
-        ON sams_hardware.student_id = ink_orders.studentid
+        FROM #{ipm_db}.ink_printer_models
+        RIGHT OUTER JOIN #{sh_db}.sams_hardware
+        ON #{ipm_db}.printer_make_model = #{sh_db}.sams_model
+        LEFT JOIN #{data_base}.ink_orders
+        ON #{sh_db}.sams_hardware.student_id = #{data_base}.ink_orders.studentid
         WHERE sams_hardware.student_id=#{sid}"
         return $db.get_data(select_sql)
     end

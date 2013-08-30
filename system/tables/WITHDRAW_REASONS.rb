@@ -68,6 +68,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "withdraw_reasons",
                 "file_name"         => "withdraw_reasons.csv",
                 "file_location"     => "withdraw_reasons",

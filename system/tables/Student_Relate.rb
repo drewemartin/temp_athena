@@ -342,7 +342,7 @@ end
         select_sql =
             "SELECT
                 CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details, ''),source)
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             #{where_clause}"
         @existing_records = $db.get_data_single(select_sql)
     end
@@ -352,7 +352,7 @@ end
         select_sql =
             "SELECT
                 primary_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details,''),source) = '|record_string|'"
         if @existing_records
             @existing_records.each{|record_string|
@@ -373,7 +373,7 @@ end
                                 
                                 if $db.get_data_single(
                                     "SELECT primary_id
-                                    FROM #{table_name}
+                                    FROM #{data_base}.#{table_name}
                                     WHERE studentid = '#{sid}'
                                     AND team_id     != '#{team_id}'
                                     AND staff_id    != '#{staff_id}'

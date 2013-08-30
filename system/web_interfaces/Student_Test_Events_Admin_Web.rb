@@ -295,7 +295,7 @@ end
             
             tables_array.push(row)
             
-        }
+        } if records
         
         output << $kit.tools.data_table(tables_array, "test_events")
         

@@ -33,7 +33,7 @@ end
     end
     
     def students_with_records
-        $db.get_data_single("SELECT sams_id FROM #{table_name} GROUP BY sams_id") 
+        $db.get_data_single("SELECT sams_id FROM #{data_base}.#{table_name} GROUP BY sams_id") 
     end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

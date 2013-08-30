@@ -276,11 +276,12 @@ end
         #end
         
         #CONFIRM WITHDRAWALS AND REPORT ACCORDINGLY
+        k12_db = $tables.attach("k12_withdrawal").data_base
         pids = $db.get_data_single(
             "SELECT         
                 withdrawing.primary_id            
-            FROM withdrawing
-            LEFT JOIN k12_withdrawal ON withdrawing.student_id = k12_withdrawal.student_id
+            FROM #{data_base}.withdrawing
+            LEFT JOIN #{k12_db}.k12_withdrawal ON #{data_base}.withdrawing.student_id = #{k12_db}.k12_withdrawal.student_id
             WHERE withdrawing.completed_date IS NULL
             AND k12_withdrawal.student_id IS NOT NULL "
         )
