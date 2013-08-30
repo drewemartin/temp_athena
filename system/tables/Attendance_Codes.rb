@@ -60,9 +60,12 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["code"] = {"data_type"=>"text", "file_field"=>"code"} if field_order.push("code")
-            structure_hash["fields"]["code_type"] = {"data_type"=>"text", "file_field"=>"code_type"} if field_order.push("code_type")
-            structure_hash["fields"]["description"] = {"data_type"=>"text", "file_field"=>"description"} if field_order.push("description")
+            
+            structure_hash["fields"]["code"                     ] = {"data_type"=>"text", "file_field"=>"code"                  } if field_order.push("code"                    )
+            structure_hash["fields"]["code_type"                ] = {"data_type"=>"text", "file_field"=>"code_type"             } if field_order.push("code_type"               )
+            structure_hash["fields"]["description"              ] = {"data_type"=>"text", "file_field"=>"description"           } if field_order.push("description"             )
+            structure_hash["fields"]["overrides_procedure"      ] = {"data_type"=>"bool", "file_field"=>"overrides_procedure"   } if field_order.push("overrides_procedure"     )
+            
         structure_hash["field_order"] = field_order
         return structure_hash
     end

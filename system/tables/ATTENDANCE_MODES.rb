@@ -63,9 +63,20 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["mode"]        = {"data_type"=>"text", "file_field"=>"mode"}           if field_order.push("mode")
-            structure_hash["fields"]["sources"]     = {"data_type"=>"text", "file_field"=>"sources"}        if field_order.push("sources")
-            structure_hash["fields"]["description"] = {"data_type"=>"text", "file_field"=>"description"}    if field_order.push("description")
+            
+            structure_hash["fields"]["mode"                     ] = {"data_type"=>"text", "file_field"=>"mode"                  } if field_order.push("mode"                )
+            structure_hash["fields"]["sources"                  ] = {"data_type"=>"text", "file_field"=>"sources"               } if field_order.push("sources"             )
+            structure_hash["fields"]["description"              ] = {"data_type"=>"text", "file_field"=>"description"           } if field_order.push("description"         )
+            structure_hash["fields"]["procedure_type"           ] = {"data_type"=>"text", "file_field"=>"procedure_type"        } if field_order.push("procedure_type"      )
+            
+            #PRESENT REQUIREMENTS
+            #structure_hash["fields"]["activity_only"            ] = {"data_type"=>"bool", "file_field"=>"activity_only"         } if field_order.push("activity_only"       )
+            #structure_hash["fields"]["live_only"                ] = {"data_type"=>"bool", "file_field"=>"live_only"             } if field_order.push("live_only"           )
+            #structure_hash["fields"]["activity_and_live"        ] = {"data_type"=>"bool", "file_field"=>"activity_and_live"     } if field_order.push("activity_and_live"   )
+            #structure_hash["fields"]["activity_or_live"         ] = {"data_type"=>"bool", "file_field"=>"activity_or_live"      } if field_order.push("activity_or_live"    )
+            #structure_hash["fields"]["no_activity"              ] = {"data_type"=>"bool", "file_field"=>"no_activity"           } if field_order.push("no_activity"         )
+            #structure_hash["fields"]["custom_procedure"         ] = {"data_type"=>"bool", "file_field"=>"custom_procedure"      } if field_order.push("custom_procedure"    )
+            #
         structure_hash["field_order"] = field_order
         return structure_hash
     end

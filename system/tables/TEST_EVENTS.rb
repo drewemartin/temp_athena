@@ -94,6 +94,7 @@ end
             structure_hash["fields"]["test_id"                  ] = {"data_type"=>"int",        "file_field"=>"test_id"                   } if field_order.push("test_id"                     )
             structure_hash["fields"]["start_date"               ] = {"data_type"=>"date",       "file_field"=>"start_date"                } if field_order.push("start_date"                  )
             structure_hash["fields"]["end_date"                 ] = {"data_type"=>"date",       "file_field"=>"end_date"                  } if field_order.push("end_date"                    )
+            structure_hash["fields"]["override_attendance"      ] = {"data_type"=>"bool",       "file_field"=>"override_attendance"       } if field_order.push("override_attendance"         )
             structure_hash["fields"]["ready"                    ] = {"data_type"=>"bool",       "file_field"=>"ready"                     } if field_order.push("ready"                       )
             structure_hash["fields"]["selection_last_run_date"  ] = {"data_type"=>"datetime",   "file_field"=>"selection_last_run_date"   } if field_order.push("selection_last_run_date"     )
         structure_hash["field_order"] = field_order

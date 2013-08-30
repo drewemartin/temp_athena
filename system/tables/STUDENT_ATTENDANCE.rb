@@ -120,7 +120,7 @@ end
             
             if att_record && !att_date.nil?
                 
-                this_code   = "p-k12_ecollege_activity"
+                this_code   = "k12_ecollege_activity"
                 curr_value  = att_record.fields["code"].value
                 
                 if curr_value.nil?
@@ -150,7 +150,7 @@ end
             student_record      = by_studentid_old(sid, att_date)
             
             if student_record
-                att_code        = "p-k12_elluminate_session"
+                att_code        = "k12_elluminate_session"
                 current_value   = student_record.fields["code"].value
                 
                 if current_value.nil?
@@ -179,7 +179,7 @@ end
             activity_student_record = by_studentid_old(s_id,hs_date)
             
             if activity_student_record && !hs_date.nil?
-                hs_code = "p-k12_hs_activity"
+                hs_code = "k12_hs_activity"
                 curr_value = activity_student_record.fields["code"].value
                 
                 if curr_value.nil?
@@ -214,7 +214,7 @@ end
             student_recordd = by_studentid_old(sidd,att_datee)
             
             if student_recordd && !att_datee.nil?
-                att_codee = "p-k12_lessons_count_daily"
+                att_codee = "k12_lessons_count_daily"
                 current_valuee = student_recordd.fields["code"].value
                 
                 if current_valuee.nil?
@@ -247,7 +247,7 @@ end
                 student_record = by_studentid_old(sid, att_date)
                
                 if student_record && !att_date.nil?
-                    att_code = "p-k12_logins"
+                    att_code = "k12_logins"
                     current_value = student_record.fields["code"].value
                    
                     if current_value.nil?
@@ -279,7 +279,7 @@ end
                 student_record = by_studentid_old(sid, att_date)
                 
                 if student_record && !att_date.nil?
-                    att_code = "p-k12_logins - LC"
+                    att_code = "k12_logins - LC"
                     current_value = student_record.fields["code"].value
                     
                     if current_value.nil?
