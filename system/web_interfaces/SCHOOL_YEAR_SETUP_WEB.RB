@@ -12,12 +12,20 @@ class SCHOOL_YEAR_SETUP_WEB
     #---------------------------------------------------------------------------
     
     def breakaway_caption
-        return "School Year Setup"
+        
+        school_year_dd = $field.new(
+            "field"     => "school_year",
+            "value"     => $config.school_year
+        ).web.select(
+            :dd_choices => $dd.school_years,
+            :onchange   => "fill_select_option('breakaway_container', this );",
+            :field_class=> "no_save"
+        )
+        return "School Year Setup #{school_year_dd}"
     end
     
     def page_title
         
-        add_new_button = @disabled ? "" : $tools.button_new_row(table_name = "SCHOOL_CALENDAR")
         return "School Year Setup"
         
     end
@@ -29,6 +37,9 @@ class SCHOOL_YEAR_SETUP_WEB
         output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("end_date",     "1").web.default(   :disabled=>@disabled, :label_option=>"Last Day of School:")
         output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("finalized",    "1").web.select(    :disabled=>@disabled, :label_option=>"Calendar Finalized?", :dd_choices=>$dd.bool)
         
+        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("db_start_date","1").web.default(   :disabled=>@disabled, :label_option=>"Database Open Date:")
+        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("db_end_date",  "1").web.default(   :disabled=>@disabled, :label_option=>"Database Close Date:")
+        
         return "#{output}#{school_holidays}"
         
     end
@@ -37,6 +48,54 @@ class SCHOOL_YEAR_SETUP_WEB
         
     end
     
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________FILL_SELECT_OPTION
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def fill_select_option_breakaway_container(field_name, field_value, pid)
+        
+        #PROVIDE A DROP DOWN WITH THE AVAILABLE SCHOOL YEARS TO ADD
+        #THIS SHOULD BE A RANGE OF THE LAST ADDED SCHOOL YEAR TO THE NEXT SCHOOL YEAR
+        #WHERE THE SCHOOL YEAR DOES NOT ALREADY EXIST.
+        
+        #ONCE THE SCHOOL YEAR IS SELECTED IT SHOULD HIT A FILL SELECT FUNCTION
+        #THIS FUNCTION WILL CREATE THE NEW SCHOOL YEAR AND INIT THE SCHOOL YEAR CALENDAR TABLES
+        
+        #ONCE THE SCHOOL YEAR CALENDAR IS FINALIZED A PROCESS WILL BE QUEUED TO INITIALIZE
+        #THE REMAINDER OF THE TABLE.
+        
+        current_db_name = $config.db_name
+        new_db_name     = "#{$config.school_name}_#{field_value}"
+        $config.db_name = new_db_name
+        
+        if !$tables.attach("SCHOOL_YEAR_DETAIL").exists?
+            
+            $tables.attach("SCHOOL_YEAR_DETAIL" ).init
+            new_school_year = $tables.attach("SCHOOL_YEAR_DETAIL" ).new_row
+            new_school_year.save
+            
+            $tables.attach("SCHOOL_CALENDAR" ).init
+            
+            #FNORD - THIS IS A TEMPORARY MEASURE TO BE USED UNTIL WE ARE ALOUD TIME TO IMPLEMENT THE USERS TABLES.
+            $db.query("CREATE TABLE #{new_db_name}.team             LIKE #{current_db_name}.team;"          )
+            $db.query("CREATE TABLE #{new_db_name}.team_rights      LIKE #{current_db_name}.team_rights;"   )
+            $db.query("CREATE TABLE #{new_db_name}.team_email       LIKE #{current_db_name}.team_email;"    )
+            $db.query("CREATE TABLE #{new_db_name}.team_sams_ids    LIKE #{current_db_name}.team_sams_ids;" )
+            
+            $db.query("INSERT #{new_db_name}.team           SELECT * FROM #{current_db_name}.team;"         )
+            $db.query("INSERT #{new_db_name}.team_rights    SELECT * FROM #{current_db_name}.team_rights;"  )
+            $db.query("INSERT #{new_db_name}.team_email     SELECT * FROM #{current_db_name}.team_email;"   )
+            $db.query("INSERT #{new_db_name}.team_sams_ids  SELECT * FROM #{current_db_name}.team_sams_ids;")
+            
+        end
+        
+        @disabled = $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("finalized", "1").is_true? ? true : false
+        
+        "#{breakaway_caption} #{load}"
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
@@ -121,22 +180,6 @@ end
         )
        
         return $tools.data_table(table_array, "school_calendar", type = "NewRecord")
-        
-    end
-    
-    def add_new_record_school_year_detail
-        
-        #PROVIDE A DROP DOWN WITH THE AVAILABLE SCHOOL YEARS TO ADD
-        #THIS SHOULD BE A RANGE OF THE LAST ADDED SCHOOL YEAR TO THE NEXT SCHOOL YEAR
-        #WHERE THE SCHOOL YEAR DOES NOT ALREADY EXIST.
-        
-        #ONCE THE SCHOOL YEAR IS SELECTED IT SHOULD HIT A FILL SELECT FUNCTION
-        #THIS FUNCTION WILL CREATE THE NEW SCHOOL YEAR AND INIT THE SCHOOL YEAR CALENDAR TABLES
-        
-        #ONCE THE SCHOOL YEAR CALENDAR IS FINALIZED A PROCESS WILL BE QUEUED TO INITIALIZE
-        #THE REMAINDER OF THE TABLE.
-        
-        
         
     end
 

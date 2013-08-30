@@ -24,12 +24,14 @@ class ATTENDANCE_ADMIN_WEB
         output = $tools.tab_identifier(1)
         output << "<div id='upload_status'></div>"
         output << $kit.tools.tabs([
-            ["K12 Reports Status",     finalize_attendance_tab       ],
+            ["Attendance Modes",        attendance_mode             ],
+            ["Attendance Sources",      attendance_sources          ],
+            ["K12 Reports Status",      finalize_attendance_tab     ],
             #["Close Out Attendance",    close_records_tab(true)      ],
-            ["Change Overall Mode",     bulk_overall_mode            ],
-            ["Change Daily Mode",       bulk_daily_mode              ],
-            ["Change Daily Code",       bulk_daily_code              ],
-            ["Process Queue",           process_queue_tab(true)      ]
+            ["Change Overall Mode",     bulk_overall_mode           ],
+            ["Change Daily Mode",       bulk_daily_mode             ],
+            ["Change Daily Code",       bulk_daily_code             ],
+            ["Process Queue",           process_queue_tab(true)     ]
         ])
         
         return output
@@ -86,6 +88,114 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   
+    def attendance_mode
+        
+        output = String.new
+        
+        output << $tools.button_new_row(table_name = "ATTENDANCE_MODES")
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "mode"              ,
+                "sources"           ,
+                "description"       ,
+                "procedure_type"
+                
+            ]
+            
+        ]
+        
+        pids = $tables.attach("ATTENDANCE_MODES").primary_ids
+        pids.each{|pid|
+            
+            row = Array.new
+            
+            record = $tables.attach("ATTENDANCE_MODES").by_primary_id(pid) 
+            row.push(record.fields["mode"               ].web.text())
+            row.push(record.fields["sources"            ].web.text())
+            row.push(record.fields["description"        ].web.default())
+            row.push(record.fields["procedure_type"     ].web.radio(:radio_choices=>procedure_type_dd))
+            
+            table_array.push(row)
+            
+        } if pids
+        
+        output << $base.web_tools.data_table(table_array, "attendance_modes")
+        
+        return output
+        
+    end
+    
+    def attendance_sources
+        
+        output = String.new
+        
+        output << $tools.button_new_row(table_name = "ATTENDANCE_SOURCES")
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "source"        ,
+                "type"          ,
+                "eligible grades"
+                
+            ]
+            
+        ]
+        
+        pids = $tables.attach("ATTENDANCE_SOURCES").primary_ids
+        pids.each{|pid|
+            
+            row = Array.new
+            
+            record = $tables.attach("ATTENDANCE_SOURCES").by_primary_id(pid) 
+            row.push(record.fields["source" ].web.text()                                                    )
+            row.push(record.fields["type"   ].web.select(:dd_choices=>$dd.from_array(["live","activity"]))  )
+            
+            grades = Array.new
+            grades.push(["K","1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"])  
+            grades.push(
+                [
+                    record.fields["grade_k"       ].web.default(),
+                    record.fields["grade_1st"     ].web.default(),
+                    record.fields["grade_2nd"     ].web.default(),
+                    record.fields["grade_3rd"     ].web.default(),
+                    record.fields["grade_4th"     ].web.default(),
+                    record.fields["grade_5th"     ].web.default(),
+                    record.fields["grade_6th"     ].web.default(),
+                    record.fields["grade_7th"     ].web.default(),
+                    record.fields["grade_8th"     ].web.default(),
+                    record.fields["grade_9th"     ].web.default(),
+                    record.fields["grade_10th"    ].web.default(),
+                    record.fields["grade_11th"    ].web.default(),
+                    record.fields["grade_12th"    ].web.default()
+                ]
+            )
+            
+            grades_included = $tools.table(
+                :table_array    => grades,
+                :unique_name    => "eligible_grades",
+                :footers        => false,
+                :head_section   => false,
+                :title          => false,
+                :caption        => "Eligible Grades"
+            )
+            
+            row.push(grades_included)
+            
+            table_array.push(row)
+            
+        } if pids
+        
+        output << $base.web_tools.data_table(table_array, "attendance_sources")
+        
+        return output
+        
+    end
+
     def finalize_attendance_tab
         
         output  = String.new
@@ -650,8 +760,131 @@ end
             
         end
     end
-
     
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________ADD_NEW_RECORDS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def add_new_record_attendance_sources
+        
+        output = String.new
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "source"        ,
+                "type"          ,
+                "eligible grades"   
+            ]
+            
+        ]
+      
+        record = $tables.attach("ATTENDANCE_SOURCES").new_row
+        
+        row = Array.new
+     
+        row.push(record.fields["source" ].web.text()                                                    )
+        row.push(record.fields["type"   ].web.select(:dd_choices=>$dd.from_array(["live","activity"]))  )
+        
+        grades = Array.new
+        grades.push(["K","1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"])  
+        grades.push(
+            [
+                record.fields["grade_k"       ].web.default(),
+                record.fields["grade_1st"     ].web.default(),
+                record.fields["grade_2nd"     ].web.default(),
+                record.fields["grade_3rd"     ].web.default(),
+                record.fields["grade_4th"     ].web.default(),
+                record.fields["grade_5th"     ].web.default(),
+                record.fields["grade_6th"     ].web.default(),
+                record.fields["grade_7th"     ].web.default(),
+                record.fields["grade_8th"     ].web.default(),
+                record.fields["grade_9th"     ].web.default(),
+                record.fields["grade_10th"    ].web.default(),
+                record.fields["grade_11th"    ].web.default(),
+                record.fields["grade_12th"    ].web.default()
+            ]
+        )
+        
+        grades_included = $tools.table(
+            :table_array    => grades,
+            :unique_name    => "eligible_grades",
+            :footers        => false,
+            :head_section   => false,
+            :title          => false,
+            :caption        => false
+        )
+        
+        row.push(grades_included)
+        
+        table_array.push(row) 
+        
+        output << $kit.tools.data_table(table_array, "ATTENDANCE_MODES", type = "NewRecord")
+        
+        return output
+        
+    end
+
+    def add_new_record_attendance_modes
+        
+        output = String.new
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "mode"              ,
+                "sources"           ,
+                "description"       ,
+                "procedure_type"
+                
+            ]
+            
+        ]
+      
+        record = $tables.attach("ATTENDANCE_MODES").new_row
+        
+        row = Array.new
+        row.push(record.fields["mode"               ].web.text())
+        row.push(record.fields["sources"            ].web.text())
+        row.push(record.fields["description"        ].web.default())
+        row.push(record.fields["procedure_type"     ].web.radio(:radio_choices=>procedure_type_dd))
+        
+        table_array.push(row) 
+        
+        output << $kit.tools.data_table(table_array, "ATTENDANCE_MODES", type = "NewRecord")
+        
+        return output
+        
+    end
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________DROP_DOWN_OPTIONS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def procedure_type_dd
+        $dd.from_array(
+            [
+                "Activity"                      ,
+                "Live Sessions"                 ,
+                "Activity AND Live Sessions"    ,
+                "Activity OR Live Sessions"     ,
+                "Manual (default 'p')"          ,
+                "Manual (default 'a')"          ,
+                "Custom Procedure"              ,
+                "Not Enrolled"
+            ]
+        )
+    end
+    #"activity_only"     ,
+    #"live_only"         ,
+    #"activity_and_live" ,
+    #"activity_or_live"  ,
+    #"no_activity"       ,
+    #"custom_procedure"  
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________JavaScript
 end
@@ -674,6 +907,14 @@ end
     def css
         output = "<style>"
         output << "
+        
+        div.ATTENDANCE_MODES__description textarea{
+            width: 300px;
+            height: 50px;
+        }
+        div.ATTENDANCE_MODES__procedure_type{
+            width: 300px;
+        }
         
         body{                                           font-size: .8em !important;}
         #tabs_{                                         margin-bottom:10px;}
