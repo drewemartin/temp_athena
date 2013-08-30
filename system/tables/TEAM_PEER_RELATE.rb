@@ -37,7 +37,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("role",   "=", role) )
         params.push( Struct::WHERE_PARAMS.new("active", "=", "1") )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT peer_group FROM #{table_name} #{where_clause} GROUP BY peer_group") 
+        $db.get_data_single("SELECT peer_group FROM #{data_base}.#{table_name} #{where_clause} GROUP BY peer_group") 
     end
     
     def peer_group_members_by_role_group(role, peer_group)
@@ -45,7 +45,7 @@ end
         params.push( Struct::WHERE_PARAMS.new("role",       "=", role       ) )
         params.push( Struct::WHERE_PARAMS.new("peer_group", "=", peer_group ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT staff_id FROM #{table_name} #{where_clause}")
+        $db.get_data_single("SELECT staff_id FROM #{data_base}.#{table_name} #{where_clause}")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

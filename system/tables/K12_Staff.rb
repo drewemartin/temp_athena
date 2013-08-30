@@ -53,7 +53,7 @@ end
     end
     
     def staff_with_records
-        $db.get_data_single("SELECT samspersonid FROM #{table_name} group by samspersonid") 
+        $db.get_data_single("SELECT samspersonid FROM #{data_base}.#{table_name} group by samspersonid") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

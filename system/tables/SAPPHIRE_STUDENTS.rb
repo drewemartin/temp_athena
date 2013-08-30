@@ -35,11 +35,11 @@ end
     end
     
     def students_with_records
-        $db.get_data_single("SELECT student_id FROM #{table_name}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name}") 
     end
     
     def active_sids
-        $db.get_data_single("SELECT student_id FROM #{table_name} WHERE active IS TRUE") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name} WHERE active IS TRUE") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -48,13 +48,14 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     def sapphire_new_students(fields_to_select)
+        k12_db = $tables.attach("k12_omnibus").data_base
         sql_statement =
             "SELECT
                 #{fields_to_select}
-            FROM k12_omnibus
-            LEFT JOIN sapphire_students on k12_omnibus.student_id = sapphire_students.student_id
-            LEFT JOIN k12_home_language on k12_omnibus.student_id = k12_home_language.student_id
-            LEFT JOIN k12_enrollment_info_tab_v2 on k12_omnibus.student_id = k12_enrollment_info_tab_v2.student_id
+            FROM #{k12_db}.k12_omnibus
+            LEFT JOIN #{data_base}.sapphire_students on #{k12_db}.k12_omnibus.student_id = #{data_base}.sapphire_students.student_id
+            LEFT JOIN #{k12_db}.k12_home_language on #{k12_db}.k12_omnibus.student_id = #{k12_db}.k12_home_language.student_id
+            LEFT JOIN #{k12_db}.k12_enrollment_info_tab_v2 on #{k12_db}.k12_omnibus.student_id = #{k12_db}.k12_enrollment_info_tab_v2.student_id
             WHERE k12_omnibus.schoolenrolldate IS NOT NULL
             AND k12_omnibus.enrollapproveddate IS NOT NULL
             AND sapphire_students.student_id IS NULL"
@@ -66,13 +67,14 @@ end
     end
     
     def sapphire_returning_students(fields_to_select)
+        k12_db = $tables.attach("k12_omnibus").data_base
         sql_statement =
             "SELECT
                 #{fields_to_select}
-            FROM k12_omnibus
-            LEFT JOIN sapphire_students on k12_omnibus.student_id = sapphire_students.student_id
-            LEFT JOIN k12_home_language on k12_omnibus.student_id = k12_home_language.student_id
-            LEFT JOIN k12_enrollment_info_tab_v2 on k12_omnibus.student_id = k12_enrollment_info_tab_v2.student_id
+            FROM #{k12_db}.k12_omnibus
+            LEFT JOIN #{data_base}.sapphire_students on #{k12_db}.k12_omnibus.student_id = #{data_base}.sapphire_students.student_id
+            LEFT JOIN #{k12_db}.k12_home_language on #{k12_db}.k12_omnibus.student_id = #{k12_db}.k12_home_language.student_id
+            LEFT JOIN #{k12_db}.k12_enrollment_info_tab_v2 on #{k12_db}.k12_omnibus.student_id = #{k12_db}.k12_enrollment_info_tab_v2.student_id
             WHERE k12_omnibus.schoolenrolldate IS NOT NULL
             AND k12_omnibus.enrollapproveddate IS NOT NULL
             AND sapphire_students.student_id IS NOT NULL
@@ -116,10 +118,10 @@ end
         $tables.attach("K12_Omnibus").field_order.each{|field_name|
             
             headers.push(field_name)
-            
+            daun_db = $tables.attach("districts_aun").data_base
             case field_name
             when "districtid"
-                select_str = "(SELECT aun FROM districts_aun WHERE K12_Omnibus.districtofresidence = districts_aun.name)"
+                select_str = "(SELECT aun FROM #{daun_db}.districts_aun WHERE K12_Omnibus.districtofresidence = districts_aun.name)"
             else
                 select_str = "K12_Omnibus.#{field_name}"
             end
@@ -201,7 +203,8 @@ end
         filename    = "invalid_districts"
         
         headers     = ["Student ID","District Of Residence","Phone","Legal Guardian"]
-        
+        s_db = $tables.attach("student").data_base
+        daun_db = $tables.attach("districts_aun").data_base
         rows = $db.get_data(
             
             "SELECT
@@ -209,8 +212,8 @@ end
                 student.districtofresidence,
                 student.studenthomephone,
                 CONCAT(student.lgfirstname,' ',student.lglastname)
-            FROM student
-            LEFT JOIN districts_aun ON districts_aun.name = student.districtofresidence
+            FROM #{s_db}.student
+            LEFT JOIN #{daun_db}.districts_aun ON #{daun_db}.districts_aun.name = #{s_db}.student.districtofresidence
             WHERE districts_aun.primary_id IS NULL
             AND student.active IS TRUE"
             

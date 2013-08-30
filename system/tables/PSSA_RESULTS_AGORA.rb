@@ -27,7 +27,7 @@ end
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("created_date", "REGEXP", created_date ) )
         where_clause = $db.where_clause(params)
-        $db.get_data_single("SELECT local_student_id FROM #{table_name} #{where_clause} GROUP BY local_student_id") 
+        $db.get_data_single("SELECT local_student_id FROM #{data_base}.#{table_name} #{where_clause} GROUP BY local_student_id") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

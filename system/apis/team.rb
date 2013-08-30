@@ -31,10 +31,10 @@ end
         return sams_ids if a[:sams_ids]
         
         if sams_ids
-            
+            tsids_db = $tables.attach("team_sams_ids").data_base
             return team_ids = $db.get_data_single(
                 "SELECT 
-                    team_id
+                    #{tsids_db}.team_id
                 FROM team_sams_ids
                 WHERE sams_id IN('#{sams_ids.join("','")}')"
             )
@@ -129,10 +129,12 @@ end
                 
             }
             
+            t_db = $tables.attach("team").data_base
+            
             tids = $db.get_data_single(
                 
                 "SELECT team.primary_id
-                FROM team
+                FROM #{t_db}.team
                 #{where_clause}
                 GROUP BY team.primary_id",
                 $tables.attach("TEAM").data_base
@@ -207,11 +209,13 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def department_heads
+        t_db = $tables.attach("team").data_base
+        d_db = $tables.attach("department").data_base
         $db.get_data_single(
           "SELECT
             team.primary_id
-          FROM team
-          LEFT JOIN department ON department.head_team_id = team.primary_id
+          FROM #{t_db}.team
+          LEFT JOIN #{d_db}.department ON #{d_db}.department.head_team_id = #{t_db}.team.primary_id
           WHERE department.head_team_id IS NOT NULL"
         )
     end
@@ -221,14 +225,16 @@ end
     end
    
     def family_coach_program_support
+        t_db = $tables.attach("team").data_base
+        d_db = $tables.attach("department").data_base
         $db.get_data_single(
           "SELECT
             supervisor_team_id
-          FROM team
+          FROM #{t_db}.team
           WHERE department_id = (
             SELECT
                 primary_id
-            FROM department
+            FROM #{d_db}.department
             WHERE name REGEXP 'Family Coach'
           )"
         )
@@ -239,11 +245,11 @@ end
     end
 
     def related_to_students
-        
+        sr_db = $tables.attach("student_relate").data_base
         $db.get_data_single(
             "SELECT
                 staff_id
-            FROM student_relate
+            FROM #{sr_db}.student_relate
             WHERE active IS TRUE
             GROUP BY staff_id"
         )
@@ -352,8 +358,9 @@ end
     
     def family_teacher_coaches(grade=nil)
         struct_name = "family_teacher_coaches#{grade}"
+        s_db = $tables.attach("student").data_base
         if !structure.has_key?(struct_name)
-            structure[struct_name] = $db.get_data_single("SELECT primaryteacher FROM student WHERE primaryteacher IS NOT NULL")
+            structure[struct_name] = $db.get_data_single("SELECT primaryteacher FROM #{s_db}.student WHERE primaryteacher IS NOT NULL")
         end  
         structure[struct_name]
     end

@@ -99,7 +99,8 @@ end
     
     def active?
         if !structure.has_key?("active")
-            if $db.get_data_single("SELECT primary_id FROM k12_omnibus WHERE student_id = '#{studentid}'")
+            k12_db = $tables.attach("k12_omnibus").data_base
+            if $db.get_data_single("SELECT primary_id FROM #{k12_db}.k12_omnibus WHERE student_id = '#{studentid}'")
                 structure["active"] = true
             else
                 structure["active"] = false
@@ -399,7 +400,8 @@ end
     
     def age
         if !structure.has_key?("age")
-            structure["age"] = $db.get_data_single("SELECT (YEAR(CURDATE())-YEAR(birthday)) - (RIGHT(CURDATE(),5)<RIGHT(birthday,5)) FROM Student WHERE Student.student_id = '#{student_id}'")[0]
+            s_db = $tables.attach("student").data_base
+            structure["age"] = $db.get_data_single("SELECT (YEAR(CURDATE())-YEAR(birthday)) - (RIGHT(CURDATE(),5)<RIGHT(birthday,5)) FROM #{s_db}.student WHERE Student.student_id = '#{student_id}'")[0]
         end
         structure["age"]
     end

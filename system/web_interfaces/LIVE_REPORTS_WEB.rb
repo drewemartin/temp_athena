@@ -230,7 +230,9 @@ end
     end
     
     def add_new_csv_athena_project(options = nil)
-        
+        ap_db  = $tables.attach("athena_project").data_base
+        aps_db = $tables.attach("athena_project_systems").data_base
+        t_db   = $tables.attach("team").data_base
         sql_str =
         "SELECT
             athena_project.primary_id,               
@@ -240,13 +242,13 @@ end
             athena_project.requested_completion_date,
             athena_project.status,    
             athena_project.development_phase,
-            (SELECT system_name FROM athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
+            (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
             athena_project.priority_level,           
             athena_project.estimated_completion_date,
-            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM team WHERE team.primary_id = athena_project.requester_team_id),
+            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = athena_project.requester_team_id),
             athena_project.created_date
             
-        FROM athena_project
+        FROM #{ap_db}.athena_project
         "
         
         headers = [
@@ -325,6 +327,9 @@ end
         
         headers.concat(date_headers)
         
+        t_db = $tables.attach("team").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        
         sql_str = String.new
         sql_str << "
         SELECT 
@@ -335,7 +340,7 @@ end
             student.grade,
             student.familyid,
             student.birthday,
-            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM team WHERE team.primary_id = ( SELECT team_id FROM team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
+            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = ( SELECT team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
             
             student.title1teacher,
             student_scantron_performance_level.stron_ent_perf_m,
@@ -345,21 +350,23 @@ end
             
             student.region,
             
-            (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM team WHERE team.primary_id = (SELECT supervisor_team_id FROM team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Truancy Prevention') AND region = student.region ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Advisors') AND region = student.region ),
+            (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
+            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Truancy Prevention') AND region = student.region ),
+            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Advisors') AND region = student.region ),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
             student.specialedteacher,
             student_attendance_mode.attendance_mode,
             student.districtofresidence,"
-      
+        
+        sa_db = $tables.attach("student_attendance").data_base
+        
         sql_str << "#ENROLLED DAYS
             (
                 SELECT
                     COUNT(student_id)
-                FROM student_attendance
+                FROM #{sa_db}.student_attendance
                 WHERE student_id = student_attendance_master.student_id
                 AND official_code IS NOT NULL
             ),"
@@ -368,7 +375,7 @@ end
             (
                 SELECT
                     COUNT(student_id)
-                FROM student_attendance
+                FROM #{sa_db}.student_attendance
                 WHERE student_id = student_attendance_master.student_id
                 AND (#{official_code_sql("present")})
             ),"
@@ -377,7 +384,7 @@ end
             (
                 SELECT
                     COUNT(student_id)
-                FROM student_attendance
+                FROM #{sa_db}.student_attendance
                 WHERE student_id = student_attendance_master.student_id
                 AND (#{official_code_sql("excused")})
             ),"
@@ -386,17 +393,22 @@ end
             (
                 SELECT
                     COUNT(student_id)
-                FROM student_attendance
+                FROM #{sa_db}.student_attendance
                 WHERE student_id = student_attendance_master.student_id
                 AND (#{official_code_sql("unexcused")})
             ),"
         
         sql_str << "student_attendance_master.*"
-       
-        sql_str << " FROM student_attendance_master
-            LEFT JOIN student                             ON student.student_id                             = student_attendance_master.student_id                       
-            LEFT JOIN student_scantron_performance_level  ON student_scantron_performance_level.student_id  = student_attendance_master.student_id
-            LEFT JOIN student_attendance_mode             ON student_attendance_mode.student_id             = student_attendance_master.student_id"
+        
+        sam_db = $tables.attach("student_attendance_master").data_base
+        s_db   = $tables.attach("student").data_base
+        sspl_db   = $tables.attach("student_scantron_performance_level").data_base
+        samo_db   = $tables.attach("student_attendance_mode").data_base
+        
+        sql_str << " FROM #{sam_db}.student_attendance_master
+            LEFT JOIN #{s_db}.student                             ON #{s_db}.student.student_id                             = #{sam_db}.student_attendance_master.student_id                       
+            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON #{sspl_db}.student_scantron_performance_level.student_id  = #{sam_db}.student_attendance_master.student_id
+            LEFT JOIN #{samo_db}.student_attendance_mode             ON #{samo_db}.student_attendance_mode.student_id             = #{sam_db}.student_attendance_master.student_id"
         
         results = $db.get_data(sql_str)
         if results
@@ -410,6 +422,8 @@ end
     end
 
     def add_new_csv_ink_orders(options = nil)
+        
+        io_db = $tables.attach("ink_orders").data_base
         
         sql_str =
         "SELECT
@@ -425,7 +439,7 @@ end
             DATEDIFF( DATE(ship_date),  DATE(request_date) ),
             created_date,
             created_by
-        FROM ink_orders
+        FROM #{io_db}.ink_orders
         ORDER BY created_date DESC"
         
         headers =
@@ -460,6 +474,8 @@ end
 
     def add_new_csv_student_contacts(options = nil)
         
+        sc_db = $tables.attach("student_contacts").data_base
+        
         sql_str =
         "SELECT
             student_id,
@@ -489,7 +505,7 @@ end
             other_description,
             created_by,
             created_date
-        FROM student_contacts"
+        FROM #{sc_db}.student_contacts"
         
         headers =
         [
@@ -535,6 +551,9 @@ end
     
     def add_new_csv_my_students_general(options = nil)
         
+        s_db  = $tables.attach("student").data_base
+        sr_db = $tables.attach("student_relate").data_base
+        
         sql_str =
         "SELECT
             student_id,
@@ -572,9 +591,9 @@ end
             lgrelationship,
             lgemail,
             studentemail
-        FROM student
-        LEFT JOIN student_relate
-            ON student.student_id = student_relate.studentid
+        FROM #{s_db}.student
+        LEFT JOIN #{sr_db}.student_relate
+            ON #{s_db}.student.student_id = #{sr_db}.student_relate.studentid
         WHERE (
             student_relate.team_id = '#{$team_member.primary_id.value}'
         )
@@ -632,6 +651,8 @@ end
     
     def add_new_csv_student_rtii_behavior(options = nil)
         
+        srtiib_db = $tables.attach("student_rtii_behavior")
+        
         sql_str =
         "SELECT
             student_id,
@@ -643,7 +664,7 @@ end
             proof,
             created_by,
             created_date
-        FROM student_rtii_behavior
+        FROM #{srtiib_db}.student_rtii_behavior
         WHERE student_id IS NOT NULL"
         
         headers =
@@ -672,6 +693,11 @@ end
     
     def add_new_csv_student_scantron_participation(options = nil)
         
+        spe_db = $tables.attach("scantron_performance_extended").data_base
+        sspl_db = $tables.attach("student_scantron_performance_level").data_base
+        s_db  = $tables.attach("student").data_base
+        k12_db  = $tables.attach("k12_omnibus").data_base
+        
         sql_str =
         "SELECT
             student.student_id,
@@ -686,10 +712,10 @@ end
             student_scantron_performance_level.`stron_ent_score_r`,
             student_scantron_performance_level.`stron_ext_perf_r`,
             student_scantron_performance_level.`stron_ext_score_r`,
-            (SELECT created_date FROM scantron_performance_extended WHERE primary_id =1) AS 'Last Updated'
-        FROM `student`
-        LEFT JOIN student_scantron_performance_level ON student_scantron_performance_level.student_id = student.student_id
-        LEFT JOIN k12_omnibus ON k12_omnibus.student_id = student.student_id
+            (SELECT created_date FROM #{spe_db}.scantron_performance_extended WHERE primary_id =1) AS 'Last Updated'
+        FROM #{s_db}.student
+        LEFT JOIN #{sspl_db}.student_scantron_performance_level ON #{sspl_db}.student_scantron_performance_level.student_id = #{s_db}.student.student_id
+        LEFT JOIN #{k12_db}.k12_omnibus ON #{k12_db}.k12_omnibus.student_id = #{s_db}.student.student_id
         WHERE k12_omnibus.schoolenrolldate IS NOT NULL
         AND k12_omnibus.schoolenrolldate <= CURDATE()
         AND k12_omnibus.enrollapproveddate IS NOT NULL
@@ -743,6 +769,15 @@ end
             "Notes 2"
         ]
         
+        s_db     = $tables.attach("student").data_base
+        st_db    = $tables.attach("student_tests").data_base
+        tst_db   = $tables.attach("tests").data_base
+        te_db    = $tables.attach("test_events").data_base
+        ts_db    = $tables.attach("test_subjects").data_base
+        tes_db   = $tables.attach("test_event_sites").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        t_db     = $tables.attach("team").data_base
+        
         sql_str =
         "SELECT
             student_tests.student_id,
@@ -761,14 +796,14 @@ end
             student_tests.drop_off,
             student_tests.pick_up
             
-        FROM `student_tests`
-        LEFT JOIN student           ON student_tests.student_id         = student.student_id
-        LEFT JOIN tests             ON student_tests.test_id            = tests.primary_id
-        LEFT JOIN test_events       ON student_tests.test_event_id      = test_events.primary_id
-        LEFT JOIN test_subjects     ON student_tests.test_subject_id    = test_subjects.primary_id
-        LEFT JOIN test_event_sites  ON student_tests.test_event_site_id = test_event_sites.primary_id
-        LEFT JOIN team_sams_ids     ON student_tests.test_administrator = team_sams_ids.sams_id
-        LEFT JOIN team              ON team_sams_ids.team_id            = team.primary_id"
+        FROM #{st_db}.student_tests
+        LEFT JOIN #{s_db}.student            ON #{st_db}.student_tests.student_id         = #{s_db}.student.student_id
+        LEFT JOIN #{tst_db}.tests            ON #{st_db}.student_tests.test_id            = #{tst_db}.tests.primary_id
+        LEFT JOIN #{te_db}.test_events       ON #{st_db}.student_tests.test_event_id      = #{te_db}.test_events.primary_id
+        LEFT JOIN #{ts_db}.test_subjects     ON #{st_db}.student_tests.test_subject_id    = #{ts_db}.test_subjects.primary_id
+        LEFT JOIN #{tes_db}.test_event_sites ON #{st_db}.student_tests.test_event_site_id = #{tes_db}.test_event_sites.primary_id
+        LEFT JOIN #{tsids_db}.team_sams_ids  ON #{st_db}.student_tests.test_administrator = #{tsids_db}.team_sams_ids.sams_id
+        LEFT JOIN #{t_db}.team               ON #{}.team_sams_ids.team_id                 = #{t_db}.team.primary_id"
         
         results = $db.get_data(sql_str)
         if results
@@ -785,6 +820,10 @@ end
     
     def add_new_csv_student_testing_events_attendance(options = nil)
         
+        std_db  = $tables.attach("student_test_dates").data_base
+        tes_db  = $tables.attach("test_event_sites").data_base
+        s_db    = $tables.attach("student").data_base
+        
         sql_str =
         "SELECT
             student_test_dates.student_id,
@@ -793,9 +832,9 @@ end
             site_name,
             date,
             attendance_code
-        FROM student_test_dates
-        LEFT JOIN test_event_sites ON test_event_site_id = test_event_sites.primary_id
-        LEFT JOIN student ON student.student_id = student_test_dates.student_id"
+        FROM #{std_db}.student_test_dates
+        LEFT JOIN #{tes_db}.test_event_sites ON #{std_db}.student_test_dates.test_event_site_id = #{tes_db}.test_event_sites.primary_id
+        LEFT JOIN #{s_db}.student ON #{s_db}.student.student_id = #{std_db}.student_test_dates.student_id"
         
         headers =
         [
@@ -821,6 +860,14 @@ end
     end
     
     def add_new_csv_team_member_evaluations_academic
+        
+        t_db     = $tables.attach("team").data_base
+        d_db     = $tables.attach("department").data_base
+        tes_db   = $tables.attach("team_evaluation_summary").data_base
+        team_db  = $tables.attach("team_evaluation_academic_metrics").data_base
+        teai_db  = $tables.attach("team_evaluation_academic_instruction").data_base
+        teap_db  = $tables.attach("team_evaluation_academic_professionalism").data_base
+        teaab_db = $tables.attach("team_evaluation_aab").data_base
         
         sql_str =
         "SELECT
@@ -910,13 +957,14 @@ end
             team_evaluation_aab.source_other,
             team_evaluation_aab.team_member_comments,
             team_evaluation_aab.supervisor_comments
-        FROM `team`
-        LEFT JOIN department                                ON department.primary_id                            = team.department_id
-        LEFT JOIN team_evaluation_summary                   ON team_evaluation_summary.team_id                  = team.primary_id
-        LEFT JOIN team_evaluation_academic_metrics          ON team_evaluation_academic_metrics.team_id         = team.primary_id
-        LEFT JOIN team_evaluation_academic_instruction      ON team_evaluation_academic_instruction.team_id     = team.primary_id
-        LEFT JOIN team_evaluation_academic_professionalism  ON team_evaluation_academic_professionalism.team_id = team.primary_id
-        LEFT JOIN team_evaluation_aab                       ON team_evaluation_aab.team_id                      = team.primary_id
+            
+        FROM #{t_db}.team
+        LEFT JOIN #{d_db}.department                                   ON #{d_db}.department.primary_id                               = #{t_db}.team.department_id
+        LEFT JOIN #{tes_db}.team_evaluation_summary                    ON #{tes_db}.team_evaluation_summary.team_id                   = #{t_db}.team.primary_id
+        LEFT JOIN #{team_db}.team_evaluation_academic_metrics          ON #{team_db}.team_evaluation_academic_metrics.team_id         = #{t_db}.team.primary_id
+        LEFT JOIN #{teai_db}.team_evaluation_academic_instruction      ON #{teai_db}.team_evaluation_academic_instruction.team_id     = #{t_db}.team.primary_id
+        LEFT JOIN #{teap_db}.team_evaluation_academic_professionalism  ON #{teap_db}.team_evaluation_academic_professionalism.team_id = #{t_db}.team.primary_id
+        LEFT JOIN #{teaab_db}.team_evaluation_aab                      ON #{teaab_db}.team_evaluation_aab.team_id                     = #{t_db}.team.primary_id
         WHERE department_category = 'Academic'
         GROUP BY team.primary_id"
         
@@ -1021,6 +1069,14 @@ end
     end
     
     def add_new_csv_team_member_evaluations_engagement
+        
+        t_db     = $tables.attach("team").data_base
+        d_db     = $tables.attach("department").data_base
+        tes_db   = $tables.attach("team_evaluation_summary").data_base
+        teem_db  = $tables.attach("team_evaluation_engagement_metrics").data_base
+        teeo_db  = $tables.attach("team_evaluation_engagement_observation").data_base
+        teep_db  = $tables.attach("team_evaluation_engagement_professionalism").data_base
+        teaab_db = $tables.attach("team_evaluation_aab").data_base
         
         sql_str =
         "SELECT
@@ -1134,13 +1190,14 @@ end
             team_evaluation_aab.source_other,
             team_evaluation_aab.team_member_comments,
             team_evaluation_aab.supervisor_comments
-        FROM `team`
-        LEFT JOIN department                                    ON department.primary_id                                = team.department_id
-        LEFT JOIN team_evaluation_summary                       ON team_evaluation_summary.team_id                      = team.primary_id
-        LEFT JOIN team_evaluation_engagement_metrics            ON team_evaluation_engagement_metrics.team_id           = team.primary_id
-        LEFT JOIN team_evaluation_engagement_observation        ON team_evaluation_engagement_observation.team_id       = team.primary_id
-        LEFT JOIN team_evaluation_engagement_professionalism    ON team_evaluation_engagement_professionalism.team_id   = team.primary_id
-        LEFT JOIN team_evaluation_aab                           ON team_evaluation_aab.team_id                          = team.primary_id
+            
+        FROM #{t_db}.team
+        LEFT JOIN #{d_db    }.department                                    ON #{d_db    }.department.primary_id                                = #{t_db}.team.department_id
+        LEFT JOIN #{tes_db  }.team_evaluation_summary                       ON #{tes_db  }.team_evaluation_summary.team_id                      = #{t_db}.team.primary_id
+        LEFT JOIN #{teem_db }.team_evaluation_engagement_metrics            ON #{teem_db }.team_evaluation_engagement_metrics.team_id           = #{t_db}.team.primary_id
+        LEFT JOIN #{teeo_db }.team_evaluation_engagement_observation        ON #{teeo_db }.team_evaluation_engagement_observation.team_id       = #{t_db}.team.primary_id
+        LEFT JOIN #{teep_db }.team_evaluation_engagement_professionalism    ON #{teep_db }.team_evaluation_engagement_professionalism.team_id   = #{t_db}.team.primary_id
+        LEFT JOIN #{teaab_db}.team_evaluation_aab                           ON #{teaab_db}.team_evaluation_aab.team_id                          = #{t_db}.team.primary_id
         WHERE department_category = 'Engagement'
         GROUP BY team.primary_id"
         
@@ -1267,6 +1324,9 @@ end
     
     def add_new_csv_transcripts_received(options = nil)
         
+        rrr_db = $tables.attach("record_requests_received").data_base
+        s_db   = $tables.attach("student").data_base
+        
         sql_str =
         "SELECT
             record_requests_received.student_id,
@@ -1277,8 +1337,8 @@ end
             record_requests_received.school_year,
             record_requests_received.created_by,
             record_requests_received.created_date
-        FROM record_requests_received
-        LEFT JOIN student ON record_requests_received.student_id = student.student_id
+        FROM #{rrr_db}.record_requests_received
+        LEFT JOIN #{s_db}.student ON #{rrr_db}.record_requests_received.student_id = #{s_db}.student.student_id
         WHERE record_requests_received.type REGEXP 'transcript'
         ORDER BY student_id, school_year"
         
@@ -1350,9 +1410,11 @@ end
         
         codes = attendance_codes_table.find_fields("code", "WHERE code IS NOT NULL ORDER BY code_type DESC", {:value_only=>true})
         
+        ac_db = $tables.attach("attendance_codes").data_base
+        
         codes.each do |code|
             
-            code_type  = $db.get_data_single("SELECT code_type FROM attendance_codes WHERE code = '#{code}'").first
+            code_type  = $db.get_data_single("SELECT code_type FROM #{ac_db}.attendance_codes WHERE code = '#{code}'").first
             code_regex = attendance_codes_table.find_fields("code", "WHERE code_type = '#{code_type}'", {:value_only=>true}).join("|")
             
             headers.insert(-1, "#{code} -% of Enrolled Days")
@@ -1367,11 +1429,15 @@ end
         
         sql_str.chop!
         
-        sql_str << " FROM `student_attendance_master`
-                     LEFT JOIN student_attendance
-                     ON student_attendance.student_id = student_attendance_master.student_id
-                     LEFT JOIN student
-                     ON student.student_id = student_attendance_master.student_id
+        sam_db = $tables.attach("student_attendance_master").data_base
+        sa_db  = $tables.attach("student_attendance").data_base
+        s_db   = $tables.attach("student").data_base
+        
+        sql_str << " FROM #{sam_db}.student_attendance_master
+                     LEFT JOIN #{sa_db}.student_attendance
+                     ON #{sa_db}.student_attendance.student_id = #{sam_db}.student_attendance_master.student_id
+                     LEFT JOIN #{s_db}.student
+                     ON #{s_db}.student.student_id = #{sam_db}.student_attendance_master.student_id
                      group by student_attendance_master.student_id"
         
         results = $db.get_data(sql_str)
@@ -1405,10 +1471,12 @@ end
         
         code_sql_string = String.new
         
+        ac_db = $tables.attach("attendance_codes").data_base
+        
         codes = $db.get_data_single(
             "SELECT
                 code
-            FROM attendance_codes
+            FROM #{ac_db}.attendance_codes
             WHERE code_type = '#{code_type}'"
         )
         

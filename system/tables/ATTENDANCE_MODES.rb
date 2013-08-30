@@ -24,7 +24,7 @@ end
     end
     
     def modes_array
-        return $db.get_data_single("SELECT mode FROM attendance_modes")
+        return $db.get_data_single("SELECT mode FROM #{data_base}.attendance_modes")
     end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENTS

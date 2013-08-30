@@ -218,11 +218,11 @@ end
     def role_details
         
         sams_ids = self.sams_ids.existing_fields("sams_id", {:value_only=>true}).join("|")
-        
+        sr_db = $tables.attach("student_relate").data_base
         return $db.get_data_single(
             
             "SELECT role_details
-             FROM student_relate
+             FROM #{sr_db}.student_relate
              WHERE staff_id REGEXP '#{sams_ids}'
              AND active = TRUE
              GROUP BY role_details
@@ -243,11 +243,11 @@ end
     end
     
     def last_login_id
-        
+        tl_db = $tables.attach("team_log").data_base
         x = $db.get_data_single(
             
             "SELECT primary_id
-            FROM team_log
+            FROM #{tl_db}.team_log
             WHERE team_id = '#{@team_id}'
             ORDER BY created_date DESC ",
             $tables.attach("TEAM_LOG").data_base            
@@ -419,11 +419,11 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def department_with
-      
+        t_db = $tables.attach("team").data_base
         $db.get_data_single(
             
             "SELECT primary_id
-            FROM team
+            FROM #{t_db}.team
             WHERE active IS TRUE
             AND department = '#{self.department_id.value}'",
             $tables.attach("TEAM").data_base 
@@ -433,11 +433,11 @@ end
     end
     
     def peers_with
-      
+        t_db = $tables.attach("team").data_base
         $db.get_data_single(
             
             "SELECT primary_id
-            FROM team
+            FROM #{t_db}.team
             WHERE active IS TRUE
             AND department_id = '#{self.department_id.value}'
             AND peer_group_id = '#{self.peer_group_id.value}'",
@@ -450,6 +450,8 @@ end
     def supervisor_of(options = {})
         
         where_clause    = "WHERE supervisor_team_id = #{@team_id} "
+        
+        t_db = $tables.attach("team").data_base
         
         if $team.department_heads && $team.department_heads.include?(@team_id)
             
@@ -473,9 +475,10 @@ end
                 '117',
                 '662'
             )" if true
+            
             results = $db.get_data_single(
                 "SELECT primary_id
-                FROM team
+                FROM #{t_db}.team
                 #{where_clause}",
                 $tables.attach("TEAM").data_base
             )
@@ -486,7 +489,7 @@ end
         
         return $db.get_data_single(
             "SELECT primary_id
-            FROM team
+            FROM #{t_db}.team
             #{where_clause}
             AND primary_id != #{@team_id}",
             $tables.attach("TEAM").data_base 

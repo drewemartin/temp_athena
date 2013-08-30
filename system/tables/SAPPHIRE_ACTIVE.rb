@@ -17,7 +17,7 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     def students_with_records
-        $db.get_data_single("SELECT student_id FROM #{table_name}") 
+        $db.get_data_single("SELECT student_id FROM #{data_base}.#{table_name}") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

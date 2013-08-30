@@ -24,7 +24,7 @@ end
     end
     
     def student_base_evaluation_roles
-        $db.get_data_single("SELECT role FROM #{table_name} WHERE student_based_evaluation IS TRUE ORDER BY role ASC")
+        $db.get_data_single("SELECT role FROM #{data_base}.#{table_name} WHERE student_based_evaluation IS TRUE ORDER BY role ASC")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

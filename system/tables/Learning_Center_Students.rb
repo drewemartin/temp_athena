@@ -39,7 +39,7 @@ end
     end
     
     def type_with_records
-        $db.get_data_single("SELECT column_name FROM #{table_name}") 
+        $db.get_data_single("SELECT column_name FROM #{data_base}.#{table_name}") 
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

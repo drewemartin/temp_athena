@@ -33,7 +33,7 @@ end
     def staples_id(concat_id)
         select_sql =
         "SELECT ship_to
-        FROM ink_staples_ids
+        FROM #{data_base}.ink_staples_ids
         WHERE
         LOWER(
             CONCAT(

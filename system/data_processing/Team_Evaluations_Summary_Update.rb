@@ -838,10 +838,11 @@ end
             
             if aims_growth_overall_eligible
                 
+                sag_db = $tables.attach("student_aims_growth").data_base
                 spring = $db.get_data_single(
                     "SELECT
                         primary_id
-                    FROM student_aims_growth
+                    FROM #{sag_db}.student_aims_growth
                     WHERE spring_growth_overall IS NOT NULL"
                 )
                 
@@ -881,10 +882,12 @@ end
         
         if !@processing[:aims_growth_overall_eligible]
             
+            sag_db = $tables.attach("student_aims_growth").data_base
+            
             spring = $db.get_data_single(
                 "SELECT
                     primary_id
-                FROM student_aims_growth
+                FROM #{sag_db}.student_aims_growth
                 WHERE spring_growth_overall IS NOT NULL"
             )
             
@@ -1123,13 +1126,13 @@ end
                 :where_clause   => "WHERE official_code IS NOT NULL
                 AND date < '#{last_school_day}'"
             )
-           
+            ac_db = $tables.attach("v").data_base
             present_days = @processing[:t].assigned_students(
                 :eval_eligible  => department_type,
                 :student_table  => "student_attendance",
                 :table_field    => "official_code",
                 :value_only     => true,
-                :where_clause   => "WHERE official_code IN(SELECT code FROM attendance_codes WHERE code_type = 'present')
+                :where_clause   => "WHERE official_code IN(SELECT code FROM #{ac_db}.attendance_codes WHERE code_type = 'present')
                 AND date < '#{last_school_day}'"
             )
             

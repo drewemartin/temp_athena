@@ -42,7 +42,7 @@ end
     def students_by_event_site(test_event_site_id)
         $db.get_data_single(
             "SELECT student_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE test_event_site_id = '#{test_event_site_id}'"
         )
     end
@@ -50,7 +50,7 @@ end
     def pids_by_event_site(test_event_site_id)
         $db.get_data_single(
             "SELECT primary_id
-            FROM #{table_name}
+            FROM #{data_base}.#{table_name}
             WHERE test_event_site_id = '#{test_event_site_id}'"
         )
     end

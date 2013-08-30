@@ -25,10 +25,11 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
     ############################################################################
     #GET ARRAY OF QUALIFYING WITHDRAW REQUEST RECORDS - withdrawing_pid_arr
     if !withdrawing_pid_arr
+      w_db = $tables.attach("k12_withdrawal").data_base
       withdrawing_pid_arr = $db.get_data_single(
         "SELECT
           primary_id
-        FROM withdrawing
+        FROM #{w_db}.withdrawing
         WHERE completed_date IS NOT NULL
         AND retracted IS NOT TRUE
         AND rescinded IS NOT TRUE
