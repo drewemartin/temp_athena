@@ -17,7 +17,7 @@ class CONVERSION_TOOL < Base
         @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
         @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
         
-        @restore_path       = $config.init_path("#{$paths.restore_path}conversion")
+        @restore_path       = $config.init_path("#{$paths.restore_path}D20130903")
         
         if !a.empty?
             
@@ -29,8 +29,6 @@ class CONVERSION_TOOL < Base
                 eval("#{function}(#{"\"#{a.join("\", \"")}\""})")
             end
             
-        else
-            complete_conversion
         end
         
     end
@@ -39,7 +37,7 @@ class CONVERSION_TOOL < Base
         
         start = Time.new
         
-        #backup
+        backup
         archive
         pre_init
         restore
@@ -188,12 +186,15 @@ class CONVERSION_TOOL < Base
         
         start = Time.new          
         
-        tables = table_name ? [table_name] : $db.get_data_single('show tables', @dbname)
+        tables = table_name ? [table_name] : $tables.table_names
         
         puts "#RESTORE INTO CONVERSION DATABASE"
         tables.each do |table|
-            puts "RESTORING: #{table}"
-            `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{@dbname} < #{@restore_path}#{table}.sql`
+            puts "RESTORING:  #{@restore_path}#{table.downcase}.sql"
+            `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}#{table.downcase}.sql`
+            if $tables.attach(table).audit
+                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}zz_#{table.downcase}.sql`
+            end
         end
         
         puts "#CONVERSION RESTORE COMPLETED IN #{(Time.new - start)/60} MINUTES"
