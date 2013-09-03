@@ -147,7 +147,7 @@ class PSSA_ENTRY_WEB
     
     def school_year_dd()
         output = []
-        current_sy = $school.current_school_year.value.split("-")[1].to_i
+        current_sy = $school.current_school_year.split("-")[1].to_i
         i = current_sy-20
         while i <= current_sy
             output.push({:name=>"#{i}", :value=>"#{i}"})

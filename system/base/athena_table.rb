@@ -342,7 +342,7 @@ end
         when "jupiter_grades"
             require "#{File.dirname(__FILE__)}/jupiter_grades_interface"
             i = Jupiter_Grades_Interface.new
-            i.download_grades_ms(school_year = $school.current_school_year.value)
+            i.download_grades_ms(school_year = $school.current_school_year)
             #FileUtils.mv( "#{$paths.imports_path}Jupiter_Grades_&_Schedules.csv" , "#{import_path}/#{file_name}")
             return true #this may need more work if downloads fail
         when "scantron_performance"

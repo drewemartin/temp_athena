@@ -27,7 +27,7 @@ end
     def document_pids(type_id, table=nil, key_field=nil, key_field_value=nil, created_date=nil, sort="DESC") 
         
         check_doc_relate = (table && key_field && key_field_value) ? true : false
-        sy_string = "#{$config.school_year}".insert(4,"-")
+        sy_string = $config.school_year
         sql_str =  "SELECT #{data_base}.documents.primary_id FROM #{data_base}.documents "
         if check_doc_relate
             sql_str << "LEFT JOIN #{data_base}.document_relate

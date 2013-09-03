@@ -58,7 +58,7 @@ www.agora.org"
       #TITLE
       pdf.grid([3,0], [3,3]).bounding_box do
         #pdf.stroke_bounds
-        text = "<b>Withdrawal Report #{$school.current_school_year.value} School Year</b>"
+        text = "<b>Withdrawal Report #{$school.current_school_year} School Year</b>"
         pdf.text text, :align => :center, :size => 18, :inline_format => true
       end
       ########################################################################
@@ -242,7 +242,7 @@ www.agora.org"
       #TITLE
       pdf.grid([3,0], [3,3]).bounding_box do
         #pdf.stroke_bounds
-        text = "<b>Withdrawal Report #{$school.current_school_year.value} School Year</b>"
+        text = "<b>Withdrawal Report #{$school.current_school_year} School Year</b>"
         pdf.text text, :align => :center, :size => 18, :inline_format => true
       end
       ########################################################################

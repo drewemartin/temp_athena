@@ -16,7 +16,7 @@ class K6_Progress_Snapshot_Report < Base
         
         #@word = $base.word
         #@word.DisplayAlerts = false
-        #@school_year = $school.current_school_year.value
+        #@school_year = $school.current_school_year
         @structure          = nil
         #@grade_levels       = grade_levels
         
@@ -44,7 +44,7 @@ class K6_Progress_Snapshot_Report < Base
             AND grade_level REGEXP 'K|1st|2nd'
             GROUP BY teacher "
         )
-        @teacher_reports_path = $config.init_path("#{$paths.reports_path}Progress_Reports/School_Year_#{$school.current_school_year.value}/#{term}_K6_Teachers")
+        @teacher_reports_path = $config.init_path("#{$paths.reports_path}Progress_Reports/School_Year_#{$school.current_school_year}/#{term}_K6_Teachers")
         #teachers.each{|teacher|
         #    
         #    teacher_package(teacher, term)
@@ -748,7 +748,7 @@ end
      
         student_name                    = "#{record.fields["last_name"].value}_#{record.fields["first_name"].value}"
         file_name                       = "#{term}_#{student_name}_#{student_id}"
-        destination_path                = "Progress_Reports/School_Year_#{$school.current_school_year.value}/#{term}_K6_Students"
+        destination_path                = "Progress_Reports/School_Year_#{$school.current_school_year}/#{term}_K6_Students"
         template_name                   = "k6_progress_report_with_masteries"
         
         pdf_file_path                   = "#{$paths.reports_path}/#{destination_path}/#{file_name}.pdf"
@@ -945,7 +945,7 @@ end
             }
             $students.detach(sid)
         }
-        location = "Progress_Reports/School_Year_#{$school.current_school_year.value}/Overview_Report"
+        location = "Progress_Reports/School_Year_#{$school.current_school_year}/Overview_Report"
         filename = "K6_Progress_Report_Overview"
         $reports.csv(location, filename, rows)
     end

@@ -237,7 +237,7 @@ Team Member has participated in additional duties beyond his/her job description
         end
         
         
-        review_period       = "#{$school.current_school_year.value} School Year"
+        review_period       = "#{$school.current_school_year} School Year"
         
         pdf.table [
             
