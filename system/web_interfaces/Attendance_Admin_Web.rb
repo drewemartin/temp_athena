@@ -838,7 +838,7 @@ end
             #HEADERS
             [
                 "mode"              ,
-                "sources"           ,
+                #"sources"           ,
                 "description"       ,
                 "procedure_type"
                 
@@ -850,7 +850,7 @@ end
         
         row = Array.new
         row.push(record.fields["mode"               ].web.text())
-        row.push(record.fields["sources"            ].web.text())
+        #row.push(record.fields["sources"            ].web.text())
         row.push(record.fields["description"        ].web.default())
         row.push(record.fields["procedure_type"     ].web.radio(:radio_choices=>procedure_type_dd))
         

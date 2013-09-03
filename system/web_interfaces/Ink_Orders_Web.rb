@@ -90,7 +90,7 @@ class INK_ORDERS_WEB
             fields["ink"].value = ink_check[0][2]
         end
         fields["status"].value = "Pending"
-        fields["school_year"].value = $school.current_school_year.to_user
+        fields["school_year"].value = $school.current_school_year
         
         output << $tools.legend_open("sub", "New Ink Order")
         

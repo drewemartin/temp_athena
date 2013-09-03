@@ -172,6 +172,8 @@ end
         
         table_array = Array.new
         
+        output << "<div class='table_container'>"
+        
         output << $tools.button_new_row(table_name = "SAPPHIRE_CALENDARS_CALENDARS")
         
         table_array.push(
@@ -210,6 +212,8 @@ end
         } if pids
         
         output << $tools.data_table(table_array, "sapphire_calendars_calendars")
+        
+        output << "</div>"
        
         return output
         
@@ -220,6 +224,8 @@ end
         output = String.new
         
         table_array = Array.new
+        
+        output << "<div class='table_container'>"
         
         output << $tools.button_new_row(table_name = "SAPPHIRE_DICTIONARY_PERIODS")
         
@@ -263,6 +269,8 @@ end
         } if pids
         
         output << $tools.data_table(table_array, "sapphire_dictionary_periods")
+        
+        output << "</div>"
        
         return output
         
@@ -372,9 +380,14 @@ end
         output << "<style>
             button.new_row_button_SAPPHIRE_CALENDARS_CALENDARS {
                 margin-top: 10px;
+                margin-bottom:5px;
             }
             button.new_row_button_SAPPHIRE_DICTIONARY_PERIODS {
                 margin-top: 10px;
+                margin-bottom:5px;
+            }
+            .table_container{
+                margin-bottom:25px;
             }
         </style>"
         
