@@ -140,7 +140,21 @@ end
         return output
         
     end
-   
+
+    def school_years_dd
+        
+        arr = $tables.attach("SCHOOL_YEAR_DETAIL").find_fields("school_year", "ORDER BY school_year ASC", {:value_only=>true}) || []
+        
+        #if arr
+        #    fall    = arr[-1].split("-")[0].to_i+1
+        #    spring  = arr[-1].split("-")[1].to_i+1
+        #    arr.push("#{fall}-#{spring}")
+        #end
+        
+        return $dd.from_array(arr)
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DD_OBJECTS
 end

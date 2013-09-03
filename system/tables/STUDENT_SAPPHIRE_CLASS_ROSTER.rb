@@ -52,7 +52,7 @@ end
         
         if ilp_cat && ilp_type
             
-            if !(
+            if (
                 
                 ilp_record = student.ilp.existing_records(
                     "WHERE  ilp_entry_category_id   = '#{ilp_cat.value  }'
@@ -61,6 +61,10 @@ end
                 )
                 
             )
+                
+                ilp_record = ilp_record[0]
+                
+            else
                 
                 ilp_record = student.ilp.new_record
                 
@@ -184,6 +188,7 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
+            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"text", "file_field"=>"STUDENT_ID"                    } if field_order.push("student_id"                      )
             structure_hash["fields"]["school_year"                      ] = {"data_type"=>"int",  "file_field"=>"SCHOOL_YEAR"                   } if field_order.push("school_year"                     )
             structure_hash["fields"]["school_id"                        ] = {"data_type"=>"text", "file_field"=>"SCHOOL_ID"                     } if field_order.push("school_id"                       )
             structure_hash["fields"]["course_id"                        ] = {"data_type"=>"text", "file_field"=>"COURSE_ID"                     } if field_order.push("course_id"                       )
@@ -198,7 +203,6 @@ end
             structure_hash["fields"]["room_code"                        ] = {"data_type"=>"text", "file_field"=>"ROOM_CODE"                     } if field_order.push("room_code"                       )
             structure_hash["fields"]["room_desc"                        ] = {"data_type"=>"text", "file_field"=>"ROOM_DESC"                     } if field_order.push("room_desc"                       )
             structure_hash["fields"]["subject_area_code"                ] = {"data_type"=>"text", "file_field"=>"SUBJECT_AREA_CODE"             } if field_order.push("subject_area_code"               )
-            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"text", "file_field"=>"STUDENT_ID"                    } if field_order.push("student_id"                      )
             structure_hash["fields"]["last_name"                        ] = {"data_type"=>"text", "file_field"=>"LAST_NAME"                     } if field_order.push("last_name"                       )
             structure_hash["fields"]["first_name"                       ] = {"data_type"=>"text", "file_field"=>"FIRST_NAME"                    } if field_order.push("first_name"                      )
             structure_hash["fields"]["middle_name"                      ] = {"data_type"=>"text", "file_field"=>"MIDDLE_NAME"                   } if field_order.push("middle_name"                     )

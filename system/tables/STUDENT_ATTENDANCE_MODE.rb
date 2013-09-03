@@ -39,18 +39,6 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    def create_att_mode_records
-        $students.current_students.each do |sid|
-            if !by_studentid_old(sid)
-                student = $students.attach(sid)
-                attendance_mode = student.grade.match(/K|1st|2nd|3rd|4th|5th|6th|7th|8th/) ? "K8 Synchronous" : "HS Synchronous"
-                student_attendance_mode_row = student.new_row("Student_Attendance_Mode")
-                student_attendance_mode_row.fields["attendance_mode"].value = attendance_mode
-                student_attendance_mode_row.save
-            end
-        end
-    end
   
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION

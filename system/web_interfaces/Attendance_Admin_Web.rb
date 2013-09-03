@@ -99,9 +99,8 @@ end
             #HEADERS
             [
                 "mode"              ,
-                "sources"           ,
-                "description"       ,
-                "procedure_type"
+                "procedure_type"    ,
+                "description"       
                 
             ]
             
@@ -113,10 +112,9 @@ end
             row = Array.new
             
             record = $tables.attach("ATTENDANCE_MODES").by_primary_id(pid) 
-            row.push(record.fields["mode"               ].web.text())
-            row.push(record.fields["sources"            ].web.text())
+            row.push(record.fields["mode"               ].web.label())
+            row.push(record.fields["procedure_type"     ].web.label)#select(:dd_choices=>procedure_type_dd))
             row.push(record.fields["description"        ].web.default())
-            row.push(record.fields["procedure_type"     ].web.radio(:radio_choices=>procedure_type_dd))
             
             table_array.push(row)
             
@@ -149,29 +147,33 @@ end
         pids = $tables.attach("ATTENDANCE_SOURCES").primary_ids
         pids.each{|pid|
             
-            row = Array.new
+            row             = Array.new
+            icons           = "<div class='type_icons'></div>"
+            record          = $tables.attach("ATTENDANCE_SOURCES").by_primary_id(pid)
             
-            record = $tables.attach("ATTENDANCE_SOURCES").by_primary_id(pid) 
-            row.push(record.fields["source" ].web.text()                                                    )
-            row.push(record.fields["type"   ].web.select(:dd_choices=>$dd.from_array(["live","activity"]))  )
+            icons.insert(-7, record.fields["override_attendance"   ].is_true? ? $icons.ui_notice    : "")
+            icons.insert(-7, record.fields["test_event"            ].is_true? ? $icons.test         : "")
+            
+            row.push(record.fields["source" ].web.label()    )
+            row.push(record.fields["type"   ].web.label)#select(:dd_choices=>source_type_dd)   )
             
             grades = Array.new
             grades.push(["K","1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"])  
             grades.push(
                 [
-                    record.fields["grade_k"       ].web.default(),
-                    record.fields["grade_1st"     ].web.default(),
-                    record.fields["grade_2nd"     ].web.default(),
-                    record.fields["grade_3rd"     ].web.default(),
-                    record.fields["grade_4th"     ].web.default(),
-                    record.fields["grade_5th"     ].web.default(),
-                    record.fields["grade_6th"     ].web.default(),
-                    record.fields["grade_7th"     ].web.default(),
-                    record.fields["grade_8th"     ].web.default(),
-                    record.fields["grade_9th"     ].web.default(),
-                    record.fields["grade_10th"    ].web.default(),
-                    record.fields["grade_11th"    ].web.default(),
-                    record.fields["grade_12th"    ].web.default()
+                    record.fields["grade_k"       ].web.default(:disabled=>true),
+                    record.fields["grade_1st"     ].web.default(:disabled=>true),
+                    record.fields["grade_2nd"     ].web.default(:disabled=>true),
+                    record.fields["grade_3rd"     ].web.default(:disabled=>true),
+                    record.fields["grade_4th"     ].web.default(:disabled=>true),
+                    record.fields["grade_5th"     ].web.default(:disabled=>true),
+                    record.fields["grade_6th"     ].web.default(:disabled=>true),
+                    record.fields["grade_7th"     ].web.default(:disabled=>true),
+                    record.fields["grade_8th"     ].web.default(:disabled=>true),
+                    record.fields["grade_9th"     ].web.default(:disabled=>true),
+                    record.fields["grade_10th"    ].web.default(:disabled=>true),
+                    record.fields["grade_11th"    ].web.default(:disabled=>true),
+                    record.fields["grade_12th"    ].web.default(:disabled=>true)
                 ]
             )
             
@@ -184,7 +186,7 @@ end
                 :caption        => "Eligible Grades"
             )
             
-            row.push(grades_included)
+            row.push(grades_included+icons)
             
             table_array.push(row)
             
@@ -786,7 +788,7 @@ end
         row = Array.new
      
         row.push(record.fields["source" ].web.text()                                                    )
-        row.push(record.fields["type"   ].web.select(:dd_choices=>$dd.from_array(["live","activity"]))  )
+        row.push(record.fields["type"   ].web.select(:dd_choices=>source_type_dd)  )
         
         grades = Array.new
         grades.push(["K","1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"])  
@@ -867,24 +869,29 @@ end
     
     def procedure_type_dd
         $dd.from_array(
-            [
-                "Activity"                      ,
-                "Live Sessions"                 ,
-                "Activity AND Live Sessions"    ,
-                "Activity OR Live Sessions"     ,
-                "Manual (default 'p')"          ,
-                "Manual (default 'a')"          ,
-                "Custom Procedure"              ,
-                "Not Enrolled"
+            [  
+                "Activity"                              ,
+                "Activity AND Live Sessions"            ,
+                "Activity OR Live Sessions"             ,
+                "Classroom Activity (50% or more)"      ,
+                "Live Sessions"                         ,
+                "Manual (default a)"                    ,
+                "Manual (default p)"                    ,
+                "Not Enrolled"                          ,
+                "Override Procedure"                    
             ]
         )
     end
-    #"activity_only"     ,
-    #"live_only"         ,
-    #"activity_and_live" ,
-    #"activity_or_live"  ,
-    #"no_activity"       ,
-    #"custom_procedure"  
+
+    def source_type_dd
+        $dd.from_array(
+            [
+                "Live"              ,
+                "Activity"          ,
+                "Classroom Activity"
+            ]
+        )
+    end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________JavaScript
 end
@@ -907,6 +914,10 @@ end
     def css
         output = "<style>"
         output << "
+        
+        div.type_icons      {display: inline-block; float: right;}
+        div.type_icons img  {display: inline-block;}
+        div.type_icons span {display: inline-block;}
         
         div.ATTENDANCE_MODES__description textarea{
             width: 300px;

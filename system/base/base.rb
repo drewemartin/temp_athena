@@ -65,6 +65,8 @@ class Base
     
     set_school_year(school_year)
     
+    $icons = self.icons
+    
     Struct.new( "NAME_DESC_VALUE",
       :NAME,            
       :DESCRIPTION,     
@@ -86,6 +88,14 @@ class Base
   end
   #---------------------------------------------------------------------------
 
+  def icons
+    if !structure.has_key?(:icons)
+      require "#{$paths.base_path}web_icons"
+      structure[:icons] = Web_Icons.new()
+    end
+    structure[:icons]
+  end
+  
   def school_days
     
     #IF SCHOOL DAYS HAVE ALREADY BEEN LOADED INTO THE TABLE IT WILL RETURN THE ENTERED VALUES
@@ -1121,6 +1131,9 @@ def x______________STRUCTURE
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+  def school_year_select
+    $field.new("field"=>"school_year","value"=>$config.school_year).web.select(:dd_choices=>$dd.school_years_dd)
+  end
   
   def set_school_year(school_year)
     
@@ -1130,18 +1143,9 @@ end
       
     else
       
-      if !$school.current_school_year.value.nil?
+      if $school.current_school_year
         
-        $config.school_year = $school.current_school_year.value
-        
-      else
-        
-        m = DateTime.now.strftime("%m").to_i
-        if m >= 9 && m <= 12
-          $config.school_year = "#{DateTime.now.strftime("%Y")}#{DateTime.now.strftime("%Y").to_i+1}"
-        else
-          $config.school_year = "#{DateTime.now.strftime("%Y").to_i-1}#{DateTime.now.strftime("%Y")}" 
-        end
+        $config.school_year = $school.current_school_year
         
       end
       

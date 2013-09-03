@@ -35,6 +35,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "test_site_accommodations",
                 "file_name"         => "test_site_accommodations.csv",
                 "file_location"     => "test_site_accommodations",

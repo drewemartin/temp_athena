@@ -258,7 +258,8 @@ end
                 "Name",
                 "Test Type",
                 "Start Date",
-                "End Date",         
+                "End Date",
+                "Strict Attendance?"
             ]
             
         ]
@@ -288,10 +289,11 @@ end
             row.push("<img src='/athena/images/#{color}.png' title='#{title}' width='32' height='32'/>"                 )
             row.push(event_sites_button                                                                                 )  
             row.push(event_students_button                                                                              )          
-            row.push(record.fields["name"                ].web.text()                                                   )
-            row.push(record.fields["test_id"             ].web.select(:disabled=>true,:dd_choices=>test_type_dd)        )
-            row.push(record.fields["start_date"          ].web.date(:defaultDate_throw=>"1")                                                   )
-            row.push(record.fields["end_date"            ].web.date(:defaultDate_catch=>"1")                                                   )
+            row.push(record.fields["name"                   ].web.text()                                                )
+            row.push(record.fields["test_id"                ].web.select(:disabled=>true,:dd_choices=>test_type_dd)     )
+            row.push(record.fields["start_date"             ].web.date(:defaultDate_throw=>"1")                         )
+            row.push(record.fields["end_date"               ].web.date(:defaultDate_catch=>"1")                         )
+            row.push(record.fields["override_attendance"    ].web.checkbox                                              )
             
             tables_array.push(row)
             
@@ -417,10 +419,11 @@ end
         
         output << $tools.legend_open("sub", "Event Details")
         
-            output << fields["name"].web.text(:label_option=>"Name:")
-            output << fields["test_id"].web.select(:label_option=>"Test ID:",:dd_choices=>test_type_dd)
-            output << fields["start_date"].web.date(:label_option=>"Start Date:",:defaultDate_throw=>"1")
-            output << fields["end_date"].web.date(:label_option=>"End Date:",:defaultDate_catch=>"1")
+            output << fields["name"                     ].web.text(:label_option=>"Name:")
+            output << fields["test_id"                  ].web.select(:label_option=>"Test ID:",:dd_choices=>test_type_dd)
+            output << fields["start_date"               ].web.date(:label_option=>"Start Date:",:defaultDate_throw=>"1")
+            output << fields["end_date"                 ].web.date(:label_option=>"End Date:",:defaultDate_catch=>"1")
+            output << fields["override_attendance"      ].web.checkbox(:label_option=>"Strict Attendance?")
         
         output << $tools.legend_close()
         

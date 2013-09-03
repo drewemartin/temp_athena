@@ -41,6 +41,7 @@ end
     
     def after_insert(row_object)
         queue_update_student_tests(row_object)
+        manage_attendance_admin_record(row_object)
     end
     
     def after_change_field_end_date(field_object)
@@ -49,6 +50,33 @@ end
     
     def after_change_field_start_date(field_object)
         queue_update_student_tests(field_object)
+    end
+    
+    def after_change_field_override_attendance(field_object)
+        manage_attendance_admin_record(field_object)
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________TRIGGER_EVENT_SUPPORT
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    def manage_attendance_admin_record(row_field_object)
+        
+        record              = by_primary_id(row_field_object.primary_id)
+        
+        source_id_str       = "Test Event ID: #{record.primary_id}"
+        source_name         = "#{source_id_str} #{record.fields["name"].value}"
+        
+        att_source_record   = $tables.attach("ATTENDANCE_SOURCES").record("WHERE source REGEXP '#{source_id_str}'")
+        att_source_record   = $tables.attach("ATTENDANCE_SOURCES").new_row if !att_source_record
+        
+        att_source_record.fields["source"               ].value = source_name
+        att_source_record.fields["override_attendance"  ].value = record.fields["override_attendance"   ].value 
+        att_source_record.fields["test_event"           ].value = true
+        
+        att_source_record.save
+        
     end
     
     def queue_update_student_tests(this_object)

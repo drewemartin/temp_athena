@@ -88,6 +88,8 @@ end
             structure_hash["fields"]["ayp_cutoff_date"]     = {"data_type"=>"date", "file_field"=>"ayp_cutoff_date"}    if field_order.push("ayp_cutoff_date")
             structure_hash["fields"]["current"]             = {"data_type"=>"bool", "file_field"=>"current"}            if field_order.push("current")
             structure_hash["fields"]["finalized"]           = {"data_type"=>"bool", "file_field"=>"finalized"}          if field_order.push("finalized")
+            structure_hash["fields"]["edit_start_date"]     = {"data_type"=>"date", "file_field"=>"edit_start_date"}    if field_order.push("edit_start_date")
+            structure_hash["fields"]["edit_end_date"]       = {"data_type"=>"date", "file_field"=>"edit_end_date"}      if field_order.push("edit_end_date")
         structure_hash["field_order"] = field_order
         return structure_hash
     end

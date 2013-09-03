@@ -33,7 +33,89 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-  
+    def load_pre_reqs
+        
+        pre_reqs = [
+            {
+                :source                 => "Blackboard",              
+                :type                   => "Live",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "K12 Logins",              
+                :type                   => "Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "K12 Logins - LC",              
+                :type                   => "Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "LMS",              
+                :type                   => "Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "LMS - Manual",              
+                :type                   => "Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "OLS",              
+                :type                   => "Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            },
+            {
+                :source                 => "Sapphire Period Attendance",              
+                :type                   => "Classroom Activity",                
+                :test_event             => nil,          
+                :override_attendance    => nil, 
+                :grade_k=>true,     :grade_1st=>true,   :grade_2nd=>true,   :grade_3rd=>true,   :grade_4th=>true,   :grade_5th=>true,
+                :grade_6th=>true,   :grade_7th=>true,   :grade_8th=>true,
+                :grade_9th=>true,   :grade_10th=>true,  :grade_11th=>true,  :grade_12th=>true         
+            }
+        ]
+        
+        max = pre_reqs.length
+        (0...max).each{|i|
+            
+            if primary_ids("WHERE source = '#{pre_reqs[i][:source]}'")
+                pre_reqs[i] = nil
+            end
+            
+        }
+        
+        pre_reqs.compact!
+        
+        return pre_reqs
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
@@ -49,7 +131,6 @@ end
     def table
         if !@table_structure
             structure_hash = {
-                :data_base          => "#{$config.school_name}_master",
                 "name"              => "attendance_sources",
                 "file_name"         => "attendance_sources.csv",
                 "file_location"     => "attendance_sources",
@@ -65,9 +146,11 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-        
+            
             structure_hash["fields"]["source"                           ] = {"data_type"=>"text", "file_field"=>"source"                        } if field_order.push("source"                          )
             structure_hash["fields"]["type"                             ] = {"data_type"=>"text", "file_field"=>"type"                          } if field_order.push("type"                            )
+            structure_hash["fields"]["test_event"                       ] = {"data_type"=>"bool", "file_field"=>"test_event"                    } if field_order.push("test_event"                      )
+            structure_hash["fields"]["override_attendance"              ] = {"data_type"=>"bool", "file_field"=>"override_attendance"           } if field_order.push("override_attendance"             )
             
             structure_hash["fields"]["grade_k"                          ] = {"data_type"=>"bool", "file_field"=>"grade_k"                       } if field_order.push("grade_k"                         )
             structure_hash["fields"]["grade_1st"                        ] = {"data_type"=>"bool", "file_field"=>"grade_1st"                     } if field_order.push("grade_1st"                       )

@@ -75,6 +75,62 @@ end
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________ATTENDANCE
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def log_attendance_activity(a)
+    #:date      =>nil,
+    #:source    =>nil
+        
+        if attendance_record = self.attendance.existing_records("WHERE date = '#{a[:date]}'")
+            
+            attendance_record = attendance_record[0]
+            
+        else
+            
+            attendance_record = self.attendance.new_record
+            attendance_record.fields["date"       ].value = a[:date]
+            attendance_record.fields["mode"       ].value = "Activity - Not Enrolled"
+            
+        end
+        
+        curr_value  = attendance_record.fields["code"].value
+      
+        if curr_value.nil?
+            attendance_record.fields["code"].value = a[:source]
+            attendance_record.save
+            
+        elsif !curr_value.include?(a[:source])
+            attendance_record.fields["code"].value = "#{curr_value},#{a[:source]}"
+            attendance_record.save
+            
+        end
+        
+    end
+    
+    def remove_attendance_activity(a)
+    #:date      =>nil,
+    #:source    =>nil
+        
+        if attendance_record = self.attendance.existing_records("WHERE date = '#{a[:date]}'")
+            
+            curr_value  = attendance_record.fields["code"].value
+          
+            if (!curr_value.nil? && curr_value.include?(a[:source]))
+                
+                attendance_record.fields["code"].value.delete(",#{a[:source]}")
+                attendance_record.fields["code"].value.delete(a[:source])
+                
+                attendance_record.save
+                
+            end
+            
+        end
+        
+    end
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________STRUCTURE
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -150,7 +206,7 @@ end
                                     
                                     #CREATE A FUNCTION FOR EACH FIELD OF THAT RECORD
                                     table.fields.each_key{|f_name|
-                                        create_method(f_name.to_sym) {
+                                        create_method(f_name.gsub("-","_").to_sym) {
                                             $tables.attach(self.class.to_s.gsub("_API","")).field_by_sid(f_name, @sid) 
                                         }
                                     }

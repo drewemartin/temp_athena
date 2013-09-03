@@ -50,7 +50,10 @@ end
             
             <div id='student_page_view_container' name='student_page_view_container'></div>\n
             
-            <INPUT type='hidden' id='school_year'   name='school_year'  value='#{$config.school_year}'>\n            
+            <div id='school_year_container' name='school_year_container'>
+                #{$base.school_year_select}
+            </div>\n
+          
             <INPUT type='hidden' id='page'          name='page'         value='#{$kit.page}'>\n
             <INPUT type='hidden' id='user_id'       name='user_id'      value='#{$team_member ? $team_member.preferred_email.value : ''}'>\n
             

@@ -16,93 +16,6 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def by_studentid_old(arg, att_date = nil)
-        params = Array.new
-        params.push( Struct::WHERE_PARAMS.new("student_id", "=", arg        ) )
-        params.push( Struct::WHERE_PARAMS.new("date",       "=", att_date   ) ) if att_date
-        where_clause = $db.where_clause(params)
-        if att_date.nil?
-            where_clause << "ORDER BY date DESC"
-            records(where_clause)
-        else
-            record(where_clause)
-        end
-    end
-    
-    def create_record_if_none_exists(student_id, att_date = nil)
-        params = Array.new
-        params.push( Struct::WHERE_PARAMS.new("student_id", "=", student_id ) )
-        params.push( Struct::WHERE_PARAMS.new("date",       "=", att_date   ) )
-        where_clause = $db.where_clause(params)
-        results = record(where_clause)
-        if results
-            return results
-        else
-            return new_row
-        end
-    end
-    
-    def attendance_date(att_date, args)
-        params = Array.new
-        operator = args[:operator] ? args[:operator] : "="
-        
-        params.push( Struct::WHERE_PARAMS.new("date",       operator, att_date              ) )
-        params.push( Struct::WHERE_PARAMS.new("student_id", "=",      args[:student_id]     ) ) if args[:student_id]
-        
-        where_clause = $db.where_clause(params)
-        records(where_clause)
-    end
-    
-    def field_bystudentid(field_name, studentid, att_date = nil)
-        params = Array.new
-        params.push( Struct::WHERE_PARAMS.new("student_id", "=", studentid  ) )
-        params.push( Struct::WHERE_PARAMS.new("date",       "=", att_date   ) ) if att_date
-        where_clause = $db.where_clause(params)
-        find_field(field_name, where_clause)
-    end
-    
-    def students_with_records
-        select_str = 
-        "SELECT
-            student_id 
-        FROM
-            `student_attendance` 
-        WHERE
-            mode IS NOT NULL 
-            AND mode != 'Withdrawn'
-            AND mode != 'SED-Changed'
-        GROUP BY student_id"
-        $db.get_data_single(select_str)
-    end
-    
-    def students_with_records_by_date(att_date, complete = nil)
-        select_str =
-        "SELECT
-            student_id
-        FROM `student_attendance`
-        WHERE date = '#{att_date}'
-        #{" AND complete = '#{complete}' " if complete}
-        GROUP BY student_id"
-        $db.get_data_single(select_str)
-    end
-    
-    def finalize_eligible
-        $db.get_data_single(
-            "SELECT
-                primary_id
-            FROM #{table_name}
-            LEFT JOIN attendance_master ON #{table_name}.student_id = attendance_master.student_id
-            WHERE attendance_master.CONCAT(\"`\",date,\"`\" NOT IN(
-                SELECT
-                    code
-                FROM attendance_codes
-                WHERE
-            )
-            AND mode != 'Withdrawn'
-            AND mode != 'SED-Changed'"
-        )
-    end
-    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENTS
 end
@@ -110,192 +23,184 @@ end
 
     def after_load_k12_ecollege_activity
         
-        activity_table = $tables.attach("k12_ecollege_activity")
-        activity_table.primary_ids("GROUP BY student_id, activitydate").each{|pid|
+        source  = "LMS"
+        pids    = $tables.attach("K12_ECOLLEGE_ACTIVITY").primary_ids
+        
+        pids.each{|pid|
             
-            activity_record = activity_table.by_primary_id(pid)
-            s_id            = activity_record.fields["student_id"   ].value
-            att_date        = activity_record.fields["activitydate" ].iso_date
-            att_record      = by_studentid_old(s_id,att_date)
+            record  = $tables.attach("K12_ECOLLEGE_ACTIVITY").by_primary_id(pid)
+            date    = record.fields["activitydate" ].iso_date
             
-            if att_record && !att_date.nil?
+            if $field.is_schoolday?(date)
                 
-                this_code   = "k12_ecollege_activity"
-                curr_value  = att_record.fields["code"].value
-                
-                if curr_value.nil?
-                    att_record.fields["code"].value = this_code
-                    att_record.save
-                    
-                elsif !curr_value.include?(this_code)
-                    att_record.fields["code"].value = "#{curr_value},#{this_code}"
-                    att_record.save
-                    
-                end
+                student = $students.get(record.fields["student_id"].value)
+                student.log_attendance_activity(:date=>date, :source=>source) if student
                 
             end
             
-        }
+        } if pids
         
     end
     
     def after_load_k12_elluminate_session
-        ellum_table = $tables.attach("k12_elluminate_session")
-        ellum_table.primary_ids.each{|pid|
+        
+        source  = "Blackboard"
+        pids    = $tables.attach("K12_ELLUMINATE_SESSION").primary_ids
+        
+        pids.each{|pid|
             
-            ellum_record        = ellum_table.by_primary_id(pid)
-            att_date            = ellum_record.fields["attendee_start_time"].iso_date
+            record  = $tables.attach("K12_ELLUMINATE_SESSION").by_primary_id(pid)
+            date    = record.fields["attendee_start_time"   ].iso_date
             
-            sid                 = ellum_record.fields["student_id"].value
-            student_record      = by_studentid_old(sid, att_date)
-            
-            if student_record
-                att_code        = "k12_elluminate_session"
-                current_value   = student_record.fields["code"].value
+            if $field.is_schoolday?(date)
                 
-                if current_value.nil?
-                    new_value       = att_code
-                elsif !current_value.include?(att_code)
-                    new_value       = "#{current_value},#{att_code}"
-                else
-                    new_value       = current_value
-                end
+                student = $students.get(record.fields["student_id"].value)
+                student.log_attendance_activity(:date=>date, :source=>source) if student
                 
-                student_record.fields["code"].value = new_value
-                student_record.save
             end
             
-        }
-    end
-    
-    def after_load_k12_hs_activity
-        activity_table = $tables.attach("k12_hs_activity")
-        activity_table.primary_ids.each{|pid|
-            
-            activity_record = activity_table.by_primary_id(pid)
-            hs_date = activity_record.fields["last_login"].iso_date
-            
-            s_id = activity_record.fields["student_id"].value
-            activity_student_record = by_studentid_old(s_id,hs_date)
-            
-            if activity_student_record && !hs_date.nil?
-                hs_code = "k12_hs_activity"
-                curr_value = activity_student_record.fields["code"].value
-                
-                if curr_value.nil?
-                    neww_value = hs_code
-                elsif !curr_value.include?(hs_code)
-                    neww_value = "#{curr_value},#{hs_code}"
-                else
-                    neww_value = curr_value
-                end
-                
-                activity_student_record.fields["code"].value = neww_value
-                activity_student_record.save
-            end
-            
-        }
+        } if pids
         
     end
     
-    def after_load_k12_omnibus
-        $tables.attach("STUDENT_ATTENDANCE_MODE").create_att_mode_records
-        $tables.attach("STUDENT_ATTENDANCE"     ).create_att_records
+    def after_load_k12_hs_activity
+        
+        source  = "LMS - Manual"
+        pids    = $tables.attach("K12_HS_ACTIVITY").primary_ids
+        
+        pids.each{|pid|
+            
+            record  = $tables.attach("K12_HS_ACTIVITY").by_primary_id(pid)
+            date    = record.fields["last_login"].iso_date
+            
+            if $field.is_schoolday?(date)
+                
+                student = $students.get(record.fields["student_id"].value)
+                student.log_attendance_activity(:date=>date, :source=>source) if student
+                
+            end
+            
+        } if pids
+        
     end
     
     def after_load_k12_lessons_count_daily
-        les_count_table = $tables.attach("k12_lessons_count_daily")
-        les_count_table.primary_ids.each{|pid|
+        
+        source  = "OLS"
+        pids    = $tables.attach("K12_LESSONS_COUNT_DAILY").primary_ids
+        
+        pids.primary_ids.each{|pid|
             
-            les_record = les_count_table.by_primary_id(pid)
-            att_datee = les_record.fields["total_last_lesson"].iso_date
+            record  = $tables.attach("K12_LESSONS_COUNT_DAILY").by_primary_id(pid)
+            date    = record.fields["total_last_lesson" ].iso_date
             
-            sidd = les_record.fields["student_id"].value
-            student_recordd = by_studentid_old(sidd,att_datee)
-            
-            if student_recordd && !att_datee.nil?
-                att_codee = "k12_lessons_count_daily"
-                current_valuee = student_recordd.fields["code"].value
+            if $field.is_schoolday?(date)
                 
-                if current_valuee.nil?
-                    new_valuee = att_codee
-                elsif !current_valuee.include?(att_codee)
-                    new_valuee = "#{current_valuee},#{att_codee}"
-                else
-                    new_valuee = current_valuee
+                if !date.nil?
+                    
+                    student = $students.get(record.fields["student_id"].value)
+                    student.log_attendance_activity(:date=>date, :source=>source) if student
+                    
                 end
                 
-                student_recordd.fields["code"].value = new_valuee
-                student_recordd.save
             end
            
-        }
+        } if pids
         
     end
     
     def after_load_k12_logins
-        login_table = $tables.attach("k12_logins")
+        
         #THE STUDENT LOGGED IN
-        login_table.primary_ids("WHERE role = '1001'").each{|pid|
+        source  = "K12 Logins"
+        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1001'")
+        
+        pids.each{|pid|
             
-            login_record = login_table.by_primary_id(pid)
-            att_date = login_record.fields["last_login"].iso_date
-           
-            identity_id = login_record.fields["identityid"].value
-            if sid = $tables.attach("Student").field_byidentityid("student_id", identity_id)
-                sid = sid.value
-                student_record = by_studentid_old(sid, att_date)
-               
-                if student_record && !att_date.nil?
-                    att_code = "k12_logins"
-                    current_value = student_record.fields["code"].value
-                   
-                    if current_value.nil?
-                        new_value = att_code
-                    elsif !current_value.include?(att_code)
-                        new_value = "#{current_value},#{att_code}"
-                    else
-                        new_value = current_value
-                    end
-                   
-                    student_record.fields["code"].value = new_value
-                    student_record.save
+            record      = $tables.attach("K12_LOGINS").by_primary_id(pid)
+            date        = record.fields["last_login"].iso_date
+            
+            if $field.is_schoolday?(date)
+              
+                identity_id = record.fields["identityid"].value
+                
+                if sid = $tables.attach("STUDENT").find_field("student_id", "WHERE identityid = '#{identity_id}'", {:value_only=>true})
+                    
+                    student = $students.get(sid)
+                    student.log_attendance_activity(:date=>date, :source=>source) if student
+                    
                 end
                 
             end
             
-        }
+        } if pids
+        
         #THE LEARNING COACH LOGGED IN
-        login_table.primary_ids("WHERE role = '1000'").each{|pid|
+        source  = "K12 Logins - LC"
+        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1000'")
+        
+        pids.each{|pid|
             
-            login_record    = login_table.by_primary_id(pid)
-            att_date        = login_record.fields["last_login"].iso_date
+            record      = $tables.attach("K12_LOGINS").by_primary_id(pid)
+            date        = record.fields["last_login"].iso_date
             
-            family_id       = login_record.fields["familyid"].value
-            regkey          = login_record.fields["regkey"].value         
-            sids            = $tables.attach("Student").students_with_records("WHERE (familyid = '#{family_id}' OR lcregistrationid REGEXP '#{regkey}')")
-            
-            sids.each{|sid|
-                student_record = by_studentid_old(sid, att_date)
+            if $field.is_schoolday?(date)
                 
-                if student_record && !att_date.nil?
-                    att_code = "k12_logins - LC"
-                    current_value = student_record.fields["code"].value
+                family_id   = record.fields["familyid"  ].value
+                regkey      = record.fields["regkey"    ].value         
+                sids        = $tables.attach("STUDENT").student_ids("WHERE (familyid = '#{family_id}' OR lcregistrationid REGEXP '#{regkey}')")
+                
+                
+                sids.each{|sid|
                     
-                    if current_value.nil?
-                        new_value = att_code
-                    elsif !current_value.include?(att_code)
-                        new_value = "#{current_value},#{att_code}"
-                    else
-                        new_value = current_value
+                    student = $students.get(sid)
+                    student.log_attendance_activity(:date=>date, :source=>source) if student
+                    
+                } if sids
+                
+            end
+            
+        } if pids
+        
+    end
+
+    def after_load_k12_omnibus
+        
+        if $field.is_schoolday?($idate)
+            
+            sids = $students.list(:currently_enrolled=>true)
+            sids.each{|sid|
+                
+                student = $students.get(sid)
+                
+                #CREATE A DAILY ATTENDANCE MASTER RECORD IF ONE DOES NOT EXIST
+                student.attendance_master.existing_record || student.attendance_master.new_record.save
+                
+                #CREATE A DAILY ATTENDANCE RECORD IF ONE DOES NOT EXIST
+                if !student.attendance.existing_records("WHERE date = '#{$idate}'")
+                    
+                    #CREATE A MODE RECORD WITH THE DEFAULT SETTING IF ONE DOES NOT EXIST
+                    if !student.attendance_mode.existing_record
+                        record = student.attendance_mode.new_record
+                        record.fields["attendance_mode"].set("Synchronous")
+                        record.save
                     end
                     
-                    student_record.fields["code"].value = new_value
-                    student_record.save
+                    mode    = student.attendance_mode.attendance_mode.value
+                    code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : nil
+                    
+                    record  = student.attendance.new_record
+                    record.fields["date"       ].value = $idate
+                    record.fields["mode"       ].value = mode
+                    record.fields["code"       ].value = code
+                    record.save
+                    
                 end
+                
             } if sids
             
-        }
+        end
+        
     end
 
     def after_load_k12_withdrawal
@@ -324,47 +229,119 @@ end
         
     end
     
-    def after_change_field_mode(field_obj)
-        after_field_change(field_obj)
-    end
-    
-    def after_change_field_code(field_obj)
-        after_field_change(field_obj)
-    end
-    
-    def after_field_change(field_obj)
-        record = by_primary_id(field_obj.primary_id)
-        require "#{$paths.system_path}data_processing/Attendance_Processing"
-        Attendance_Processing.new(record.fields["student_id"].value, record.fields["date"].value)
-    end
-    
-    def create_att_records(att_date = $idate) 
-        if $field.is_schoolday?(att_date)
-            $students.current_students.each do |sid|
-                if !by_studentid_old(sid, att_date)
-                    student         = $students.attach(sid)
-                    mode            = $tables.attach("student_attendance_mode").current_mode_by_studentid(sid).value
-                    sources         = $tables.attach("attendance_modes").sources_by_mode(mode)
-                    attendance_row  = new_row
-                    fields          = attendance_row.fields
-                    fields["student_id" ].value = sid
-                    fields["date"       ].value = att_date
-                    fields["mode"       ].value = mode
-                    fields["sources"    ].value = sources ? sources.value : sources
-                    fields["complete"   ].value = false
-                    attendance_row.save
-                    $students.detach(sid)
+    def after_load_student_sapphire_period_attendance
+        
+        #start = Time.new
+        
+        source  = "Sapphire Period Attendance"
+        pids    = $tables.attach("STUDENT_SAPPHIRE_PERIOD_ATTENDANCE").primary_ids
+        
+        pids.each{|pid|
+            
+            record              = $tables.attach("STUDENT_SAPPHIRE_PERIOD_ATTENDANCE").by_primary_id(pid)
+            sid                 = record.fields["student_id"    ].value
+            date                = record.fields["calendar_day"  ].value
+            student             = $students.get(sid)
+            
+            day_codes = $tables.attach("SAPPHIRE_CALENDARS_CALENDARS").find_fields(
+                "CONCAT(school,':',day_code)",
+                "WHERE date = '#{date}'",
+                {:value_only=>true}
+            )
+            
+            qualifying_periods  = Array.new
+            attended_periods    = Array.new
+            
+            day_codes.each{|day_code|
+                
+                school      = day_code.split(":")[0]
+                day_code    = day_code.split(":")[1]
+                
+                pattern_fields = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER").find_fields(
+                    "pattern",
+                    "WHERE active IS TRUE
+                    AND `pattern` REGEXP '\\\\(.*#{day_code}.*\\\\)'
+                    AND school_id = '#{school}'
+                    AND student_id = '#{sid}'
+                    GROUP BY pattern",
+                    {:value_only=>true}
+                )
+                
+                if pattern_fields
+                    
+                    pattern_fields.each{|pattern_field|
+                        
+                        pattern_field.split(/\r?\n/).each{|pattern|
+                            
+                            if period_code = pattern.match(/^(.*?)\W/).to_s
+                                
+                                qualifying_periods.push("period_#{period_code.strip}")
+                              
+                            end
+                          
+                        }
+                        
+                    }
+                    
+                    qualifying_periods.each{|period_code|
+                        
+                        #STUDENT MARKED PRESENT OR THE TEACHER FORGOT TO MARK ATTENDANCE (Forgetting to mark = present per Christina)
+                        code            = record.fields[period_code.downcase].value
+                        activity_code   = (code=="p" || code.nil?) ? "p" : "u"
+                        
+                        student.log_attendance_activity(
+                            :date      => date,
+                            :source    => "#{source}: #{period_code} - #{activity_code}"
+                        )
+                        
+                        attended_periods.push(period_code) if activity_code == "p" 
+                        
+                    } if qualifying_periods
+                    
                 end
+                
+            } if day_codes
+            
+            if (attended_periods.length.to_f/qualifying_periods.length.to_f > 0.5)
+                
+                record.fields["athena_attendance_code"].value = "p"
+                
+            else
+                
+                record.fields["athena_attendance_code"].value = "u"
+                
             end
+            
+            record.save
+            
+        } if pids
+        
+        #puts "completed in #{(Time.new - start)/60} minutes"
+        
+    end
+
+    def after_change_field_mode(obj)
+        process_attendance(obj)
+    end
+    
+    def after_change_field_code(obj)
+        process_attendance(obj)
+    end
+    
+    def after_insert(obj)
+        process_attendance(obj)
+    end
+    
+    def process_attendance(obj)
+        unless caller.find{|x|x.match(/Attendance_Processing/)}
+            record = by_primary_id(obj.primary_id)
+            require "#{$paths.system_path}data_processing/Attendance_Processing"
+            processed = Attendance_Processing.new(record.fields["student_id"].value, record.fields["date"].value)
         end
     end
     
-    def after_insert(row_obj)
-        record = by_primary_id(row_obj.primary_id)
-        require "#{$paths.system_path}data_processing/Attendance_Processing"
-        Attendance_Processing.new(record.fields["student_id"].value, record.fields["date"].value)
-    end
-  
+    
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end

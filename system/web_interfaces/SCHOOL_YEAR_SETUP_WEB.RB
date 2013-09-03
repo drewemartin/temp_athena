@@ -13,15 +13,8 @@ class SCHOOL_YEAR_SETUP_WEB
     
     def breakaway_caption
         
-        school_year_dd = $field.new(
-            "field"     => "school_year",
-            "value"     => $config.school_year
-        ).web.select(
-            :dd_choices => $dd.school_years,
-            :onchange   => "fill_select_option('breakaway_container', this );",
-            :field_class=> "no_save"
-        )
-        return "School Year Setup #{school_year_dd}"
+        return "School Year Setup"
+        
     end
     
     def page_title
@@ -30,21 +23,32 @@ class SCHOOL_YEAR_SETUP_WEB
         
     end
     
-    def load
+    def load 
         
-        output = String.new
-        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("start_date",   "1").web.default(   :disabled=>@disabled, :label_option=>"First Day of School:")
-        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("end_date",     "1").web.default(   :disabled=>@disabled, :label_option=>"Last Day of School:")
-        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("finalized",    "1").web.select(    :disabled=>@disabled, :label_option=>"Calendar Finalized?", :dd_choices=>$dd.bool)
-        
-        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("db_start_date","1").web.default(   :disabled=>@disabled, :label_option=>"Database Open Date:")
-        output << $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("db_end_date",  "1").web.default(   :disabled=>@disabled, :label_option=>"Database Close Date:")
-        
-        return "#{output}#{school_holidays}"
+        "<div class='school_year_content' id='school_year_content'>#{school_year_content}</div>"
         
     end
     
     def response
+        if $kit.params.has_key?(:school_year)
+            $kit.modify_tag_content("school_year_content", school_year_content, "update")
+        end
+    end
+    
+    def school_year_content
+        
+        output = String.new
+        
+        record = $tables.attach("SCHOOL_YEAR_DETAIL").record("WHERE school_year = '#{$config.school_year}'")
+        output << record.fields["start_date"        ].web.default(   :disabled=>@disabled, :label_option=>"First Day of School:")
+        output << record.fields["end_date"          ].web.default(   :disabled=>@disabled, :label_option=>"Last Day of School:")
+        output << record.fields["finalized"         ].web.select(    :disabled=>@disabled, :label_option=>"Calendar Finalized?", :dd_choices=>$dd.bool)
+        output << record.fields["edit_start_date"   ].web.default(   :disabled=>@disabled, :label_option=>"Database Open Date:")
+        output << record.fields["edit_end_date"     ].web.default(   :disabled=>@disabled, :label_option=>"Database Close Date:")
+        
+        output << school_holidays
+        
+        return output
         
     end
     
@@ -65,32 +69,17 @@ end
         #ONCE THE SCHOOL YEAR CALENDAR IS FINALIZED A PROCESS WILL BE QUEUED TO INITIALIZE
         #THE REMAINDER OF THE TABLE.
         
-        current_db_name = $config.db_name
-        new_db_name     = "#{$config.school_name}_#{field_value}"
-        $config.db_name = new_db_name
+        $config.school_year = field_value
         
-        if !$tables.attach("SCHOOL_YEAR_DETAIL").exists?
-            
-            $tables.attach("SCHOOL_YEAR_DETAIL" ).init
-            new_school_year = $tables.attach("SCHOOL_YEAR_DETAIL" ).new_row
-            new_school_year.save
+        if !$tables.attach("SCHOOL_CALENDAR").exists?
             
             $tables.attach("SCHOOL_CALENDAR" ).init
             
-            #FNORD - THIS IS A TEMPORARY MEASURE TO BE USED UNTIL WE ARE ALOUD TIME TO IMPLEMENT THE USERS TABLES.
-            $db.query("CREATE TABLE #{new_db_name}.team             LIKE #{current_db_name}.team;"          )
-            $db.query("CREATE TABLE #{new_db_name}.team_rights      LIKE #{current_db_name}.team_rights;"   )
-            $db.query("CREATE TABLE #{new_db_name}.team_email       LIKE #{current_db_name}.team_email;"    )
-            $db.query("CREATE TABLE #{new_db_name}.team_sams_ids    LIKE #{current_db_name}.team_sams_ids;" )
-            
-            $db.query("INSERT #{new_db_name}.team           SELECT * FROM #{current_db_name}.team;"         )
-            $db.query("INSERT #{new_db_name}.team_rights    SELECT * FROM #{current_db_name}.team_rights;"  )
-            $db.query("INSERT #{new_db_name}.team_email     SELECT * FROM #{current_db_name}.team_email;"   )
-            $db.query("INSERT #{new_db_name}.team_sams_ids  SELECT * FROM #{current_db_name}.team_sams_ids;")
-            
+            new_school_year = $tables.attach("SCHOOL_YEAR_DETAIL" ).new_row
+            new_school_year.fields["school_year"].value = field_value
+            new_school_year.save
+           
         end
-        
-        @disabled = $tables.attach("SCHOOL_YEAR_DETAIL").field_by_pid("finalized", "1").is_true? ? true : false
         
         "#{breakaway_caption} #{load}"
         
@@ -103,9 +92,11 @@ end
     
     def school_holidays
         
+        output      = String.new
+        
         table_array = Array.new
         
-        add_new_button = @disabled ? "" : $tools.button_new_row(table_name = "SCHOOL_CALENDAR")
+        output << $tools.button_new_row(table_name = "SCHOOL_CALENDAR")
         
         table_array.push(
             
@@ -132,11 +123,7 @@ end
             
         } if pids
         
-       return "<div
-            class='student_container'
-            id='student_container'>
-            #{add_new_button}#{$tools.data_table(table_array, "school_calendar")}
-        </div>"
+        output << $tools.data_table(table_array, "school_holidays")
         
     end
     

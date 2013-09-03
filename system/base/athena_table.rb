@@ -577,22 +577,26 @@ end
                             #SKIPPING THIS @CURRENT_ROW BECAUSE IT'S NOT VALID, JUST K12'S DATETIME GENERATION STAMP.
                         else
                             
-                            total_rows += 1
-                            
-                            @current_row.clear
+                            total_rows += 1 
                             
                             if table["audit"] && table[:keys]
                                 
                                 key_field_values = String.new
                                 table[:keys].each{|key_name|
                                     
-                                    key_field_values << row[csv_field_names.index(key_name)]
+                                    key_field_values << @current_row.fields[key_name].set(row[csv_field_names.index(key_name)].to_s).to_db.to_s
                                     
                                 }
                                 
                                 existing_record = record("WHERE CONCAT(#{table[:keys].join(",")}) = '#{key_field_values}'")
-                                @current_row    = existing_record if existing_record
+                                if existing_record
+                                    @current_row    = existing_record
+                                else
+                                    @current_row.clear
+                                end
                                 
+                            else
+                                @current_row.clear
                             end
                             
                             if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
@@ -620,13 +624,16 @@ end
                             begin
                                 @current_row.save
                             rescue=>e
+                                e.backtrace
                                 $base.system_notification(
                                     subject = "LOAD WARNING - #{table_name}",
                                     content = "Save record failed in load.
                                     ROW DETAILS:
                                     #{row.to_s}
                                     ERROR MESSAGE:
-                                    #{e.message}"
+                                    #{e.message}",
+                                    caller[0],
+                                    e
                                 )
                                 #So the load failed can be caught in case here was a problm with saving this record.
                                 #Otherwise an error is raised inside the save function and is not reported to syslog or sysnotification
