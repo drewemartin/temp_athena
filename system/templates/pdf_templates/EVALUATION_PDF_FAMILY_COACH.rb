@@ -479,7 +479,7 @@ Sources of Evidence:</b>
         academic_department = $tables.attach("DEPARTMENT").field_by_pid("name",@t.department_id.value).value
         evaluator           = @t.supervisor_team_id.to_name(:full_name)
         
-        review_period       = "#{$school.current_school_year.value} School Year"
+        review_period       = "#{$school.current_school_year} School Year"
         
         #SCHOOL LOGO
         pdf.move_down 8

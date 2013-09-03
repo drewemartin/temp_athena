@@ -824,6 +824,7 @@ end
             :body   =>"<style>body {background-color:#F2F5F7};</style><div id='breakaway_container' style='width:1200px; min-height:400px; margin-left:auto; margin-right:auto;'>
                 
                 <H1>#{alt_page.breakaway_caption}</H1>
+                <div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>\n
                 #{alt_page_content}
                 
             </div>"
@@ -1223,7 +1224,7 @@ end
         
         fields = new_row.fields
         
-        fields["school_year"].value = $school.current_school_year.value
+        fields["school_year"].value = $school.current_school_year
         
         category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='#{category}'").value
         

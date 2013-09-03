@@ -69,7 +69,7 @@ end
             
             output << $focus_student.attendance_mode.attendance_mode.web.select({:label_option=>"#{how_to_button_attendance_override} Override Student Attendance Mode", :dd_choices=>modes_dd}, true)
             
-            attendance_records = $tables.attach("Student_Attendance").by_studentid_old(sid)
+            attendance_records = $tables.attach("Student_Attendance").by_studentid(sid)
             weeks = attendance_weeks(sid)
             weeks.each do |week|
                 week_number = week[0]
@@ -86,7 +86,7 @@ end
                         output << $tools.newlabel("att_date", Date.parse(date_string).strftime("%m/%d/%y"))
                         output << $tools.div_close()
                         if date.last
-                            date_record = $tables.attach("Student_Attendance").by_studentid_old(sid, date.first)
+                            date_record = $tables.attach("Student_Attendance").record("WHERE student_id='#{sid}' AND date='#{date.first}'")
                             fields = date_record.fields
                             
                             disabled = fields["complete"].is_true?
@@ -161,7 +161,7 @@ end
     def attendance_weeks(sid)
         #Get All Student Attendance Dates
         attendance_dates = Array.new
-        attendance_records = $tables.attach("Student_Attendance").by_studentid_old(sid)
+        attendance_records = $tables.attach("Student_Attendance").by_studentid(sid)
         attendance_records.each do |record|
             fields = record.fields
             date_string = fields["date"].value

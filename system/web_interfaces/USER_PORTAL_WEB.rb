@@ -42,6 +42,8 @@ end
             
         </style>"
         
+        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>\n"
+        
         $kit.output << "<div class='menu_buttons_container'>"
         
         #SEARCH ALL TEAM MEMBERS
