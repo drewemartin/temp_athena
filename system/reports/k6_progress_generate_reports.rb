@@ -8,7 +8,7 @@ class K6_Progress_Generate_Reports < Base
         super()
         @reprint              = true
         @term                 = "Q4"#add function to get current @term if none was passed here
-        @school_year          = $school.current_school_year.value
+        @school_year          = $school.current_school_year
         @teacher_reports_path = $config.init_path("#{$paths.reports_path}Progress_Reports/School_Year_#{@school_year}/#{@term}_K6_Teachers#{@reprint ? "/WITH_INTACT_TAGS" : ""}")
         
         #sids = [

@@ -144,7 +144,7 @@ end
     
     def school_years_dd()
         output = []
-        current_sy = $school.current_school_year.value
+        current_sy = $school.current_school_year
         temp = current_sy.split("-")
         max_year = temp[1].to_i
         i = max_year-20

@@ -81,7 +81,7 @@ end
         category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='#{document_hash[:category_name]}'").value
         
         fields = new_row.fields
-        fields["school_year"].value = $school.current_school_year.value
+        fields["school_year"].value = $school.current_school_year
         fields["category_id"].value = category_id
         fields["type_id"].value     = $tables.attach("document_type").find_field("primary_id",  "WHERE name='#{document_hash[:type_name]}' AND category_id='#{category_id}'").value
         

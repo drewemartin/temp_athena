@@ -322,7 +322,7 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     #This entire funtion needs to be reworked before next run!!! FNORD!
-    def generate_report(school_year=$config.school_year.value, reprint = false)
+    def generate_report(school_year=$config.school_year, reprint = false)
         reprints = reprint ? "/WITH_INTACT_TAGS" : ""
         puts "ENTERED 'generate_report'"
         session_school_year=(school_year)
@@ -856,7 +856,7 @@ end
     def term_active?
         return structure["term_active_#{term}"] = false if term == "Q1" || term == "Q2"
         if !structure.has_key?("term_active_#{term}")
-            results = $tables.attach("Progress_Report_Schedule").by_term(term, $config.school_year.value)
+            results = $tables.attach("Progress_Report_Schedule").by_term(term, $config.school_year)
             if results && results.fields["opened_datetime"].value && !results.fields["closed_datetime"].value
                 structure["term_active_#{term}"] = true
             else

@@ -89,8 +89,8 @@ end
     end
     
     def school_year=(arg)
-        structure[:school_year] = arg.gsub("-","")
-        self.db_name = "#{self.school_name}_#{self.school_year}"
+        self.db_name = "#{self.school_name}_#{arg.gsub("-","")}"
+        structure[:school_year] = arg
     end
     
     def storage_root=(arg)
@@ -106,12 +106,7 @@ end
     end
     
     def db_name=(arg)
-        if structure.has_key?(:db_name)
-            structure[:db_name] = arg
-            $db.new_connection
-        else
-            structure[:db_name] = arg
-        end  
+        structure[:db_name] = arg
     end
     
     def db_pass=(arg)

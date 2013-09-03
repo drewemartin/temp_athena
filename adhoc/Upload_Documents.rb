@@ -114,7 +114,7 @@ class Upload_Documents < Base
                         #add to user_documents_table to get pid
                         new_row = $tables.attach("documents").new_row
                         fields = new_row.fields
-                        fields["school_year"].value = $school.current_school_year.value
+                        fields["school_year"].value = $school.current_school_year
                         fields["category_id"].value = category_id
                         fields["type_id"].value     = type_id
                         new_row_pid = new_row.save
@@ -138,7 +138,7 @@ class Upload_Documents < Base
                         #add to user_documents_table to get pid
                         new_row = $tables.attach("documents").new_row
                         fields = new_row.fields
-                        fields["school_year"].value = $school.current_school_year.value
+                        fields["school_year"].value = $school.current_school_year
                         fields["category_id"].value = category_id
                         fields["type_id"].value     = $tables.attach("document_type").find_field("primary_id",  "WHERE name='Snap Caregivers Update' AND category_id='#{category_id}'").value
                         new_row_pid = new_row.save
@@ -377,7 +377,7 @@ class Upload_Documents < Base
                         
                         new_row = $tables.attach("documents").new_row
                         fields = new_row.fields
-                        fields["school_year"].value = $school.current_school_year.value
+                        fields["school_year"].value = $school.current_school_year
                         fields["category_id"].value = category_id
                         fields["type_id"].value     = type_id
                         new_row_pid = new_row.save
@@ -402,7 +402,7 @@ class Upload_Documents < Base
                         
                         new_row = $tables.attach("documents").new_row
                         fields = new_row.fields
-                        fields["school_year"].value = $school.current_school_year.value
+                        fields["school_year"].value = $school.current_school_year
                         fields["category_id"].value = category_id
                         fields["type_id"].value     = type_id
                         new_row_pid = new_row.save
@@ -454,7 +454,7 @@ class Upload_Documents < Base
                             
                             new_row = $tables.attach("documents").new_row
                             fields = new_row.fields
-                            fields["school_year"].value = $school.current_school_year.value
+                            fields["school_year"].value = $school.current_school_year
                             fields["category_id"].value = category_id
                             fields["type_id"].value     = type_id
                             new_row_pid = new_row.save
@@ -503,7 +503,7 @@ class Upload_Documents < Base
                                 
                                 new_row = $tables.attach("documents").new_row
                                 fields = new_row.fields
-                                fields["school_year"].value = $school.current_school_year.value
+                                fields["school_year"].value = $school.current_school_year
                                 fields["category_id"].value = category_id
                                 fields["type_id"].value     = type_id
                                 new_row_pid = new_row.save
@@ -545,7 +545,7 @@ class Upload_Documents < Base
                     
                     new_row = $tables.attach("documents").new_row
                     fields = new_row.fields
-                    fields["school_year"].value = $school.current_school_year.value
+                    fields["school_year"].value = $school.current_school_year
                     fields["category_id"].value = category_id
                     fields["type_id"].value     = type_id
                     new_row_pid = new_row.save

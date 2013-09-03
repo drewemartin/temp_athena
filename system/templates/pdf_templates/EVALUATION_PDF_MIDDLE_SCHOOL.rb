@@ -61,7 +61,7 @@ class EVALUATION_PDF_MIDDLE_SCHOOL
         title               = ""
         academic_department = t.department.value
         evaluator           = t.supervisor_team_id.to_name(:full_name)
-        review_period       = "#{$school.current_school_year.value} School Year"
+        review_period       = "#{$school.current_school_year} School Year"
         
         overall_score       = 75
         

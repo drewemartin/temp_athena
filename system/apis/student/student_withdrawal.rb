@@ -47,7 +47,7 @@ end
             replace["[last_name]"]          = @stu.last_name.value
             replace["[primary_teacher]"]    = @stu.primary_teacher.value
             replace["[school_enroll_date]"] = @stu.school_enroll_date.value
-            replace["[school_year]"]        = $school.current_school_year.value
+            replace["[school_year]"]        = $school.current_school_year
             replace["[studentid]"]          = @stu.studentid
             replace["[unexcused]"]          = @stu.attendance.unexcused_absences.length if on_attendance_master
             replace["[effective_date]"]     = wd_record ? wd_record.fields["effective_date"].value : DateTime.now.strftime("%Y-%m-%d")
