@@ -80,4 +80,4 @@ class Load < Base
 
 end
 
-Load.new(["student_sapphire_period_attendance"])
+Load.new(ARGV)
