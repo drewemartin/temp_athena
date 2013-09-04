@@ -28,4 +28,4 @@ class After_Load < Base
     
 end
 
-After_Load.new(["student_sapphire_period_attendance"])
+After_Load.new(ARGV)
