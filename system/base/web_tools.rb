@@ -811,7 +811,8 @@ end
         ).web.button(
             :field_id   => "new_row_button_#{table_name}",
             :no_div     => true,
-            :onclick    => "get_new_row(#{pstr});"
+            :onclick    => "get_new_row(#{pstr});",
+            :add_class  => "new_row"
         )
         
         #button_html << "<button name='new_row_button' class='new_row' id='new_row_button_#{table_name}' onclick=\"get_new_row(#{pstr});\">#{button_text}</button>"

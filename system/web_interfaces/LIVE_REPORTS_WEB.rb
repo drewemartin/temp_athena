@@ -651,7 +651,7 @@ end
     
     def add_new_csv_student_rtii_behavior(options = nil)
         
-        srtiib_db = $tables.attach("student_rtii_behavior")
+        srtiib_db = $tables.attach("student_rtii_behavior").data_base
         
         sql_str =
         "SELECT

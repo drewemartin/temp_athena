@@ -945,7 +945,7 @@ end
             #{params[:clause_string]}"
             params[:results] = $db.get_data(select_sql, table[:data_base])
         end
-        params[:results].each{|result| nv_array.push(    {:name=>result[0],:value=>result[1]}    )}
+        params[:results].each{|result| nv_array.push(    {:name=>result[0],:value=>result[1]}    )} if params[:results]
         return nv_array
     end
     
