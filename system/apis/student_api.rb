@@ -115,6 +115,8 @@ end
         
         if attendance_record = self.attendance.existing_records("WHERE date = '#{a[:date]}'")
             
+            attendance_record = attendance_record[0]
+            
             curr_value  = attendance_record.fields["code"].value
           
             if (!curr_value.nil? && curr_value.include?(a[:source]))

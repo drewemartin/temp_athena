@@ -108,8 +108,8 @@ class Base
       
     elsif (
       
-      (start_date  = $tables.attach("SCHOOL_YEAR_DETAIL" ).field_by_pid( "start_date", "1")) &&
-      (end_date    = $tables.attach("SCHOOL_YEAR_DETAIL" ).field_by_pid( "end_date",   "1")) &&
+      (start_date  = $tables.attach("SCHOOL_YEAR_DETAIL" ).find_field( "start_date",  "WHERE current IS TRUE")) &&
+      (end_date    = $tables.attach("SCHOOL_YEAR_DETAIL" ).find_field( "end_date",    "WHERE current IS TRUE")) &&
       ($tables.attach("SCHOOL_CALENDAR").primary_ids)
       
     )

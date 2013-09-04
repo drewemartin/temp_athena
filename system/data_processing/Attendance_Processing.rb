@@ -211,36 +211,36 @@ end
   
     def orientation_override
         
-        student_enroll_date = $students.get(@sid).schoolenrolldate.mathable
-        
-        enrolled_in_orn     = true#MUST ALSO CURRENTLY BE ENROLLED IN ORIENTATION - Create check for this here
-        
-        if (enrolled_in_orn && student_enroll_date && (student_enroll_date >= (DateTime.now - 4)) && (student_enroll_date <= (student_enroll_date + 4)))
+        if @stu_daily_sapphire_period_attendance
             
-            att_date = att_record.fields["date"].mathable
+            student_enroll_date = $students.get(@sid).schoolenrolldate.mathable
             
-            if (att_date >= (DateTime.now - 4)) && (att_date <= (student_enroll_date + 4))
+            enrolled_in_orn     = true#MUST ALSO CURRENTLY BE ENROLLED IN ORIENTATION - Create check for this here
+            
+            if (enrolled_in_orn && student_enroll_date && (student_enroll_date >= (DateTime.now - 4)) && (student_enroll_date <= (student_enroll_date + 4)))
                 
-                source = "Orientation"
+                if ($base.mathable("date", @date) >= (DateTime.now - 4)) && ($base.mathable("date", @date) <= (student_enroll_date + 4))
+                    
+                    source = "Orientation"
+                    
+                    orn = Array.new
+                    orn.push(@stu_daily_sapphire_period_attendance.fields["period_elo"   ].value)
+                    orn.push(@stu_daily_sapphire_period_attendance.fields["period_mo"    ].value)
+                    orn.push(@stu_daily_sapphire_period_attendance.fields["period_orn"   ].value)
+                    
+                    orn = orn.include?("p") ? "p" : "u"
+                    
+                    @finalize_code  = orn
+                    
+                    return true
+                    
+                end
                 
-                orn = Array.new
-                orn.push(@stu_daily_sapphire_period_attendance.fields["PERIOD_ELO"   ].value)
-                orn.push(@stu_daily_sapphire_period_attendance.fields["PERIOD_MO"    ].value)
-                orn.push(@stu_daily_sapphire_period_attendance.fields["PERIOD_ORN"   ].value)
-                orn.compact!
+            else
                 
-                orn = !orn.empty? ? orn[0] : "p"
-                orn == "p" ? log_attendance_activity(source) : remove_attendance_activity(source)
-                
-                @finalize_code  = orn
-                
-                return true
+                return false
                 
             end
-            
-        else
-            
-            return false
             
         end
         
@@ -342,7 +342,8 @@ end
             @stu_daily_mode                         = att_record.fields["mode"].value
             @stu_daily_codes                        = att_record.fields["code"].value.nil? ? [] : att_record.fields["code"].value.split(",")
             @stu_daily_procedure_type               = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value 
-            @stu_daily_sapphire_period_attendance   = @student.sapphire_period_attendance("WHERE calendar_day = '#{@date}'")
+            @stu_daily_sapphire_period_attendance   = @student.sapphire_period_attendance.existing_records("WHERE calendar_day = '#{@date}'")
+            @stu_daily_sapphire_period_attendance   = @stu_daily_sapphire_period_attendance ? @stu_daily_sapphire_period_attendance[0] : false
             
             @stu_strict_attendance_testing_records  = @student.test_dates.existing_records(
                 "LEFT JOIN test_event_sites ON test_event_sites.primary_id  = student_test_dates.test_event_site_id

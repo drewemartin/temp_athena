@@ -77,6 +77,8 @@ end
             structure_hash["fields"]["period_m12"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_M12"                    } if field_order.push("period_m12"              )
             structure_hash["fields"]["period_m13"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_M13"                    } if field_order.push("period_m13"              )
             structure_hash["fields"]["period_m14"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_M14"                    } if field_order.push("period_m14"              )
+            structure_hash["fields"]["period_as1"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS1"                    } if field_order.push("period_as1"              )
+            structure_hash["fields"]["period_as2"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS2"                    } if field_order.push("period_as2"              )
             structure_hash["fields"]["period_mo"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_MO"                     } if field_order.push("period_mo"               )
             structure_hash["fields"]["period_el1"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL1"                    } if field_order.push("period_el1"              )
             structure_hash["fields"]["period_el2"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL2"                    } if field_order.push("period_el2"              )
@@ -87,6 +89,7 @@ end
             structure_hash["fields"]["period_el7"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL7"                    } if field_order.push("period_el7"              )
             structure_hash["fields"]["period_el8"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL8"                    } if field_order.push("period_el8"              )
             structure_hash["fields"]["period_el9"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL9"                    } if field_order.push("period_el9"              )
+            structure_hash["fields"]["period_ela"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_ELA"                    } if field_order.push("period_ela"              )
             structure_hash["fields"]["period_elo"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_ELO"                    } if field_order.push("period_elo"              )
             structure_hash["fields"]["athena_attendance_code"   ] = {"data_type"=>"text", "file_field"=>"athena_attendance_code"        } if field_order.push("athena_attendance_code"  )
             

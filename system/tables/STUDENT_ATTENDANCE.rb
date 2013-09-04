@@ -124,9 +124,9 @@ end
               
                 identity_id = record.fields["identityid"].value
                 
-                if sid = $tables.attach("STUDENT").find_field("student_id", "WHERE identityid = '#{identity_id}'", {:value_only=>true})
+                if sid = $tables.attach("STUDENT").find_field("student_id", "WHERE identityid = '#{identity_id}'")
                     
-                    student = $students.get(sid)
+                    student = $students.get(sid.value)
                     student.log_attendance_activity(:date=>date, :source=>source) if student
                     
                 end
@@ -289,10 +289,59 @@ end
                         code            = record.fields[period_code.downcase].value
                         activity_code   = (code=="p" || code.nil?) ? "p" : "u"
                         
-                        student.log_attendance_activity(
-                            :date      => date,
-                            :source    => "#{source}: #{period_code} - #{activity_code}"
+                        if (
+                            
+                            period_code.match(/period_elo|period_mo|period_orn/) &&
+                            student.grade.match(/K|1st|2nd|3rd|4th|5th/)
+                            
                         )
+                            
+                            family_attended_orientation = (activity_code=="p" ? true : false)
+                            related_students = $students.list(:familyid=>student.family_id.value, :grade=>"/K|1st|2nd|3rd|4th|5th/")
+                            
+                            if !family_attended_orientation
+                                
+                                #CHECK TO SEE IF ANOTHER FAMILY MEMBER ATTENDED THE ORIENTATION
+                                family_attended_orientation = $tables.attach("STUDENT_SAPPHIRE_PERIOD_ATTENDANCE").primary_ids(
+                                    "WHERE student_id IN ('#{related_students.join("','")}')
+                                    AND calendar_day = '#{date}'
+                                    AND(
+                                        period_elo  = 'p' OR
+                                        period_mo   = 'p' OR
+                                        period_orn  = 'p'
+                                    )"
+                                )
+                                
+                            end
+                            
+                            if family_attended_orientation
+                                
+                                related_students.each{|related_sid|
+                                    
+                                    $student.get(related_sid).log_attendance_activity(
+                                        :date      => date,
+                                        :source    => "#{source}: #{period_code} - #{activity_code}"
+                                    )
+                                    
+                                }
+                                
+                            else
+                                
+                                student.log_attendance_activity(
+                                    :date      => date,
+                                    :source    => "#{source}: #{period_code} - #{activity_code}"
+                                )
+                                
+                            end
+                            
+                        else
+                            
+                            student.log_attendance_activity(
+                                :date      => date,
+                                :source    => "#{source}: #{period_code} - #{activity_code}"
+                            )
+                            
+                        end
                         
                         attended_periods.push(period_code) if activity_code == "p" 
                         
