@@ -1132,7 +1132,11 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
   def school_year_select
-    $field.new("field"=>"school_year","value"=>$config.school_year).web.select(:dd_choices=>$dd.school_years_dd)
+    $field.new("field"=>"school_year","value"=>$config.school_year).web.select({:dd_choices=>$dd.school_years_dd,:add_class=>"no_save",:label_option=>"Select School Year:"},true)
+  end
+  
+  def school_year_hidden
+    $field.new("field"=>"school_year","value"=>$config.school_year).web.hidden(:add_class=>"no_save")
   end
   
   def set_school_year(school_year)
