@@ -113,7 +113,7 @@ end
         
         #THE STUDENT LOGGED IN
         source  = "K12 Logins"
-        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1001'")
+        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1001' AND last_login IS NOT NULL AND last_login REGEXP '2013-09-03'")
         
         pids.each{|pid|
             
@@ -137,7 +137,7 @@ end
         
         #THE LEARNING COACH LOGGED IN
         source  = "K12 Logins - LC"
-        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1000'")
+        pids    = $tables.attach("K12_LOGINS").primary_ids("WHERE role = '1000' AND last_login IS NOT NULL AND last_login REGEXP '2013-09-03'")
         
         pids.each{|pid|
             
@@ -243,14 +243,15 @@ end
             date                = record.fields["calendar_day"  ].value
             student             = $students.get(sid)
             
+            student_activity    = String.new
+            
             day_codes = $tables.attach("SAPPHIRE_CALENDARS_CALENDARS").find_fields(
                 "CONCAT(school,':',day_code)",
-                "WHERE date = '#{date}'",
+                "WHERE date = '#{date}' GROUP BY CONCAT(school,':',day_code)",
                 {:value_only=>true}
             )
             
-            qualifying_periods  = Array.new
-            attended_periods    = Array.new
+            qualifying_periods = Array.new
             
             day_codes.each{|day_code|
                 
@@ -287,63 +288,31 @@ end
                         
                         #STUDENT MARKED PRESENT OR THE TEACHER FORGOT TO MARK ATTENDANCE (Forgetting to mark = present per Christina)
                         code            = record.fields[period_code.downcase].value
-                        activity_code   = (code=="p" || code.nil?) ? "p" : "u"
+                        activity_code   = (code.nil? ||  code.downcase=="p") ? "p" : "u"
                         
                         if (
                             
-                            period_code.match(/period_elo|period_mo|period_orn/) &&
+                            period_code.match(/period_elo|period_mo|period_orn/)    &&
+                            activity_code == "p"                                    &&
                             student.grade.match(/K|1st|2nd|3rd|4th|5th/)
                             
                         )
                             
-                            family_attended_orientation = (activity_code=="p" ? true : false)
                             related_students = $students.list(:familyid=>student.family_id.value, :grade=>"/K|1st|2nd|3rd|4th|5th/")
                             
-                            if !family_attended_orientation
+                            related_students.each{|related_sid|
                                 
-                                #CHECK TO SEE IF ANOTHER FAMILY MEMBER ATTENDED THE ORIENTATION
-                                family_attended_orientation = $tables.attach("STUDENT_SAPPHIRE_PERIOD_ATTENDANCE").primary_ids(
-                                    "WHERE student_id IN ('#{related_students.join("','")}')
-                                    AND calendar_day = '#{date}'
-                                    AND(
-                                        period_elo  = 'p' OR
-                                        period_mo   = 'p' OR
-                                        period_orn  = 'p'
-                                    )"
-                                )
-                                
-                            end
-                            
-                            if family_attended_orientation
-                                
-                                related_students.each{|related_sid|
-                                    
-                                    $student.get(related_sid).log_attendance_activity(
-                                        :date      => date,
-                                        :source    => "#{source}: #{period_code} - #{activity_code}"
-                                    )
-                                    
-                                }
-                                
-                            else
-                                
-                                student.log_attendance_activity(
+                                $student.get(related_sid).log_attendance_activity(
                                     :date      => date,
                                     :source    => "#{source}: #{period_code} - #{activity_code}"
-                                )
+                                ) if !(related_sid == sid)
                                 
-                            end
-                            
-                        else
-                            
-                            student.log_attendance_activity(
-                                :date      => date,
-                                :source    => "#{source}: #{period_code} - #{activity_code}"
-                            )
+                            } 
                             
                         end
                         
-                        attended_periods.push(period_code) if activity_code == "p" 
+                        activity            = "#{source}: #{period_code} - #{activity_code}"
+                        student_activity    = attendance_activity(:activity=>activity, :activity_string=>student_activity)
                         
                     } if qualifying_periods
                     
@@ -351,17 +320,10 @@ end
                 
             } if day_codes
             
-            if (attended_periods.length.to_f/qualifying_periods.length.to_f > 0.5)
-                
-                record.fields["athena_attendance_code"].value = "p"
-                
-            else
-                
-                record.fields["athena_attendance_code"].value = "u"
-                
-            end
-            
-            record.save
+            student.log_attendance_activity(
+                :date      => date,
+                :source    => student_activity
+            ) if !student_activity.empty?
             
         } if pids
         
@@ -384,12 +346,28 @@ end
     def process_attendance(obj)
         unless caller.find{|x|x.match(/Attendance_Processing/)}
             record = by_primary_id(obj.primary_id)
-            require "#{$paths.system_path}data_processing/Attendance_Processing"
-            processed = Attendance_Processing.new(record.fields["student_id"].value, record.fields["date"].value)
+            $students.process_attendance(:student_id=>record.fields["student_id"].value,:date=>record.fields["date"].value)
         end
     end
     
-    
+    def attendance_activity(a)
+    #:activity          =>nil,
+    #:activity_string   =>nil
+        
+        curr_value  = a[:activity_string] || String.new
+      
+        if curr_value.empty?
+            curr_value = a[:activity]
+            
+        elsif !curr_value.include?(a[:activity])
+            curr_value = "#{curr_value},#{a[:activity]}"
+            
+        end
+        
+        return curr_value
+        
+    end
+
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION

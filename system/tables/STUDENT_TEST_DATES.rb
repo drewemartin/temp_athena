@@ -120,10 +120,11 @@ end
       
     end
     
-    def after_change_field_attendance_code(field_obj)
-        record = by_primary_id(field_obj.primary_id)
-        require "#{$paths.system_path}data_processing/Attendance_Processing"
-        Attendance_Processing.new(record.fields["student_id"].value, record.fields["date"].value)
+    def after_change_field_attendance_code(obj)
+        unless caller.find{|x|x.match(/Attendance_Processing/)}
+            record = by_primary_id(obj.primary_id)
+            $students.process_attendance(:student_id=>record.fields["student_id"].value,:date=>record.fields["date"].value)
+        end
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
