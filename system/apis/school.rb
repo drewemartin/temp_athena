@@ -111,8 +111,10 @@ end
         return $tables.attach("SCHOOL_DAYS").find_fields("date", where_clause, {:value_only=>true})
     end
     
-    def school_days_after(start_date)
-        $tables.attach("Attendance_Master").schooldays_after(start_date)
+    def attendance_days_after(start_date)
+        
+        $tables.attach("student_attendance").find_fields("date", "WHERE date >= '#{start_date}'", {:value_only=>true})
+        
     end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

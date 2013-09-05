@@ -16,14 +16,18 @@ class Sapphire_Withdrawal_Report
         headers     = Array.new
      
         headers.push("STUDENT_ID","WITHDRAWDATE","WITHDRAWCODE","SCHOOL_YEAR")
+        
+        ss_db  = $tables.attach("sapphire_students").data_base
+        k12_db = $tables.attach("k12_withdrawal").data_base
+        
         sql_string =  
             "SELECT
                 sapphire_students.student_id,
                 IFNULL(k12_withdrawal.schoolwithdrawdate,k12_withdrawal.withdrawdate),
                 IFNULL(k12_withdrawal.transferring_to,LEFT(k12_withdrawal.withdrawreason,2)),
                 #{$school.current_school_year_end.mathable.strftime("%Y")}
-            FROM sapphire_students
-            LEFT JOIN k12_withdrawal ON k12_withdrawal.student_ID = sapphire_students.student_id
+            FROM #{ss_db}.sapphire_students
+            LEFT JOIN #{k12_db}.k12_withdrawal ON #{k12_db}.k12_withdrawal.student_ID = #{ss_db}.sapphire_students.student_id
             WHERE sapphire_students.active IS TRUE
             AND k12_withdrawal.student_ID IS NOT NULL
             AND k12_withdrawal.transferring_to != '1'"
@@ -62,14 +66,18 @@ class Sapphire_Withdrawal_Report
         headers     = Array.new
      
         headers.push("STUDENT_ID","WITHDRAWDATE","WITHDRAWCODE","SCHOOL_YEAR")
+        
+        ss_db  = $tables.attach("sapphire_students").data_base
+        k12_db = $tables.attach("k12_withdrawal").data_base
+        
         sql_string =  
             "SELECT
                 sapphire_students.student_id,
                 IFNULL(k12_withdrawal.schoolwithdrawdate,k12_withdrawal.withdrawdate),
                 IFNULL(k12_withdrawal.transferring_to,LEFT(k12_withdrawal.withdrawreason,2)),
                 #{$school.current_school_year_end.mathable.strftime("%Y")}
-            FROM sapphire_students
-            LEFT JOIN k12_withdrawal ON k12_withdrawal.student_ID = sapphire_students.student_id
+            FROM #{ss_db}.sapphire_students
+            LEFT JOIN #{k12_db}.k12_withdrawal ON #{k12_db}.k12_withdrawal.student_ID = #{ss_db}.sapphire_students.student_id
             WHERE sapphire_students.active IS TRUE
             AND k12_withdrawal.student_ID IS NOT NULL
             AND k12_withdrawal.transferring_to = '1'"

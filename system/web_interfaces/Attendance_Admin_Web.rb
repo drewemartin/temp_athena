@@ -514,7 +514,7 @@ end
                             j+=1
                             next
                         else
-                            output << "Header \"#{row[j]}\" is not a valid school day or date format (yyyy-mm-dd).<br>"
+                            output << "Header \"#{row[j]}\" is not a valid school day for the #{$config.school_year} SY, or is an invalid date format (Required:yyyy-mm-dd).<br>"
                         end
                     else
                         output << "Header \"#{row[j]}\" needs to start with \"code_\" followed by the date in (yyyy-mm-dd) format.<br>"
@@ -534,16 +534,14 @@ end
             end
             if i!=1
                 j = 1
+                override_codes = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE", {:value_only=>true}) || []
                 while j < row.length
                     if !$tables.attach("ATTENDANCE_CODES").find_fields("code", nil, {:value_only=>true}).include?(row[j])
                         output << "Warning: '#{row[j]}' at line #{i} is not a valid code.<br>"
                     end
-                    #if row[j] == "p"
-                    #    output << "Warning: '#{row[j]}' at line #{i} must be replaced with 'pr'.<br>"
-                    #end
-                    #if row[j] == "u"
-                    #    output << "Warning: '#{row[j]}' at line #{i} must be replaced with 'ur'.<br>"
-                    #end
+                    if !override_codes.include?(row[j]) #if a code is not an override code, it will just be reprocessed on upload
+                        output << "Warning: '#{row[j]}' at line #{i} must be replaced with a valid override code. (Overide codes are: #{override_codes.join(",")})<br>"
+                    end
                     j+=1
                 end
             end
