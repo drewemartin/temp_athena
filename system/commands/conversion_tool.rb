@@ -17,7 +17,7 @@ class CONVERSION_TOOL < Base
         @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
         @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
         
-        @restore_path       = $config.init_path("#{$paths.restore_path}D20130903")
+        @restore_path       = $config.init_path("#{$paths.restore_path}D20130905")
         
         if !a.empty?
             
@@ -26,7 +26,9 @@ class CONVERSION_TOOL < Base
             if a.empty?
                 eval(function)
             else
-                eval("#{function}(#{"\"#{a.join("\", \"")}\""})")
+                a.each{|arg|
+                    eval("#{function}(\"#{arg}\")")
+                }
             end
             
         end
@@ -191,8 +193,10 @@ class CONVERSION_TOOL < Base
         puts "#RESTORE INTO CONVERSION DATABASE"
         tables.each do |table|
             puts "RESTORING:  #{@restore_path}#{table.downcase}.sql"
+            $tables.attach(table).truncate
             `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}#{table.downcase}.sql`
             if $tables.attach(table).audit
+                $tables.attach(table).truncate(audit=true)
                 `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}zz_#{table.downcase}.sql`
             end
         end
@@ -221,4 +225,24 @@ class CONVERSION_TOOL < Base
     
 end
   
-CONVERSION_TOOL.new(ARGV)
+CONVERSION_TOOL.new(
+    
+    [
+        "backup",
+        
+        #"attendance_codes",
+        #"attendance_modes",
+        #"attendance_sources",
+        #"school_days",
+        #"student_sapphire_class_roster",
+        #"student_sapphire_period_attendance",
+        "student_attendance_master",
+        "student_attendance",
+        #"student_attendance_mode",
+        #"student",
+        #"sapphire_calendars_calendars",
+        #"sapphire_calendars_calendars",
+        #"sapphire_dictionary_periods"
+    ]
+    
+)
