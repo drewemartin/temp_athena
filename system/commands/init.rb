@@ -22,17 +22,21 @@ class Init < Base
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     private
     
-    def init(table)
+    def init(tableName)
         start = Time.new
-        table = $tables.attach(table)
-        if !@init_primary_pre_reqs
-            table.init_primary_pre_reqs
-            @init_primary_pre_reqs = true
+        table = $tables.attach(tableName)
+        if table
+            if !@init_primary_pre_reqs
+                table.init_primary_pre_reqs
+                @init_primary_pre_reqs = true
+            end
+            puts "Init started at #{time_str(start)} -> #{table.table_name}"
+            table.init
+            puts "Init completed in #{(Time.new - start)/60} minutes"
+            puts ">-------------------------------------------------------->"
+        else
+            puts "'#{tableName}' is not a table."
         end
-        puts "Init started at #{time_str(start)} -> #{table.table_name}"
-        table.init
-        puts "Init completed in #{(Time.new - start)/60} minutes"
-        puts ">-------------------------------------------------------->"
     end
 
 end
