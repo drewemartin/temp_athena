@@ -717,7 +717,7 @@ end
                 new_row[0] = "pid"
             else
                 sid = row.first
-                pid = $tables.attach(table).by_studentid_old(sid).primary_id
+                pid = $tables.attach(table).by_studentid(sid).primary_id
                 new_row[0] = pid
             end
             converted_csv.push(new_row)
@@ -742,7 +742,7 @@ end
                 field_headers.each_with_index do |field_name, i|
                     new_row = Array.new
                     begin
-                        pid = $tables.attach(table).by_studentid_old(sid, field_name).primary_id
+                        pid = $tables.attach(table).by_studentid(sid, "WHERE date='#{field_name}'")[0].primary_id
                         new_row[0] = pid
                         new_row[1] = row[i+1]
                         converted_csv.push(new_row)

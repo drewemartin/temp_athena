@@ -341,6 +341,9 @@ end
             div.student_page_view{              position:absolute; right:20px; top:47px;}
             div.DTTT_print_info{                top:300px !important; position:absolute !important;}
             table.dataTable td{                 text-align: center;}
+            div.menu_buttons_container{         clear:both;}
+            div#school_year_container{          float:right; margin-bottom:10px; margin-right:10px; size:1.1em;}
+            
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}
         #

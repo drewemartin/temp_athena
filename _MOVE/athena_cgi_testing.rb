@@ -822,8 +822,8 @@ end
         self.output = html.header(
             :body   =>"<style>body {background-color:#F2F5F7};</style><div id='breakaway_container' style='width:1200px; min-height:400px; margin-left:auto; margin-right:auto;'>
                 
-                <H1>#{alt_page.breakaway_caption}</H1>
-                <div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>\n
+                <H1>#{alt_page.breakaway_caption} - #{$config.school_year} SY</H1>
+                <div id='school_year_container' name='school_year_container'>#{$base.school_year_hidden}</div>\n
                 #{alt_page_content}
                 
             </div>"
