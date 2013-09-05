@@ -111,9 +111,9 @@ end
         return $tables.attach("SCHOOL_DAYS").find_fields("date", where_clause, {:value_only=>true})
     end
     
-    def attendance_days_after(start_date)
+    def school_days_after(start_date)
         
-        $tables.attach("student_attendance").find_fields("date", "WHERE date >= '#{start_date}'", {:value_only=>true})
+        $tables.attach("school_days").find_fields("date", "WHERE date >= '#{start_date}'", {:value_only=>true})
         
     end
 

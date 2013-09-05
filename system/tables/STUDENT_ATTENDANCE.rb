@@ -217,10 +217,11 @@ end
             #MARK ALL SCHOOL DAYS AFTER THE WITHDRAW EFFECTIVE DATE AS NULL
             att_mast_record = $tables.attach("student_attendance_master").by_studentid(sid)
             if att_mast_record
-                school_days = $school.attendance_days_after(wd_effective_date)
+                school_days = $school.school_days_after(wd_effective_date)
                 if school_days
                     school_days.each{|date|
-                        att_mast_record.fields["code_#{date}"].value = nil
+                        att_mast_record.fields["code_#{date}"    ].value = nil
+                        att_mast_record.fields["activity_#{date}"].value = nil
                     }
                     att_mast_record.save
                 end
