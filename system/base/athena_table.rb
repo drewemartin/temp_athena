@@ -355,7 +355,7 @@ end
     end
     
     def drop
-        $db.query("DROP TABLE `#{table_name}`", table[:data_base])
+        $db.query("DROP TABLE `#{table_name}`", data_base)
     end
     
     def exists?(this_table = nil)
@@ -363,7 +363,7 @@ end
             "SELECT
                 table_name
             FROM information_schema.tables
-            WHERE table_schema = '#{ table[:data_base] || $config.db_name }'
+            WHERE table_schema = '#{ data_base || $config.db_name }'
             AND table_name = '#{this_table || table_name}'"
         )
         return exists ? true : false
@@ -391,7 +391,7 @@ end
     end
     
     def find_field(field_name, where_clause)
-        record = $db.get_data("SELECT #{table_name}.primary_id, `#{field_name}` FROM #{table_name} #{where_clause}", table[:data_base])
+        record = $db.get_data("SELECT #{table_name}.primary_id, `#{field_name}` FROM #{table_name} #{where_clause}", data_base)
         if record
             record = record[0]
             id = record[0]   
@@ -416,11 +416,11 @@ end
         if options && options[:value_only] && !options[:to_user]
             
             field_str = field_order.include?(field_name) ? "`#{field_name}`" : field_name
-            return $db.get_data_single("SELECT #{field_str} FROM #{table_name} #{where_clause}", table[:data_base])
+            return $db.get_data_single("SELECT #{field_str} FROM #{table_name} #{where_clause}", data_base)
             
         else
             
-            records = $db.get_data("SELECT #{table_name}.primary_id, `#{field_name}` FROM #{table_name} #{where_clause}", table[:data_base])
+            records = $db.get_data("SELECT #{table_name}.primary_id, `#{field_name}` FROM #{table_name} #{where_clause}", data_base)
             if records
                 
                 these_fields = Array.new
@@ -943,7 +943,7 @@ end
             "SELECT #{params[:name_field]}, #{params[:value_field]}
             FROM #{table_name}
             #{params[:clause_string]}"
-            params[:results] = $db.get_data(select_sql, table[:data_base])
+            params[:results] = $db.get_data(select_sql, data_base)
         end
         params[:results].each{|result| nv_array.push(    {:name=>result[0],:value=>result[1]}    )} if params[:results]
         return nv_array
@@ -955,7 +955,7 @@ end
             "SELECT #{name_field}, #{value_field}
             FROM #{table_name}
             #{clause_string}"
-        results = $db.get_data(select_sql, table[:data_base])
+        results = $db.get_data(select_sql, data_base)
         
         if results
             
@@ -973,7 +973,7 @@ end
 
     def record(where_clause = "", fields_list = nil)
         fields_str = fields_list ? fields_list : sql_fields_str
-        record = $db.get_data("SELECT #{fields_str} FROM #{table_name} #{where_clause}", table[:data_base])
+        record = $db.get_data("SELECT #{fields_str} FROM #{table_name} #{where_clause}", data_base)
         if record
             record = record[0]
             id = record[0]
@@ -994,7 +994,7 @@ end
     def records(where_clause = "", fields_str = nil)
         fields_str      = sql_fields_str if !fields_str
         records_array   = Array.new
-        records         = $db.get_data("SELECT #{fields_str} FROM #{table_name} #{where_clause}", table[:data_base])
+        records         = $db.get_data("SELECT #{fields_str} FROM #{table_name} #{where_clause}", data_base)
         if records
             records.each do |record|
                 id  = record[0]
@@ -1020,7 +1020,7 @@ end
         
         if exists?(@this_table)
             
-            indexes             = $db.get_data("SHOW INDEX FROM #{@this_table}", table[:data_base])
+            indexes             = $db.get_data("SHOW INDEX FROM #{@this_table}", data_base)
             indexes_assigned    = indexes ? indexes.length : 0
             
             field_order.each {|field|
@@ -1118,8 +1118,13 @@ end
     #    end   
     #end
     
-    def truncate
-        $db.query("TRUNCATE #{table_name}", table[:data_base])
+    def truncate(audit = nil)
+        
+        if audit
+            $db.query("TRUNCATE zz_#{table_name}", data_base)
+        else
+            $db.query("TRUNCATE #{table_name}", data_base)
+        end
     end
     
     def values(where_clause) #needs work returns values, but no way to indicate which column they're for
@@ -1427,9 +1432,9 @@ end
     def primary_ids(where_clause = nil)
         $db.get_data_single(
             "SELECT #{table_name}.primary_id
-            FROM #{table[:data_base]}.#{table_name}
+            FROM #{data_base}.#{table_name}
             #{where_clause}",
-            table[:data_base]
+            data_base
         )
     end
     
@@ -1440,7 +1445,7 @@ end
                 FROM #{table_name}
                 #{where_clause}
                 GROUP BY staff_id",
-                table[:data_base]
+                data_base
             )
         else
             return false
@@ -1454,7 +1459,7 @@ end
                 FROM #{table_name}
                 #{where_clause}
                 GROUP BY student_id",
-                table[:data_base]
+                data_base
             )
         else
             return false
@@ -1477,7 +1482,7 @@ end
             "SELECT
                 table_catalog
             FROM information_schema.statistics 
-            WHERE table_schema = '#{table[:data_base] || $config.db_name}' 
+            WHERE table_schema = '#{data_base}' 
             AND table_name = '#{@this_table}' AND column_name = '#{field_name}'"  
         )
         
@@ -1488,7 +1493,7 @@ end
     end
     
     def records_exist?
-        $db.get_data_single("SELECT primary_id FROM #{table_name}", table[:data_base]) ? true : false
+        $db.get_data_single("SELECT primary_id FROM #{table_name}", data_base) ? true : false
     end
  
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1543,7 +1548,7 @@ end
             FROM #{source_table}
             INTO OUTFILE '#{dest_path}#{dest_file}'
             FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n'",
-            table[:data_base]
+            data_base
             
         )
         
@@ -1570,13 +1575,13 @@ end
         
         ########################################################################
         if exists?(@this_table)
-            table_status = $db.get_data("CHECK TABLE #{@this_table} FAST QUICK;", table[:data_base])
+            table_status = $db.get_data("CHECK TABLE #{@this_table} FAST QUICK;", data_base)
             puts table_status.join(" || ")
             if !(table_status[0][3] == "Table is already up to date")
                 puts "PRESS ANY KEY TO CONTINUE"
                 anykey = $stdin.gets
                 #FNORD - add functionality to handle results of below when there's time.
-                $db.query("REPAIR TABLE #{@this_table}", table[:data_base])
+                $db.query("REPAIR TABLE #{@this_table}", data_base)
             end
             
         end
@@ -1584,11 +1589,11 @@ end
         
         if !exists?(@this_table)
             indexes_assigned = 0
-            $db.query("CREATE TABLE IF NOT EXISTS #{@this_table} (PRIMARY_ID int(11) primary key auto_increment not null)", table[:data_base])
-            $db.query("ALTER TABLE #{@this_table} ENGINE = MYISAM", table[:data_base])
+            $db.query("CREATE TABLE IF NOT EXISTS #{@this_table} (PRIMARY_ID int(11) primary key auto_increment not null)", data_base)
+            $db.query("ALTER TABLE #{@this_table} ENGINE = MYISAM", data_base)
             indexes_assigned += 1
         else
-            indexes             = $db.get_data("SHOW INDEX FROM #{@this_table}", table[:data_base])
+            indexes             = $db.get_data("SHOW INDEX FROM #{@this_table}", data_base)
             indexes_assigned    = indexes ? indexes.length : 0
         end 
         
@@ -1603,7 +1608,7 @@ end
                 
                 unless (details.key? "index" && details["index"] == false) || (indexes_assigned >= (64 - reserved_indexes))
                     
-                    if !$db.get_data("SHOW INDEX FROM #{@this_table} WHERE column_name = '#{field_name}'", table[:data_base])
+                    if !$db.get_data("SHOW INDEX FROM #{@this_table} WHERE column_name = '#{field_name}'", data_base)
                         
                         case type
                         when "int","date","bool","tinyint","year","timestamp","decimal(5,4)","decimal(10,2)"
@@ -1689,8 +1694,8 @@ end
             
             unless a[:backup_only]
                 
-                $db.query("DROP TABLE `#{table_name}`",     table[:data_base]   )
-                $db.query("DROP TABLE `zz_#{table_name}`",  table[:data_base]   ) if audit
+                $db.query("DROP TABLE `#{table_name}`",     data_base   )
+                $db.query("DROP TABLE `zz_#{table_name}`",  data_base   ) if audit
                 
                 init
                 
@@ -1712,12 +1717,12 @@ end
         
         if File.exists?(source_file_path)
             
-            $db.query("TRUNCATE #{dest_table}", table[:data_base])
+            $db.query("TRUNCATE #{dest_table}", data_base)
             $db.query(
                 "LOAD DATA INFILE '#{source_file_path}'
                 INTO TABLE #{dest_table}
                 FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\\r\\n'",
-                table[:data_base]
+                data_base
             )
             
         else
@@ -1764,7 +1769,7 @@ end
         alter_sql =
             "ALTER TABLE `#{@this_table}`
             #{instructions}"
-        $db.query(alter_sql, table[:data_base])
+        $db.query(alter_sql, data_base)
     end
    
     def field_exists?(this_field)
@@ -1772,7 +1777,7 @@ end
             "SELECT
                 *
             FROM information_schema.columns
-            WHERE table_schema  = '#{table[:data_base] || $config.db_name}'
+            WHERE table_schema  = '#{data_base || $config.db_name}'
             AND table_name      = '#{@this_table}'
             AND column_name     = '#{this_field}'"
         field_exists = $db.get_data_single(select_sql)

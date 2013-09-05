@@ -28,6 +28,23 @@ class Students
         
     end
     
+    def process_attendance(a)
+    #:student_id
+    #:date
+        
+        if !structure.has_key?(:attendance_processing)
+            
+            require "#{$paths.system_path}data_processing/Attendance_Processing"
+            structure[:attendance_processing] = Attendance_Processing.new
+            
+        end
+      
+        if structure[:attendance_processing].set_student(a[:student_id], a[:date])
+            structure[:attendance_processing].finalize
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
