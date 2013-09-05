@@ -183,7 +183,7 @@ end
             student_attendance_ap.assessment_completion_engaged,
             student_attendance_ap.attended,
             student_attendance_ap.notes
-        FROM student_attendance_ap
+        FROM #{saap_db}.student_attendance_ap
         LEFT JOIN #{s_db}.student
             ON #{saap_db}.student_attendance_ap.student_id = #{s_db}.student.student_id
         LEFT JOIN #{tsids_db}.team_sams_ids

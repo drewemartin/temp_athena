@@ -132,14 +132,14 @@ end
     #    :test_record    => nil,
     #    :test_period    => nil
     #)
-        
+        ap_db = $tables.attach("aims_percentile").data_base
         if (score = a[:test_record].fields["#{a[:test_period]}_correct"].value) && rows = $db.get_data(
             
             "SELECT
                 score,
                 percentile
                 
-            FROM aims_percentile
+            FROM #{ap_db}.aims_percentile
             WHERE gom       = '#{a[:test_record].fields["gom"].value                                             }'
             AND grade       = '#{$students.get(a[:test_record].fields["student_id"].value).grade.to_grade_int    }' 
             AND test_period = '#{a[:test_period ]                                                                }'
@@ -215,7 +215,7 @@ end
                     
                     if $db.get_data_single("SELECT
                             student_id
-                        FROM student_aims_test_results
+                        FROM #{data_base}.student_aims_test_results
                         WHERE #{season}_growth IS NOT NULL
                         AND student_id = #{sid}"
                     )
@@ -224,12 +224,12 @@ end
                             "SELECT
                                 (SELECT
                                     COUNT(student_id)
-                                FROM student_aims_test_results
+                                FROM #{data_base}.student_aims_test_results
                                 WHERE #{season}_growth IS TRUE
                                 AND student_id = #{sid})/
                                 (SELECT
                                     COUNT(student_id)
-                                FROM student_aims_test_results
+                                FROM #{data_base}.student_aims_test_results
                                 WHERE #{season}_growth IS NOT NULL
                                 AND student_id = #{sid})"
                         )

@@ -34,8 +34,8 @@ end
             tsids_db = $tables.attach("team_sams_ids").data_base
             return team_ids = $db.get_data_single(
                 "SELECT 
-                    #{tsids_db}.team_id
-                FROM team_sams_ids
+                    team_id
+                FROM #{tsids_db}.team_sams_ids
                 WHERE sams_id IN('#{sams_ids.join("','")}')"
             )
             

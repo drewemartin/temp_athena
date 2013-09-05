@@ -36,7 +36,7 @@ end
         
         $db.get_data_single(
             "SELECT date
-            FROM student_attendance_ap
+            FROM #{data_base}.student_attendance_ap
             #{where_clause}
             GROUP BY date
             ORDER BY date DESC"
@@ -50,7 +50,7 @@ end
         
         $db.get_data_single(
             "SELECT date
-            FROM student_attendance_ap
+            FROM #{data_base}.student_attendance_ap
             #{where_clause}
             GROUP BY date
             ORDER BY date DESC"
@@ -64,7 +64,7 @@ end
         
         $db.get_data_single(
             "SELECT staff_id
-            FROM student_attendance_ap
+            FROM #{data_base}.student_attendance_ap
             #{where_clause}
             GROUP BY staff_id"
         )
@@ -76,10 +76,12 @@ end
         params.push( Struct::WHERE_PARAMS.new("date",       "REGEXP",   dates       ) ) if dates
         where_clause = $db.where_clause(params)
         
+        s_db = $tables.attach("student").data_base
+        
         $db.get_data_single(
             "SELECT student_attendance_ap.student_id
-            FROM student_attendance_ap
-            LEFT JOIN student on student.student_id = student_attendance_ap.student_id
+            FROM #{data_base}.student_attendance_ap
+            LEFT JOIN #{s_db}.student on #{s_db}.student.student_id = #{data_base}.student_attendance_ap.student_id
             #{where_clause}
             GROUP BY student_attendance_ap.student_id
             ORDER BY student.studentlastname, student.studentfirstname ASC"

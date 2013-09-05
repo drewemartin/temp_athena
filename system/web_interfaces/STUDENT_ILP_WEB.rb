@@ -335,18 +335,20 @@ end
     end
     
     def new_category_dd
-        
+        silp_db  = $tables.attach("student_ilp").data_base
+        ilpet_db = $tables.attach("ilp_entry_type").data_base
+        ilpec_db = $tables.attach("ilp_entry_category").data_base
         $tables.attach("ILP_ENTRY_CATEGORY").dd_choices(
             "ilp_entry_category.name",
             "ilp_entry_category.primary_id",
-            "LEFT JOIN ilp_entry_type ON ilp_entry_type.category_id = ilp_entry_category.primary_id
+            "LEFT JOIN #{ilpet_db}.ilp_entry_type ON #{ilpet_db}.ilp_entry_type.category_id = #{ilpec_db}.ilp_entry_category.primary_id
             WHERE TRUE
             AND(
                 ilp_entry_category.max_entries IS NULL
                 OR(
                     
                     (SELECT COUNT(student_ilp.student_id)
-                    FROM student_ilp
+                    FROM #{silp_db}.student_ilp
                     WHERE
                         student_ilp.student_id              = #{$focus_student.student_id.value} AND
                         student_ilp.ilp_entry_category_id   = ilp_entry_category.primary_id
@@ -355,7 +357,7 @@ end
                     OR
                     
                     (SELECT COUNT(student_ilp.student_id)
-                    FROM student_ilp
+                    FROM #{silp_db}.student_ilp
                     WHERE
                         student_ilp.student_id              = #{$focus_student.student_id.value} AND
                         student_ilp.ilp_entry_category_id   = ilp_entry_category.primary_id
@@ -377,6 +379,7 @@ end
     end
     
     def new_type_dd(cat_id)
+        silp_db  = $tables.attach("student_ilp").data_base
         $tables.attach("ILP_ENTRY_TYPE").dd_choices(
             "name",
             "primary_id",
@@ -386,7 +389,7 @@ end
                 OR(
                     
                     (SELECT COUNT(student_ilp.student_id)
-                    FROM student_ilp
+                    FROM #{silp_db}.student_ilp
                     WHERE
                         student_ilp.student_id              = #{$focus_student.student_id.value} AND
                         student_ilp.ilp_entry_type_id   = ilp_entry_type.primary_id
@@ -395,7 +398,7 @@ end
                     OR
                     
                     (SELECT COUNT(student_ilp.student_id)
-                    FROM student_ilp
+                    FROM #{silp_db}.student_ilp
                     WHERE
                         student_ilp.student_id              = #{$focus_student.student_id.value} AND
                         student_ilp.ilp_entry_type_id   = ilp_entry_type.primary_id
