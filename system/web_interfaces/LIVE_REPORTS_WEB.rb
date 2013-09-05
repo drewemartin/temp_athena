@@ -315,7 +315,10 @@ end
             "Enrolled",
             "Present",
             "Excused",
-            "Unexcused"
+            "Unexcused",
+            
+            "att_master_id",
+            "student_id"
             
         ]
         
@@ -351,8 +354,8 @@ end
             student.region,
             
             (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Truancy Prevention') AND region = student.region ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM department WHERE name = 'Advisors') AND region = student.region ),
+            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Truancy Prevention') AND region = student.region ),
+            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
@@ -406,9 +409,9 @@ end
         samo_db   = $tables.attach("student_attendance_mode").data_base
         
         sql_str << " FROM #{sam_db}.student_attendance_master
-            LEFT JOIN #{s_db}.student                             ON #{s_db}.student.student_id                             = #{sam_db}.student_attendance_master.student_id                       
-            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON #{sspl_db}.student_scantron_performance_level.student_id  = #{sam_db}.student_attendance_master.student_id
-            LEFT JOIN #{samo_db}.student_attendance_mode             ON #{samo_db}.student_attendance_mode.student_id             = #{sam_db}.student_attendance_master.student_id"
+            LEFT JOIN #{s_db}.student                                ON #{s_db}.student.student_id                                  = #{sam_db}.student_attendance_master.student_id                       
+            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON #{sspl_db}.student_scantron_performance_level.student_id    = #{sam_db}.student_attendance_master.student_id
+            LEFT JOIN #{samo_db}.student_attendance_mode             ON #{samo_db}.student_attendance_mode.student_id               = #{sam_db}.student_attendance_master.student_id"
         
         results = $db.get_data(sql_str)
         if results
