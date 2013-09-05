@@ -154,6 +154,11 @@ end
  
     def add_new_csv_student_attendance_ap(options = nil)
         
+        s_db     = $tables.attach("student").data_base
+        saap_db  = $tables.attach("student_attendance_ap").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        t_db     = $tables.attach("team").data_base
+        
         sql_str =
         "SELECT
             student_attendance_ap.primary_id,
@@ -179,12 +184,12 @@ end
             student_attendance_ap.attended,
             student_attendance_ap.notes
         FROM student_attendance_ap
-        LEFT JOIN student
-            ON student_attendance_ap.student_id = student.student_id
-        LEFT JOIN team_sams_ids
-            ON student_attendance_ap.staff_id = team_sams_ids.sams_id
-        LEFT JOIN team
-            ON team_sams_ids.team_id = team.primary_id
+        LEFT JOIN #{s_db}.student
+            ON #{saap_db}.student_attendance_ap.student_id = #{s_db}.student.student_id
+        LEFT JOIN #{tsids_db}.team_sams_ids
+            ON #{saap_db}.student_attendance_ap.staff_id = #{tsids_db}.team_sams_ids.sams_id
+        LEFT JOIN #{t_db}.team
+            ON #{tsids_db}.team_sams_ids.team_id = #{t_db}.team.primary_id
         WHERE (
             student_attendance_ap.student_id != '5555'
             AND

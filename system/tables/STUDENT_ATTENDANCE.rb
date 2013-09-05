@@ -209,18 +209,18 @@ end
         sids.each{|sid|
             
             wd_effective_date = $tables.attach("k12_withdrawal").by_studentid_old(sid).fields["schoolwithdrawdate"].value
-            records = $tables.attach("student_attendance").attendance_date(wd_effective_date, {:student_id=>sid,:operator=>">"})
+            records = $tables.attach("student_attendance").records("WHERE attendance_date > '#{wd_effective_date}' AND student_id = '#{sid}'")
             records.each{|record|
                 record.fields["mode"].value = "Withdrawn"
                 record.save
             } if records
             #MARK ALL SCHOOL DAYS AFTER THE WITHDRAW EFFECTIVE DATE AS NULL
-            att_mast_record = $tables.attach("attendance_master").by_studentid_old(sid)
+            att_mast_record = $tables.attach("student_attendance_master").by_studentid(sid)
             if att_mast_record
-                school_days = $school.school_days_after(wd_effective_date)
+                school_days = $school.attendance_days_after(wd_effective_date)
                 if school_days
                     school_days.each{|date|
-                        att_mast_record.fields[date].value = nil
+                        att_mast_record.fields["code_#{date}"].value = nil
                     }
                     att_mast_record.save
                 end

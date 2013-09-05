@@ -89,7 +89,7 @@ end
                 
             } if records
             
-        } if sids
+        } if sids && $school.current_term
         
     end
     
@@ -127,7 +127,8 @@ end
                 
             end
             
-        } if pids
+        } if pids && $school.current_term
+        
     end
     
     def after_load_jupiter_grades
