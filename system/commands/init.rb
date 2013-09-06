@@ -6,6 +6,7 @@ class Init < Base
     #---------------------------------------------------------------------------
     def initialize(table = nil)
         super()
+        start = Time.new
         @init_primary_pre_reqs = false
         if !table.empty?
             init(table[0])
@@ -14,6 +15,7 @@ class Init < Base
                 init(table)
             }
         end
+        puts "#{(Time.new - start)/60} minutes"
     end
     #---------------------------------------------------------------------------
     

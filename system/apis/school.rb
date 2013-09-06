@@ -32,29 +32,24 @@ end
     
     def current_school_year
         
-        if !structure.has_key?(:current_school_year)
+        begin
             
-            begin
+            if !(sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE"))
                 
-                if !(sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE"))
-                    
-                    sy = $tables.attach("School_Year_Detail").new_row
-                    sy.fields["current"].value = true
-                    sy.save
-                    
-                    sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE")
-                    
-                end
+                sy = $tables.attach("School_Year_Detail").new_row
+                sy.fields["school_year" ].value = $config.school_year_installed
+                sy.fields["current"     ].value = true
+                sy.save
                 
-                structure[:current_school_year] = sy.fields["school_year"].value
+                sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE")
                 
-            rescue
-                structure[:current_school_year] = "2012-2013"
             end
             
+            sy.fields["school_year"].value
+            
+        rescue
+            $config.school_year_installed
         end
-        
-        structure[:current_school_year]
         
     end
     

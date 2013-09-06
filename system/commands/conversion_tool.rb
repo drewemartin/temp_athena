@@ -14,10 +14,10 @@ class CONVERSION_TOOL < Base
         
         @archive_dbname     = "#{$config.school_name}_archive_#{@dbname}_#{$ifilestamp}"
         
-        @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
-        @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/athena/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
+        @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
+        @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
         
-        @restore_path       = $config.init_path("#{$paths.restore_path}D20130905")
+        @restore_path       = $config.init_path("#{$paths.restore_path}D20130906")
         
         if !a.empty?
             
@@ -232,21 +232,7 @@ end
 CONVERSION_TOOL.new(
     
     [
-        "backup",
-        
-        #"attendance_codes",
-        #"attendance_modes",
-        #"attendance_sources",
-        #"school_days",
-        #"student_sapphire_class_roster",
-        #"student_sapphire_period_attendance",
-        "student_attendance_master",
-        "student_attendance",
-        #"student_attendance_mode",
-        #"student",
-        #"sapphire_calendars_calendars",
-        #"sapphire_calendars_calendars",
-        #"sapphire_dictionary_periods"
+        "restore"
     ]
     
 )

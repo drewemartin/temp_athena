@@ -82,7 +82,7 @@ end
     end 
     
     def primary_pre_reqs
-        ["DB_CONFIG","SYSTEM_LOG","USER_LOG","USER_LOG_CREDENTIAL_ERRORS","TEAM_LOG"]
+        ["DB_CONFIG","SYSTEM_LOG","USER_LOG","USER_LOG_CREDENTIAL_ERRORS","TEAM_LOG","SCHOOL_YEAR_DETAIL"]
     end
     
     def relationship
@@ -500,6 +500,7 @@ end
                 req_table.load if req_table.import_file_exists?
             end
         }
+        $school.current_school_year
     end
     
     def load(a={}) #:after_load=>table_name

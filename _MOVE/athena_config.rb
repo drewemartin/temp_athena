@@ -6,7 +6,8 @@ class Athena_Config
     def initialize(school_year = nil) 
         @structure       = nil
         
-        @code_set_name   = "athena"
+        @code_set_name              = "athena"
+        @school_year_installed      = "2012-2013"
         
         self.school_name = "agora"
         
@@ -45,6 +46,10 @@ end
     
     def school_year
         structure[:school_year]
+    end
+    
+    def school_year_installed
+        @school_year_installed
     end
     
     def storage_root

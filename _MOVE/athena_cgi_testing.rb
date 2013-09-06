@@ -151,7 +151,7 @@ class ATHENA_CGI_TESTING < Base
                     expansion_cls    = expansion_arr[0]
                     expansion_arg    = expansion_arr[1]
                     
-                    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/#{$config.code_set_name}/system/web_interfaces/#{expansion_cls}")
+                    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/athena/system/web_interfaces/#{expansion_cls}")
                     script = Object.const_get(expansion_cls.upcase).new();
                     
                     this_function = expand_function.to_s.split("_")
