@@ -322,13 +322,13 @@ end
                 row.push(record.fields["status"    ].value)
                 
                 if !record.fields["system_id"].value.nil?
-                    
+                    aps_db = $tables.attach("athena_project_systems").data_base
                     row.push(
                         record.fields["system_id"].set(
                             $db.get_data_single(
                                 "SELECT
                                     system_name
-                                FROM athena_project_systems
+                                FROM #{aps_db}.athena_project_systems
                                 WHERE primary_id = #{record.fields["system_id"].value}"
                             )[0]
                         ).value
@@ -340,7 +340,8 @@ end
                     
                 end
                 p = record.fields["project_id"]
-                projectname = p.value.nil? ? "" : $db.get_data_single("SELECT project_name FROM athena_project WHERE primary_id = #{p.value}")[0]
+                ap_db = $tables.attach("athena_project").data_base
+                projectname = p.value.nil? ? "" : $db.get_data_single("SELECT project_name FROM #{ap_db}.athena_project WHERE primary_id = #{p.value}")[0]
                 row.push(projectname)
                 row.push(record.fields["server"         ].value)
                 row.push(record.fields["location_found" ].value)

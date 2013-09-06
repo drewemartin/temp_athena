@@ -38,9 +38,8 @@ end
     def after_change_field(field_obj)
         unless caller.find{|x|x.match(/Attendance_Processing/)}
             record = by_primary_id(field_obj.primary_id)
-            date = field_obj.field_name.gsub("code_", "")
-            require "#{$paths.system_path}data_processing/Attendance_Processing"
-            Attendance_Processing.new(record.fields["student_id"].value, date)
+            date   = field_obj.field_name.gsub("code_", "")
+            $students.process_attendance(:student_id=>record.fields["student_id"].value,:date=>date)
         end
     end
 
