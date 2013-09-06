@@ -1,17 +1,13 @@
 #!C:/Users/Parnassus/athena-sis/Ruby187/bin/ruby.exe
 require 'cgi'
 
-Dir["#{File.dirname(__FILE__)}/system/web_interfaces/*.rb"].each {|file|
-    x = file.split("/").last.split(".").first
-    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/athena/system/web_interfaces/#{x.downcase}")
-}
 if false
     puts "Content-type: text/html"
     puts ""
     puts "<html><head></head><body>test"
 end
 
-require File.dirname(__FILE__).gsub("cgi-bin","htdocs/athena/system/base/base")
+require File.dirname(__FILE__).gsub("cgi-bin","htdocs/D20130905/system/base/base")
 
 class ATHENA_CGI < Base
 
@@ -151,7 +147,7 @@ class ATHENA_CGI < Base
                     expansion_cls    = expansion_arr[0]
                     expansion_arg    = expansion_arr[1]
                     
-                    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/athena/system/web_interfaces/#{expansion_cls}")
+                    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/#{$config.code_set_name}/system/web_interfaces/#{expansion_cls}")
                     script = Object.const_get(expansion_cls.upcase).new();
                     
                     this_function = expand_function.to_s.split("_")

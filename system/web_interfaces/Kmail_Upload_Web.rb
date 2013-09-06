@@ -34,7 +34,7 @@ class KMAIL_UPLOAD_WEB
     #---------------------------------------------------------------------------
     def upload
         output = ""
-        output << "<form id='upload_form' name='form' action='athena_cgi.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='upload_form' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
         output << $tools.kmailinput("subject", "Subject Line:")
         output << $tools.newselect("account", credentials_dd, "Account To Send From:")
         output << $tools.kmailtextarea("content", "Message of Kmail:")

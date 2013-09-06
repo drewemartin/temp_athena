@@ -431,7 +431,7 @@ end
     def upload_form(id, upload_type)
         
         output = String.new
-        output << "<form id='#{id}' name='form' action='athena_cgi.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='#{id}' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
         output << "<INPUT type='hidden' name='upload_type' value='#{upload_type}'>"
         output << $tools.kmailinput("authorizor", "Authorizor:")
         output << $tools.newtextarea("reason", "Reason:")

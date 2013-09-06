@@ -165,7 +165,7 @@ end
     def upload_doc_ilp_document(sid)
         output = String.new
         
-        output << "<form id='doc_upload_form' name='form' action='athena_cgi.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='doc_upload_form' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
         output << "<input id='sidref' name='sidref' value='#{sid}' type='hidden'>"
         output << $tools.document_upload2(self.class.name, "Individualized Learning Plan", "Student ILP", "doc_upload_form", "pdf")
         output << "</form>"
