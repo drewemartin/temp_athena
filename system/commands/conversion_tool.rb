@@ -193,11 +193,15 @@ class CONVERSION_TOOL < Base
         puts "#RESTORE INTO CONVERSION DATABASE"
         tables.each do |table|
             puts "RESTORING:  #{@restore_path}#{table.downcase}.sql"
-            $tables.attach(table).truncate
-            `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}#{table.downcase}.sql`
-            if $tables.attach(table).audit
-                $tables.attach(table).truncate(audit=true)
-                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}zz_#{table.downcase}.sql`
+            if File.exists?("#{@restore_path}#{table.downcase}.sql")
+                $tables.attach(table).truncate
+                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}#{table.downcase}.sql`
+                if $tables.attach(table).audit
+                    $tables.attach(table).truncate(audit=true)
+                    `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}zz_#{table.downcase}.sql`
+                end
+            else
+                puts "No Restore File Found"
             end
         end
         

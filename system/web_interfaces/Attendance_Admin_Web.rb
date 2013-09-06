@@ -530,17 +530,20 @@ end
             elsif !row[0].match(/^[0-9]+$/)
                 output << "Warning: '#{row[0]}' at line #{i} is not a number.<br>"
             elsif !$students.attach(row[0]).exists?
-                output << "Warning: SID ##{sid} is not an existing Student ID.<br>"
+                output << "Warning: SID ##{sid} at line #{i} is not an existing Student ID.<br>"
             end
             if i!=1
                 j = 1
                 override_codes = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE", {:value_only=>true}) || []
                 while j < row.length
-                    if !$tables.attach("ATTENDANCE_CODES").find_fields("code", nil, {:value_only=>true}).include?(row[j])
-                        output << "Warning: '#{row[j]}' at line #{i} is not a valid code.<br>"
-                    end
-                    if !override_codes.include?(row[j]) #if a code is not an override code, it will just be reprocessed on upload
-                        output << "Warning: '#{row[j]}' at line #{i} must be replaced with a valid override code. (Overide codes are: #{override_codes.join(",")})<br>"
+                    if !row[j].nil?
+                        row[j].chomp!(" ")
+                        if !$tables.attach("ATTENDANCE_CODES").find_fields("code", nil, {:value_only=>true}).include?(row[j])
+                            output << "Warning: '#{row[j]}' at line #{i} is not a valid code.<br>"
+                        end
+                        if !override_codes.include?(row[j]) #if a code is not an override code, it will just be reprocessed on upload
+                            output << "Warning: '#{row[j]}' at line #{i} must be replaced with a valid override code. (Overide codes are: #{override_codes.join(",")})<br>"
+                        end
                     end
                     j+=1
                 end

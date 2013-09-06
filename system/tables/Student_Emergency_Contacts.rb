@@ -27,7 +27,7 @@ end
     def max_contacts_per_student
         select_sql =
         "SELECT COUNT(student_id)
-        FROM `student_emergency_contacts`
+        FROM #{data_base}.student_emergency_contacts
         GROUP BY student_id
         HAVING COUNT(student_id) > 1
         ORDER BY COUNT(student_id) DESC"

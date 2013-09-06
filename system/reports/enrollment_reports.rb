@@ -20,6 +20,8 @@ class Enrollment_Reports
      
         headers.push("student_id","firstname","lastname", "birthday","enrollreceiveddate","enrollapproveddate")
         
+        k12_db = $tables.attach("k12_all_students").data_base
+        
         sql_string =
             "SELECT
                 k12_enrollment_info_tab_v2.student_id,
@@ -28,8 +30,8 @@ class Enrollment_Reports
                 k12_enrollment_info_tab_v2.birthday,
                 k12_enrollment_info_tab_v2.enrollreceiveddate,
                 k12_enrollment_info_tab_v2.enrollapproveddate
-            FROM k12_enrollment_info_tab_v2
-            JOIN K12_all_students ON CONCAT( k12_enrollment_info_tab_v2.firstname, k12_enrollment_info_tab_v2.lastname, k12_enrollment_info_tab_v2.birthday ) = CONCAT( K12_all_students.studentfirstname, K12_all_students.studentlastname, K12_all_students.birthday )
+            FROM #{k12_db}.k12_enrollment_info_tab_v2
+            JOIN #{k12_db}.K12_all_students ON CONCAT( #{k12_db}.k12_enrollment_info_tab_v2.firstname, #{k12_db}.k12_enrollment_info_tab_v2.lastname, #{k12_db}.k12_enrollment_info_tab_v2.birthday ) = CONCAT( #{k12_db}.K12_all_students.studentfirstname, #{k12_db}.K12_all_students.studentlastname, #{k12_db}.K12_all_students.birthday )
             WHERE k12_enrollment_info_tab_v2.student_id != K12_all_students.student_id
             #{date_addon}
             GROUP BY k12_enrollment_info_tab_v2.student_id"
