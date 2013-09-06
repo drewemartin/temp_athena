@@ -12,6 +12,8 @@ class Attendance_Processing
         @override_codes         = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE",    {:value_only=>true}) || []
         @orientation_sources    = ["period_elo", "period_mo", "period_orn"]
         
+        @school_start           = $tables.attach("School_Year_Detail").record("WHERE school_year = '#{$config.school_year}'").fields["start_date"].mathable
+        
         #puts "completed in #{(Time.new - start)/60} minutes"
         
     end
@@ -268,22 +270,28 @@ end
         if @stu_daily_procedure_type == "Classroom Activity (50% or more)"
             
             student_enroll_date = $students.get(@sid).schoolenrolldate.mathable
+            att_date            = $base.mathable("date", @date)
             
-            if (student_enroll_date && (student_enroll_date >= (DateTime.now - 4)) && (student_enroll_date <= (student_enroll_date + 4)))
+            if (
                 
-                if ($base.mathable("date", @date) >= (DateTime.now - 4)) && ($base.mathable("date", @date) <= (student_enroll_date + 4))
+                student_enroll_date &&
+                
+                (
+                    (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+                    (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+                )
+                
+            )
+                
+                if orientation_logged
                     
-                    if orientation_logged
-                        
-                        @finalize_code = (orientation_attended ? "p" : "u")
-                        
-                        return true
-                        
-                    else
-                        
-                        return false
-                        
-                    end
+                    @finalize_code = (orientation_attended ? "p" : "u")
+                    
+                    return true
+                    
+                else
+                    
+                    return false
                     
                 end
                 
