@@ -93,7 +93,7 @@ end
     begin
       
       m = Mysql::new($config.db_domain, $config.db_user, $config.db_pass)
-      m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless $config.db_name == "information_schema"
+      m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless selected_db == "information_schema"
       m.select_db(selected_db || $config.db_name)
       
       results         = m.query(sql)
@@ -110,19 +110,23 @@ end
         tries+=1
         retry
       else
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        
+        content = "SQL QUERY FAILED\n"
+        content << "Error code:       #{e.errno}\n"
+        content << "Error message:    #{e.error}\n"
+        content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
+        content << "Statement Attempted: \n#{sql}\n"
+        content << "Caller:             #{caller[0]}\n"
+        content << "BACKTRACE:        #{e.backtrace}"
+        
+        if false #ENV["COMPUTERNAME"] == "ATHENA"
           $base.system_notification("SQL QUERY FAILED!",content)
         else
-          content = "SQL QUERY FAILED\n"
-          content << "Error code:       #{e.errno}\n"
-          content << "Error message:    #{e.error}\n"
-          content << "Error SQLSTATE:   #{e.sqlstate}\n" if e.respond_to?("sqlstate")
-          content << "Statement Attempted: \n#{sql}\n"
-          content << "Caller:             #{caller[0]}\n"
-          content << "BACKTRACE:        #{e.backtrace}"
+          puts content
           raise e
           $base.system_log(content)
         end
+        
       end
       
     end
