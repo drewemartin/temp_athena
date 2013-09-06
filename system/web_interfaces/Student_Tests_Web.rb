@@ -241,24 +241,10 @@ end
         
         headers.push("Test Type")
         headers.push("Test Event")
-        headers.push("Test Subject")
-        headers.push("Check In Date")
-        headers.push("Serial Number")
         headers.push("Completed Date")
-        headers.push("Test Administrator")
-        headers.push("Test Results")
-        
-        #if section_name.match(/aims|k-6 face to face assessment/i)
-        #    headers.push("AIMS")
-        #end
-        #if section_name == "aims"
-        #    headers.push("AIMS")
-        #end
-        
-        headers.push("Assigned")
+        headers.push("Test Administrator") if test_admin_dd
         headers.push("Test Event Site")
-        headers.push("Drop Off Info")
-        headers.push("Pick Up Info")
+        headers.push("Test Results")
         
         tables_array.push(headers)
         
@@ -268,32 +254,15 @@ end
             
             row.push(test.fields["test_id"              ].web.select(:dd_choices=>test_types_dd,  :disabled=>true) )  
             row.push(test.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd, :disabled=>true) )  
-            row.push(test.fields["test_subject_id"      ].web.select(:dd_choices=>test_subjects_dd(test.fields["test_id"].value)) )          
-            row.push(test.fields["checked_in"           ].web.default() )
-            row.push(test.fields["serial_number"        ].web.text() )        
             row.push(test.fields["completed"            ].web.default() )            
             row.push(test.fields["test_administrator"   ].web.select({:dd_choices=>test_admin_dd}) )   if test_admin_dd #ELSE NO STAFF ASSIGNED
-            #row.push(test.fields["test_results"         ].web.default() )
+            row.push(test.fields["test_event_site_id"   ].web.select({:dd_choices=>$dd.test_events.event_sites(test.fields["test_event_id"].value)}, true) )  
             
             if section_name.match(/aims|k-6 face to face assessment/i)
-            #if section_name == "aims"
                 row.push(aims_scores(test.primary_id))
             else
-                row.push(test.fields["test_results"         ].web.default() )
-                #if test.fields["test_id"].value == $tables.attach("tests").find_field("primary_id", "WHERE name='AIMS'").value
-                #    row.push(aims_scores(test.primary_id))
-                #elsif test.fields["test_id"].value == $tables.attach("tests").find_field("primary_id", "WHERE name='K-6 Face To Face Assessment'").value
-                #    row.push(aims_scores(test.primary_id))
-                #elsif test.fields["test_id"].value == $tables.attach("tests").find_field("primary_id", "WHERE name='May K-6 Face To Face Assessment'").value
-                #    row.push(aims_scores(test.primary_id))
-                #else row.push("")
-                #end
+                row.push(test.fields["test_results"     ].web.default() )
             end
-            
-            row.push(test.fields["assigned"             ].web.default() )            
-            row.push(test.fields["test_event_site_id"   ].web.select({:dd_choices=>$dd.test_events.event_sites(test.fields["test_event_id"].value)}, true) )  
-            row.push(test.fields["drop_off"             ].web.default() )             
-            row.push(test.fields["pick_up"              ].web.default() )
             
             tables_array.push(row)
             
@@ -309,54 +278,38 @@ end
         
         tables_array = [
             
-            #if  grade == "Kindergarten" || grade == "1st Grade" || grade == "2nd Grade"# || grade == "10th Grade"
-                
-                #HEADERS
-                [
-                    "LNF",
-                    "LNF Errors",
-                    "LSF",
-                    "LSF Errors",
-                    "PSF",
-                    "PSF Errors",
-                    "NWF",
-                    "NWF Errors",
-                    "R-CBM",
-                    "R-CBM Errors",
-                    "Reading Instructional Recommendation",
-                    "OCM",
-                    "OCM Errors",
-                    "NIM",
-                    "NIM Errors",
-                    "QDM",
-                    "QDM Errors",
-                    "MNM",
-                    "MNM Errors",
-                    "M-CAP",
-                    "M-CAP Read to Student",
-                    "Requirement for AIMS Benchmark",
-                    "Math Instructional Recommendation"
-                ]
-                
-            #else#if grade == "3rd Grade" || grade == "4th Grade" || grade == "5th Grade" || grade == "6th Grade"# || grade == "10th Grade"
-                
-                #HEADERS
-                #[
-                    #"Requirement for AIMS Benchmark",
-                    #"R-CBM",
-                    #"R-CBM Errors",
-                    #"M-CAP",
-                    #"M-CAP Read to Student"
-                #]
-                
-            #else
-                
-                #HEADERS
-                #[
-                #    ""
-                #]
-                
-            #end
+            [
+                "CORE Phonics- Letter Names Upper Case (_/26)",
+                "CORE Phonics- Letter Names Lower Case (_/26)",
+                "CORE Phonics- Consonant Sounds (_/23)",
+                "CORE Phonics- Long Vowel Sounds (_/5)",
+                "CORE Phonics- Short Vowel Sounds (_/5)",
+                "CORE PHONICS- Short Vowels in CVC Words (_/10)",
+                "Reading Comprehension (correct/total)",
+                "LNF",
+                "LNF Errors",
+                "LSF",
+                "LSF Errors",
+                "PSF",
+                "PSF Errors",
+                "NWF",
+                "NWF Errors",
+                "R-CBM",
+                "R-CBM Errors",
+                "Reading Instructional Recommendation (K and 1)",
+                "OCM",
+                "OCM Errors",
+                "NIM",
+                "NIM Errors",
+                "QDM",
+                "QDM Errors",
+                "MNM",
+                "MNM Errors",
+                "M-COMP", #Still M-CAP field
+                "Math Instructional Recommendation (K and 1)",
+                "Notes"
+            ]
+            
         ]
         
         
@@ -368,50 +321,40 @@ end
             test.save
         end
         
-        #tests.each{|test|
+        row = Array.new
+        
+        row.push(test.fields["core_phonics_letter_names_upper"          ].web.default() )
+        row.push(test.fields["core_phonics_letter_names_lower"          ].web.default() )
+        row.push(test.fields["core_phonics_consonant"                   ].web.default() )
+        row.push(test.fields["core_phonics_long_vowel"                  ].web.default() )
+        row.push(test.fields["core_phonics_short_vowel"                 ].web.default() )
+        row.push(test.fields["core_phonics_short_vowel_cvc"             ].web.default() )
+        row.push(test.fields["reading_comprehension"                    ].web.default() )
+        row.push(test.fields["lnf"                                      ].web.default() )
+        row.push(test.fields["lnf_errors"                               ].web.default() )
+        row.push(test.fields["lsf"                                      ].web.default() )
+        row.push(test.fields["lsf_errors"                               ].web.default() )
+        row.push(test.fields["psf"                                      ].web.default() )
+        row.push(test.fields["psf_errors"                               ].web.default() )
+        row.push(test.fields["nwf"                                      ].web.default() )
+        row.push(test.fields["nwf_errors"                               ].web.default() )
+        row.push(test.fields["rcbm"                                     ].web.default() )
+        row.push(test.fields["rcbm_errors"                              ].web.default() )
+        row.push(test.fields["reading_instructional_recommendation"     ].web.default() )
+        
+        row.push(test.fields["ocm"                                      ].web.default() )
+        row.push(test.fields["ocm_errors"                               ].web.default() )
+        row.push(test.fields["nim"                                      ].web.default() )
+        row.push(test.fields["nim_errors"                               ].web.default() )
+        row.push(test.fields["qdm"                                      ].web.default() )
+        row.push(test.fields["qdm_errors"                               ].web.default() )
+        row.push(test.fields["mnm"                                      ].web.default() )
+        row.push(test.fields["mnm_errors"                               ].web.default() )
+        row.push(test.fields["mcap"                                     ].web.default() )
+        row.push(test.fields["math_instructional_recommendation"        ].web.default() )
+        row.push(test.fields["notes"                                    ].web.default() )
             
-            row = Array.new
-            
-            #if grade == "Kindergarten" || grade == "1st Grade" || grade == "2nd Grade"# || grade == "10th Grade"
-                
-                row.push(test.fields["lnf"                                      ].web.default() )
-                row.push(test.fields["lnf_errors"                               ].web.default() )
-                row.push(test.fields["lsf"                                      ].web.default() )
-                row.push(test.fields["lsf_errors"                               ].web.default() )
-                row.push(test.fields["psf"                                      ].web.default() )
-                row.push(test.fields["psf_errors"                               ].web.default() )
-                row.push(test.fields["nwf"                                      ].web.default() )
-                row.push(test.fields["nwf_errors"                               ].web.default() )
-                row.push(test.fields["rcbm"                                     ].web.default() )
-                row.push(test.fields["rcbm_errors"                              ].web.default() )
-                row.push(test.fields["reading_instructional_recommendation"     ].web.default() ) 
-                
-                row.push(test.fields["ocm"                                      ].web.default() )
-                row.push(test.fields["ocm_errors"                               ].web.default() )
-                row.push(test.fields["nim"                                      ].web.default() )
-                row.push(test.fields["nim_errors"                               ].web.default() )
-                row.push(test.fields["qdm"                                      ].web.default() )
-                row.push(test.fields["qdm_errors"                               ].web.default() )
-                row.push(test.fields["mnm"                                      ].web.default() )
-                row.push(test.fields["mnm_errors"                               ].web.default() )
-                row.push(test.fields["mcap"                                     ].web.default() )
-                row.push(test.fields["mcap_read_to_student"                     ].web.default() )
-                row.push(test.fields["requirement_for_aims_benchmark"           ].web.default() )
-                row.push(test.fields["math_instructional_recommendation"        ].web.default() ) 
-                
-            #else#if grade == "3rd Grade" || grade == "4th Grade" || grade == "5th Grade" || grade == "6th Grade"# || grade == "10th Grade"
-                
-                #row.push(test.fields["requirement_for_aims_benchmark"   ].web.default() )
-                #row.push(test.fields["rcbm"                             ].web.default() )
-                #row.push(test.fields["rcbm_errors"                      ].web.default() )
-                #row.push(test.fields["mcap"                             ].web.default() )
-                #row.push(test.fields["mcap_read_to_student"             ].web.default() )
-                
-            #end
-            
-            tables_array.push(row)
-            
-        #} if tests
+        tables_array.push(row)
         
         return $kit.tools.table(
         :table_array    =>tables_array,
