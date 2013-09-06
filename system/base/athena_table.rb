@@ -364,7 +364,8 @@ end
                 table_name
             FROM information_schema.tables
             WHERE table_schema = '#{ data_base || $config.db_name }'
-            AND table_name = '#{this_table || table_name}'"
+            AND table_name = '#{this_table || table_name}'",
+            "information_schema"
         )
         return exists ? true : false
     end
@@ -1780,7 +1781,7 @@ end
             WHERE table_schema  = '#{data_base || $config.db_name}'
             AND table_name      = '#{@this_table}'
             AND column_name     = '#{this_field}'"
-        field_exists = $db.get_data_single(select_sql)
+        field_exists = $db.get_data_single(select_sql, "information_schema")
     end
    
     def prep_row
