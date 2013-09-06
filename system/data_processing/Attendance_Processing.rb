@@ -12,6 +12,8 @@ class Attendance_Processing
         @override_codes         = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE",    {:value_only=>true}) || []
         @orientation_sources    = ["period_elo", "period_mo", "period_orn"]
         
+        @school_start           = $tables.attach("School_Year_Detail").record("WHERE school_year = '#{$config.school_year}'").fields["start_date"].mathable
+        
         #puts "completed in #{(Time.new - start)/60} minutes"
         
     end
@@ -27,34 +29,57 @@ class Attendance_Processing
         
         unless @override
             
-            case @stu_daily_procedure_type
-            when "Activity"
+            retried = 0
+            begin
                 
-                @finalize_code = has_activity ? "p" : "u"
-                
-            when "Activity AND Live Sessions"
-                
-                @finalize_code = (has_live && has_activity) ? "p" : "u"
-                
-            when "Activity OR Live Sessions"
-                
-                @finalize_code = (has_live || has_activity) ? "p" : "u"
-                
-            when "Live Sessions"
-                
-                @finalize_code = has_live ? "p" : "u"
-                
-            when "Classroom Activity (50% or more)"
-                
-                if (active = classrooms_active).length > 0
-                    @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
-                else
-                    @finalize_code = "u"
+                case @stu_daily_procedure_type
+                when "Activity"
+                    
+                    @finalize_code = has_activity ? "p" : "u"
+                    
+                when "Activity AND Live Sessions"
+                    
+                    @finalize_code = (has_live && has_activity) ? "p" : "u"
+                    
+                when "Activity OR Live Sessions"
+                    
+                    @finalize_code = (has_live || has_activity) ? "p" : "u"
+                    
+                when "Live Sessions"
+                    
+                    @finalize_code = has_live ? "p" : "u"
+                    
+                when "Classroom Activity (50% or more)"
+                    
+                    if classrooms_total.length > 0
+                        
+                        if (active = classrooms_active).length > 0
+                            @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                        else
+                            @finalize_code = "u"
+                        end
+                        
+                    else
+                        
+                        @stu_daily_mode = "Asynchronous"
+                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                        puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                        raise "MODE CHANGE"
+                        
+                    end
+                    
+                when "Not Enrolled"
+                    
+                    @finalize_code = "NULL"
+                    
                 end
                 
-            when "Not Enrolled"
+            rescue=>e
                 
-                @finalize_code = "NULL"
+                if e=="MODE CHANGE"
+                    retried+=1
+                    retry if retried <= 1
+                end
                 
             end
             
@@ -93,7 +118,11 @@ end
         total = Array.new
         @stu_daily_codes.each{|code|
             
-            total.push(code) if @classroom_sources.find{|x|x.match(/#{code.split(":")[0]}/)}
+            total.push(code) if (
+                @classroom_sources.find{|x|
+                    x.match(/#{code.split(":")[0]}/) && !(code.split(" - ")[-1] == "asy") 
+                }            
+            )
             
         }
         
@@ -241,25 +270,28 @@ end
         if @stu_daily_procedure_type == "Classroom Activity (50% or more)"
             
             student_enroll_date = $students.get(@sid).schoolenrolldate.mathable
+            att_date            = $base.mathable("date", @date)
             
-            if (student_enroll_date && (student_enroll_date >= (DateTime.now - 4)) && (student_enroll_date <= (student_enroll_date + 4)))
+            if (
                 
-                if ($base.mathable("date", @date) >= (DateTime.now - 4)) && ($base.mathable("date", @date) <= (student_enroll_date + 4))
+                student_enroll_date &&
+                
+                (
+                    (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+                    (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+                )
+                
+            )
+                
+                if orientation_logged
                     
-                    if orientation_logged
-                        
-                        @finalize_code = (orientation_attended ? "p" : "u")
-                        
-                        return true
-                        
-                    else
-                        
-                        @stu_daily_mode = "Asynchronous"
-                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
-                        
-                        return false
-                        
-                    end
+                    @finalize_code = (orientation_attended ? "p" : "u")
+                    
+                    return true
+                    
+                else
+                    
+                    return false
                     
                 end
                 

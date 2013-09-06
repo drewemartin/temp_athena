@@ -289,7 +289,7 @@ end
                         
                         #STUDENT MARKED PRESENT OR THE TEACHER FORGOT TO MARK ATTENDANCE (Forgetting to mark = present per Christina)
                         code            = record.fields[period_code.downcase].value
-                        activity_code   = (code.nil? ||  code.downcase=="p") ? "p" : "u"
+                        activity_code   = (code.nil? ||  code.downcase=="p") ? "p" : (code.downcase=="a" ? "u" : code.downcase)
                         
                         if (
                             
