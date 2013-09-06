@@ -27,34 +27,57 @@ class Attendance_Processing
         
         unless @override
             
-            case @stu_daily_procedure_type
-            when "Activity"
+            retried = 0
+            begin
                 
-                @finalize_code = has_activity ? "p" : "u"
-                
-            when "Activity AND Live Sessions"
-                
-                @finalize_code = (has_live && has_activity) ? "p" : "u"
-                
-            when "Activity OR Live Sessions"
-                
-                @finalize_code = (has_live || has_activity) ? "p" : "u"
-                
-            when "Live Sessions"
-                
-                @finalize_code = has_live ? "p" : "u"
-                
-            when "Classroom Activity (50% or more)"
-                
-                if (active = classrooms_active).length > 0
-                    @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
-                else
-                    @finalize_code = "u"
+                case @stu_daily_procedure_type
+                when "Activity"
+                    
+                    @finalize_code = has_activity ? "p" : "u"
+                    
+                when "Activity AND Live Sessions"
+                    
+                    @finalize_code = (has_live && has_activity) ? "p" : "u"
+                    
+                when "Activity OR Live Sessions"
+                    
+                    @finalize_code = (has_live || has_activity) ? "p" : "u"
+                    
+                when "Live Sessions"
+                    
+                    @finalize_code = has_live ? "p" : "u"
+                    
+                when "Classroom Activity (50% or more)"
+                    
+                    if classrooms_total.length > 0
+                        
+                        if (active = classrooms_active).length > 0
+                            @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                        else
+                            @finalize_code = "u"
+                        end
+                        
+                    else
+                        
+                        @stu_daily_mode = "Asynchronous"
+                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                        puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                        raise "MODE CHANGE"
+                        
+                    end
+                    
+                when "Not Enrolled"
+                    
+                    @finalize_code = "NULL"
+                    
                 end
                 
-            when "Not Enrolled"
+            rescue=>e
                 
-                @finalize_code = "NULL"
+                if e=="MODE CHANGE"
+                    retried+=1
+                    retry if retried <= 1
+                end
                 
             end
             
@@ -93,7 +116,11 @@ end
         total = Array.new
         @stu_daily_codes.each{|code|
             
-            total.push(code) if @classroom_sources.find{|x|x.match(/#{code.split(":")[0]}/)}
+            total.push(code) if (
+                @classroom_sources.find{|x|
+                    x.match(/#{code.split(":")[0]}/) && !(code.split(" - ")[-1] == "asy") 
+                }            
+            )
             
         }
         
@@ -253,9 +280,6 @@ end
                         return true
                         
                     else
-                        
-                        @stu_daily_mode = "Asynchronous"
-                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
                         
                         return false
                         
