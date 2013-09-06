@@ -164,7 +164,7 @@ end
                     if table_record
                         field_names.each_with_index do |field_name, i|
                             new_value = row[i+1]
-                            if !new_value.nil?
+                            if !new_value.nil? && new_value != ""
                                 old_value = table_record.fields["#{field_name}"].value
                                 if old_value != new_value
                                     table_record.fields["#{field_name}"].value = new_value

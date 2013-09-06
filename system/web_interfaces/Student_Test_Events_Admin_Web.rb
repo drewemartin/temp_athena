@@ -617,6 +617,15 @@ end
 
     def add_new_csv_test_event_students(test_event_id = nil)
         
+        s_db     = $tables.attach("student"         ).data_base
+        tst_db   = $tables.attach("tests"           ).data_base
+        te_db    = $tables.attach("test_events"     ).data_base
+        ts_db    = $tables.attach("test_subjects"   ).data_base
+        tes_db   = $tables.attach("test_event_sites").data_base
+        tsids_db = $tables.attach("team_sams_ids"   ).data_base
+        t_db     = $tables.attach("team"            ).data_base
+        st_db    = $tables.attach("student_tests"   ).data_base
+        
         headers = [
             "Student-ID",
             "First Name",
@@ -651,14 +660,14 @@ end
             student_tests.drop_off,
             student_tests.pick_up
             
-        FROM `student_tests`
-        LEFT JOIN student           ON student_tests.student_id         = student.student_id
-        LEFT JOIN tests             ON student_tests.test_id            = tests.primary_id
-        LEFT JOIN test_events       ON student_tests.test_event_id      = test_events.primary_id
-        LEFT JOIN test_subjects     ON student_tests.test_subject_id    = test_subjects.primary_id
-        LEFT JOIN test_event_sites  ON student_tests.test_event_site_id = test_event_sites.primary_id
-        LEFT JOIN team_sams_ids     ON student_tests.test_administrator = team_sams_ids.sams_id
-        LEFT JOIN team              ON team_sams_ids.team_id            = team.primary_id
+        FROM #{st_db}.student_tests
+        LEFT JOIN #{s_db    }.student           ON #{st_db}.student_tests.student_id         = #{s_db    }.student.student_id
+        LEFT JOIN #{tst_db  }.tests             ON #{st_db}.student_tests.test_id            = #{tst_db  }.tests.primary_id
+        LEFT JOIN #{te_db   }.test_events       ON #{st_db}.student_tests.test_event_id      = #{te_db   }.test_events.primary_id
+        LEFT JOIN #{ts_db   }.test_subjects     ON #{st_db}.student_tests.test_subject_id    = #{ts_db   }.test_subjects.primary_id
+        LEFT JOIN #{tes_db  }.test_event_sites  ON #{st_db}.student_tests.test_event_site_id = #{tes_db  }.test_event_sites.primary_id
+        LEFT JOIN #{tsids_db}.team_sams_ids     ON #{st_db}.student_tests.test_administrator = #{tsids_db}.team_sams_ids.sams_id
+        LEFT JOIN #{t_db    }.team              ON team_sams_ids.team_id                     = #{t_db    }.team.primary_id
         
         WHERE student_tests.test_event_id = '#{test_event_id}'"
         

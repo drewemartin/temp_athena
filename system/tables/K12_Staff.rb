@@ -70,17 +70,20 @@ end
     end
     
     def deactivate_team_members
+        t_db     = $tables.attach("team").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        k12_db = $tables.attach("k12_staff").data_base
         
         members_to_mark_inactive = $db.get_data_single(
             
             "SELECT team.primary_id 
-            FROM `team` 
+            FROM #{t_db}.team 
             WHERE team.primary_id NOT IN(
                 SELECT
                     team.primary_id 
-                FROM `team` 
-                LEFT JOIN team_sams_ids ON team_sams_ids.team_id  = team.primary_id
-                LEFT JOIN k12_staff     ON k12_staff.samspersonid = team_sams_ids.sams_id
+                FROM #{t_db}.team 
+                LEFT JOIN #{tsids_db}.team_sams_ids ON #{tsids_db}.team_sams_ids.team_id  = #{t_db}.team.primary_id
+                LEFT JOIN #{k12_db}.k12_staff     ON #{k12_db}.k12_staff.samspersonid = #{tsids_db}.team_sams_ids.sams_id
                 WHERE active IS TRUE
                 AND k12_staff.samspersonid IS NOT NULL
                 GROUP BY team.primary_id

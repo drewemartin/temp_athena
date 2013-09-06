@@ -183,7 +183,7 @@ end
             student_attendance_ap.assessment_completion_engaged,
             student_attendance_ap.attended,
             student_attendance_ap.notes
-        FROM student_attendance_ap
+        FROM #{saap_db}.student_attendance_ap
         LEFT JOIN #{s_db}.student
             ON #{saap_db}.student_attendance_ap.student_id = #{s_db}.student.student_id
         LEFT JOIN #{tsids_db}.team_sams_ids
@@ -295,9 +295,9 @@ end
             "Family ID",
             "Birthday",
             
-            "Family Coach",
+            "Teacher/Guidance",
             
-            "Teacher",
+            "Family Coach/Comm Cord",
             "Scantron entrance math",
             "Scantron exit math",
             "Scantron entrance reading",
@@ -305,9 +305,7 @@ end
             
             #"Program Support",
             
-            "Region",
-            
-            "Family Coach Program Support",
+            "Family Coach Support",
             "Truancy Prevention",
             "Advisor",
             
@@ -356,9 +354,7 @@ end
             student_scantron_performance_level.stron_ent_perf_r,
             student_scantron_performance_level.stron_ext_perf_r,
             
-            student.region,
-            
-            (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
+            (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.title1teacher ) ),
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Truancy Prevention') AND region = student.region ),
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
