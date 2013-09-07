@@ -492,6 +492,13 @@ end
             
             #HEADERS
             [
+                "CORE Phonics- Letter Names Upper Case (_/26)",
+                "CORE Phonics- Letter Names Lower Case (_/26)",
+                "CORE Phonics- Consonant Sounds (_/23)",
+                "CORE Phonics- Long Vowel Sounds (_/5)",
+                "CORE Phonics- Short Vowel Sounds (_/5)",
+                "CORE PHONICS- Short Vowels in CVC Words (_/10)",
+                "Reading Comprehension (correct/total)",
                 "LNF",
                 "LNF Errors",
                 "LSF",
@@ -502,6 +509,7 @@ end
                 "NWF Errors",
                 "R-CBM",
                 "R-CBM Errors",
+                "Reading Instructional Recommendation (K and 1)",
                 "OCM",
                 "OCM Errors",
                 "NIM",
@@ -510,9 +518,9 @@ end
                 "QDM Errors",
                 "MNM",
                 "MNM Errors",
-                "M-CAP",
-                "M-CAP Read to Student",
-                "Requirement for AIMS Benchmark"
+                "M-COMP", #Still M-CAP field
+                "Math Instructional Recommendation (K and 1)",
+                "Notes"
             ]
         ]
         
@@ -526,27 +534,35 @@ end
         
         row = Array.new
         
-        row.push(test.fields["lnf"                              ].web.default() )
-        row.push(test.fields["lnf_errors"                       ].web.default() )
-        row.push(test.fields["lsf"                              ].web.default() )
-        row.push(test.fields["lsf_errors"                       ].web.default() )
-        row.push(test.fields["psf"                              ].web.default() )
-        row.push(test.fields["psf_errors"                       ].web.default() )
-        row.push(test.fields["nwf"                              ].web.default() )
-        row.push(test.fields["nwf_errors"                       ].web.default() )
-        row.push(test.fields["rcbm"                             ].web.default() )
-        row.push(test.fields["rcbm_errors"                      ].web.default() )
-        row.push(test.fields["ocm"                              ].web.default() )
-        row.push(test.fields["ocm_errors"                       ].web.default() )
-        row.push(test.fields["nim"                              ].web.default() )
-        row.push(test.fields["nim_errors"                       ].web.default() )
-        row.push(test.fields["qdm"                              ].web.default() )
-        row.push(test.fields["qdm_errors"                       ].web.default() )
-        row.push(test.fields["mnm"                              ].web.default() )
-        row.push(test.fields["mnm_errors"                       ].web.default() )
-        row.push(test.fields["mcap"                             ].web.default() )
-        row.push(test.fields["mcap_read_to_student"             ].web.default() )
-        row.push(test.fields["requirement_for_aims_benchmark"   ].web.default() )
+        row.push(test.fields["core_phonics_letter_names_upper"          ].web.default() )
+        row.push(test.fields["core_phonics_letter_names_lower"          ].web.default() )
+        row.push(test.fields["core_phonics_consonant"                   ].web.default() )
+        row.push(test.fields["core_phonics_long_vowel"                  ].web.default() )
+        row.push(test.fields["core_phonics_short_vowel"                 ].web.default() )
+        row.push(test.fields["core_phonics_short_vowel_cvc"             ].web.default() )
+        row.push(test.fields["reading_comprehension"                    ].web.default() )
+        row.push(test.fields["lnf"                                      ].web.default() )
+        row.push(test.fields["lnf_errors"                               ].web.default() )
+        row.push(test.fields["lsf"                                      ].web.default() )
+        row.push(test.fields["lsf_errors"                               ].web.default() )
+        row.push(test.fields["psf"                                      ].web.default() )
+        row.push(test.fields["psf_errors"                               ].web.default() )
+        row.push(test.fields["nwf"                                      ].web.default() )
+        row.push(test.fields["nwf_errors"                               ].web.default() )
+        row.push(test.fields["rcbm"                                     ].web.default() )
+        row.push(test.fields["rcbm_errors"                              ].web.default() )
+        row.push(test.fields["reading_instructional_recommendation"     ].web.default() )
+        row.push(test.fields["ocm"                                      ].web.default() )
+        row.push(test.fields["ocm_errors"                               ].web.default() )
+        row.push(test.fields["nim"                                      ].web.default() )
+        row.push(test.fields["nim_errors"                               ].web.default() )
+        row.push(test.fields["qdm"                                      ].web.default() )
+        row.push(test.fields["qdm_errors"                               ].web.default() )
+        row.push(test.fields["mnm"                                      ].web.default() )
+        row.push(test.fields["mnm_errors"                               ].web.default() )
+        row.push(test.fields["mcap"                                     ].web.default() )
+        row.push(test.fields["math_instructional_recommendation"        ].web.default() )
+        row.push(test.fields["notes"                                    ].web.default() )
         
         tables_array.push(row)
         
