@@ -32,7 +32,7 @@ end
     
     def current_school_year
         
-        begin
+        if $tables.attach("School_Year_Detail").exists?
             
             if !(sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE"))
                 
@@ -47,7 +47,7 @@ end
             
             sy.fields["school_year"].value
             
-        rescue
+        else
             $config.school_year_installed
         end
         

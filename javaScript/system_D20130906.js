@@ -2,6 +2,8 @@
 function x___________________GENERAL_WEBPAGE_FUNCTIONS(){}
 //------------------------------------------------------------------------------
 
+var athena = "D20130906"
+
 var action_group = undefined;
 function add_student(element, sid){
 	if(element.value == 1){
@@ -415,7 +417,7 @@ function send(post_params, preCallback, callback){
 		$.ajax({
 			
 			type:     'POST',
-			url:      '/cgi-bin/athena_cgi.rb',
+			url:      '/cgi-bin/'+athena+'.rb',
 			dataType: 'html',
 			data:      data,
 			timeout:   120000,
@@ -1836,7 +1838,7 @@ function x___________________UNSORTED(){}
 		var width	= screen.width
 		var specs 	= "height="+height+",width="+width+",location=0,scrollbars=yes"
 		window.open(
-			'/cgi-bin/athena_cgi.rb?'+data,
+			'/cgi-bin/'+athena+'.rb?'+data,
 			''
 		);
 		
@@ -1994,7 +1996,7 @@ function x___________________UNSORTED(){}
 		var top 	= (screen.height/2	)-(height/2);
 		var specs 	= "height="+height+",width="+width+",top="+top+",left="+left
 		window.open(
-			'/cgi-bin/athena_cgi.rb?'+data,
+			'/cgi-bin/'+athena+'.rb?'+data,
 			'',
 			specs
 		);	

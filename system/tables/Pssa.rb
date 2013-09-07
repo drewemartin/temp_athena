@@ -184,6 +184,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "pssa",
                 "file_name"         => "pssa.csv",
                 "file_location"     => "pssa",

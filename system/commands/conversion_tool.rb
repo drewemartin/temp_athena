@@ -12,7 +12,7 @@ class CONVERSION_TOOL < Base
             @dbname = $config.db_name
         end
         
-        @archive_dbname     = "#{$config.school_name}_archive_#{@dbname}_#{$ifilestamp}"
+        @archive_dbname     = "archive_#{@dbname}_#{$ifilestamp}"
         
         @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
         @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
@@ -175,6 +175,7 @@ class CONVERSION_TOOL < Base
         
         puts "#RUN RE-INIT PROCEDURE ON CONVERSION DATABASE"
         $tables.table_names.each{|table|
+            puts table
             table = $tables.attach(table)
             table.re_initialize
         }
@@ -192,17 +193,34 @@ class CONVERSION_TOOL < Base
         
         puts "#RESTORE INTO CONVERSION DATABASE"
         tables.each do |table|
-            puts "RESTORING:  #{@restore_path}#{table.downcase}.sql"
-            if File.exists?("#{@restore_path}#{table.downcase}.sql")
+            
+            puts ">>>-----------------------------> #{table.upcase}"
+            
+            restore_file_path = "#{@restore_path}#{table.downcase}.sql"
+            if File.exists?(restore_file_path)
+                
+                puts "     RESTORING TABLE"
                 $tables.attach(table).truncate
-                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}#{table.downcase}.sql`
-                if $tables.attach(table).audit
-                    $tables.attach(table).truncate(audit=true)
-                    `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{@restore_path}zz_#{table.downcase}.sql`
+                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`
+                
+                restore_file_path = "#{@restore_path}zz_#{table.downcase}.sql"
+                if File.exists?(restore_file_path)
+                    
+                    if $tables.attach(table).audit
+                        
+                        puts "     RESTORING AUDIT TABLE"
+                        $tables.attach(table).truncate(audit=true)
+                        `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`
+                    end
+                    
+                else
+                    puts "     FILE NOT FOUND: #{@restore_path}#{table.downcase}.sql"
                 end
+                
             else
-                puts "No Restore File Found"
+                puts "     FILE NOT FOUND: #{@restore_path}#{table.downcase}.sql"
             end
+            
         end
         
         puts "#CONVERSION RESTORE COMPLETED IN #{(Time.new - start)/60} MINUTES"
@@ -232,7 +250,9 @@ end
 CONVERSION_TOOL.new(
     
     [
-        "restore"
+        "restore",
+        "ilp_entry_type",
+        "ilp_entry_category"
     ]
     
 )

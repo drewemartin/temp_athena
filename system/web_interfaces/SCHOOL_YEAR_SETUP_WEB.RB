@@ -43,8 +43,6 @@ class SCHOOL_YEAR_SETUP_WEB
         output << record.fields["start_date"        ].web.default(   :disabled=>@disabled, :label_option=>"First Day of School:")
         output << record.fields["end_date"          ].web.default(   :disabled=>@disabled, :label_option=>"Last Day of School:")
         output << record.fields["finalized"         ].web.select(    :disabled=>@disabled, :label_option=>"Calendar Finalized?", :dd_choices=>$dd.bool)
-        output << record.fields["edit_start_date"   ].web.default(   :disabled=>@disabled, :label_option=>"Database Open Date:")
-        output << record.fields["edit_end_date"     ].web.default(   :disabled=>@disabled, :label_option=>"Database Close Date:")
         
         output << school_holidays
         
