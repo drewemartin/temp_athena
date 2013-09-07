@@ -128,13 +128,6 @@ end
             structure_hash["fields"]["pdf_order"                        ] = {"data_type"=>"int",  "file_field"=>"pdf_order"                     } if field_order.push("pdf_order"                       )
             structure_hash["fields"]["display_type"                     ] = {"data_type"=>"text", "file_field"=>"display_type"                  } if field_order.push("display_type"                    )
             
-            structure_hash["fields"]["interface_solution"               ] = {"data_type"=>"bool", "file_field"=>"interface_solution"            } if field_order.push("interface_solution"              )
-            structure_hash["fields"]["interface_completed"              ] = {"data_type"=>"bool", "file_field"=>"interface_completed"           } if field_order.push("interface_completed"             )
-            structure_hash["fields"]["interface_goal_type"              ] = {"data_type"=>"bool", "file_field"=>"interface_goal_type"           } if field_order.push("interface_goal_type"             )
-            structure_hash["fields"]["interface_progress"               ] = {"data_type"=>"bool", "file_field"=>"interface_progress"            } if field_order.push("interface_progress"              )
-            structure_hash["fields"]["interface_expiration_date"        ] = {"data_type"=>"bool", "file_field"=>"interface_expiration_date"     } if field_order.push("interface_expiration_date"       )
-            structure_hash["fields"]["interface_responsible_parties"    ] = {"data_type"=>"bool", "file_field"=>"interface_responsible_parties" } if field_order.push("interface_responsible_parties"   )
-            
             ######################################################################################################################
             #ALL STUDENT ILP FIELDS SHOULD BE LISTED HERE, THIS WAY THE USER CAN HAVE THE OPTION OF INCLDING THAT FIELD ON THE PDF
             #DISPLAY ON INTERFACE?

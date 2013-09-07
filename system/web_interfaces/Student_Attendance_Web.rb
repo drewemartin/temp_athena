@@ -5,7 +5,9 @@ class STUDENT_ATTENDANCE_WEB
     
     #---------------------------------------------------------------------------
     def initialize()
-        @code_choices = $tables.attach("Attendance_Codes").dd_choices("code", "code", " WHERE `code` IS NOT NULL ORDER BY `code_type`, `code`  ASC ")
+        
+        codes = $tables.attach("Attendance_Codes").dd_choices("code", "code", " WHERE `code` IS NOT NULL ORDER BY `code_type`, `code`  ASC ")
+        @code_choices = codes ? codes : []
         @code_choices.each{|y|
             y[:value] = "pr" if y[:name] == "pt"
             y[:value] = "pr" if y[:name] == "pap"
@@ -13,7 +15,7 @@ class STUDENT_ATTENDANCE_WEB
             y[:value] = "ur" if y[:name] == "u"
             y[:value] = "ur" if y[:name] == "ut"
             y[:value] = "ur" if y[:name] == "uap" 
-        }
+        } 
         
     end
     #---------------------------------------------------------------------------

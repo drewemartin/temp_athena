@@ -34,7 +34,7 @@ end
     def excused_absences
         codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'excused'", {:value_only=>true})
         
-        dates = $tables.attach("student_attendance").find_fields("date","WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        dates = codes ? $tables.attach("student_attendance").find_fields("date","WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true}) : []
         
         return dates || []
     end
@@ -46,7 +46,7 @@ end
     def unexcused_absences
         codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'", {:value_only=>true})
         
-        dates = $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        dates = codes ? $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true}) : []
         
         return dates || []
     end
@@ -81,7 +81,7 @@ end
         
         codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'present'", {:value_only=>true})
         
-        dates = $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true})
+        dates = codes ? $tables.attach("student_attendance").find_fields("date", "WHERE student_id = #{@stu.studentid} AND official_code IN\('#{codes.join("','")}'\)", {:value_only=>true}) : []
         
         return dates || []
         

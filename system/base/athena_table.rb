@@ -1721,25 +1721,18 @@ end
             
             @re_initialize = true
             
-            init(table_only = true)
+            init
             
-            $paths.restore_path = "#{$config.storage_root}#{(a[:restore_path] || "restore_ordered")}"
-            
-            existing_codeset_restore_file = Dir.glob("#{$paths.restore_path}#{table_name}*")
-            FileUtils.rm_rf(existing_codeset_restore_file) if existing_codeset_restore_file
+            $paths.restore_path = "#{$config.storage_root}REINITIALIZE_#{$ifilestamp}"
             
             backup_path = backup(audit_backup=nil, structured_order=true)
             
-            unless a[:backup_only]
-                
-                $db.query("DROP TABLE `#{table_name}`",     data_base   )
-                $db.query("DROP TABLE `zz_#{table_name}`",  data_base   ) if audit
-                
-                init
-                
-                restore
-                
-            end
+            $db.query("DROP TABLE `#{table_name}`",     data_base   )
+            $db.query("DROP TABLE `zz_#{table_name}`",  data_base   ) if audit
+            
+            init
+            
+            restore
             
             return backup_path
             

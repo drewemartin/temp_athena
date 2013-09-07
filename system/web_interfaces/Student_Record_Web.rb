@@ -22,7 +22,7 @@ class STUDENT_RECORD_WEB
     end
     
     def page_title
-        return $focus_student.full_name
+        return "#{$config.school_year.split('-')[1]} #{$focus_student.full_name}"
     end
     
     def content
