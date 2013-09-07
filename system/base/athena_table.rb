@@ -539,7 +539,7 @@ end
                 #WE WILL NOT TRUNCATE THE TABLE IF THERE IS AN AUDIT TRAIL.
                 #IF YOU NEED TO START WITH A BLANK TABLE YOU WILL NEED TO
                 #TRUNCATE MANUALLY.
-                unless (table["audit"] || load_type == :overwrite)
+                unless (table["audit"] || load_type == :append)
                     truncate
                 end 
                 ################################################################
@@ -548,7 +548,7 @@ end
                 
                 sid_row                 = nil
                 samsid_row              = nil
-                @current_row            = new_row #unless load_type == :load_by_sid
+                @current_row            = new_row 
                 skip                    = true
                 
                 last_row_first_column = nil
@@ -1119,6 +1119,42 @@ end
     #        return false  
     #    end   
     #end
+    
+    def field_value(field_name, where_clause)
+        
+        sql_str =
+            "SELECT `#{field_name}`
+            FROM `#{table_name}`
+            #{where_clause}"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results[0] : false
+        
+    end
+    
+    def field_values(field_name, where_clause)
+        
+        sql_str =
+            "SELECT `#{field_name}`
+            FROM `#{table_name}`
+            #{where_clause}"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results : false
+        
+    end
+    
+    def field_value_by_pid(field_name, pid)
+        
+        sql_str =
+            "SELECT `#{field_name}`
+            FROM `#{table_name}`
+            WHERE primary_id = '#{pid}'"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results[0] : false
+        
+    end
     
     def truncate(audit = nil)
         
