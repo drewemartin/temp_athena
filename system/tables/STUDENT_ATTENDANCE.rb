@@ -21,7 +21,7 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-    def after_load_k12_ecollege_activity
+    def DISABLED_after_load_k12_ecollege_activity
         
         source  = "LMS"
         pids    = $tables.attach("K12_ECOLLEGE_ACTIVITY").primary_ids
@@ -42,7 +42,7 @@ end
         
     end
     
-    def after_load_k12_elluminate_session
+    def DISABLED_after_load_k12_elluminate_session
         
         source  = "Blackboard"
         pids    = $tables.attach("K12_ELLUMINATE_SESSION").primary_ids
@@ -63,7 +63,7 @@ end
         
     end
     
-    def after_load_k12_hs_activity
+    def DISABLED_after_load_k12_hs_activity
         
         source  = "LMS - Manual"
         pids    = $tables.attach("K12_HS_ACTIVITY").primary_ids
@@ -84,7 +84,7 @@ end
         
     end
     
-    def after_load_k12_lessons_count_daily
+    def DISABLED_after_load_k12_lessons_count_daily
         
         source  = "OLS"
         pids    = $tables.attach("K12_LESSONS_COUNT_DAILY").primary_ids
@@ -109,7 +109,7 @@ end
         
     end
     
-    def after_load_k12_logins
+    def DISABLE_after_load_k12_logins
         
         #THE STUDENT LOGGED IN
         source  = "K12 Logins"
@@ -230,7 +230,7 @@ end
         
     end
     
-    def after_load_student_sapphire_period_attendance
+    def DISABLED_after_load_student_sapphire_period_attendance
         
         #start = Time.new
         
@@ -350,25 +350,6 @@ end
             $students.process_attendance(:student_id=>record.fields["student_id"].value,:date=>record.fields["date"].value)
         end
     end
-    
-    def attendance_activity(a)
-    #:activity          =>nil,
-    #:activity_string   =>nil
-        
-        curr_value  = a[:activity_string] || String.new
-      
-        if curr_value.empty?
-            curr_value = a[:activity]
-            
-        elsif !curr_value.include?(a[:activity])
-            curr_value = "#{curr_value},#{a[:activity]}"
-            
-        end
-        
-        return curr_value
-        
-    end
-
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION

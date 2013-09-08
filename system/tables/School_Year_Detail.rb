@@ -52,6 +52,26 @@ end
                 
             }
             
+            start_date  = $tables.attach("SCHOOL_YEAR_DETAIL" ).find_field( "start_date",  "WHERE school_year = '#{$config.school_year}'")
+            end_date    = $tables.attach("SCHOOL_YEAR_DETAIL" ).find_field( "end_date",    "WHERE school_year = '#{$config.school_year}'")
+            
+            last_day_of_school  = end_date.mathable
+            eval_date           = start_date
+            
+            until eval_date.mathable > last_day_of_school
+              
+                if !$tables.attach("SCHOOL_CALENDAR").primary_ids("WHERE date = '#{eval_date.to_db}'")
+                    
+                    record = $tables.attach("SCHOOL_CALENDAR").new_record
+                    record.fields["date"].value = eval_date.to_db
+                    record.save
+                    
+                end
+              
+                eval_date.add!
+              
+            end
+            
         end
         
     end

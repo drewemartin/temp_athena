@@ -80,55 +80,18 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def log_attendance_activity(a)
-    #:date      =>nil,
-    #:source    =>nil
+    #:date       => date,
+    #:source     => source,
+    #:period     => period_code,
+    #:class      => course_title,
+    #:code       => activity_code,
+    #:team_id    => team_id || nil
         
-        if attendance_record = self.attendance.existing_records("WHERE date = '#{a[:date]}'")
-            
-            attendance_record = attendance_record[0]
-            
-        else
-            
-            attendance_record = self.attendance.new_record
-            attendance_record.fields["date"       ].value = a[:date]
-            attendance_record.fields["mode"       ].value = "Activity - Not Enrolled"
-            
-        end
-        
-        curr_value  = attendance_record.fields["code"].value
-      
-        if curr_value.nil?
-            attendance_record.fields["code"].value = a[:source]
-            attendance_record.save
-            
-        elsif !curr_value.include?(a[:source])
-            attendance_record.fields["code"].value = "#{curr_value},#{a[:source]}"
-            attendance_record.save
-            
-        end
-        
-    end
-    
-    def remove_attendance_activity(a)
-    #:date      =>nil,
-    #:source    =>nil
-        
-        if attendance_record = self.attendance.existing_records("WHERE date = '#{a[:date]}'")
-            
-            attendance_record = attendance_record[0]
-            
-            curr_value  = attendance_record.fields["code"].value
-          
-            if (!curr_value.nil? && curr_value.include?(a[:source]))
-                
-                attendance_record.fields["code"].value.delete(",#{a[:source]}")
-                attendance_record.fields["code"].value.delete(a[:source])
-                
-                attendance_record.save
-                
-            end
-            
-        end
+        record = self.attendance_activity.new_record
+        a.each_pair{|k,v|
+            record.fields[k.to_s].value = v
+        }
+        record.save
         
     end
 
@@ -198,18 +161,23 @@ end
                                 #BUILD SUB-TABLE FIELD/RECORD ACCESSOR METHODS FOR ONE TO ONE RELATIONSHIPS
                                 table = $tables.attach(self.class.to_s.gsub("_API",""))
                                 
+                                #PROVIDE ACCESS TO THE TABLE
+                                create_method(:table) {
+                                    table
+                                }
+                                
                                 #IF THERE CAN BE ONLY ONE RECORD PER STUDENT
                                 if table.relationship == :one_to_one
                                     
                                     #BUILD SUB-TABLE FIELD/RECORD ACCESSOR METHODS FOR ONE TO ONE RELATIONSHIPS
                                     create_method(:existing_record) {
-                                        $tables.attach(self.class.to_s.gsub("_API","")).by_studentid(@sid) 
+                                        table.by_studentid(@sid) 
                                     }
                                     
                                     #CREATE A FUNCTION FOR EACH FIELD OF THAT RECORD
                                     table.fields.each_key{|f_name|
                                         create_method(f_name.gsub("-","_").to_sym) {
-                                            $tables.attach(self.class.to_s.gsub("_API","")).field_by_sid(f_name, @sid) 
+                                            table.field_by_sid(f_name, @sid) 
                                         }
                                     }
                                     
@@ -220,7 +188,7 @@ end
                                     
                                     #BUILD SUB-TABLE FIELD/RECORD ACCESSOR METHODS FOR ONE TO MANY RELATIONSHIPS
                                     create_method(:existing_records) { |where_clause_addon|
-                                        $tables.attach(self.class.to_s.gsub("_API","")).by_studentid(@sid, where_clause_addon)
+                                        table.by_studentid(@sid, where_clause_addon)
                                     }
                                 end
                                 
@@ -229,7 +197,7 @@ end
                                 self.class.send(:define_method, name, &block)
                             end
                             def new_record
-                                this_record = $tables.attach(self.class.to_s.gsub("_API","")).new_row
+                                this_record = table.new_row
                                 this_record.fields["student_id" ].value = @sid if this_record.fields["student_id" ]
                                 this_record.fields["studentid"  ].value = @sid if this_record.fields["studentid"  ]
                                 return this_record

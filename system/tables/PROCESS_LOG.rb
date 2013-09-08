@@ -59,6 +59,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "process_log",
                 "file_name"         => "process_log.csv",
                 "file_location"     => "process_log",
@@ -80,6 +81,7 @@ end
             structure_hash["fields"]["function_name"]       = {"data_type"=>"text",     "file_field"=>"function_name"}      if field_order.push("function_name")
             structure_hash["fields"]["args"]                = {"data_type"=>"text",     "file_field"=>"args"}               if field_order.push("args")
             structure_hash["fields"]["status"]              = {"data_type"=>"text",     "file_field"=>"status"}             if field_order.push("status")
+            structure_hash["fields"]["start_datetime"]      = {"data_type"=>"datetime", "file_field"=>"start_datetime"}     if field_order.push("start_datetime")
             structure_hash["fields"]["completed_datetime"]  = {"data_type"=>"datetime", "file_field"=>"completed_datetime"} if field_order.push("completed_datetime")
         structure_hash["field_order"] = field_order
         return structure_hash
