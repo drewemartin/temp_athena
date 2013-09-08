@@ -10,7 +10,7 @@ class Attendance_Processing
         @excused_codes          = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'excused'",          {:value_only=>true}) || []
         @unexcused_codes        = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'unexcused'",        {:value_only=>true}) || []
         @override_codes         = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE",    {:value_only=>true}) || []
-        @orientation_sources    = ["period_elo", "period_mo", "period_orn"]
+        @orientation_sources    = ["ELO", "MO", "ORN"]
         
         @school_start           = $tables.attach("School_Year_Detail").record("WHERE school_year = '#{$config.school_year}'").fields["start_date"].mathable
         
@@ -98,101 +98,67 @@ end
     
     def classrooms_active
         
-        active = Array.new
-        @stu_daily_codes.each{|code|
-            
-            if @classroom_sources.find{|x|x.match(/#{code.split(":")[0]}/)}
-                
-                active.push(code) if (code.split(" - ")[-1] == "p")
-                
-            end
-            
-        }
-        
-        return active
+        @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND code            = 'p'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
         
     end
     
     def classrooms_total
         
-        total = Array.new
-        @stu_daily_codes.each{|code|
-            
-            total.push(code) if (
-                @classroom_sources.find{|x|
-                    x.match(/#{code.split(":")[0]}/) && !(code.split(" - ")[-1] == "asy") 
-                }            
-            )
-            
-        }
-        
-        return total
+        @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
         
     end
     
     def has_activity
         
-        has_activity = false
-        @activity_sources.each{|activity_source|
-            
-            has_activity = true if @stu_daily_codes.include?(activity_source)    
-            
-        }
-        
-        return has_activity
-        
-    end
-    
-    def has_classroom_activity
-        
-        return (classrooms_active.empty? ? false : true)
+        @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND code            = 'p'
+            AND source REGEXP '#{@activity_sources.join("|")}'"
+        )
         
     end
     
     def has_live
         
-        has_live = false
-        @live_sources.each{|live_source|
-            
-            has_live = true if @stu_daily_codes.include?(live_source)   
-            
-        }
+        results = @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND code            = 'p'
+            AND source REGEXP '#{@live_sources.join("|")}'"
+        )
         
-        return (has_live || has_classroom_activity)
+        return (results || classrooms_active)
         
     end
 
     def orientation_attended
         
-        orientation_attended = false
-        @orientation_sources.each{|orientation_source|
-            
-            @stu_daily_codes.each{|code|
-                if code.match(/#{orientation_source}/)
-                    orientation_attended = true if (code.split(" - ")[-1] == "p")
-                end
-            }
-            
-        }
-        
-        return orientation_attended
+        @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND code            = 'p'
+            AND period REGEXP '#{@orientation_sources.join("|")}'"
+        )
         
     end
 
     def orientation_logged
         
-        orientation_logged = false
-        @orientation_sources.each{|orientation_source|
-            
-            @stu_daily_codes.each{|code|
-                if code.match(/#{orientation_source}/)
-                    orientation_logged = true
-                end
-            }
-            
-        }
-        
-        return orientation_logged
+        @student.attendance_activity.table.pids(
+            "WHERE student_id   = '#{@sid}'
+            AND date            = '#{@date}'
+            AND period REGEXP '#{@orientation_sources.join("|")}'"
+        )
         
     end
     
@@ -401,7 +367,9 @@ end
             
             att_record                                  = student_attendance_record
             @stu_daily_mode                             = att_record.fields["mode"].value
+            
             @stu_daily_codes                            = att_record.fields["code"].value.nil? ? [] : att_record.fields["code"].value.split(",")
+            
             @stu_daily_procedure_type                   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value 
             @stu_daily_sapphire_period_attendance       = @student.sapphire_period_attendance.existing_records("WHERE calendar_day = '#{@date}'")
             @stu_daily_sapphire_period_attendance       = @stu_daily_sapphire_period_attendance ? @stu_daily_sapphire_period_attendance[0] : false

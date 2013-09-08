@@ -249,7 +249,7 @@ end
                         return self.value
                     end
                 rescue
-                    return 0 
+                    return false 
                 end
             when "datetime"
                 

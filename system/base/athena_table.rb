@@ -539,7 +539,7 @@ end
                 #WE WILL NOT TRUNCATE THE TABLE IF THERE IS AN AUDIT TRAIL.
                 #IF YOU NEED TO START WITH A BLANK TABLE YOU WILL NEED TO
                 #TRUNCATE MANUALLY.
-                unless (table["audit"] || load_type == :overwrite)
+                unless (table["audit"] || load_type == :append)
                     truncate
                 end 
                 ################################################################
@@ -548,21 +548,14 @@ end
                 
                 sid_row                 = nil
                 samsid_row              = nil
-                @current_row            = new_row #unless load_type == :load_by_sid
+                @current_row            = new_row 
                 skip                    = true
                 
                 last_row_first_column = nil
                 
                 begin
                     
-                    
-                    if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
-                        
-                        #GET PIDS OF ALL ACTIVE RECORDS
-                        #IF THEY AREN'T FOUND IN THIS LOAD THEY WILL BE DEACTIVATED AFTER THE LOAD.
-                        active_ids = primary_ids("WHERE active IS TRUE") || []
-                        
-                    end
+                    active_ids = false
                     
                     total_rows = 0
                     CSV.foreach( file_path ) do |row|
@@ -577,21 +570,44 @@ end
                             
                         elsif source_type == "k12_report" && last_row_first_column.match(/generated/i)
                             #SKIPPING THIS @CURRENT_ROW BECAUSE IT'S NOT VALID, JUST K12'S DATETIME GENERATION STAMP.
-                        else
+                        else 
                             
-                            total_rows += 1 
+                            skip_this_row = false
                             
-                            if table["audit"] && table[:keys]
+                            if !active_ids && table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                                
+                                #GET PIDS OF ALL ACTIVE RECORDS
+                                #IF THEY AREN'T FOUND IN THIS LOAD THEY WILL BE DEACTIVATED AFTER THE LOAD.
+                                
+                                if table_name.match(/sapphire/) && field_order.include?("school_id")
+                                    
+                                    active_ids = primary_ids("WHERE active IS TRUE AND school_id = '#{row[csv_field_names.index("school_id")]}'") || []
+                                    
+                                else
+                                    
+                                    active_ids = primary_ids("WHERE active IS TRUE") || []
+                                    
+                                end
+                                
+                            end
+                            
+                            if table[:keys]
                                 
                                 key_field_values = String.new
+                                key_field_select = Array.new
                                 table[:keys].each{|key_name|
                                     
-                                    key_field_values << @current_row.fields[key_name].set(row[csv_field_names.index(key_name)].to_s).to_db.to_s
+                                    if this_fields_value = row[csv_field_names.index(key_name)]
+                                        key_field_values << @current_row.fields[key_name].set(this_fields_value.to_s).to_db.to_s   
+                                    end
+                                    
+                                    key_field_select.push("IFNULL(`#{key_name}`, '')")
                                     
                                 }
                                 
-                                existing_record = record("WHERE CONCAT(#{table[:keys].join(",")}) = '#{key_field_values}'")
+                                existing_record = record("WHERE CONCAT(#{key_field_select.join(",")}) = '#{key_field_values}'")
                                 if existing_record
+                                    skip_this_row   = true if !table[:update]
                                     @current_row    = existing_record
                                 else
                                     @current_row.clear
@@ -601,48 +617,56 @@ end
                                 @current_row.clear
                             end
                             
-                            if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                            unless skip_this_row
                                 
-                                #MARK THE RECORD AS ACTIVE
-                                @current_row.fields["active"].value = true
+                                if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
+                                    
+                                    #MARK THE RECORD AS ACTIVE
+                                    @current_row.fields["active"].value = true
+                                    
+                                    #REMOVE FROM THE active_ids ARRAY
+                                    active_ids.delete(@current_row.primary_id) if active_ids.include?(@current_row.primary_id)
+                                    
+                                end
                                 
-                                #REMOVE FROM THE active_ids ARRAY
-                                active_ids.delete(@current_row.primary_id) if active_ids.include?(@current_row.primary_id)
+                                index = 0  
+                                while index < row.length
+                                    
+                                    csv_field = csv_field_names[index]
+                                    csv_value = row[index]
+                                    @current_row.fields[csv_field].value = csv_value if csv_field
+                                    index += 1
+                                    
+                                end
                                 
-                            end
-                            
-                            index = 0  
-                            while index < row.length
+                                @current_row.fields["created_date"].value = $base.created_date if $base.created_date
                                 
-                                csv_field = csv_field_names[index]
-                                csv_value = row[index]
-                                @current_row.fields[csv_field].value = csv_value if csv_field
-                                index += 1
+                                begin
+                                    @current_row.save
+                                rescue=>e
+                                    e.backtrace
+                                    $base.system_notification(
+                                        subject = "LOAD WARNING - #{table_name}",
+                                        content = "Save record failed in load.
+                                        ROW DETAILS:
+                                        #{row.to_s}
+                                        ERROR MESSAGE:
+                                        #{e.message}",
+                                        caller[0],
+                                        e
+                                    )
+                                    #So the load failed can be caught in case here was a problm with saving this record.
+                                    #Otherwise an error is raised inside the save function and is not reported to syslog or sysnotification
+                                end
                                 
-                            end
-                            
-                            @current_row.fields["created_date"].value = $base.created_date if $base.created_date
-                            
-                            begin
-                                @current_row.save
-                            rescue=>e
-                                e.backtrace
-                                $base.system_notification(
-                                    subject = "LOAD WARNING - #{table_name}",
-                                    content = "Save record failed in load.
-                                    ROW DETAILS:
-                                    #{row.to_s}
-                                    ERROR MESSAGE:
-                                    #{e.message}",
-                                    caller[0],
-                                    e
-                                )
-                                #So the load failed can be caught in case here was a problm with saving this record.
-                                #Otherwise an error is raised inside the save function and is not reported to syslog or sysnotification
+                                total_rows += 1
+                                
                             end
                             
                         end
+                        
                         skip = false
+                        
                     end
                     
                     if total_rows < 5
@@ -1119,6 +1143,52 @@ end
     #        return false  
     #    end   
     #end
+    
+    def field_value(field_name, where_clause)
+        
+        field_str = field_name.match(/concat/i) ? field_name : "`#{field_name}`"
+        
+        sql_str =
+            "SELECT #{field_str}
+            FROM `#{table_name}`
+            #{where_clause}"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results[0] : false
+        
+    end
+    
+    def field_values(field_name, where_clause)
+        
+        field_str = field_name.match(/concat/i) ? field_name : "`#{field_name}`"
+        
+        sql_str =
+            "SELECT #{field_str}
+            FROM `#{table_name}`
+            #{where_clause}"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results : false
+        
+    end
+    
+    def field_value_by_pid(field_name, pid)
+        
+        field_str = field_name.match(/concat/i) ? field_name : "`#{field_name}`"
+        
+        sql_str =
+            "SELECT #{field_str}
+            FROM `#{table_name}`
+            WHERE primary_id = '#{pid}'"
+        results = $db.get_data_single(sql_str, data_base)
+        
+        return results ? results[0] : false
+        
+    end
+    
+    def query(sql)
+        $db.query(sql, data_base)
+    end
     
     def truncate(audit = nil)
         

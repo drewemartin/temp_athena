@@ -47,64 +47,18 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     def after_load_k12_logins
+        
+        $base.queue_process("ATTENDANCE_LOG", "k12_logins_students",            nil)
+        $base.queue_process("ATTENDANCE_LOG", "k12_logins_learning_coaches",    nil)
+        
+    end
+    
+    def DISABLE_after_load_k12_logins
         this_hour = DateTime.now.strftime("%H")
         if (!this_hour.include?("0") && Integer(this_hour) > 15) && $field.is_schoolday?(DateTime.now)
             require "#{File.dirname(__FILE__).gsub("tables","reports")}/Login_Reminders_Report"
             Login_Reminders_Report.new
         end
-    end
-    def DISABLE_after_load_k12_logins
-        #find the present students
-        #$students.list(:current_students)
-        omni             = $tables.attach("K12_Omnibus")
-        master           = $tables.attach("Attendance_Master")
-        current_students = omni.current_students
-        att_day          = master.schooldays(cutoff_date = today.iso_date)[-1]
-        present_students = Array.new
-        missing_login    = Array.new
-        by_last_login(att_day).each{|record|
-            fid  = record.fields["familyid"].value
-            reg  = record.fields["regkey"].value
-            lcoaches = $tables.attach("K12_Learning_Coach").by_familyid(fid)
-            if lcoaches
-                lcoaches.each{|coach|
-                    sid = coach.fields["student_id"].value
-                    if !present_students.index(sid) && current_students.index(sid)
-                        k8  = $students.student(sid).grade.match(/K|1st|2nd|3rd|4th|5th|6th|7th|8th/)
-                        present_students.push(sid) if k8
-                    end
-                }
-            end
-            students = omni.by_familyid(fid)
-            if students
-                students.each{|student|
-                    sid = student.fields["studentid"].value
-                    if !present_students.index(sid) && current_students.index(sid)
-                        k8  = $students.student(sid).grade.match(/K|1st|2nd|3rd|4th|5th|6th|7th|8th/)
-                        present_students.push(sid) if k8
-                    end
-                }
-            end
-            lcoach_reg = omni.by_lcregid(reg)
-            if lcoach_reg
-                lcoach_reg.each{|student|
-                    sid = student.fields["studentid"].value
-                    if !present_students.index(sid) && current_students.index(sid)
-                        k8  = $students.student(sid).grade.match(/K|1st|2nd|3rd|4th|5th|6th|7th|8th/)
-                        present_students.push(sid) if k8
-                    end
-                }
-            end
-            missing_login.push(fid) if !lcoaches && !students && !missing_login.index(fid)
-        }
-        #create report
-        file  = $base.user_file("Attendance/k8_present")
-        file.puts "Student ID"
-        present_students.each{|s| file.puts s}
-        file.close
-        
-        #update attendance master
-        master.batch_present(students, att_day)
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -117,6 +71,9 @@ end
         if !@table_structure
             structure_hash = {
                 :data_base          => "#{$config.school_name}_k12",
+                :load_type          => :append,
+                :keys               => ["identityid","role","last_login"],
+                :update             => false,
                 "name"              => "k12_logins",
                 "file_name"         => "agora_logins.csv",
                 "file_location"     => "k12_reports",
@@ -135,6 +92,7 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
+        
         structure_hash["fields"]["accountid"]       = {"data_type"=>"int",      "file_field"=>"ACCOUNTID"}      if field_order.push("accountid")
         structure_hash["fields"]["identityid"]      = {"data_type"=>"int",      "file_field"=>"IDENTITYID"}     if field_order.push("identityid")
         structure_hash["fields"]["familyid"]        = {"data_type"=>"int",      "file_field"=>"FAMILYID"}       if field_order.push("familyid")
@@ -150,6 +108,8 @@ end
         structure_hash["fields"]["first_login"]     = {"data_type"=>"datetime", "file_field"=>"FIRST_LOGIN"}    if field_order.push("first_login")
         structure_hash["fields"]["last_login"]      = {"data_type"=>"datetime", "file_field"=>"LAST_LOGIN"}     if field_order.push("last_login")
         structure_hash["fields"]["num_logins"]      = {"data_type"=>"int",      "file_field"=>"NUM_LOGINS"}     if field_order.push("num_logins")
+        structure_hash["fields"]["logged"]          = {"data_type"=>"bool",     "file_field"=>"logged"}         if field_order.push("logged")
+      
         structure_hash["field_order"] = field_order
         return structure_hash
     end

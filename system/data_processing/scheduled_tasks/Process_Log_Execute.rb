@@ -14,7 +14,8 @@ class Process_Log_Execute < Base
             
             fields          = row.fields
             
-            fields["status"].value = "Processing"
+            fields["status"         ].value = "Processing"
+            fields["start_datetime" ].value = DateTime.now
             row.save
             
             class_name      = fields["class_name"       ].value
