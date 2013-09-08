@@ -166,7 +166,9 @@ end
 
     def after_load_k12_omnibus
         
-        if $field.is_schoolday?($idate)
+        eval_date = $base.created_date ? DateTime.parse($base.created_date).strftime("%Y-%m-%d") : $idate
+        
+        if $field.is_schoolday?(eval_date)
             
             sids = $students.list(:currently_enrolled=>true)
             sids.each{|sid|
@@ -177,7 +179,7 @@ end
                 student.attendance_master.existing_record || student.attendance_master.new_record.save
                 
                 #CREATE A DAILY ATTENDANCE RECORD IF ONE DOES NOT EXIST
-                if !student.attendance.existing_records("WHERE date = '#{$idate}'")
+                if !student.attendance.existing_records("WHERE date = '#{eval_date}'")
                     
                     #CREATE A MODE RECORD WITH THE DEFAULT SETTING IF ONE DOES NOT EXIST
                     if !student.attendance_mode.existing_record
@@ -190,7 +192,7 @@ end
                     code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : nil
                     
                     record  = student.attendance.new_record
-                    record.fields["date"       ].value = $idate
+                    record.fields["date"       ].value = eval_date
                     record.fields["mode"       ].value = mode
                     record.fields["code"       ].value = code
                     record.save
