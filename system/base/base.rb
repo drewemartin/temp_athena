@@ -17,8 +17,9 @@ require 'prawn'
 require 'watir'
 require 'zip/zip'
 
-require "#{File.dirname(__FILE__).gsub("athena/system/base", "athena_config")}"
-$config     = Athena_Config.new
+#EXPLICIT REFERENCE!!!!!
+require "#{File.dirname(__FILE__).gsub("athena/system/base", "config")}"
+$config  = Athena_Config.new
 
 require "#{File.dirname(__FILE__)}/paths"
 $paths      = Paths.new
@@ -1150,6 +1151,10 @@ end
       if $school.current_school_year
         
         $config.school_year = $school.current_school_year
+        
+      else
+        
+        raise "CURRENT SCHOOL YEAR NOT SET!"
         
       end
       
