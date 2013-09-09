@@ -97,18 +97,57 @@ end
                             
                             output << fields["mode"].web.select({:label_option=>"Mode", :dd_choices=>modes_dd, :disabled=>disabled}, true)
                             
-                            if fields["code"].value
-                                #CLEAN UP ATTENDANCE LOG STRING
-                                fields["code"].value = fields["code"].gsub(",","<BR>")
-                                fields["code"].value = fields["code"].gsub("p-k12_elluminate_session",  "Blackboard")
-                                fields["code"].value = fields["code"].gsub("p-k12_lessons_count_daily", "OLS")
-                                fields["code"].value = fields["code"].gsub("p-k12_hs_activity",         "LMS")
-                                fields["code"].value = fields["code"].gsub("p-k12_ecollege_activity",   "LMS2")
-                                fields["code"].value = fields["code"].gsub("p-k12_logins",              "Logged In")
-                            
-                            end
                             output << $tools.newlabel("activity", "Activity Log")
-                            output << fields["code"].web.label()
+                            
+                            output << "<div class='activity_container'>"
+                            
+                            activity_records = $tables.attach("student_attendance_activity").by_studentid(sid, "WHERE date='#{date.first}'")
+                            
+                            tables_array = [
+                                [
+                                    "Source",
+                                    "Period",
+                                    "Class",
+                                    "Code",
+                                    "Team Member"
+                                ]
+                            ]
+                            
+                            activity_records.each do |activity_row|
+                                
+                                a_fields = activity_row.fields
+                                source   = a_fields["source"].value
+                                period   = a_fields["period"].value
+                                a_class  = a_fields["class"].value
+                                code     = a_fields["code"].value
+                                begin
+                                    team = $team.get(a_fields["team_id"].value).full_name
+                                rescue
+                                    team = "Unknown"
+                                end
+                                
+                                tables_array.push([source,period,a_class,code,team])
+                                
+                            end if activity_records
+                            
+                            output << $kit.tools.table(
+                                :table_array    =>tables_array,
+                                :unique_name    => "activity_#{date.first}",
+                                :footers        => false,
+                                :head_section   => false,
+                                :title          => false,
+                                :legend         => false,
+                                :caption        => false,
+                                :embedded_style => {
+                                    :table  => "width:500px;",
+                                    :th     => nil,
+                                    :tr     => nil,
+                                    :tr_alt => nil,
+                                    :td     => nil
+                                }
+                            )
+                            
+                            output << "</div>"
                             
                         else
                             output << $tools.newlabel("no_record", "No Attendance Record")
@@ -270,6 +309,7 @@ end
         div.STUDENT_ATTENDANCE__code{                           width:160px; height:80px; margin-left:auto; margin-right:auto; text-align:center; border: 1px solid black; overflow-y:scroll; background-color:white}
         div.code{                                               width:60px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
         div.activity{                                           width:150px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
+        div.activity_container{                                 width:160px; height:80px; margin-left:auto; margin-right:auto; border: 1px solid black; overflow-y:scroll; background-color:white}
 
         div.incomplete_title{                                   float:left; clear:left; margin-left:10px; font-size:1.2em;}
         div.complete_title{                                     float:left; clear:left; margin-left:10px; font-size:1.2em;}

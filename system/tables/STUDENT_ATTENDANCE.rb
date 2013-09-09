@@ -189,12 +189,12 @@ end
                     end
                     
                     mode    = student.attendance_mode.attendance_mode.value
-                    code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : nil
+                    code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : "u"
                     
                     record  = student.attendance.new_record
-                    record.fields["date"       ].value = eval_date
-                    record.fields["mode"       ].value = mode
-                    record.fields["code"       ].value = code
+                    record.fields["date"            ].value = eval_date
+                    record.fields["mode"            ].value = mode
+                    record.fields["official_code"   ].value = code
                     record.save
                     
                 end
@@ -342,7 +342,7 @@ end
         process_attendance(obj)
     end
     
-    def after_insert(obj)
+    def DISABLED_after_insert(obj)
         process_attendance(obj)
     end
     

@@ -75,11 +75,11 @@ end
     
     def documents_path
         if !structure.has_key?(:documents_path)
-            if ENV["COMPUTERNAME"] == "ATHENA"
+            #if ENV["COMPUTERNAME"] == "ATHENA"
                 structure[:documents_path] = $config.init_path("A:/documents")
-            else
-                structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")
-            end
+            #else
+            #    structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")
+            #end
             
         end
         return structure[:documents_path]

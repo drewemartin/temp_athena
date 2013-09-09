@@ -20,7 +20,7 @@ class Attendance_Processing
 
     def finalize
         
-        @finalize_code  = student_attendance_master_field.value
+        @finalize_code  = "u"#student_attendance_master_field.value
         
         @override       = attendance_department_override  unless @override
         @override       = orientation_override            unless @override
@@ -98,7 +98,7 @@ end
     
     def classrooms_active
         
-        @student.attendance_activity.table.pids(
+        @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND code            = 'p'
@@ -109,7 +109,7 @@ end
     
     def classrooms_total
         
-        @student.attendance_activity.table.pids(
+        @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND source REGEXP '#{@classroom_sources.join("|")}'"
@@ -119,7 +119,7 @@ end
     
     def has_activity
         
-        @student.attendance_activity.table.pids(
+        @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND code            = 'p'
@@ -130,7 +130,7 @@ end
     
     def has_live
         
-        results = @student.attendance_activity.table.pids(
+        results = @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND code            = 'p'
@@ -143,7 +143,7 @@ end
 
     def orientation_attended
         
-        @student.attendance_activity.table.pids(
+        @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND code            = 'p'
@@ -154,7 +154,7 @@ end
 
     def orientation_logged
         
-        @student.attendance_activity.table.pids(
+        @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
             AND period REGEXP '#{@orientation_sources.join("|")}'"
@@ -371,8 +371,6 @@ end
             @stu_daily_codes                            = att_record.fields["code"].value.nil? ? [] : att_record.fields["code"].value.split(",")
             
             @stu_daily_procedure_type                   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value 
-            @stu_daily_sapphire_period_attendance       = @student.sapphire_period_attendance.existing_records("WHERE calendar_day = '#{@date}'")
-            @stu_daily_sapphire_period_attendance       = @stu_daily_sapphire_period_attendance ? @stu_daily_sapphire_period_attendance[0] : false
             
             @stu_strict_attendance_testing_records  = @student.test_dates.existing_records(
                 "LEFT JOIN test_event_sites ON test_event_sites.primary_id  = student_test_dates.test_event_site_id

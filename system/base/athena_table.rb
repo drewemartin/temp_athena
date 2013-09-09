@@ -532,7 +532,7 @@ end
                 FileUtils.cp(file_path, "#{report_path}#{processed_filename}")
                 
                 if ENV["COMPUTERNAME"] == "ATHENA" && !caller.find{|x| x.include?("load_k12_history")}
-                    $reports.move_to_athena_reports("#{report_path}#{processed_filename}")
+                    #$reports.move_to_athena_reports("#{report_path}#{processed_filename}")
                 end
                 
                 ################################################################
@@ -1007,6 +1007,7 @@ end
             row = Row.new(self)
             row.trim_fields_not_listed(fields_list) if fields_list
             fields_str.gsub("`","").split(",").each{|field|
+                field = field.split(".")[-1] if field.include?(".")
                 row.fields[field].primary_id = id
                 row.fields[field].value = record[i]
                 i += 1
@@ -1027,6 +1028,7 @@ end
                 i   = 0
                 row = Row.new(self)
                 fields_str.gsub("`","").split(",").each{|field|
+                    field = field.split(".")[-1] if field.include?(".")
                     row.fields[field].value         = record[i]
                     row.fields[field].primary_id    = id
                     i += 1
@@ -1855,10 +1857,8 @@ end
     end
  
     def sql_fields_str
-        fieldstr = nil
-        fieldstr = "`primary_id`,`created_by`,`created_date`"
-        field_order.each{|field| fieldstr = "#{fieldstr},`#{field}`"}
-        return fieldstr
+        fieldstr = ["primary_id","created_by","created_date"].concat(field_order)
+        return "`#{table_name}`.`#{fieldstr.join("`,`#{table_name}`.`")}`"
     end
     
 end
