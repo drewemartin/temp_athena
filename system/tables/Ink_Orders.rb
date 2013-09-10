@@ -54,7 +54,7 @@ end
             ink_number  
         FROM #{ipm_db}.ink_printer_models
         RIGHT OUTER JOIN #{sh_db}.sams_hardware
-        ON #{ipm_db}.printer_make_model = #{sh_db}.sams_model
+        ON #{sh_db}.sams_hardware.printer_make_model = #{ipm_db}.ink_printer_models.sams_model
         LEFT JOIN #{data_base}.ink_orders
         ON #{sh_db}.sams_hardware.student_id = #{data_base}.ink_orders.studentid
         WHERE sams_hardware.student_id=#{sid}"

@@ -23,7 +23,7 @@ end
         link_performance_current_scores
         link_students_all_subjects
         excel_student_all_subjects
-        success = download_complete?("#{$config.temp_path}/scores.csv")
+        success = download_complete?("#{$paths.imports_path}/scores.csv")
         browser.close
         return success
     end
@@ -302,7 +302,7 @@ end
     end
     
     def link_district_reports
-        link = "/html/body/table[5]/tbody/tr/td/table/tbody/tr/td/table[2]/tbody/tr/td/table/tbody/tr[2]/td/a/img"
+        link = "/html/body/table[2]/tbody/tr/td[4]/a"
         complete = false
         i = 0
         until complete
@@ -318,7 +318,7 @@ end
     end
     
     def link_performance_current_scores
-        link = "/html/body/table[5]/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/table[2]/tbody/tr[9]/td/span/a"
+        link = "/html/body/table[5]/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td/table[2]/tbody/tr[2]/td/span/a"
         complete = false
         i = 0
         until complete
@@ -334,7 +334,7 @@ end
     end
     
     def link_performance_tests
-        link = "/html/body/table[2]/tbody/tr/td[6]/a"
+        link = "/html/body/table[2]/tbody/tr/td[5]/a"
         complete = false
         i = 0
         until complete
@@ -364,7 +364,7 @@ end
             end
             i+=1
         end
-        link2 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[3]/tbody/tr/td[10]/a/span/span"
+        link2 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[3]/tbody/tr/td[10]/a"
         if browser.link(:xpath, link2).exists?
           browser.cell(:xpath, link2).click
           #complete = true
