@@ -91,7 +91,24 @@ end
         a.each_pair{|k,v|
             record.fields[k.to_s].value = v
         }
-        record.save
+        
+        if !(
+         
+            self.attendance_activity.table.primary_ids(
+                "WHERE student_id = '#{@sid}'
+                 AND date    = '#{record.fields["date"       ].to_db}'
+                 AND source  = '#{record.fields["source"     ].to_db}'
+                 AND period  = '#{record.fields["period"     ].to_db}'
+                 AND class   = '#{record.fields["class"      ].to_db}'
+                 AND code    = '#{record.fields["code"       ].to_db}'
+                 AND team_id = '#{record.fields["team_id"    ].to_db}'"
+            )
+            
+        )
+            
+            record.save
+            
+        end
         
     end
 

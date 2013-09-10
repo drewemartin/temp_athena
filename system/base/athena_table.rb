@@ -555,8 +555,6 @@ end
                 
                 begin
                     
-                    active_ids = false
-                    
                     total_rows = 0
                     CSV.foreach( file_path ) do |row|
                         
@@ -573,23 +571,6 @@ end
                         else 
                             
                             skip_this_row = false
-                            
-                            if !active_ids && table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
-                                
-                                #GET PIDS OF ALL ACTIVE RECORDS
-                                #IF THEY AREN'T FOUND IN THIS LOAD THEY WILL BE DEACTIVATED AFTER THE LOAD.
-                                
-                                if table_name.match(/sapphire/) && field_order.include?("school_id")
-                                    
-                                    active_ids = primary_ids("WHERE active IS TRUE AND school_id = '#{row[csv_field_names.index("school_id")]}'") || []
-                                    
-                                else
-                                    
-                                    active_ids = primary_ids("WHERE active IS TRUE") || []
-                                    
-                                end
-                                
-                            end
                             
                             if table[:keys]
                                 
@@ -618,16 +599,6 @@ end
                             end
                             
                             unless skip_this_row
-                                
-                                if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
-                                    
-                                    #MARK THE RECORD AS ACTIVE
-                                    @current_row.fields["active"].value = true
-                                    
-                                    #REMOVE FROM THE active_ids ARRAY
-                                    active_ids.delete(@current_row.primary_id) if active_ids.include?(@current_row.primary_id)
-                                    
-                                end
                                 
                                 index = 0  
                                 while index < row.length
@@ -679,17 +650,6 @@ end
                 rescue => e
                     load_failed(message = e.message, e)
                     raise e
-                    
-                end
-                
-                if table[:imports_active] #THE IMPORT FILE INCLUDES ALL ACTIVE RECORDS
-                    
-                    #DEACTIVATE PIDS THAT REMAIN IN THE active_ids ARRAY
-                    active_ids.each{|pid|
-                        
-                        by_primary_id(pid).fields["active"].set(false).save
-                        
-                    } if active_ids
                     
                 end
                 
