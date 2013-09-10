@@ -48,6 +48,9 @@ end
     
     def after_load_k12_logins
         
+        #$base.process("ATTENDANCE_LOG").k12_logins_students
+        #$base.process("ATTENDANCE_LOG").k12_logins_learning_coaches
+        #
         $base.queue_process("ATTENDANCE_LOG", "k12_logins_students",            nil)
         $base.queue_process("ATTENDANCE_LOG", "k12_logins_learning_coaches",    nil)
         

@@ -136,7 +136,7 @@ end
             
             if day_code
                 
-                fields = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER_#{school}").field_values(
+                fields = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").field_values(
                     "CONCAT( pattern,':',course_title,':',staff_id )",
                     "WHERE TRUE
                     AND `pattern` REGEXP '\\\\(.*#{day_code}.*\\\\)'

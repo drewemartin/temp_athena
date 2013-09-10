@@ -108,7 +108,7 @@ end
         
         output = String.new
         
-        output << "<form id='doc_upload_form' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='doc_upload_form' name='form' action='D20130906.rb' method='POST' enctype='multipart/form-data' >"
         output << "<input id='sidref' name='sidref' value='#{sid}' type='hidden'>"
         output << $tools.document_upload(self.class.name, "doc_upload_form", "pdf,jpg,jpeg,bmp,tiff,tif,gif,png")
         output << "</form>"

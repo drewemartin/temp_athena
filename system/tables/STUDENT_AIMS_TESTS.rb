@@ -113,7 +113,7 @@ end
                 "file_location"     => "student_aims_tests",
                 "source_address"    => nil,
                 "source_type"       => nil,
-                "audit"             => nil,
+                "audit"             => true,
                 :relationship       => :one_to_many
             }
             @table_structure = set_fields(structure_hash)
@@ -167,13 +167,13 @@ end
             structure_hash["fields"]["notes"                                    ] = {"data_type"=>"text", "file_field"=>"notes"                                 } if field_order.push("notes"                                   )
             structure_hash["fields"]["mcap_read_to_student"                     ] = {"data_type"=>"bool", "file_field"=>"mcap_read_to_student"                  } if field_order.push("mcap_read_to_student"                    )
             
-            structure_hash["fields"]["reading_comprehension"                    ] = {"data_type"=>"int", "file_field"=>"reading_comprehension"                  } if field_order.push("reading_comprehension"                   )
-            structure_hash["fields"]["core_phonics_short_vowel_cvc"             ] = {"data_type"=>"int", "file_field"=>"core_phonics_short_vowel_cvc"           } if field_order.push("core_phonics_short_vowel_cvc"            )
-            structure_hash["fields"]["core_phonics_letter_names_upper"          ] = {"data_type"=>"int", "file_field"=>"core_phonics_letter_names_upper"        } if field_order.push("core_phonics_letter_names_upper"         )
-            structure_hash["fields"]["core_phonics_letter_names_lower"          ] = {"data_type"=>"int", "file_field"=>"core_phonics_letter_names_lower"        } if field_order.push("core_phonics_letter_names_lower"         )
-            structure_hash["fields"]["core_phonics_consonant"                   ] = {"data_type"=>"int", "file_field"=>"core_phonics_consonant"                 } if field_order.push("core_phonics_consonant"                  )
-            structure_hash["fields"]["core_phonics_long_vowel"                  ] = {"data_type"=>"int", "file_field"=>"core_phonics_long_vowel"                } if field_order.push("core_phonics_long_vowel"                 )
-            structure_hash["fields"]["core_phonics_short_vowel"                 ] = {"data_type"=>"int", "file_field"=>"core_phonics_short_vowel"               } if field_order.push("core_phonics_short_vowel"                )
+            structure_hash["fields"]["reading_comprehension"                    ] = {"data_type"=>"text", "file_field"=>"reading_comprehension"                  } if field_order.push("reading_comprehension"                   )
+            structure_hash["fields"]["core_phonics_short_vowel_cvc"             ] = {"data_type"=>"text", "file_field"=>"core_phonics_short_vowel_cvc"           } if field_order.push("core_phonics_short_vowel_cvc"            )
+            structure_hash["fields"]["core_phonics_letter_names_upper"          ] = {"data_type"=>"text", "file_field"=>"core_phonics_letter_names_upper"        } if field_order.push("core_phonics_letter_names_upper"         )
+            structure_hash["fields"]["core_phonics_letter_names_lower"          ] = {"data_type"=>"text", "file_field"=>"core_phonics_letter_names_lower"        } if field_order.push("core_phonics_letter_names_lower"         )
+            structure_hash["fields"]["core_phonics_consonant"                   ] = {"data_type"=>"text", "file_field"=>"core_phonics_consonant"                 } if field_order.push("core_phonics_consonant"                  )
+            structure_hash["fields"]["core_phonics_long_vowel"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_long_vowel"                } if field_order.push("core_phonics_long_vowel"                 )
+            structure_hash["fields"]["core_phonics_short_vowel"                 ] = {"data_type"=>"text", "file_field"=>"core_phonics_short_vowel"               } if field_order.push("core_phonics_short_vowel"                )
             
         structure_hash["field_order"] = field_order
         return structure_hash

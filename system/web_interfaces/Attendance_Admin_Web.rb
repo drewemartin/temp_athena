@@ -431,7 +431,7 @@ end
     def upload_form(id, upload_type)
         
         output = String.new
-        output << "<form id='#{id}' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='#{id}' name='form' action='D20130906.rb' method='POST' enctype='multipart/form-data' >"
         output << "<INPUT type='hidden' name='upload_type' value='#{upload_type}'>"
         output << $tools.kmailinput("authorizor", "Authorizor:")
         output << $tools.newtextarea("reason", "Reason:")
@@ -531,6 +531,8 @@ end
                 output << "Warning: '#{row[0]}' at line #{i} is not a number.<br>"
             elsif !$students.attach(row[0]).exists?
                 output << "Warning: SID ##{sid} at line #{i} is not an existing Student ID.<br>"
+            elsif !$tables.attach("student_attendance_master").by_studentid(sid)
+                output << "Warning: SID ##{sid} at line #{i} does not have a student attendance master record<br>"
             end
             if i!=1
                 j = 1
@@ -1008,7 +1010,7 @@ end
         fields["table_name"     ].value = fields["table_name"     ].value.split("_").map{|w| w.capitalize }.join(" ")
         
         if sch = fields["import_schedule"].value
-            fields["import_schedule"].value = sch.split(",").map{|t| DateTime.parse(t).strftime("%I:%M %p")}.join(", ") 
+            fields["import_schedule"].value = sch.split(";").map{|t| DateTime.parse(t).strftime("%I:%M %p")}.join(", ") 
         else
             fields["import_schedule"].value = "Not Scheduled"
         end

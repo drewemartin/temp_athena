@@ -231,7 +231,7 @@ end
         this_form_name = "#{form_name}"
         form_header = ""
         form_header << "<DIV class='#{form_name}'>\n"
-        form_header << "<FORM id='#{this_form_name}' name='#{form_name}' enctype='multipart/form-data' action='/cgi-bin/#{$config.code_set_name}.rb' style='visibility: visible;' method='post'>\n"
+        form_header << "<FORM id='#{this_form_name}' name='#{form_name}' enctype='multipart/form-data' action='/cgi-bin/D20130906.rb' style='visibility: visible;' method='post'>\n"
         form_header << "<INPUT type='hidden' name='page' value='#{$kit.page}'>\n"
         form_header << "<INPUT type ='hidden' id = 'user_id' name = 'user_id' value = '#{$user.email_address_k12.value}'>\n"
         #if !new_rec
@@ -247,7 +247,7 @@ end
             row_num = i%2 == 0 ? "row0" : "row1"
             this_form_name = index ?  "#{form_name}_#{i}" : "#{form_name}"
             form_header = "<DIV class='#{form_name} #{row_num}'>
-            <form id='#{this_form_name}' name='#{this_form_name}' enctype='multipart/form-data' action='/cgi-bin/#{$config.code_set_name}.rb' style='visibility: visible;' method='post'>
+            <form id='#{this_form_name}' name='#{this_form_name}' enctype='multipart/form-data' action='/cgi-bin/D20130906.rb' style='visibility: visible;' method='post'>
             <input type='hidden' name='page' value='#{$kit.page}'>
             <input type ='hidden' id = 'user_id' name = 'user_id' value = '#{$user}'>
             <input type ='hidden' id = 'update' name = 'update' value = '#{$kit.update}'>"    

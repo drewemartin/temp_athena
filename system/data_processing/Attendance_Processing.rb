@@ -88,6 +88,7 @@ class Attendance_Processing
         student_attendance_master_field.set(                    @finalize_code              ).save
         @student_attendance_master_activity_field.set(          @stu_daily_codes.join(",")  ).save
         student_attendance_record.fields["official_code"].set(  @finalize_code              ).save
+        student_attendance_record.fields["complete"     ].set(  true                        ).save
         
     end
   

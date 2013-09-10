@@ -892,7 +892,7 @@ end
     def upload_doc_evaluation_document(tid)
         output = String.new
         
-        output << "<form id='doc_upload_form' name='form' action='#{$config.code_set_name}.rb' method='POST' enctype='multipart/form-data' >"
+        output << "<form id='doc_upload_form' name='form' action='D20130906.rb' method='POST' enctype='multipart/form-data' >"
         output << "<input id='tidref' name='tidref' value='#{tid}' type='hidden'>"
         output << $tools.document_upload2(self.class.name, "Team Member Evaluations", "Evaluation", "doc_upload_form", "pdf")
         output << "</form>"

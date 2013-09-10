@@ -56,7 +56,7 @@ end
     end
     
     def response
-        if $kit.params[:student_id]
+        if $kit.params[:student_id] && $kit.params[:student_id] != ""
             sid = $kit.params[:student_id]
             output = student_record(sid)
             $kit.modify_tag_content("tabs-2", output, "update")
