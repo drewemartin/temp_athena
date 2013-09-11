@@ -54,7 +54,7 @@ end
             $tools.button_new_csv("attendance_master", additional_params_str = nil),
             "Attendance Master",
             "This report includes all students who have had any attendance records created this school year."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_attendance_ap.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_master.is_true?
         
         #Ink Orders
         tables_array.push([
@@ -83,6 +83,13 @@ end
             "My Students General",
             "This report includes general information about your students."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_my_students_general.is_true?
+        
+        #MY STUDENTS TESTS
+        tables_array.push([
+            $tools.button_new_csv("my_students_tests", additional_params_str = nil),
+            "My Students Tests",
+            "This report includes all test records for only your related students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_my_students_tests.is_true?
         
         #STUDENT_SCANTRON_PARTICIPATION
         tables_array.push([
@@ -653,6 +660,140 @@ end
         
     end
     
+    def add_new_csv_my_students_tests(options = nil)
+        
+        s_db     = $tables.attach("student").data_base
+        sr_db    = $tables.attach("student_relate").data_base
+        st_db    = $tables.attach("student_tests").data_base
+        tst_db   = $tables.attach("tests").data_base
+        te_db    = $tables.attach("test_events").data_base
+        ts_db    = $tables.attach("test_subjects").data_base
+        tes_db   = $tables.attach("test_event_sites").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        t_db     = $tables.attach("team").data_base
+        sat_db   = $tables.attach("student_aims_tests").data_base
+        
+        sql_str =
+        "SELECT
+            student_tests.student_id,
+            studentfirstname,
+            studentlastname,
+            tests.name,
+            test_events.name,
+            test_subjects.name,
+            test_event_sites.site_name,
+            student_tests.assigned,
+            student_tests.checked_in,
+            student_tests.serial_number,
+            student_tests.completed,
+            CONCAT(team.legal_first_name,' ',team.legal_last_name),
+            student_tests.test_results,
+            student_tests.drop_off,
+            student_tests.pick_up,
+            student_aims_tests.core_phonics_letter_names_upper,          
+            student_aims_tests.core_phonics_letter_names_lower,          
+            student_aims_tests.core_phonics_consonant,                   
+            student_aims_tests.core_phonics_long_vowel,                  
+            student_aims_tests.core_phonics_short_vowel,                 
+            student_aims_tests.core_phonics_short_vowel_cvc,             
+            student_aims_tests.reading_comprehension,                    
+            student_aims_tests.lnf,                                      
+            student_aims_tests.lnf_errors,                               
+            student_aims_tests.lsf,                                      
+            student_aims_tests.lsf_errors,                               
+            student_aims_tests.psf,                                      
+            student_aims_tests.psf_errors,                               
+            student_aims_tests.nwf,                                      
+            student_aims_tests.nwf_errors,                               
+            student_aims_tests.rcbm,                                     
+            student_aims_tests.rcbm_errors,                              
+            student_aims_tests.reading_instructional_recommendation,     
+            student_aims_tests.ocm,                                      
+            student_aims_tests.ocm_errors,                               
+            student_aims_tests.nim,                                      
+            student_aims_tests.nim_errors,                               
+            student_aims_tests.qdm,                                      
+            student_aims_tests.qdm_errors,                               
+            student_aims_tests.mnm,                                      
+            student_aims_tests.mnm_errors,                               
+            student_aims_tests.mcap,                                     
+            student_aims_tests.math_instructional_recommendation,        
+            student_aims_tests.notes
+            
+        FROM #{st_db}.student_tests
+        LEFT JOIN #{s_db}.student              ON #{st_db}.student_tests.student_id         = #{s_db}.student.student_id
+        LEFT JOIN #{tst_db}.tests              ON #{st_db}.student_tests.test_id            = #{tst_db}.tests.primary_id
+        LEFT JOIN #{te_db}.test_events         ON #{st_db}.student_tests.test_event_id      = #{te_db}.test_events.primary_id
+        LEFT JOIN #{ts_db}.test_subjects       ON #{st_db}.student_tests.test_subject_id    = #{ts_db}.test_subjects.primary_id
+        LEFT JOIN #{tes_db}.test_event_sites   ON #{st_db}.student_tests.test_event_site_id = #{tes_db}.test_event_sites.primary_id
+        LEFT JOIN #{tsids_db}.team_sams_ids    ON #{st_db}.student_tests.test_administrator = #{tsids_db}.team_sams_ids.sams_id
+        LEFT JOIN #{t_db}.team                 ON #{tsids_db}.team_sams_ids.team_id         = #{t_db}.team.primary_id
+        LEFT JOIN #{sat_db}.student_aims_tests ON #{sat_db}.student_aims_tests.test_id      = #{st_db}.student_tests.primary_id
+        LEFT JOIN #{sr_db}.student_relate      ON #{s_db}.student.student_id                = #{sr_db}.student_relate.studentid
+        
+        WHERE
+            student_relate.team_id = '#{$team_member.primary_id.value}'
+            
+        GROUP BY student.student_id"
+        
+        headers = [
+            "Student ID",
+            "First Name",
+            "Last Name",
+            "Test Type",
+            "Event",
+            "Subject",
+            "Site",
+            "Site Assigned by Office?",
+            "Check In Date",
+            "Serial Number",
+            "Completed?",
+            "Test Administrator",
+            "Test Results",
+            "Notes 1",
+            "Notes 2",
+            "AIMS-CORE Phonics- Letter Names Upper Case (_/26)",
+            "AIMS-CORE Phonics- Letter Names Lower Case (_/26)",
+            "AIMS-CORE Phonics- Consonant Sounds (_/23)",
+            "AIMS-CORE Phonics- Long Vowel Sounds (_/5)",
+            "AIMS-CORE Phonics- Short Vowel Sounds (_/5)",
+            "AIMS-CORE PHONICS- Short Vowels in CVC Words (_/10)",
+            "AIMS-Reading Comprehension (correct/total)",
+            "AIMS-LNF",
+            "AIMS-LNF Errors",
+            "AIMS-LSF",
+            "AIMS-LSF Errors",
+            "AIMS-PSF",
+            "AIMS-PSF Errors",
+            "AIMS-NWF",
+            "AIMS-NWF Errors",
+            "AIMS-R-CBM",
+            "AIMS-R-CBM Errors",
+            "AIMS-Reading Instructional Recommendation (K and 1)",
+            "AIMS-OCM",
+            "AIMS-OCM Errors",
+            "AIMS-NIM",
+            "AIMS-NIM Errors",
+            "AIMS-QDM",
+            "AIMS-QDM Errors",
+            "AIMS-MNM",
+            "AIMS-MNM Errors",
+            "AIMS-M-COMP", #Still M-CAP field
+            "AIMS-Math Instructional Recommendation (K and 1)",
+            "AIMS-Notes"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
     def add_new_csv_student_rtii_behavior(options = nil)
         
         srtiib_db = $tables.attach("student_rtii_behavior").data_base
@@ -770,7 +911,36 @@ end
             "Test Administrator",
             "Test Results",
             "Notes 1",
-            "Notes 2"
+            "Notes 2",
+            "AIMS-CORE Phonics- Letter Names Upper Case (_/26)",
+            "AIMS-CORE Phonics- Letter Names Lower Case (_/26)",
+            "AIMS-CORE Phonics- Consonant Sounds (_/23)",
+            "AIMS-CORE Phonics- Long Vowel Sounds (_/5)",
+            "AIMS-CORE Phonics- Short Vowel Sounds (_/5)",
+            "AIMS-CORE PHONICS- Short Vowels in CVC Words (_/10)",
+            "AIMS-Reading Comprehension (correct/total)",
+            "AIMS-LNF",
+            "AIMS-LNF Errors",
+            "AIMS-LSF",
+            "AIMS-LSF Errors",
+            "AIMS-PSF",
+            "AIMS-PSF Errors",
+            "AIMS-NWF",
+            "AIMS-NWF Errors",
+            "AIMS-R-CBM",
+            "AIMS-R-CBM Errors",
+            "AIMS-Reading Instructional Recommendation (K and 1)",
+            "AIMS-OCM",
+            "AIMS-OCM Errors",
+            "AIMS-NIM",
+            "AIMS-NIM Errors",
+            "AIMS-QDM",
+            "AIMS-QDM Errors",
+            "AIMS-MNM",
+            "AIMS-MNM Errors",
+            "AIMS-M-COMP", #Still M-CAP field
+            "AIMS-Math Instructional Recommendation (K and 1)",
+            "AIMS-Notes"
         ]
         
         s_db     = $tables.attach("student").data_base
@@ -781,6 +951,7 @@ end
         tes_db   = $tables.attach("test_event_sites").data_base
         tsids_db = $tables.attach("team_sams_ids").data_base
         t_db     = $tables.attach("team").data_base
+        sat_db   = $tables.attach("student_aims_tests").data_base
         
         sql_str =
         "SELECT
@@ -798,16 +969,46 @@ end
             CONCAT(team.legal_first_name,' ',team.legal_last_name),
             student_tests.test_results,
             student_tests.drop_off,
-            student_tests.pick_up
+            student_tests.pick_up,
+            student_aims_tests.core_phonics_letter_names_upper,          
+            student_aims_tests.core_phonics_letter_names_lower,          
+            student_aims_tests.core_phonics_consonant,                   
+            student_aims_tests.core_phonics_long_vowel,                  
+            student_aims_tests.core_phonics_short_vowel,                 
+            student_aims_tests.core_phonics_short_vowel_cvc,             
+            student_aims_tests.reading_comprehension,                    
+            student_aims_tests.lnf,                                      
+            student_aims_tests.lnf_errors,                               
+            student_aims_tests.lsf,                                      
+            student_aims_tests.lsf_errors,                               
+            student_aims_tests.psf,                                      
+            student_aims_tests.psf_errors,                               
+            student_aims_tests.nwf,                                      
+            student_aims_tests.nwf_errors,                               
+            student_aims_tests.rcbm,                                     
+            student_aims_tests.rcbm_errors,                              
+            student_aims_tests.reading_instructional_recommendation,     
+            student_aims_tests.ocm,                                      
+            student_aims_tests.ocm_errors,                               
+            student_aims_tests.nim,                                      
+            student_aims_tests.nim_errors,                               
+            student_aims_tests.qdm,                                      
+            student_aims_tests.qdm_errors,                               
+            student_aims_tests.mnm,                                      
+            student_aims_tests.mnm_errors,                               
+            student_aims_tests.mcap,                                     
+            student_aims_tests.math_instructional_recommendation,        
+            student_aims_tests.notes                                    
             
         FROM #{st_db}.student_tests
-        LEFT JOIN #{s_db}.student            ON #{st_db}.student_tests.student_id         = #{s_db}.student.student_id
-        LEFT JOIN #{tst_db}.tests            ON #{st_db}.student_tests.test_id            = #{tst_db}.tests.primary_id
-        LEFT JOIN #{te_db}.test_events       ON #{st_db}.student_tests.test_event_id      = #{te_db}.test_events.primary_id
-        LEFT JOIN #{ts_db}.test_subjects     ON #{st_db}.student_tests.test_subject_id    = #{ts_db}.test_subjects.primary_id
-        LEFT JOIN #{tes_db}.test_event_sites ON #{st_db}.student_tests.test_event_site_id = #{tes_db}.test_event_sites.primary_id
-        LEFT JOIN #{tsids_db}.team_sams_ids  ON #{st_db}.student_tests.test_administrator = #{tsids_db}.team_sams_ids.sams_id
-        LEFT JOIN #{t_db}.team               ON #{}.team_sams_ids.team_id                 = #{t_db}.team.primary_id"
+        LEFT JOIN #{s_db}.student              ON #{st_db}.student_tests.student_id         = #{s_db}.student.student_id
+        LEFT JOIN #{tst_db}.tests              ON #{st_db}.student_tests.test_id            = #{tst_db}.tests.primary_id
+        LEFT JOIN #{te_db}.test_events         ON #{st_db}.student_tests.test_event_id      = #{te_db}.test_events.primary_id
+        LEFT JOIN #{ts_db}.test_subjects       ON #{st_db}.student_tests.test_subject_id    = #{ts_db}.test_subjects.primary_id
+        LEFT JOIN #{tes_db}.test_event_sites   ON #{st_db}.student_tests.test_event_site_id = #{tes_db}.test_event_sites.primary_id
+        LEFT JOIN #{tsids_db}.team_sams_ids    ON #{st_db}.student_tests.test_administrator = #{tsids_db}.team_sams_ids.sams_id
+        LEFT JOIN #{t_db}.team                 ON #{tsids_db}.team_sams_ids.team_id         = #{t_db}.team.primary_id
+        LEFT JOIN #{sat_db}.student_aims_tests ON #{sat_db}.student_aims_tests.test_id      = #{st_db}.student_tests.primary_id"
         
         results = $db.get_data(sql_str)
         if results
