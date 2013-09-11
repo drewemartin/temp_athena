@@ -100,11 +100,11 @@ end
                 
             end
             
-            if a[:sams_id]
+            if a.has_key?(:sams_id)
                 where_clause << "LEFT JOIN team_sams_ids ON team_sams_ids.team_id = team.primary_id"
             end
             
-            if a[:email_address]
+            if a.has_key?(:email_address)
                 where_clause << "LEFT JOIN team_email ON team_email.team_id = team.primary_id"
             end
             
