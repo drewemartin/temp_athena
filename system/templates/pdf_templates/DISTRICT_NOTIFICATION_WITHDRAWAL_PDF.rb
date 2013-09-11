@@ -25,7 +25,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
     ############################################################################
     #GET ARRAY OF QUALIFYING WITHDRAW REQUEST RECORDS - withdrawing_pid_arr
     if !withdrawing_pid_arr
-      w_db = $tables.attach("k12_withdrawal").data_base
+      w_db = $tables.attach("withdrawing").data_base
       withdrawing_pid_arr = $db.get_data_single(
         "SELECT
           primary_id
