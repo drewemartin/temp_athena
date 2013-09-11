@@ -484,6 +484,13 @@ def x______________DATE_TIME_SUPPORT
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   
+  def right_now
+    $field.new(
+      "type"=>"datetime",
+      "value"=>DateTime.now
+    )
+  end
+  
   def tomorrow
     return today.add!
   end
