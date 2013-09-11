@@ -164,7 +164,7 @@ end
         
     end
 
-    def after_load_k12_omnibus
+    def create_new_attendance_records
         
         eval_date = $base.created_date ? DateTime.parse($base.created_date).strftime("%Y-%m-%d") : $idate
         
@@ -392,6 +392,7 @@ end
             structure_hash["fields"]["official_code"    ] = {"data_type"=>"text", "file_field"=>"official_code" } if field_order.push("official_code"   )
             structure_hash["fields"]["sources"          ] = {"data_type"=>"text", "file_field"=>"sources"       } if field_order.push("sources"         )
             structure_hash["fields"]["complete"         ] = {"data_type"=>"bool", "file_field"=>"complete"      } if field_order.push("complete"        )
+            structure_hash["fields"]["logged"           ] = {"data_type"=>"bool", "file_field"=>"logged"        } if field_order.push("logged"          )
             
         structure_hash["field_order"] = field_order
         return structure_hash
