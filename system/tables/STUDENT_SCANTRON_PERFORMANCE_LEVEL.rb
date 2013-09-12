@@ -122,15 +122,41 @@ end
                             grade   = performance_record["grade"].value.gsub("Grade ","")
                             grade   = "K" if grade == "0"
                             
-                            range   = $tables.attach("Scantron_Performance_Range").by_subject_grade(subject,grade).fields
-                            min     = range["target_min"].mathable
-                            max     = range["target_max"].mathable
-                            if score < min
-                                performance_level = "At Risk"
-                            elsif score > max
-                                performance_level = "Advanced"
+                            #range   = $tables.attach("Scantron_Performance_Range").by_subject_grade(subject,grade).fields
+                            #min     = range["target_min"].mathable
+                            #max     = range["target_max"].mathable
+                            #if score < min
+                            #    performance_level = "At Risk"
+                            #elsif score > max
+                            #    performance_level = "Advanced"
+                            #else
+                            #    performance_level = "On Target"
+                            #end
+                            
+                            if score <= range["quartile_1_max"].mathable && score >= range["quartile_1_min"].mathable
+                            #BELOW AVERAGE
+                                
+                                performance_level = "Below Average"
+                                
+                            elsif score <= range["quartile_2_max"].mathable && score >= range["quartile_2_min"].mathable
+                            #AVERAGE LOW
+                                
+                                performance_level = "Average Low"
+                                
+                            elsif score <= range["quartile_3_max"].mathable && score >= range["quartile_3_min"].mathable
+                            #AVERAGE HIGH
+                                
+                                performance_level = "Average High"
+                                
+                            elsif score <= range["quartile_4_max"].mathable && score >= range["quartile_4_min"].mathable
+                            #ABOVE AVERAGE
+                                
+                                performance_level = "Above Average"
+                                
                             else
-                                performance_level = "On Target"
+                                
+                                $base.system_notification("Scantron Performance - Score Out of Range","SID: #{sid}")
+                                
                             end
                             
                             score_field = "stron_#{ent_ext}_score_#{subject[0].chr}"
@@ -142,7 +168,9 @@ end
                             level_record.fields[date_field  ].value = test_date
                             level_record.fields[nce_field   ].value = nce
                             
-                            #math growth
+                            level_record.fields["reading_predicted_name_long"].value = performance_record.fields["reading_predicted_name_long"].value
+                            level_record.fields["math_predicted_name_long"   ].value = performance_record.fields["math_predicted_name_long"   ].value
+                            
                             if $students.list(
                                 :student_id                 => sid,
                                 :scantron_eligible          => ["ent_m","ext_m"],
@@ -454,34 +482,37 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",  "file_field"=>"student_id"            } if field_order.push("student_id"              )
-            structure_hash["fields"]["stron_ent_perf_m"         ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_m"      } if field_order.push("stron_ent_perf_m"        )
-            structure_hash["fields"]["stron_ent_score_m"        ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_m"     } if field_order.push("stron_ent_score_m"       )
-            structure_hash["fields"]["stron_ent_test_date_m"    ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_m" } if field_order.push("stron_ent_test_date_m"   )
-            structure_hash["fields"]["stron_ent_nce_m"          ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_m"       } if field_order.push("stron_ent_nce_m"         )
-            structure_hash["fields"]["stron_ext_perf_m"         ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_m"      } if field_order.push("stron_ext_perf_m"        )
-            structure_hash["fields"]["stron_ext_score_m"        ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_m"     } if field_order.push("stron_ext_score_m"       )
-            structure_hash["fields"]["stron_ext_test_date_m"    ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_m" } if field_order.push("stron_ext_test_date_m"   )
-            structure_hash["fields"]["stron_ext_nce_m"          ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_m"       } if field_order.push("stron_ext_nce_m"         )
-            structure_hash["fields"]["stron_ent_perf_r"         ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_r"      } if field_order.push("stron_ent_perf_r"        )
-            structure_hash["fields"]["stron_ent_score_r"        ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_r"     } if field_order.push("stron_ent_score_r"       )
-            structure_hash["fields"]["stron_ent_test_date_r"    ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_r" } if field_order.push("stron_ent_test_date_r"   )
-            structure_hash["fields"]["stron_ent_nce_r"          ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_r"       } if field_order.push("stron_ent_nce_r"         )
-            structure_hash["fields"]["stron_ext_perf_r"         ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_r"      } if field_order.push("stron_ext_perf_r"        )
-            structure_hash["fields"]["stron_ext_score_r"        ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_r"     } if field_order.push("stron_ext_score_r"       )
-            structure_hash["fields"]["stron_ext_test_date_r"    ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_r" } if field_order.push("stron_ext_test_date_r"   )
-            structure_hash["fields"]["stron_ext_nce_r"          ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_r"       } if field_order.push("stron_ext_nce_r"         )
-            structure_hash["fields"]["stron_ent_perf_s"         ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_s"      } if field_order.push("stron_ent_perf_s"        )
-            structure_hash["fields"]["stron_ent_score_s"        ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_s"     } if field_order.push("stron_ent_score_s"       )
-            structure_hash["fields"]["stron_ent_test_date_s"    ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_s" } if field_order.push("stron_ent_test_date_s"   )
-            structure_hash["fields"]["stron_ent_nce_s"          ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_s"       } if field_order.push("stron_ent_nce_s"         )
-            structure_hash["fields"]["stron_ext_perf_s"         ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_s"      } if field_order.push("stron_ext_perf_s"        )
-            structure_hash["fields"]["stron_ext_score_s"        ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_s"     } if field_order.push("stron_ext_score_s"       )
-            structure_hash["fields"]["stron_ext_test_date_s"    ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_s" } if field_order.push("stron_ext_test_date_s"   )
-            structure_hash["fields"]["stron_ext_nce_s"          ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_s"       } if field_order.push("stron_ext_nce_s"         )
-            structure_hash["fields"]["growth_math"              ] = {"data_type"=>"bool", "file_field"=>"growth_math"           } if field_order.push("growth_math"             )
-            structure_hash["fields"]["growth_reading"           ] = {"data_type"=>"bool", "file_field"=>"growth_reading"        } if field_order.push("growth_reading"          )
-            structure_hash["fields"]["growth_overall"           ] = {"data_type"=>"bool", "file_field"=>"growth_overall"        } if field_order.push("growth_overall"          )
+            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"int",  "file_field"=>"student_id"                    } if field_order.push("student_id"                      )
+            structure_hash["fields"]["stron_ent_perf_m"                 ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_m"              } if field_order.push("stron_ent_perf_m"                )
+            structure_hash["fields"]["stron_ent_score_m"                ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_m"             } if field_order.push("stron_ent_score_m"               )
+            structure_hash["fields"]["stron_ent_test_date_m"            ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_m"         } if field_order.push("stron_ent_test_date_m"           )
+            structure_hash["fields"]["stron_ent_nce_m"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_m"               } if field_order.push("stron_ent_nce_m"                 )
+            structure_hash["fields"]["stron_ext_perf_m"                 ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_m"              } if field_order.push("stron_ext_perf_m"                )
+            structure_hash["fields"]["stron_ext_score_m"                ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_m"             } if field_order.push("stron_ext_score_m"               )
+            structure_hash["fields"]["stron_ext_test_date_m"            ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_m"         } if field_order.push("stron_ext_test_date_m"           )
+            structure_hash["fields"]["stron_ext_nce_m"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_m"               } if field_order.push("stron_ext_nce_m"                 )
+            structure_hash["fields"]["stron_ent_perf_r"                 ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_r"              } if field_order.push("stron_ent_perf_r"                )
+            structure_hash["fields"]["stron_ent_score_r"                ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_r"             } if field_order.push("stron_ent_score_r"               )
+            structure_hash["fields"]["stron_ent_test_date_r"            ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_r"         } if field_order.push("stron_ent_test_date_r"           )
+            structure_hash["fields"]["stron_ent_nce_r"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_r"               } if field_order.push("stron_ent_nce_r"                 )
+            structure_hash["fields"]["stron_ext_perf_r"                 ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_r"              } if field_order.push("stron_ext_perf_r"                )
+            structure_hash["fields"]["stron_ext_score_r"                ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_r"             } if field_order.push("stron_ext_score_r"               )
+            structure_hash["fields"]["stron_ext_test_date_r"            ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_r"         } if field_order.push("stron_ext_test_date_r"           )
+            structure_hash["fields"]["stron_ext_nce_r"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_r"               } if field_order.push("stron_ext_nce_r"                 )
+            structure_hash["fields"]["stron_ent_perf_s"                 ] = {"data_type"=>"text", "file_field"=>"stron_ent_perf_s"              } if field_order.push("stron_ent_perf_s"                )
+            structure_hash["fields"]["stron_ent_score_s"                ] = {"data_type"=>"int",  "file_field"=>"stron_ent_score_s"             } if field_order.push("stron_ent_score_s"               )
+            structure_hash["fields"]["stron_ent_test_date_s"            ] = {"data_type"=>"date", "file_field"=>"stron_ent_test_date_s"         } if field_order.push("stron_ent_test_date_s"           )
+            structure_hash["fields"]["stron_ent_nce_s"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ent_nce_s"               } if field_order.push("stron_ent_nce_s"                 )
+            structure_hash["fields"]["stron_ext_perf_s"                 ] = {"data_type"=>"text", "file_field"=>"stron_ext_perf_s"              } if field_order.push("stron_ext_perf_s"                )
+            structure_hash["fields"]["stron_ext_score_s"                ] = {"data_type"=>"int",  "file_field"=>"stron_ext_score_s"             } if field_order.push("stron_ext_score_s"               )
+            structure_hash["fields"]["stron_ext_test_date_s"            ] = {"data_type"=>"date", "file_field"=>"stron_ext_test_date_s"         } if field_order.push("stron_ext_test_date_s"           )
+            structure_hash["fields"]["stron_ext_nce_s"                  ] = {"data_type"=>"int",  "file_field"=>"stron_ext_nce_s"               } if field_order.push("stron_ext_nce_s"                 )
+            structure_hash["fields"]["growth_math"                      ] = {"data_type"=>"bool", "file_field"=>"growth_math"                   } if field_order.push("growth_math"                     )
+            structure_hash["fields"]["growth_reading"                   ] = {"data_type"=>"bool", "file_field"=>"growth_reading"                } if field_order.push("growth_reading"                  )
+            structure_hash["fields"]["growth_overall"                   ] = {"data_type"=>"bool", "file_field"=>"growth_overall"                } if field_order.push("growth_overall"                  )
+            
+            structure_hash["fields"]["reading_predicted_name_long"      ] = {"data_type"=>"text", "file_field"=>"Reading_Predicted_Name_Long"   } if field_order.push("reading_predicted_name_long"     )
+            structure_hash["fields"]["math_predicted_name_long"         ] = {"data_type"=>"text", "file_field"=>"Math_Predicted_Name_Long"      } if field_order.push("math_predicted_name_long"        )
             
         structure_hash["field_order"] = field_order
         return structure_hash
