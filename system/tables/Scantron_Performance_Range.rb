@@ -55,12 +55,22 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-        structure_hash["fields"]["grade"]       = {"data_type"=>"text", "file_field"=>"grade"}       if field_order.push("grade")
-        structure_hash["fields"]["subject"]     = {"data_type"=>"text", "file_field"=>"subject"}     if field_order.push("subject")
-        structure_hash["fields"]["range_start"] = {"data_type"=>"date", "file_field"=>"range_start"} if field_order.push("range_start")
-        structure_hash["fields"]["range_end"]   = {"data_type"=>"date", "file_field"=>"range_end"}   if field_order.push("range_end")
-        structure_hash["fields"]["target_min"]  = {"data_type"=>"int",  "file_field"=>"target_min"}  if field_order.push("target_min")
-        structure_hash["fields"]["target_max"]  = {"data_type"=>"int",  "file_field"=>"target_max"}  if field_order.push("target_max")
+        
+            structure_hash["fields"]["grade"            ] = {"data_type"=>"text", "file_field"=>"grade"         } if field_order.push("grade"           )
+            structure_hash["fields"]["subject"          ] = {"data_type"=>"text", "file_field"=>"subject"       } if field_order.push("subject"         )
+            structure_hash["fields"]["range_start"      ] = {"data_type"=>"date", "file_field"=>"range_start"   } if field_order.push("range_start"     )
+            structure_hash["fields"]["range_end"        ] = {"data_type"=>"date", "file_field"=>"range_end"     } if field_order.push("range_end"       )
+            structure_hash["fields"]["target_min"       ] = {"data_type"=>"int",  "file_field"=>"target_min"    } if field_order.push("target_min"      )
+            structure_hash["fields"]["target_max"       ] = {"data_type"=>"int",  "file_field"=>"target_max"    } if field_order.push("target_max"      )
+            structure_hash["fields"]["quartile_1_min"   ] = {"data_type"=>"int",  "file_field"=>"quartile_1_min"} if field_order.push("quartile_1_min"  )
+            structure_hash["fields"]["quartile_1_max"   ] = {"data_type"=>"int",  "file_field"=>"quartile_1_max"} if field_order.push("quartile_1_max"  )
+            structure_hash["fields"]["quartile_2_min"   ] = {"data_type"=>"int",  "file_field"=>"quartile_2_min"} if field_order.push("quartile_2_min"  )
+            structure_hash["fields"]["quartile_2_max"   ] = {"data_type"=>"int",  "file_field"=>"quartile_2_max"} if field_order.push("quartile_2_max"  )
+            structure_hash["fields"]["quartile_3_min"   ] = {"data_type"=>"int",  "file_field"=>"quartile_3_min"} if field_order.push("quartile_3_min"  )
+            structure_hash["fields"]["quartile_3_max"   ] = {"data_type"=>"int",  "file_field"=>"quartile_3_max"} if field_order.push("quartile_3_max"  )
+            structure_hash["fields"]["quartile_4_min"   ] = {"data_type"=>"int",  "file_field"=>"quartile_4_min"} if field_order.push("quartile_4_min"  )
+            structure_hash["fields"]["quartile_4_max"   ] = {"data_type"=>"int",  "file_field"=>"quartile_4_max"} if field_order.push("quartile_4_max"  )
+            
         structure_hash["field_order"] = field_order
         return structure_hash
     end
