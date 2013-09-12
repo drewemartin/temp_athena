@@ -292,6 +292,7 @@ end
     def type_dd
         return [
             {:name=>"ADO - Agora Day Out",      :value=>"ADO - Agora Day Out"       },
+            {:name=>"Childline",                :value=>"Childline"                 },
             {:name=>"E-Mail",                   :value=>"E-Mail"                    },
             {:name=>"Home Visit (Unscheduled)", :value=>"Home Visit (Unscheduled)"  },
             {:name=>"Individual Face to Face",  :value=>"Individual Face to Face"   },

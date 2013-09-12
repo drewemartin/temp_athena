@@ -51,7 +51,7 @@ class Attendance_Processing
                     
                 when "Classroom Activity (50% or more)"
                     
-                    if classrooms_total.length > 0
+                    if classrooms_total && classrooms_total.length > 0
                         
                         if (active = classrooms_active).length > 0
                             @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
@@ -88,7 +88,7 @@ class Attendance_Processing
         student_attendance_master_field.set(                    @finalize_code              ).save
         @student_attendance_master_activity_field.set(          @stu_daily_codes.join(",")  ).save
         student_attendance_record.fields["official_code"].set(  @finalize_code              ).save
-        student_attendance_record.fields["complete"     ].set(  true                        ).save
+        student_attendance_record.fields["logged"       ].set(  true                        ).save if $user == "Athena-SIS"
         
     end
   
