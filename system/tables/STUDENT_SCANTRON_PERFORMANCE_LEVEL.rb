@@ -103,6 +103,7 @@ end
                 if !level_record
                     level_record = new_row
                     level_record.fields["student_id"].value = sid
+                    level_record.save
                 end
                 
                 subjects.each{|subject|
