@@ -20,10 +20,15 @@ class Process_Log_Execute < Base
             
             class_name      = fields["class_name"       ].value
             function_name   = fields["function_name"    ].value
+            
             if fields["args"].value.nil?
+                
                 args = ""
+                
             else
+                
                 args = fields["args"].value.split("<,>").map {|w| "\"#{w}\""}.join(', ')
+                
             end
             
             begin
@@ -33,30 +38,25 @@ class Process_Log_Execute < Base
                 
                 eval("require \"#{File.dirname(__FILE__).gsub("scheduled_tasks","")}#{class_name}\"")
                 
-                begin
+                if function_name
                     
-                    if function_name
-                        
-                        eval("#{class_name}.new\(\).#{function_name}\(#{args}\)")
-                        
-                    else
-                        
-                        eval("#{class_name}.new\(#{args}\)")
-                        
-                    end
+                    eval("#{class_name}.new\(\).#{function_name}\(#{args}\)")
                     
-                    fields["status"             ].value = "Completed"
-                    fields["completed_datetime" ].value = DateTime.now.strftime("%Y-%m-%d %H:%M:%S")
+                else
                     
-                rescue => e
-                    
-                    fields["status"             ].value = "Failed"
+                    eval("#{class_name}.new\(#{args}\)")
                     
                 end
+                
+                fields["status"             ].value = "Completed"
+                fields["completed_datetime" ].value = DateTime.now.strftime("%Y-%m-%d %H:%M:%S")
                 
                 row.save
                 
             rescue => e
+                
+                fields["status"             ].value = "Failed"
+                row.save
                 
                 $base.system_notification("Process Log Failed", "#{e.message}\n\n#{e.backtrace}")
                 
