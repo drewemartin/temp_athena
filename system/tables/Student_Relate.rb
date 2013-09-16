@@ -612,6 +612,92 @@ end
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def X_______AFTER_LOAD_SAPPHIRE_CLASS_ROSTER
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    def after_load_sapphire_class_roster_el
+        params = field_params
+        params[:role            ] = "Teacher - Elementary School"
+        params[:source          ] = "SAPPHIRE_CLASS_ROSTER_EL"
+        get_existing_records 
+        sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"EL")#current_students
+        sids.each{|sid|
+            sapphire_classes = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL").primary_ids("WHERE student_id = '#{sid}'")
+            sapphire_classes.each{|pid|
+                
+                record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL").by_primary_id(pid)
+                params[:sid]    = sid
+                staff_id        = record.fields["staff_id"].value  
+                if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    params[:role_details    ] = record.fields["course_title"].value
+                    params[:team_id         ] = team_member.primary_id.value
+                    params[:staff_id        ] = staff_id
+                    active_record
+                end         
+                
+            }
+            
+        } if sids
+        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        deactivate_existing_records
+    end
+    
+    def after_load_sapphire_class_roster_hs
+        params = field_params
+        params[:role            ] = "Teacher - Middle School"
+        params[:source          ] = "SAPPHIRE_CLASS_ROSTER_HS"
+        get_existing_records 
+        sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"HS")#current_students
+        sids.each{|sid|
+            sapphire_classes = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS").primary_ids("WHERE student_id = '#{sid}'")
+            sapphire_classes.each{|pid|
+                
+                record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS").by_primary_id(pid)
+                params[:sid]    = sid
+                staff_id        = record.fields["staff_id"].value  
+                if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    params[:role_details    ] = record.fields["course_title"].value
+                    params[:team_id         ] = team_member.primary_id.value
+                    params[:staff_id        ] = staff_id
+                    active_record
+                end         
+                
+            }
+            
+        } if sids
+        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        deactivate_existing_records
+    end
+
+    def after_load_sapphire_class_roster_ms
+        params = field_params
+        params[:role            ] = "Teacher - Middle School"
+        params[:source          ] = "SAPPHIRE_CLASS_ROSTER_MS"
+        get_existing_records 
+        sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"MS")#current_students
+        sids.each{|sid|
+            sapphire_classes = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS").primary_ids("WHERE student_id = '#{sid}'")
+            sapphire_classes.each{|pid|
+                
+                record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS").by_primary_id(pid)
+                params[:sid]    = sid
+                staff_id        = record.fields["staff_id"].value  
+                if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    params[:role_details    ] = record.fields["course_title"].value
+                    params[:team_id         ] = team_member.primary_id.value
+                    params[:staff_id        ] = staff_id
+                    active_record
+                end         
+                
+            }
+            
+        } if sids
+        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        deactivate_existing_records
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______AFTER_CHANGE_SPECIALISTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1233,6 +1319,24 @@ end
         else
             raise("#{arg} is not a valid option")
         end
+    end
+    
+    def sapphire_class_roster(arg)
+        
+        ss_db = $tables.attach("sapphire_class_roster_#{arg}").data_base
+        
+        join_addon =
+            " LEFT JOIN #{ss_db}.sapphire_class_roster_#{arg} ON #{ss_db}.sapphire_class_roster_#{arg}.student_id = #{data_base}.student.student_id "
+        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+        end
+        
+        where_addon =
+            " AND sapphire_class_roster_#{arg}.student_id IS NOT NULL "
+        if @search_options[:where_clause_addon].nil? || (!@search_options[:where_clause_addon].nil? && !@search_options[:where_clause_addon].include?(where_addon))
+            @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+        end
+        
     end
     
     def sapphire_new_students(arg)
