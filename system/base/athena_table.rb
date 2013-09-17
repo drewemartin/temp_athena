@@ -280,7 +280,7 @@ end
                             file_1.puts csv_text
                             file_1.close
                             
-                            if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/) && table_name == "k12_all_students"
+                            if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && table_name == "k12_all_students"
                                 
                                 begin
                                     
@@ -531,7 +531,7 @@ end
                 processed_filename = file_name.gsub(".csv","_#{$ifilestamp}.csv")
                 FileUtils.cp(file_path, "#{report_path}#{processed_filename}")
                 
-                if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/) && !caller.find{|x| x.include?("load_k12_history")}
+                if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && !caller.find{|x| x.include?("load_k12_history")}
                     #$reports.move_to_athena_reports("#{report_path}#{processed_filename}")
                 end
                 

@@ -119,7 +119,7 @@ end
         content << "Caller:             #{caller[0]}\n"
         content << "BACKTRACE:        #{e.backtrace}"
         
-        if false #ENV["COMPUTERNAME"].match(/ATHENA||HERMES/)
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
           $base.system_notification("SQL QUERY FAILED!",content)
         else
           puts content
