@@ -34,21 +34,37 @@ end
         
         if $tables.attach("School_Year_Detail").exists?
             
-            if !(sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE"))
+            begin
                 
-                sy = $tables.attach("School_Year_Detail").new_row
-                sy.fields["school_year" ].value = $config.school_year_installed
-                sy.fields["current"     ].value = true
-                sy.save
+                if sy = $db.get_data_single("SELECT school_year FROM school_year_detail WHERE current IS TRUE", $tables.attach("School_Year_Detail").data_base)
+                    
+                    sy = sy[0]
+                    
+                else
+                 
+                    $db.query(
+                        "INSERT
+                            INTO #{$tables.attach("School_Year_Detail").data_base}.school_year_detail
+                        (school_year, current)
+                        VALUES('#{$config.school_year_installed}',true)"
+                    )
+                    
+                    sy = $config.school_year_installed
+                    
+                end
                 
-                sy = $tables.attach("School_Year_Detail").record("WHERE current IS TRUE")
+                return sy
+                
+            rescue=>e
+                
+                return $config.school_year_installed
                 
             end
             
-            sy.fields["school_year"].value
-            
         else
+            
             $config.school_year_installed
+            
         end
         
     end
