@@ -22,10 +22,14 @@ class Attendance_Processing
         
         @finalize_code  = "u"#student_attendance_master_field.value
         
-        @override       = attendance_department_override  unless @override
-        @override       = orientation_override            unless @override
-        @override       = testing_day_override            unless @override
-        @override       = academic_plan_override          unless @override
+        #unless @sid == "205426"
+            
+            @override       = attendance_department_override  unless @override
+            @override       = orientation_override            unless @override
+            @override       = testing_day_override            unless @override
+            @override       = academic_plan_override          unless @override
+            
+        #end
         
         unless @override
             
@@ -61,8 +65,11 @@ class Attendance_Processing
                         
                     else
                         
-                        @stu_daily_mode = "Asynchronous"
+                        @stu_daily_mode             = "No Live Sessions"
+                        @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
+                        
                         student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                        
                         puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
                         raise "MODE CHANGE"
                         
@@ -76,7 +83,7 @@ class Attendance_Processing
                 
             rescue=>e
                 
-                if e=="MODE CHANGE"
+                if e.message=="MODE CHANGE"
                     retried+=1
                     retry if retried <= 1
                 end
@@ -100,9 +107,10 @@ end
     def classrooms_active
         
         @student.attendance_activity.table.primary_ids(
-            "WHERE student_id   = '#{@sid}'
-            AND date            = '#{@date}'
-            AND code            = 'p'
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND code            =   'p'
+            AND code            !=  'asy'
             AND source REGEXP '#{@classroom_sources.join("|")}'"
         )
         
@@ -111,8 +119,9 @@ end
     def classrooms_total
         
         @student.attendance_activity.table.primary_ids(
-            "WHERE student_id   = '#{@sid}'
-            AND date            = '#{@date}'
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND code            !=  'asy'
             AND source REGEXP '#{@classroom_sources.join("|")}'"
         )
         

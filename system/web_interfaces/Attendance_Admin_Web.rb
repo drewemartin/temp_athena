@@ -209,7 +209,9 @@ end
         colors  = {"gray"=>gray, "yellow"=>yellow, "green"=>green, "red"=>red}
         
         output << $tools.div_open("main_div", "main_div")
-        
+        complete_tot    = $tables.attach("student_attendance").primary_ids("WHERE logged IS TRUE")
+        tot             = $tables.attach("student_attendance").primary_ids()
+        output << "<div style='float:right;'>#{complete_tot ? complete_tot.length : 0}/#{tot ? tot.length : 0}</div>"
         #Report Status
         output << $tools.newlabel("report_status", "Report Status")
         output << $tools.div_open("status_container")
