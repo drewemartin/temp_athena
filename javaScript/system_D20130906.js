@@ -530,6 +530,7 @@ $(function () {
 			pickerTimeFormat: 'hh:mm:ss TT',
 			minDate: min,
 			maxDate: max,
+			//stepMinute: 5,
 			onSelect: function() {
 				$(this).trigger('datechange')
 			}
