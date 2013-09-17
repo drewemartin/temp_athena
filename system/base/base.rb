@@ -1158,9 +1158,9 @@ end
       
     else
       
-      if $school.current_school_year
+      if school_year = $school.current_school_year
         
-        $config.school_year = $school.current_school_year
+        $config.school_year = school_year
         
       else
         
