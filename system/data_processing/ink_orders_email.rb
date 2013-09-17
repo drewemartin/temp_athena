@@ -6,7 +6,7 @@ class Ink_Orders_Email
         
         super()
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/)
             
             @staples_email      = ["Rachael.Conner@staples.com", "kyoung@agora.org", "esaddler@agora.org"]
             @agora_ink_orderer  = ["lcraig@agora.org", "esaddler@agora.org"]

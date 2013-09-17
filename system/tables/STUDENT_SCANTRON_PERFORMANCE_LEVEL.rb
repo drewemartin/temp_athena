@@ -258,7 +258,7 @@ end
   
     def ftc_participation_notifications
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/)
             
             report_location = "Scantron/Participation_Notifications"
             

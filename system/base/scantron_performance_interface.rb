@@ -1,4 +1,6 @@
 #!/usr/local/bin/ruby
+require 'firewatir'
+require 'watir'
 
 class Scantron_Performance_Interface
 

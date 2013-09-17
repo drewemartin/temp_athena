@@ -88,7 +88,7 @@ end
     
     def after_load_k12_omnibus
         
-        if ENV["COMPUTERNAME"] == "ATHENA" #&& !$reports.exists_in_sapphire_inbox?(filename)
+        if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/)
             sapphire_update_new_students
             sapphire_update_returning_students
             invalid_districts_report
@@ -98,7 +98,7 @@ end
     
     def after_load_k12_withdrawal
         
-        if ENV["COMPUTERNAME"] == "ATHENA" #&& !$reports.exists_in_sapphire_inbox?(filename)
+        if ENV["COMPUTERNAME"].match(/ATHENA||HERMES/)
             require "#{$paths.system_path}reports/sapphire_withdrawal_report.rb"
             sapphire_withdrawal_report = Sapphire_Withdrawal_Report.new
             sapphire_withdrawal_report.withdrawals_import   #IMPORTED BY SAPPHIRE
