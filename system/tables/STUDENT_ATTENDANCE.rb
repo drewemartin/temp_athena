@@ -166,7 +166,7 @@ end
 
     def create_new_attendance_records
         
-        eval_date = $base.created_date ? DateTime.parse($base.created_date).strftime("%Y-%m-%d") : $idate
+        eval_date = $base.created_date ? DateTime.parse($base.created_date).strftime("%Y-%m-%d") : ($instance_DateTime - 1).strftime("%Y-%m-%d")
         
         if $field.is_schoolday?(eval_date)
             
