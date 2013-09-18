@@ -1259,16 +1259,32 @@ end
         
         path = "#{$paths.documents_path}#{pid}.#{ext}"
         
-        newDoc = File.new(path, "wb")
-        
-        newDoc.write(doc)
-        
-        newDoc.close
-        
-        filepath = newDoc.path
-        
-        #$reports.move_to_athena_reports(filepath, false)
-        #$reports.move_to_athena_reports_from_docs(filepath, sub_directory, alt_file_name)
+        if !File.exists?(path)
+            
+            newDoc = File.new(path, "wb")
+            
+            newDoc.write(doc)
+            
+            newDoc.close
+            
+            filepath = newDoc.path
+            
+        else
+            
+            error_file_path    = "#{$paths.document_error_path}#{pid}_#{$ifilestamp}.#{ext}"
+            newDoc = File.new(error_file_path, "wb")
+            newDoc.write(doc)
+            newDoc.close
+            filepath = newDoc.path
+            
+            $base.system_notification(
+                "FILE AT DOCUMENT PID:#{pid} ALREADY EXISTS",
+                "FILE SAVED TO PATH: #{error_file_path}",
+                caller[0],
+                nil
+            )
+            return_message = "There was a problem uploading your file. An e-mail has already been send to the system administrators."
+        end
         
         self.output = return_message
         

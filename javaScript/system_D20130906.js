@@ -530,6 +530,7 @@ $(function () {
 			pickerTimeFormat: 'hh:mm:ss TT',
 			minDate: min,
 			maxDate: max,
+			//stepMinute: 5,
 			onSelect: function() {
 				$(this).trigger('datechange')
 			}
@@ -1686,7 +1687,7 @@ function x___________________UNSORTED(){}
 					"Save Record": function() {
 						var field_ids = ""
 						if (validate($(this))){
-							$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden],[type=radio]").each(function(){
+							$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden],[type=radio]:checked").each(function(){
 								var field_id = $(this).attr("id")
 								if(field_id != ""){
 									if(field_ids == ""){
@@ -1903,7 +1904,7 @@ function x___________________UNSORTED(){}
 							field_ids = field_ids+","+save_params
 						}
 						if (validate($(this))){
-							$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden],[type=radio]").each(function(){
+							$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden],[type=radio]:checked").each(function(){
 								var field_id = $(this).attr("id")
 								if(field_id != ""){
 									if(field_ids == ""){

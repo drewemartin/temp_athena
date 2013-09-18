@@ -85,6 +85,18 @@ end
         return structure[:documents_path]
     end
     
+    def document_error_path
+        if !structure.has_key?(:document_error_path)
+            #if ENV["COMPUTERNAME"] == "ATHENA"
+                structure[:document_error_path] = $config.init_path("A:/document_error")
+            #else
+                #structure[:document_error_path] = $config.init_path("#{htdocs_path}document_error")
+            #end
+            
+        end
+        return structure[:document_error_path]
+    end
+    
     def htdocs_path
         if !structure.has_key?(:htdocs_path)
             path_array = $config.system_root.split("/")

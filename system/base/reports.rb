@@ -104,33 +104,101 @@ end
             
         end
         
-        if document_hash[:csv_rows]
+        begin
             
-            return csv(nil, new_document_pid, document_hash[:csv_rows], false)
-            
-        elsif document_hash[:pdf]
-            
-            pdf = document_hash[:pdf].render_file("#{$paths.documents_path}#{new_document_pid}.pdf")
-            
-            return pdf.path
-            
-        elsif document_hash[:pdf_template]
-            
-            pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}.pdf" do |pdf|
-                    require "#{$paths.templates_path}pdf_templates/#{document_hash[:pdf_template]}"
-                    template = eval("#{document_hash[:pdf_template].gsub(".rb","")}.new")
-                    template.generate_pdf(document_hash[:pdf_id], pdf)
+            if document_hash[:csv_rows]
+                
+                if !File.exists?("#{$paths.documents_path}#{new_document_pid}.csv")
+                    
+                    return csv(nil, new_document_pid, document_hash[:csv_rows], false)
+                    
+                else
+                    
+                    file_path = "#{csv(nil, "#{new_document_pid}_#{$ifilestamp}", document_hash[:csv_rows], false)}.csv"
+                    
+                    raise
+                    
+                end
+                
+            elsif document_hash[:pdf]
+                
+                if !File.exists?("#{$paths.documents_path}#{new_document_pid}.pdf")
+                    
+                    pdf = document_hash[:pdf].render_file("#{$paths.documents_path}#{new_document_pid}.pdf")
+                    
+                    return pdf.path
+                    
+                else
+                    
+                    pdf = document_hash[:pdf].render_file("#{$paths.documents_path}#{new_document_pid}_#{$ifilestamp}.pdf")
+                    
+                    file_path = pdf.path
+                    
+                    raise
+                    
+                end
+                
+            elsif document_hash[:pdf_template]
+                
+                if !File.exists?("#{$paths.documents_path}#{new_document_pid}.pdf")
+                    
+                    pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}.pdf" do |pdf|
+                            require "#{$paths.templates_path}pdf_templates/#{document_hash[:pdf_template]}"
+                            template = eval("#{document_hash[:pdf_template].gsub(".rb","")}.new")
+                            template.generate_pdf(document_hash[:pdf_id], pdf)
+                    end
+                    
+                    return pdf.path
+                    
+                else
+                    
+                    pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}_#{$ifilestamp}.pdf" do |pdf|
+                            require "#{$paths.templates_path}pdf_templates/#{document_hash[:pdf_template]}"
+                            template = eval("#{document_hash[:pdf_template].gsub(".rb","")}.new")
+                            template.generate_pdf(document_hash[:pdf_id], pdf)
+                    end
+                    
+                    file_path = pdf.path
+                    ext = "pdf"
+                    
+                    raise
+                    
+                end
+                
+            elsif document_hash[:file_path]
+                
+                file_path   = document_hash[:file_path]
+                ext         = file_path.split(".").last
+                new_path    = "#{$paths.documents_path}#{new_document_pid}.#{ext}"
+                
+                if !File.exists?(new_path)
+                    
+                    FileUtils.cp(file_path,new_path)
+                    
+                else
+                    
+                    raise
+                    
+                end
+                
             end
             
-            return pdf.path
+        rescue => e
             
-        elsif document_hash[:file_path]
+            error_file_path = file_path ? "#{$paths.document_error_path}#{new_document_pid}_#{$ifilestamp}.#{ext}" : "~Not saved, because process was aborted before file creation."
             
-            file_path   = document_hash[:file_path]
-            ext         = file_path.split(".").last
-            new_path    = "#{$paths.documents_path}#{new_document_pid}.#{ext}"
+            FileUtils.cp(file_path,error_file_path) if file_path
             
-            FileUtils.cp(file_path,new_path)
+            $base.system_notification(
+                "FILE AT DOCUMENT PID:#{new_document_pid} ALREADY EXISTS",
+                "FILE SAVED TO PATH: #{error_file_path}<br><br>
+                PROCESS ABORTED<br><br>
+                #{e.backtrace}",
+                caller[0],
+                e
+            )
+            
+            raise
             
         end
         
