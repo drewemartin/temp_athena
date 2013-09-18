@@ -610,6 +610,8 @@ end
                 output << "Warning: '#{row[0]}' at line #{i} is not a number.<br>"
             elsif !$students.attach(row[0]).exists?
                 output << "Warning: SID ##{sid} is not an existing Student ID.<br>"
+            elsif !$tables.attach("student_attendance_master").by_studentid(sid)
+                output << "Warning: SID ##{sid} at line #{i} does not have a student attendance master record<br>"
             end
             if i!=1
                 j = 1
@@ -678,6 +680,8 @@ end
                 output << "Warning: '#{row[0]}' at line #{i} is not a number.<br>"
             elsif !$students.attach(row[0]).exists?
                 output << "Warning: SID ##{sid} is not an existing Student ID.<br>"
+            elsif !$tables.attach("student_attendance_mode").by_studentid(sid)
+                output << "Warning: SID ##{sid} at line #{i} does not have a student attendance mode record<br>"
             end
             if !$tables.attach("Attendance_Modes").modes_array.include?(row[1])
                 output << "Warning: '#{row[1]}' at line #{i} is not a valid mode.<br>"
