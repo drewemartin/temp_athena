@@ -9,7 +9,7 @@ class Daily_Attendance_1 < Base
 
     def execute_processes
         
-        until !(pid = $tables.attach("student_attendance").primary_ids("WHERE logged IS NULL"))
+        until !(pid = $tables.attach("student_attendance").primary_ids("WHERE logged IS NULL AND MODE IS NOT NULL"))
             
             pid = pid[10]
             record = $tables.attach("student_attendance").by_primary_id(pid)
