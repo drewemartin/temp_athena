@@ -189,7 +189,7 @@ end
                     end
                     
                     mode    = student.attendance_mode.attendance_mode.value
-                    code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : "u"
+                    code    = mode.match(/Manual/) ? (mode.match(/(default p)/) ? "p" : "a") : "u"
                     
                     record  = student.attendance.new_record
                     record.fields["date"            ].value = eval_date
