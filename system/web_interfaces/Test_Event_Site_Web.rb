@@ -457,10 +457,12 @@ end
     
     def test_admin_dd(assigned_staff_id = nil)
         
+        k12_db = $tables.attach("k12_staff").data_base
+        
         results =  $tables.attach("TEST_EVENT_SITE_STAFF").dd_choices(
             "CONCAT(k12_staff.firstname,' ',k12_staff.lastname)",
             "staff_id",
-            " LEFT JOIN agora_k12.k12_staff on staff_id = k12_staff.samspersonid WHERE test_event_site_id = '#{@test_event_site_id}' "
+            " LEFT JOIN #{k12_db}.k12_staff ON staff_id = k12_staff.samspersonid WHERE test_event_site_id = '#{@test_event_site_id}' "
         )
         
         if assigned_staff_id && $tables.attach("K12_STAFF").primary_ids(" WHERE samspersonid = '#{assigned_staff_id}' ")

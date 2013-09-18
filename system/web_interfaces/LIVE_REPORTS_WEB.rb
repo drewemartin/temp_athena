@@ -63,6 +63,13 @@ end
             "This report includes all ink orders entered into Athena."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_ink_orders.is_true?
         
+        #Ink Orders Manual Shipping
+        tables_array.push([
+            $tools.button_new_csv("ink_orders_manual", additional_params_str = nil),
+            "Ink Orders Manual Shipping Mail Merge",
+            "This is a mail merge csv for making shipping labels for ink orders who don't have a staples id yet."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_ink_orders_manual.is_true?
+        
         #TRACKER REPORT
         tables_array.push([
             $tools.button_new_csv("student_contacts", additional_params_str = "complete"),
@@ -467,6 +474,56 @@ end
             "Days to Ship",
             "Entered DateTime",
             "Created By"
+        ]
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            return results.insert(0, headers)
+            
+        else
+            
+            return false
+            
+        end
+        
+    end
+    def add_new_csv_ink_orders_manual(options = nil)
+        
+        s_db  = $tables.attach("student").data_base
+        io_db = $tables.attach("ink_orders").data_base
+        
+        sql_str =
+        "SELECT
+            ink_orders.studentid,
+            ink_orders.request_date,
+            ink_orders.ink,
+            student.studentfirstname,
+            student.studentlastname,
+            student.mailingaddress1,
+            student.mailingaddress2,
+            student.mailingcity,
+            student.mailingstate,
+            student.mailingzip
+            
+        FROM #{io_db}.ink_orders
+        LEFT JOIN #{s_db}.STUDENT
+        ON #{io_db}.ink_orders.studentid = #{s_db}.student.student_id
+        WHERE ink_orders.status = 'No Staples Id'"
+        
+        headers =
+        [
+            "Student ID",
+            "Request Date",
+            "Ink",
+            "First Name",
+            "Last Name",
+            "Mailing Address 1",
+            "Mailing Address 2",
+            "Mailing City",
+            "Mailing State",
+            "Mailing Zip"
         ]
         
         results = $db.get_data(sql_str)

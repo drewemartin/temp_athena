@@ -118,7 +118,7 @@ end
                     ########################################################################
                     #FNORD - MOVE THE 'DISPLAY:NONE' DIV INTO WEB AS AN OPTION
                     row.push($team.by_team_email(f["created_by"].value) ? $team.by_team_email(f["created_by"].value).full_name : f["created_by"].value)
-                    row.push(f["datetime"                      ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
+                    row.push(f["datetime"                      ].web.default(:disabled=>disabled, :date_range_end=>"#{$iuser}")+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
                     row.push(f["successful"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["successful"                    ].to_user()+"</div>")
                     row.push(f["notes"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
                     row.push(f["contact_type"                  ].web.label()) 
@@ -197,9 +197,9 @@ end
             output << $tools.legend_open("sub", "Contact Details")
                 
                 output << record.fields["student_id"                  ].web.hidden()
-                output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,       :div_id=>"blank")
-                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",     :div_id=>"blank")
-                output << record.fields["contact_type"                ].web.select(  {:label_option=>"Contact Type:",            :div_id=>"blank", :dd_choices=>type_dd}, true)
+                output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,      :div_id=>"blank")
+                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",    :div_id=>"blank", :date_range_end=>"#{$iuser}")
+                output << record.fields["contact_type"                ].web.select( {:label_option=>"Contact Type:",            :div_id=>"blank", :dd_choices=>type_dd}, true)
                 
             output << $tools.legend_close()
             
