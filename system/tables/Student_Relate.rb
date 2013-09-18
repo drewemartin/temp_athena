@@ -527,7 +527,7 @@ end
 
     def after_load_k12_omnibus
         #Update/Create Active Student Relationships
-            family_teacher_coaches
+            #family_teacher_coaches
             home_room_teachers
             primary_teachers
             special_education_teachers
@@ -1454,7 +1454,7 @@ end
         sspl_db = $tables.attach("student_scantron_performance_level").data_base
         
         join_addon =
-            " LEFT JOIN #{sspl}.student_scantron_performance_level ON #{sspl}.student_scantron_performance_level.student_id = #{data_base}.student.student_id "
+            " LEFT JOIN #{sspl_db}.student_scantron_performance_level ON #{sspl_db}.student_scantron_performance_level.student_id = #{data_base}.student.student_id "
         if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
             @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
         end
