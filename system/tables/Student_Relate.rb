@@ -630,6 +630,18 @@ end
                 params[:sid]    = sid
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    
+                    if record.fields["course_id"].value = "FC1314"
+                        
+                        sec_id = record.fields["section_id"].value.to_i
+                        if sec_id < 132
+                            params[:role] = "Family Teacher Coach"
+                        else
+                            params[:role] = "Learning Center Classroom Coach"
+                        end
+                        
+                    end
+                    
                     params[:role_details    ] = record.fields["course_title"].value
                     params[:team_id         ] = team_member.primary_id.value
                     params[:staff_id        ] = staff_id
@@ -657,6 +669,18 @@ end
                 params[:sid]    = sid
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    
+                    if record.fields["course_id"].value = "FC1314"
+                        
+                        sec_id = record.fields["section_id"].value.to_i
+                        if sec_id < 132
+                            params[:role] = "Family Teacher Coach"
+                        else
+                            params[:role] = "Learning Center Classroom Coach"
+                        end
+                        
+                    end
+                    
                     params[:role_details    ] = record.fields["course_title"].value
                     params[:team_id         ] = team_member.primary_id.value
                     params[:staff_id        ] = staff_id
@@ -684,6 +708,18 @@ end
                 params[:sid]    = sid
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
+                    
+                    if record.fields["course_id"].value = "FC1314"
+                        
+                        sec_id = record.fields["section_id"].value.to_i
+                        if sec_id < 132
+                            params[:role] = "Family Teacher Coach"
+                        else
+                            params[:role] = "Learning Center Classroom Coach"
+                        end
+                        
+                    end
+                    
                     params[:role_details    ] = record.fields["course_title"].value
                     params[:team_id         ] = team_member.primary_id.value
                     params[:staff_id        ] = staff_id
