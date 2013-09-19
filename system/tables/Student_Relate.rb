@@ -648,8 +648,8 @@ end
         pids.each{|pid|
            
             record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").by_primary_id(pid)
-            params[:sid]    = sid
-            staff_id        = record.fields["staff_id"].value  
+            params[:sid]    = record.fields["student_id"].value
+            staff_id        = record.fields["staff_id"  ].value  
             if staff_id && (team_member = $team.find(:sams_id=>staff_id)) 
                 params[:role_details    ] = record.fields["course_title"].value
                 params[:team_id         ] = team_member.primary_id.value
@@ -676,8 +676,8 @@ end
         pids.each{|pid|
            
             record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").by_primary_id(pid)
-            params[:sid]    = sid
-            staff_id        = record.fields["staff_id"].value  
+            params[:sid]    = record.fields["student_id"].value
+            staff_id        = record.fields["staff_id"  ].value  
             if staff_id && (team_member = $team.find(:sams_id=>staff_id))   
                 params[:role_details    ] = record.fields["course_title"].value
                 params[:team_id         ] = team_member.primary_id.value
@@ -702,8 +702,8 @@ end
         pids.each{|pid|
            
             record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").by_primary_id(pid)
-            params[:sid]    = sid
-            staff_id        = record.fields["staff_id"].value  
+            params[:sid]    = record.fields["student_id"].value
+            staff_id        = record.fields["staff_id"  ].value  
             if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                 params[:role_details    ] = record.fields["course_title"].value
                 params[:team_id         ] = team_member.primary_id.value
