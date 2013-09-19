@@ -192,8 +192,11 @@ end
             :border_colors      => "AED0EA"
         }
         
-        gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor'")
+        gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor' AND active IS TRUE")
         gc          = (gc_record ? gc_record[0].fields["team_id"].to_name(:full_name) : "")
+        
+        ftc_record  = @student.relate.existing_records("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
+        ftc         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
         
         @pdf.table [
             
@@ -213,7 +216,7 @@ end
                 "<b>Birth Date:</b>",
                 "#{@student.birthday.to_user}",
                 "<b>Family Coach:</b>",
-                @student.primaryteacher.value
+                ftc
             ],
             [
                 "<b>Grade Level:</b>",
