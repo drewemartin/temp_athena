@@ -406,7 +406,7 @@ end
     
     def after_load_k12_ecollege_detail
         #Update/Create Active Student Relationships
-            high_school_teachers
+            #high_school_teachers
             guidance_counselors
     end
     
@@ -631,7 +631,7 @@ end
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                     
-                    if record.fields["course_id"].value = "FC1314"
+                    if record.fields["course_id"].value == "FC1314"
                         
                         sec_id = record.fields["section_id"].value.to_i
                         if sec_id < 132
@@ -670,7 +670,7 @@ end
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                     
-                    if record.fields["course_id"].value = "FC1314"
+                    if record.fields["course_id"].value == "FC1314"
                         
                         sec_id = record.fields["section_id"].value.to_i
                         if sec_id < 132
@@ -709,7 +709,7 @@ end
                 staff_id        = record.fields["staff_id"].value  
                 if staff_id && (team_member = $team.find(:sams_id=>staff_id))
                     
-                    if record.fields["course_id"].value = "FC1314"
+                    if record.fields["course_id"].value == "FC1314"
                         
                         sec_id = record.fields["section_id"].value.to_i
                         if sec_id < 132
