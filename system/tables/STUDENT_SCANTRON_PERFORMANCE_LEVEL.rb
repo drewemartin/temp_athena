@@ -123,7 +123,7 @@ end
                             grade   = performance_record["grade"].value.gsub("Grade ","")
                             grade   = "K" if grade == "0"
                             
-                            #range   = $tables.attach("Scantron_Performance_Range").by_subject_grade(subject,grade).fields
+                            range   = $tables.attach("Scantron_Performance_Range").by_subject_grade(subject,grade).fields
                             #min     = range["target_min"].mathable
                             #max     = range["target_max"].mathable
                             #if score < min
@@ -169,8 +169,8 @@ end
                             level_record.fields[date_field  ].value = test_date
                             level_record.fields[nce_field   ].value = nce
                             
-                            level_record.fields["reading_predicted_name_long"].value = performance_record.fields["reading_predicted_name_long"].value
-                            level_record.fields["math_predicted_name_long"   ].value = performance_record.fields["math_predicted_name_long"   ].value
+                            level_record.fields["reading_predicted_name_long"].value = performance_record["reading_predicted_name_long"].value
+                            level_record.fields["math_predicted_name_long"   ].value = performance_record["math_predicted_name_long"   ].value
                             
                             if $students.list(
                                 :student_id                 => sid,
@@ -258,7 +258,7 @@ end
   
     def ftc_participation_notifications
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             
             report_location = "Scantron/Participation_Notifications"
             

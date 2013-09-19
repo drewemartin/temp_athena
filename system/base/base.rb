@@ -5,7 +5,6 @@ require 'rubygems'
 require 'csv'
 require 'date'
 require 'fileutils'
-require 'firewatir'
 require 'digest/md5'
 require 'mysql'
 require 'net/http'
@@ -14,7 +13,6 @@ require 'net/ftp'
 require 'net/smtp'
 require 'pdf/reader'
 require 'prawn'
-require 'watir'
 require 'zip/zip'
 
 #EXPLICIT REFERENCE!!!!!
@@ -1160,9 +1158,9 @@ end
       
     else
       
-      if $school.current_school_year
+      if school_year = $school.current_school_year
         
-        $config.school_year = $school.current_school_year
+        $config.school_year = school_year
         
       else
         

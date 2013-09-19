@@ -6,7 +6,7 @@ class Ink_Staples_Id_Confirmation
         
         super()
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             
             confirm_records
             

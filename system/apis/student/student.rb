@@ -435,7 +435,7 @@ end
     
     def family_teacher_coach
         if !structure.has_key?("family_teacher_coach")
-            results = $tables.attach("Student").field_bystudentid("primaryteacher", studentid)
+            results = $tables.attach("Student").field_bystudentid("title1teacher", studentid)
             structure["family_teacher_coach"] = results if results
         end
         return structure["family_teacher_coach"].value if output_type == "value"

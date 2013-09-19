@@ -11,7 +11,7 @@ class Ink_Staples_Id_Request
         @csv_path    = String.new
         @needs_id    = Array.new
         
-        if ENV["COMPUTERNAME"] == "ATHENA" || override
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) || override
             
             begin
                 

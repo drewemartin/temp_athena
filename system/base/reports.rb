@@ -356,7 +356,7 @@ end
     end
     
     def transfer_offsite(file_path, ftp, putstext=true)
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             file_name   = file_path.split("/")[-1]
             location    = file_path.split("/reports/")[-1].gsub(file_name,"")
             begin

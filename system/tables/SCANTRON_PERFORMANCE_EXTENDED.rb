@@ -36,7 +36,7 @@ end
         
         return true if import_file_exists?
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             
             return true if import_file_exists?
             

@@ -240,7 +240,7 @@ end
     
     def snap_update
         
-        if ENV["COMPUTERNAME"] == "ATHENA"
+        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             
             tried = 0
             begin

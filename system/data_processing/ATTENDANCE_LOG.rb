@@ -171,7 +171,12 @@ end
                         
                         #STUDENT MARKED PRESENT OR THE TEACHER FORGOT TO MARK ATTENDANCE (Forgetting to mark = present per Christina)
                         code            = source_table.field_value_by_pid("period_#{period_code.downcase}", pid)
-                        activity_code   = (code.nil? ||  code.downcase=="p") ? "p" : (code.downcase=="a" ? "u" : code.downcase)
+                        
+                        if code.nil?
+                            activity_code   = "pb"
+                        else
+                            activity_code   = code.downcase=="p" ? "p" : (code.downcase=="a" ? "u" : code.downcase)
+                        end
                         
                         student         = $students.get(sid)
                         
