@@ -618,7 +618,6 @@ end
     
     def after_load_sapphire_class_roster_el
         params = field_params
-        params[:role            ] = "Teacher - Elementary School"
         params[:source          ] = "SAPPHIRE_CLASS_ROSTER_EL"
         get_existing_records 
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"EL")#current_students
@@ -640,6 +639,8 @@ end
                             params[:role] = "Learning Center Classroom Coach"
                         end
                         
+                    else
+                        params[:role] = "Teacher - Elementary School"
                     end
                     
                     params[:role_details    ] = record.fields["course_title"].value
@@ -657,7 +658,6 @@ end
     
     def after_load_sapphire_class_roster_hs
         params = field_params
-        params[:role            ] = "Teacher - Middle School"
         params[:source          ] = "SAPPHIRE_CLASS_ROSTER_HS"
         get_existing_records 
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"HS")#current_students
@@ -679,6 +679,8 @@ end
                             params[:role] = "Learning Center Classroom Coach"
                         end
                         
+                    else
+                        params[:role] = "Teacher - High School"
                     end
                     
                     params[:role_details    ] = record.fields["course_title"].value
@@ -696,7 +698,6 @@ end
 
     def after_load_sapphire_class_roster_ms
         params = field_params
-        params[:role            ] = "Teacher - Middle School"
         params[:source          ] = "SAPPHIRE_CLASS_ROSTER_MS"
         get_existing_records 
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>"MS")#current_students
@@ -718,6 +719,8 @@ end
                             params[:role] = "Learning Center Classroom Coach"
                         end
                         
+                    else
+                        params[:role] = "Teacher - Middle School"
                     end
                     
                     params[:role_details    ] = record.fields["course_title"].value
