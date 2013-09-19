@@ -224,7 +224,6 @@ end
                 if school_days
                     school_days.each{|date|
                         att_mast_record.fields["code_#{date}"    ].value = nil
-                        att_mast_record.fields["activity_#{date}"].value = nil
                     }
                     att_mast_record.save
                 end

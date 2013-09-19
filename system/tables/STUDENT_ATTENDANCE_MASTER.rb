@@ -83,7 +83,6 @@ end
                 $base.school_days.reverse.each{|school_day|
                     
                     structure_hash["fields"]["code_#{school_day}"     ] = {"data_type"=>"text", "file_field"=>"code_#{school_day}"     } if field_order.push("code_#{school_day}"     )
-                    structure_hash["fields"]["activity_#{school_day}" ] = {"data_type"=>"text", "file_field"=>"activity_#{school_day}" } if field_order.push("activity_#{school_day}" )
                     
                 }
                 

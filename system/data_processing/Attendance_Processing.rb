@@ -86,7 +86,6 @@ class Attendance_Processing
         end
         
         student_attendance_master_field.set(                    @finalize_code              ).save
-        @student_attendance_master_activity_field.set(          @stu_daily_codes.join(",")  ).save
         student_attendance_record.fields["official_code"].set(  @finalize_code              ).save
         student_attendance_record.fields["logged"       ].set(  true                        ).save if $user == "Athena-SIS"
         
@@ -359,8 +358,6 @@ end
         @student                        = $students.get(@sid)
         
         if student_attendance_master_field && student_attendance_record
-            
-            @student_attendance_master_activity_field   = @student.attendance_master.send("activity_#{@date.gsub("-","_")}")
             
             @activity_sources                           = $tables.attach("ATTENDANCE_SOURCES").find_fields("source","WHERE type = 'Activity'            AND #{@student.grade.to_grade_field} IS TRUE", {:value_only=>true}) || []
             @classroom_sources                          = $tables.attach("ATTENDANCE_SOURCES").find_fields("source","WHERE type = 'Classroom Activity'  AND #{@student.grade.to_grade_field} IS TRUE", {:value_only=>true}) || []
