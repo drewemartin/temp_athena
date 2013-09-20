@@ -8,6 +8,7 @@ class Team_API
         @team_id    = team_id
         @where      = " WHERE team_id = '#{@team_id}'"
         define_accessor_methods
+        verify_requirements
     end
     #---------------------------------------------------------------------------
    
@@ -641,6 +642,20 @@ end
                 structure[function_name]
             }
         }
+    end
+
+    def verify_requirements
+        
+        required_one_to_one_tables = [
+            "rights"
+        ]
+        
+        required_one_to_one_tables.each{|required_table|
+            
+            send(required_table).existing_record || send(required_table).new_record.save
+            
+        }
+        
     end
 
 end
