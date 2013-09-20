@@ -278,6 +278,16 @@ end
                 
             else
                 
+                if o_pids = orientation_logged
+                    
+                    o_pids.each{|pid|
+                        
+                        $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
+                        
+                    }
+                    
+                end
+                
                 return false
                 
             end
