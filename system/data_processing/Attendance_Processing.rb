@@ -278,13 +278,18 @@ end
                 
             else
                 
-                if o_pids = orientation_logged
+                #WE DON'T WANT THIS CHANGE TO BE IMPLEMENTED ON ANY STUDENT ATTENDANCE RECORDS THAT HAVE ALREADY BEEN REPORTED.
+                if att_date >= $base.mathable("date", "2013-09-20") 
                     
-                    o_pids.each{|pid|
+                    if o_pids = orientation_logged
                         
-                        $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
+                        o_pids.each{|pid|
+                            
+                            $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
+                            
+                        }
                         
-                    }
+                    end
                     
                 end
                 
