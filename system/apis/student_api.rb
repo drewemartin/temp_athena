@@ -4,9 +4,10 @@ class Student_API
     
     #---------------------------------------------------------------------------
     def initialize(student_id = nil)
-        @structure  = nil
-        @sid        = student_id
+        @structure                  = nil
+        @sid                        = student_id
         define_accessor_methods
+        verify_requirements
     end
     #---------------------------------------------------------------------------
    
@@ -78,6 +79,34 @@ end
 def x______________ATTENDANCE
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    def create_attendance_record(date)
+        
+        #CREATE A DAILY ATTENDANCE MASTER RECORD IF ONE DOES NOT EXIST
+        student.attendance_master.existing_record || student.attendance_master.new_record.save
+        
+        #CREATE A DAILY ATTENDANCE RECORD IF ONE DOES NOT EXIST
+        if !student.attendance.existing_records("WHERE date = '#{date}'")
+            
+            #CREATE A MODE RECORD WITH THE DEFAULT SETTING IF ONE DOES NOT EXIST
+            if !student.attendance_mode.existing_record
+                record = student.attendance_mode.new_record
+                record.fields["attendance_mode"].set("Synchronous")
+                record.save
+            end
+            
+            mode    = student.attendance_mode.attendance_mode.value
+            code    = mode.match(/Manual/) ? (mode.match(/(default 'p')/) ? "p" : "a") : "u"
+            
+            record  = student.attendance.new_record
+            record.fields["date"            ].value = date
+            record.fields["mode"            ].value = mode
+            record.fields["official_code"   ].value = code
+            record.save
+            
+        end
+        
+    end
 
     def log_attendance_activity(a)
     #:date       => date,
@@ -227,6 +256,20 @@ end
                 structure[function_name]
             }
         }
+    end
+
+    def verify_requirements
+        
+        required_one_to_one_tables = [
+            "assessment"
+        ]
+        
+        required_one_to_one_tables.each{|required_table|
+            
+            send(required_table).existing_record || send(required_table).new_record.save
+            
+        }
+        
     end
 
 end
