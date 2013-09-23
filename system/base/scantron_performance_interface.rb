@@ -226,7 +226,7 @@ end
         day     = "StartDay"
         year    = "StartYear"
         
-        start_date  = $school.current_school_year_start.mathable
+        start_date  = $tables.attach("SCANTRON_SCHEDULE").field_by_pid("ent_start_date", "1").mathable
         start_month = start_date.strftime("%B")
         start_day   = start_date.strftime("%d")[0].chr == "0" ? start_date.strftime("%d").delete("0") : start_date.strftime("%d")
         start_year  = start_date.strftime("%Y")
@@ -251,9 +251,9 @@ end
     def export_parameters_select_enddate
        #link = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[4]/tbody/tr[2]/td/table/tbody/tr[3]/td[2]/span/select"
         
-        month = "EndMonth"
-        day = "EndDay"
-        year = "EndYear"
+        month   = "EndMonth"
+        day     = "EndDay"
+        year    = "EndYear"
         select_field_found = false
         
         end_date  = $base.today.mathable
@@ -261,21 +261,20 @@ end
         end_day   = end_date.strftime("%d")[0].chr == "0" ? end_date.strftime("%d").delete("0") : end_date.strftime("%d")
         end_year  = end_date.strftime("%Y")
         
-          if browser.select_list(:name, month).exists?
-            browser.select_list(:name, month).select(end_month)
-            complete = true
-          end
-          
-          if browser.select_list(:name, day).exists?
-            browser.select_list(:name, day).select(end_day)
-            complete = true
-          end
-          
-          if browser.select_list(:name, year).exists?
-            browser.select_list(:name, year).select(end_year)
-            complete = true
-          end
-          
+        if browser.select_list(:name, month).exists?
+          browser.select_list(:name, month).select(end_month)
+          complete = true
+        end
+        
+        if browser.select_list(:name, day).exists?
+          browser.select_list(:name, day).select(end_day)
+          complete = true
+        end
+        
+        if browser.select_list(:name, year).exists?
+          browser.select_list(:name, year).select(end_year)
+          complete = true
+        end
       
     end
     
