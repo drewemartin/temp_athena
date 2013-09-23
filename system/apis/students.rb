@@ -12,10 +12,16 @@ class Students
     
     def get(sid)
         
-        s=Student_API.new(sid)
-        
-        if s.exists?
-            return s
+        if $base.is_num?(sid)
+            
+            s=Student_API.new(sid)
+            
+            if s.exists?
+                return s
+            else
+                return false
+            end
+            
         else
             return false
         end
