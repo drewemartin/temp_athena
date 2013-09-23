@@ -47,7 +47,8 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
             
             student_ilps = @student.ilp.existing_records(
                 "WHERE ilp_entry_category_id = '#{pid}'
-                AND pdf_excluded IS NOT TRUE"
+                AND pdf_excluded IS NOT TRUE
+                AND completed IS NOT TRUE"
             )
             if student_ilps
                 
