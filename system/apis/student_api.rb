@@ -7,7 +7,7 @@ class Student_API
         @structure                  = nil
         @sid                        = student_id
         define_accessor_methods
-        verify_requirements
+        verify_requirements         if self.exists?
     end
     #---------------------------------------------------------------------------
    
