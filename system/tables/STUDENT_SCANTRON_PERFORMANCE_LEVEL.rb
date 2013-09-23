@@ -289,7 +289,7 @@ end
                 
                 test_phase  = $school.scantron.current_test_phase
                 
-                team_ids    = $team.filter(:role=>"Family Teacher Coach")
+                team_ids    = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
                 
                 if team_ids
                     
