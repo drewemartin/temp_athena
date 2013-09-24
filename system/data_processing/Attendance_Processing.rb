@@ -262,13 +262,13 @@ end
                 student_enroll_date &&
                 
                 (
-                    #(
-                    #    grade.match(/K|1st|2nd|3rd|4th|5th/) && 
-                    #    (
-                    #        (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
-                    #        (att_date >= @school_start          && att_date <= (@school_start + 4       ))
-                    #    )
-                    #) ||
+                    (
+                        grade.match(/K|1st|2nd|3rd|4th|5th/) && 
+                        (
+                            (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+                            (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+                        )
+                    ) ||
                     (
                         (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
                         (att_date >= @school_start          && att_date <= (@school_start + 3       ))
