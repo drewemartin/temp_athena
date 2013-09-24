@@ -22,13 +22,15 @@ class Attendance_Processing
         
         @finalize_code  = "u"#student_attendance_master_field.value
         
-        #unless @sid == "205426"
+        #if @sid != "1291086"
             
             @override       = attendance_department_override  unless @override
             @override       = orientation_override            unless @override
             @override       = testing_day_override            unless @override
             @override       = academic_plan_override          unless @override
             
+        #else
+        #    @override       = orientation_override            unless @override
         #end
         
         unless @override
@@ -172,6 +174,7 @@ end
         @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
+            AND code            != 'asy'
             AND period REGEXP '#{@orientation_sources.join("|")}'"
         )
         
@@ -251,6 +254,7 @@ end
         if @stu_daily_procedure_type == "Classroom Activity (50% or more)"
             
             student_enroll_date = $students.get(@sid).schoolenrolldate.mathable
+            grade               = $students.get(@sid).grade.value
             att_date            = $base.mathable("date", @date)
             
             if (
@@ -258,8 +262,17 @@ end
                 student_enroll_date &&
                 
                 (
-                    (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
-                    (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+                    #(
+                    #    grade.match(/K|1st|2nd|3rd|4th|5th/) && 
+                    #    (
+                    #        (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+                    #        (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+                    #    )
+                    #) ||
+                    (
+                        (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
+                        (att_date >= @school_start          && att_date <= (@school_start + 3       ))
+                    )
                 )
                 
             )
