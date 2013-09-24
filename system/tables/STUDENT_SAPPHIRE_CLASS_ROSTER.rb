@@ -20,7 +20,11 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
+    
+    def after_load_student_sapphire_class_roster
+        set_active_status
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
@@ -30,23 +34,6 @@ end
 def x______________FUNCTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    def after_change_field(field_obj)
-        
-        if !(field_obj.field_name == "complete")
-            
-            record = by_primary_id(field_obj.primary_id)
-            manage_ilp(record)
-            
-        end
-        
-    end
-    
-    def after_insert(record)
-        
-        manage_ilp(record)
-        
-    end
     
     def manage_ilp(record)
         
@@ -107,116 +94,44 @@ end
             ilp_record.fields["day6"                   ].value = (days.include?("6") ? true : false)
             ilp_record.fields["day7"                   ].value = (days.include?("7") ? true : false)
             
+            ilp_record.fields["completed"              ].value = (record.fields["active"].is_true? ? false : true)
+            
             ilp_record.save
             
         end
        
     end
     
-    def after_load_student_sapphire_class_roster
-        activate_classes
-        deactivate_classes
-    end
-    
-    def activate_classes
+    def set_active_status
         
-        el_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL"       ).data_base
-        ms_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS"       ).data_base
-        hs_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS"       ).data_base
-        
-        ss_db = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER"  ).data_base
-        
-        pids = primary_ids(
+        source_tables = {
             
-            "LEFT JOIN #{el_db}.sapphire_class_roster_el
-                
-                ON  sapphire_class_roster_el.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_el.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_el.section_id    = student_sapphire_class_roster.section_id
-                
-            LEFT JOIN #{ms_db}.sapphire_class_roster_ms
-                
-                ON  sapphire_class_roster_ms.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_ms.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_ms.section_id    = student_sapphire_class_roster.section_id
-              
-            LEFT JOIN #{hs_db}.sapphire_class_roster_hs
-                
-                ON  sapphire_class_roster_hs.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_hs.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_hs.section_id    = student_sapphire_class_roster.section_id
-                
-            WHERE (
-                
-                sapphire_class_roster_el.primary_id IS NOT NULL
-                    OR
-                sapphire_class_roster_ms.primary_id IS NOT NULL
-                    OR
-                sapphire_class_roster_hs.primary_id IS NOT NULL
-                
-            )
-            AND active IS NOT TRUE"
+            "EL"=>"SAPPHIRE_CLASS_ROSTER_EL",
+            "MS"=>"SAPPHIRE_CLASS_ROSTER_MS",
+            "HS"=>"SAPPHIRE_CLASS_ROSTER_HS"
             
-        )
+        }
         
-        pids.each{|pid|
+        if pids = primary_ids
             
-            record = by_primary_id(pid)
-            record.field["active"].value = true
-            record.save
+            pids.each{|pid|
+                
+                record = by_primary_id(pid)
+                if $tables.attach(source_tables[record.fields["school_id"  ].value]).primary_ids(
+                    "WHERE student_id   = '#{record.fields["student_id" ].to_db}'
+                    AND course_id       = '#{record.fields["course_id"  ].to_db}'
+                    AND section_id      = '#{record.fields["section_id" ].to_db}'"
+                )
+                    record.fields["active"].set(true).save
+                else
+                    record.fields["active"].set(false).save
+                end
+                
+                manage_ilp(record)
+                
+            } 
             
-        } if pids
-        
-    end
-
-    def deactivate_classes
-        
-        el_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL"       ).data_base
-        ms_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS"       ).data_base
-        hs_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS"       ).data_base
-        
-        ss_db = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER"  ).data_base
-        
-        pids = primary_ids(
-            
-            "LEFT JOIN #{el_db}.sapphire_class_roster_el
-                
-                ON  sapphire_class_roster_el.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_el.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_el.section_id    = student_sapphire_class_roster.section_id
-                
-            LEFT JOIN #{ms_db}.sapphire_class_roster_ms
-                
-                ON  sapphire_class_roster_ms.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_ms.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_ms.section_id    = student_sapphire_class_roster.section_id
-              
-            LEFT JOIN #{hs_db}.sapphire_class_roster_hs
-                
-                ON  sapphire_class_roster_hs.student_id    = student_sapphire_class_roster.student_id
-                AND sapphire_class_roster_hs.course_id     = student_sapphire_class_roster.course_id
-                AND sapphire_class_roster_hs.section_id    = student_sapphire_class_roster.section_id
-                
-            WHERE (
-                
-                sapphire_class_roster_el.primary_id IS NULL
-                    OR
-                sapphire_class_roster_ms.primary_id IS NULL
-                    OR
-                sapphire_class_roster_hs.primary_id IS NULL
-                
-            )
-            AND active IS NOT FALSE"
-            
-        )
-        
-        pids.each{|pid|
-            
-            record = by_primary_id(pid)
-            record.field["active"].value = false
-            record.save
-            
-        } if pids
+        end
         
     end
     
