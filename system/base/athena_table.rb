@@ -1500,6 +1500,20 @@ end
         end
     end
     
+    def team_ids(where_clause = nil)
+        if fields["team_id"]
+            $db.get_data_single(
+                "SELECT #{table_name}.team_id
+                FROM #{table_name}
+                #{where_clause}
+                GROUP BY team_id",
+                data_base
+            )
+        else
+            return false
+        end
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________QUESTIONS?
 end

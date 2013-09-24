@@ -31,7 +31,24 @@ def x______________FUNCTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field(field_obj)
+        
+        if !(field_obj.field_name == "complete")
+            
+            record = by_primary_id(field_obj.primary_id)
+            manage_ilp(record)
+            
+        end
+        
+    end
+    
     def after_insert(record)
+        
+        manage_ilp(record)
+        
+    end
+    
+    def manage_ilp(record)
         
         student     = $students.get(record.fields["student_id"].value)
         
@@ -94,6 +111,113 @@ end
             
         end
        
+    end
+    
+    def after_load_student_sapphire_class_roster
+        activate_classes
+        deactivate_classes
+    end
+    
+    def activate_classes
+        
+        el_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL"       ).data_base
+        ms_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS"       ).data_base
+        hs_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS"       ).data_base
+        
+        ss_db = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER"  ).data_base
+        
+        pids = primary_ids(
+            
+            "LEFT JOIN #{el_db}.sapphire_class_roster_el
+                
+                ON  sapphire_class_roster_el.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_el.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_el.section_id    = student_sapphire_class_roster.section_id
+                
+            LEFT JOIN #{ms_db}.sapphire_class_roster_ms
+                
+                ON  sapphire_class_roster_ms.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_ms.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_ms.section_id    = student_sapphire_class_roster.section_id
+              
+            LEFT JOIN #{hs_db}.sapphire_class_roster_hs
+                
+                ON  sapphire_class_roster_hs.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_hs.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_hs.section_id    = student_sapphire_class_roster.section_id
+                
+            WHERE (
+                
+                sapphire_class_roster_el.primary_id IS NOT NULL
+                    OR
+                sapphire_class_roster_ms.primary_id IS NOT NULL
+                    OR
+                sapphire_class_roster_hs.primary_id IS NOT NULL
+                
+            )
+            AND active IS NOT TRUE"
+            
+        )
+        
+        pids.each{|pid|
+            
+            record = by_primary_id(pid)
+            record.field["active"].value = true
+            record.save
+            
+        } if pids
+        
+    end
+
+    def deactivate_classes
+        
+        el_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_EL"       ).data_base
+        ms_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_MS"       ).data_base
+        hs_db = $tables.attach("SAPPHIRE_CLASS_ROSTER_HS"       ).data_base
+        
+        ss_db = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER"  ).data_base
+        
+        pids = primary_ids(
+            
+            "LEFT JOIN #{el_db}.sapphire_class_roster_el
+                
+                ON  sapphire_class_roster_el.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_el.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_el.section_id    = student_sapphire_class_roster.section_id
+                
+            LEFT JOIN #{ms_db}.sapphire_class_roster_ms
+                
+                ON  sapphire_class_roster_ms.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_ms.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_ms.section_id    = student_sapphire_class_roster.section_id
+              
+            LEFT JOIN #{hs_db}.sapphire_class_roster_hs
+                
+                ON  sapphire_class_roster_hs.student_id    = student_sapphire_class_roster.student_id
+                AND sapphire_class_roster_hs.course_id     = student_sapphire_class_roster.course_id
+                AND sapphire_class_roster_hs.section_id    = student_sapphire_class_roster.section_id
+                
+            WHERE (
+                
+                sapphire_class_roster_el.primary_id IS NULL
+                    OR
+                sapphire_class_roster_ms.primary_id IS NULL
+                    OR
+                sapphire_class_roster_hs.primary_id IS NULL
+                
+            )
+            AND active IS NOT FALSE"
+            
+        )
+        
+        pids.each{|pid|
+            
+            record = by_primary_id(pid)
+            record.field["active"].value = false
+            record.save
+            
+        } if pids
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

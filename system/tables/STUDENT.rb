@@ -203,24 +203,21 @@ end
         
         #IDENTIFY NEWLY REINSTATED STUDENTS
         #MARK THEM APPROPRIATELY
-        #REMOVE OLD WITHDRAWAL INFORMATION
         
+        o_db = $tables.attach("K12_OMNIBUS").data_base
         pids = primary_ids(
-            
-            "WHERE active IS NOT TRUE
-            AND enrollmentstatus = 'Approved'
-            AND schoolenrolldate IS NOT NULL"
+            "LEFT JOIN #{o_db}.k12_omnibus ON k12_omnibus.student_id = student.student_id
+            WHERE k12_omnibus.student_id IS NOT NULL
+            AND k12_omnibus.enrollmentstatus = 'Approved'
+            AND k12_omnibus.schoolenrolldate IS NOT NULL
+            AND student.active IS NOT TRUE"
             
         )
         
         pids.each{|pid|
             
             record = by_primary_id(pid)
-            record.fields["active"             ].value = 1
-            record.fields["withdrawdate"       ].value = nil          
-            record.fields["schoolwithdrawdate" ].value = nil    
-            record.fields["transferring_to"    ].value = nil       
-            record.fields["withdrawreason"     ].value = nil        
+            record.fields["active"].value = 1      
             record.save
             
             sid = record.fields["student_id"].value

@@ -1,6 +1,19 @@
+def date = new Date().format("yyyy-MM-dd")
+
 /* CLASS ROSTER */
 for ( school in ["EL","MS","HS"] ) {
-
+    
+    def durations = "YR"
+    if (school == "EL"){
+        durations = "YR"; 
+    }
+    if (school == "MS"){
+        durations = "FY,S1"; 
+    }
+    if (school == "HS"){
+        durations = "YR,YS,S1,Q1"; 
+    }
+    
     loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "jhalverson", "tBM679p8a", "PAAGC", school, 2014);
     
     def params = [ 
@@ -8,6 +21,7 @@ for ( school in ["EL","MS","HS"] ) {
     "SCHOOL_ID"             : school,
     "REPORT_CATEGORY_ID"    : "1",
     "REPORT_CODE"           : "CLASS_ROSTER",
+    "DURATIONS"             : durations,
     "TEACHER_RID"           : "",
     "YR"                    : "",
     "COURSE_ID"             : "",
@@ -31,16 +45,12 @@ for ( school in ["EL","MS","HS"] ) {
 
     runReportAndSave("https://agora-sapphire.k12system.com/Gradebook/CMS/Reports/Reports/ClassRosterRpt.cfm",
         params,
-        "C:/Users/Parnassus/athena-sis/htdocs/athena_files/imports/sapphire_class_roster_${school.toLowerCase();}.csv"
+        "Q:/athena_files/imports/sapphire_class_roster_${school.toLowerCase();}.csv"
     )
-    
-    /* out << "\n${school} student_sapphire_class_roster load started"
 
-    def command = """ruby C:/Users/Parnassus/athena-sis/htdocs/athena/system/commands/load.rb student_sapphire_class_roster"""
+    def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_class_roster_${school.toLowerCase();}"""
     def proc    = command.execute()               
     proc.waitFor()  
-    
-    out << "${school} student_sapphire_class_roster load complete" */
 
     logout()
     
@@ -57,8 +67,8 @@ for ( school in ["EL","MS","HS"] ) {
     "REPORT_CATEGORY_ID"    : "3",
     "REPORT_CODE"           : "PERIOD_ATTEND_RPT",
     "SJC_REPORT_ID"         : "PERIOD_ATTEND_RPT",
-    "START_DATE"            : "2013-09-16",
-    "END_DATE"              : "2013-09-16",
+    "START_DATE"            : date,
+    "END_DATE"              : date,
     "GRADE_LEVEL"           : "",
     "STUDENT_IDS"           : "",
     "STATUS_FLG"            : "E",
@@ -68,19 +78,15 @@ for ( school in ["EL","MS","HS"] ) {
     ];
     
     out << params;
-    
-    out << "\n\n${school} REQUESTING REPORT\n\n"
 
     runReportAndSave("https://agora-sapphire.k12system.com/Gradebook/CMS/Reports/Reports/PeriodAttendRpt.cfm",
         params,
-        "C:/Users/Parnassus/athena-sis/htdocs/athena_files/imports/sapphire_period_attendance_${school.toLowerCase();}.csv"
+        "Q:/athena_files/imports/sapphire_period_attendance_${school.toLowerCase();}.csv"
     )
-    
-    /* out << "\n${school} REQUESTING LOAD\n"
 
-    def command = """ruby C:/Users/Parnassus/athena-sis/htdocs/athena/system/commands/load.rb sapphire_period_attendance_${school.toLowerCase();}"""
+    def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_period_attendance_${school.toLowerCase();}"""
     def proc    = command.execute()               
-    proc.waitFor()*/  
+    proc.waitFor() 
 
     logout()
     

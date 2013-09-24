@@ -188,8 +188,9 @@ end
                         record.save
                     end
                     
-                    mode    = student.attendance_mode.attendance_mode.value
-                    code    = mode.match(/Manual/) ? (mode.match(/(default p)/) ? "p" : "a") : "u"
+                    mode            = student.attendance_mode.attendance_mode.value
+                    procedure_type  = $tables.attach("ATTENDANCE_MODES").field_value("procedure_type", "WHERE mode = '#{mode}'")
+                    code            = procedure_type.match(/Manual/) ? (procedure_type.match(/(default p)/) ? "p" : "u") : "u"
                     
                     record  = student.attendance.new_record
                     record.fields["date"            ].value = eval_date

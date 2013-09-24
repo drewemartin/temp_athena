@@ -368,9 +368,11 @@ end
                 
                 if !record.fields["role"].value.nil?
                     record.fields["role"].value = record.fields["role"].value.gsub(
-                        "Middle School Teacher",    "MS - #{record.fields["role_details"].value}"
+                        "Teacher - Middle School",    "MS - #{record.fields["role_details"].value}"
                     ).gsub(
-                        "High School Teacher",      "HS - #{record.fields["role_details"].value}"
+                        "Teacher - High School",      "HS - #{record.fields["role_details"].value}"
+                    ).gsub(
+                        "Teacher - Elementary School","EL - #{record.fields["role_details"].value}"
                     )
                 else
                     record.fields["role"].value = "Role not Specified!! ELBERT!!!"
