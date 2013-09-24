@@ -9,7 +9,7 @@ class STUDENT_RELATE < Athena_Table
         @search_options          = nil
         @table_structure  = nil
         @blank_record     = nil
-        @existing_records = nil
+        #@existing_records = nil
         @params = {
             :sid          =>  nil,
             :team_id      =>  nil,
@@ -279,7 +279,12 @@ end
             
         end
         
-        @existing_records.delete("#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}") if @existing_records
+        unique_id = "#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}"
+        $db.query(
+            "DELETE from #{@temp_existing_records_table} WHERE unique_id = '#{unique_id}'",
+            data_base
+        )
+        #@existing_records.delete("#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}") if @existing_records
         
     end
     
@@ -335,68 +340,113 @@ end
     end
     
     def get_existing_records
+        
+        @temp_existing_records_table = "student_relate_#{@params[:source].gsub(" ","_")}#{$ifilestamp}"
+        $db.query(
+            "CREATE TABLE IF NOT EXISTS #{@temp_existing_records_table} (
+                unique_id text NOT NULL)",
+            data_base
+        )
+        
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("role",           "=", @params[:role          ]   ) )
         params.push( Struct::WHERE_PARAMS.new("source",         "=", @params[:source        ]   ) )
         where_clause = $db.where_clause(params)
-        select_sql =
-            "SELECT
+        #select_sql =
+        #    "SELECT
+        #        CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details, ''),source)
+        #    FROM #{data_base}.#{table_name}
+        #    #{where_clause}"
+        #@existing_records = $db.get_data_single(select_sql)
+        $db.query(
+            "INSERT INTO #{@temp_existing_records_table} (unique_id)
+            (SELECT
                 CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details, ''),source)
             FROM #{data_base}.#{table_name}
-            #{where_clause}"
-        @existing_records = $db.get_data_single(select_sql)
+            #{where_clause})",
+            data_base
+        )
     end
     
     def deactivate_existing_records
-        placeholder = "|record_string|"
-        select_sql =
-            "SELECT
-                primary_id
-            FROM #{data_base}.#{table_name}
-            WHERE CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details,''),source) = '|record_string|'"
-        if @existing_records
-            @existing_records.each{|record_string|
+        
+        pids = primary_ids(
+            "LEFT JOIN #{@temp_existing_records_table} ON unique_id = CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details,''),source)
+            WHERE unique_id IS NOT NULL
+            AND active IS TRUE"
+        )
+        
+        if pids
+            
+            puts start = Time.new
+            puts "Deactivating #{pids.length} records."
+            
+            pids.each{|pid|
                 
-                results = $db.get_data(select_sql.gsub(placeholder, "#{Mysql.quote(record_string)}"))
+                record = by_primary_id(pid)
+                record.fields["active"].value = false
+                record.save
                 
-                if results
-                    results.each{|result|
-                        primary_id  = result[0]
-                        record      = by_primary_id(primary_id)
-                        if record
-                            record.fields["active"].value = false
-                            if record.fields["role"].value == "Family Teacher Coach"
-                                
-                                sid      = record.fields["studentid"    ].value
-                                team_id  = record.fields["team_id"      ].value
-                                staff_id = record.fields["staff_id"     ].value
-                                
-                                if $db.get_data_single(
-                                    "SELECT primary_id
-                                    FROM #{data_base}.#{table_name}
-                                    WHERE studentid = '#{sid}'
-                                    AND team_id     != '#{team_id}'
-                                    AND staff_id    != '#{staff_id}'
-                                    AND role         = 'Family Teacher Coach'"
-                                )
-                                    
-                                    #THIS STUDENT HAS BEEN ASSIGNED TO A DIFFERENT FAMILY TEACHER COACH
-                                    #SO THEY SHOULD NOT BE INCLUDED IN PREVIOUS COACHES EVALUATION TOTALS
-                                    record.fields["eval_eligible_engagement" ].value = false
-                                    
-                                end
-                                
-                            end
-                            record.save
-                        else
-                            puts "Deactivation failed, primary_id not found: #{primary_id}"
-                        end
-                    }
-                else
-                    puts "Deactivation failed, record_string not found: #{record_string}"
-                end
-            } 
+            }
+            
+            puts "#{(Time.new - start)/60} minutes"
+            
         end
+        
+        $db.query(
+            "DROP TABLE #{@temp_existing_records_table}",
+            data_base
+        )
+        
+        #placeholder = "|record_string|"
+        #select_sql =
+        #    "SELECT
+        #        primary_id
+        #    FROM #{data_base}.#{table_name}
+        #    WHERE CONCAT(studentid,IFNULL(team_id, ''),staff_id,role,IFNULL(role_details,''),source) = '|record_string|'"
+        #if @existing_records
+        #    @existing_records.each{|record_string|
+        #        
+        #        results = $db.get_data(select_sql.gsub(placeholder, "#{Mysql.quote(record_string)}"))
+        #        
+        #        if results
+        #            results.each{|result|
+        #                primary_id  = result[0]
+        #                record      = by_primary_id(primary_id)
+        #                if record
+        #                    record.fields["active"].value = false
+        #                    if record.fields["role"].value == "Family Teacher Coach"
+        #                        
+        #                        sid      = record.fields["studentid"    ].value
+        #                        team_id  = record.fields["team_id"      ].value
+        #                        staff_id = record.fields["staff_id"     ].value
+        #                        
+        #                        if $db.get_data_single(
+        #                            "SELECT primary_id
+        #                            FROM #{data_base}.#{table_name}
+        #                            WHERE studentid = '#{sid}'
+        #                            AND team_id     != '#{team_id}'
+        #                            AND staff_id    != '#{staff_id}'
+        #                            AND role         = 'Family Teacher Coach'"
+        #                        )
+        #                            
+        #                            #THIS STUDENT HAS BEEN ASSIGNED TO A DIFFERENT FAMILY TEACHER COACH
+        #                            #SO THEY SHOULD NOT BE INCLUDED IN PREVIOUS COACHES EVALUATION TOTALS
+        #                            record.fields["eval_eligible_engagement" ].value = false
+        #                            
+        #                        end
+        #                        
+        #                    end
+        #                    record.save
+        #                else
+        #                    puts "Deactivation failed, primary_id not found: #{primary_id}"
+        #                end
+        #            }
+        #        else
+        #            puts "Deactivation failed, record_string not found: #{record_string}"
+        #        end
+        #    } 
+        #end
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -436,7 +486,7 @@ end
             end
             
         } if pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records if pids #THIS ONLY DEACTIVATES THEM IF THERE ARE ANY BECAUSE K12 RECENTLY DROPPED ALL 'FINDING YOUR PATH' COURSES
         
     end
@@ -470,7 +520,7 @@ end
             end
             
         } if pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
     
@@ -516,7 +566,7 @@ end
             end
             
         } if pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
     
@@ -549,7 +599,7 @@ end
                 active_record
             end         
         } if sids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
     
@@ -658,7 +708,7 @@ end
             end         
             
         } if sids && pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
 
@@ -686,7 +736,7 @@ end
             end         
             
         } if sids && pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
 
@@ -712,7 +762,7 @@ end
             end         
             
         } if sids && pids
-        puts "#{@existing_records.length} Remaining Records." if @existing_records
+        #puts "#{@existing_records.length} Remaining Records." if @existing_records
         deactivate_existing_records
     end
 
