@@ -223,6 +223,14 @@ end
             record.fields["withdrawreason"     ].value = nil        
             record.save
             
+            sid = record.fields["student_id"].value
+            
+            attendance_mode_record = $tables.attach("student_attendance_mode").by_studentid(sid)
+            if attendance_mode_record
+                attendance_mode_record.fields["attendance_mode"].value = "Synchronous"
+                attendance_mode_record.save
+            end
+            
         } if pids
         
     end
