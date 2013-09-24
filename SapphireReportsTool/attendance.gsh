@@ -51,7 +51,7 @@ for ( school in ["EL","MS","HS"] ) {
     def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_class_roster_${school.toLowerCase();}"""
     def proc    = command.execute()               
     proc.waitFor()  
-
+    
     logout()
     
 }
