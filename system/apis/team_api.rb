@@ -4,11 +4,11 @@ class Team_API
     
     #---------------------------------------------------------------------------
     def initialize(team_id = nil)
-        @structure  = nil
-        @team_id    = team_id
-        @where      = " WHERE team_id = '#{@team_id}'"
+        @structure              = nil
+        @team_id                = team_id
+        @where                  = " WHERE team_id = '#{@team_id}'"
         define_accessor_methods
-        verify_requirements
+        verify_requirements     if self.exists?
     end
     #---------------------------------------------------------------------------
    

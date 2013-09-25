@@ -32,7 +32,7 @@ class Init < Base
                 table.init_primary_pre_reqs
                 @init_primary_pre_reqs = true
             end
-            puts "Init started at #{time_str(start)} -> #{table.table_name}"
+            puts "Init started at #{time_str(start)} -> #{table.data_base}.#{table.table_name}"
             table.init
             puts "Init completed in #{(Time.new - start)/60} minutes"
             puts ">-------------------------------------------------------->"
