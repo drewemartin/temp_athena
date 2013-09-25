@@ -275,6 +275,7 @@ end
             event_students_button   = $tools.button_new_csv(
                 csv_name                = "test_event_students",
                 additional_params_str   = test_event_id,
+                send_field_name         = nil,
                 button_title            = "Students Report"
             )
             

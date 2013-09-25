@@ -49,6 +49,23 @@ end
             "This report includes all Athena Projects."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_athena_project.is_true?
         
+        #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
+        tables_array.push([
+            $tools.button_new_csv("attendance_consecutive_absences", additional_params_str = nil, send_field_names = "consecutive_days,consecutive_target_date")+
+            $field.new("type"=>"date","value"=>$base.yesterday.iso_date).web.select(:label_option=>"Target Date",:add_class=>"no_save",:field_id=>"consecutive_target_date",:field_name=>"consecutive_target_date",:dd_choices=>school_days_dd)+
+            $field.new("type"=>"int", "value"=>"1"                     ).web.select(:label_option=>"Consecutive Absences",:add_class=>"no_save",:field_id=>"consecutive_days",:field_name=>"consecutive_days",:dd_choices=>[{:name=>"1",:value=>"1"},{:name=>"2",:value=>"2"},{:name=>"5",:value=>"5"},{:name=>"9",:value=>"9"}]),
+            "Attendance Consecutive Absences",
+            "This report includes students with the number of selected unexcused absences relative to the selected target school date."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_consecutive_absences.is_true?
+        
+        #ATTENDANCE ACTIVITY
+        tables_array.push([
+            $tools.button_new_csv("attendance_activity", additional_params_str = nil, send_field_names = "date_attendance_activity")+
+            $field.new("type"=>"date","value"=>$base.yesterday.iso_date).web.select(:label_option=>"Date",:add_class=>"no_save",:field_id=>"date_attendance_activity",:field_name=>"date_attendance_activity",:dd_choices=>school_days_dd),
+            "Attendance Activity",
+            "This report includes all activity for the selected schoolday."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_activity.is_true?
+        
         #ATTENDANCE MASTER
         tables_array.push([
             $tools.button_new_csv("attendance_master", additional_params_str = nil),
@@ -287,6 +304,146 @@ end
         ]
         
         results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_attendance_consecutive_absences(options = nil)
+        
+        codes       = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'unexcused'", {:value_only=>true})
+        codes_str   = "'#{codes.join("','")}'"
+        
+        target_date = $kit.params[:consecutive_target_date]
+        target_date = $base.yesterday.iso_date if target_date == ""
+        
+        x =  $kit.params[:consecutive_days].to_i
+        x += 1 if $school.school_days(target_date).length > x
+        
+        return false if $school.school_days(target_date).length < x
+        
+        prev_x_schooldays = $school.school_days(target_date).slice(-x, x)
+        
+        where_str = String.new
+        
+        headers =
+        [
+            
+            "Student ID",
+            "First Name",
+            "Last Name"
+            
+        ]
+        
+        prev_x_schooldays.each_with_index do |school_day,i|
+            
+            if i==0 && $school.school_days(target_date).length > x
+                
+                where_str << "(`code_#{school_day}` NOT IN(#{codes_str}) OR `code_#{school_day}` IS NULL) "
+                
+            else
+                
+                where_str << "`code_#{school_day}` IN(#{codes_str}) "
+                
+                headers.insert(-1,school_day)
+                
+            end
+            
+            where_str << "AND " if i != prev_x_schooldays.length-1
+            
+        end if prev_x_schooldays
+        
+        sam_db   = $tables.attach("student_attendance_master").data_base
+        s_db     = $tables.attach("student").data_base
+        
+        if $school.school_days(target_date).length > x
+            
+            school_days_sql = prev_x_schooldays[1..-1].map{|x| "`code_" + x + "`"}.join(",")
+            
+        else
+            
+            school_days_sql = prev_x_schooldays.map{|x| "`code_" + x + "`"}.join(",")
+            
+        end
+        
+        sql_str = String.new
+        sql_str << "
+        SELECT
+            student.student_id,
+            student.studentfirstname,
+            student.studentlastname,
+            #{school_days_sql}
+            
+        FROM #{sam_db}.student_attendance_master
+        LEFT JOIN #{s_db}.student
+        ON #{s_db}.student.student_id = #{sam_db}.student_attendance_master.student_id
+        WHERE #{where_str}
+        ORDER BY student_id DESC
+        "
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_attendance_activity(options = nil)
+        
+        headers =
+        [
+            
+            "Student ID",
+            "Date",
+            "Source",
+            "Period",
+            "Class",
+            "Code",
+            "Team ID",
+            "Team Name",
+            "Logged",
+            "Created Date"
+            
+        ]
+        
+        saa_db   = $tables.attach("student_attendance_activity").data_base
+        t_db     = $tables.attach("team").data_base
+        tsids_db = $tables.attach("team_sams_ids").data_base
+        
+        date = $kit.params[:date_attendance_activity]
+        
+        sql_str = String.new
+        sql_str << "
+        SELECT
+            student_id,
+            date,
+            source,
+            period,
+            class,
+            code,
+            team_id,
+            CONCAT(legal_first_name, ' ', legal_last_name),
+            logged,
+            student_attendance_activity.created_date
+        FROM #{saa_db}.student_attendance_activity
+        LEFT JOIN #{t_db}.team
+        ON #{t_db}.team.primary_id = #{saa_db}.student_attendance_activity.team_id
+        WHERE date = '#{date}'
+        ORDER BY student_id DESC
+        "
+        
+        results = $db.get_data(sql_str)
+        
         if results
             return results.insert(0, headers)
             
@@ -1747,6 +1904,23 @@ end
         }
         
         return code_sql_string
+        
+    end
+    
+    def school_days_dd
+        
+        addable_days_dd     = Array.new
+        
+        addable_days = $school.school_days($base.yesterday.iso_date, "DESC") || []
+        
+        if !addable_days.empty?
+            addable_days.each do |day|
+                addable_days_dd << {:name=>"#{Date.parse(day).strftime('%m/%d/%Y')}",:value=>day}
+            end
+            return addable_days_dd
+        else
+            return false
+        end
         
     end
 
