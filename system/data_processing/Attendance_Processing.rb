@@ -20,7 +20,7 @@ class Attendance_Processing
 
     def finalize
         
-        @finalize_code  = "u"#student_attendance_master_field.value
+        @finalize_code  = student_attendance_record.fields["official_code"].value
         
         #if @sid != "1291086"
             

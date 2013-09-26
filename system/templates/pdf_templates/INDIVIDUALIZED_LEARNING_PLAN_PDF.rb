@@ -110,8 +110,7 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
             table_array.push(
                 
                 headers = [
-                    "Conference Date",
-                    "Notes"
+                    "Conference Date"
                 ]
                 
             )
@@ -120,7 +119,6 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
                 
                 row_array = Array.new
                 row_array.push(record.fields["datetime" ].to_user)
-                row_array.push(record.fields["notes"    ].to_user)
                 
                 table_array.push(row_array)
                 
