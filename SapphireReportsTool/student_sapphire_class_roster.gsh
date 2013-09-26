@@ -45,11 +45,16 @@ for ( school in ["EL","MS","HS"] ) {
         params,
         "Q:/athena_files/imports/student_sapphire_class_roster.csv"
     )
-
+    
+    logout()
+    
     def command_2 = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb student_sapphire_class_roster"""
     def proc_2    = command_2.execute()               
     proc_2.waitFor()
     
-    logout()
-    
 }
+
+def command_2 = """ruby Q:/athena-sis/htdocs/athena/system/commands/after_load.rb student_sapphire_class_roster"""
+def proc_2    = command_2.execute()               
+proc_2.waitFor()
+    
