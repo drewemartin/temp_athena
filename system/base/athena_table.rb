@@ -1549,6 +1549,10 @@ def x______________TABLE_MAINTENANCE
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_load(a={})
+        find_and_trigger_event(event_type = :after_load, args = a[:after_load])
+    end
+    
     def backup(audit_backup=nil, structured_order=nil)
         
         if audit_backup
