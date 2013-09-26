@@ -281,7 +281,7 @@ end
         
         unique_id = "#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}"
         $db.query(
-            "DELETE from #{@temp_existing_records_table} WHERE unique_id = '#{unique_id}'",
+            "DELETE from #{@temp_existing_records_table} WHERE unique_id = '#{Mysql.quote(unique_id)}'",
             data_base
         )
         #@existing_records.delete("#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}") if @existing_records
