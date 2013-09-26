@@ -6,7 +6,7 @@ class STUDENT_SAPPHIRE_CLASS_ROSTER < Athena_Table
     #---------------------------------------------------------------------------
     def initialize()
         super()
-        @table_structure = nil
+        @table_structure    = nil
     end
     #---------------------------------------------------------------------------
    
@@ -22,7 +22,11 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     def after_load_student_sapphire_class_roster
-        set_active_status
+        
+        if caller.find{|x|x.match(/after_load/i)}
+            set_active_status
+        end
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -112,7 +116,11 @@ end
             
         }
         
-        if pids = primary_ids
+        if pids = primary_ids(
+            "LEFT JOIN zz_#{table_name} ON zz_#{table_name}.modified_pid = #{table_name}.primary_id
+            WHERE created_date BETWEEN SUBDATE(CURRENT_TIMESTAMP, 1) AND CURRENT_TIMESTAMP
+            OR modified_date BETWEEN SUBDATE(CURRENT_TIMESTAMP, 1) AND CURRENT_TIMESTAMP"
+        )
             
             pids.each{|pid|
                 
