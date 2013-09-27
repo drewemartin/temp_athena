@@ -21,6 +21,21 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field(field_obj)
+        
+        record          = by_primary_id(field_obj.primary_id)
+        
+        start_time      = record.fields["start_time"        ]
+        end_time        = record.fields["end_time"          ]
+        time_frame      = (start_time.value&&end_time.value ? "#{start_time.to_user} to #{end_time.to_user}" : "")
+        description     = "#{record.fields["period_decription" ].value} #{time_frame}"
+        
+        ilp_type_record = $tables.attach("ILP_ENTRY_TYPE").record("WHERE name = '#{record.fields["period_code"].value}'")
+        ilp_type_record.fields["default_description"].value = description
+        ilp_type_record.save
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
