@@ -822,16 +822,18 @@ end
         return button_html
     end
     
-    def button_new_csv(csv_name, additional_params_str = nil, csv_title = "Download")
+    def button_new_csv(csv_name, additional_params_str = nil, send_field_names = nil, csv_title = "Download")
         
         params_str      = additional_params_str ? "ARGV#{additional_params_str}" : ""
         button_html     = String.new
         
         this_id         = "new_csv_#{csv_name}_I_#{@csv_iterator}"
+        send_id         = "#{this_id}"
+        send_id        << ",#{send_field_names}" if send_field_names
         @csv_iterator   +=1
         
         button_html << "<input id='#{this_id}' name='new_csv' value='#{csv_name+params_str}' type='hidden'>"
-        button_html << "<button name='new_csv_button' class='new_csv_button' id='new_csv_button' onclick=\"get_new_download('#{this_id}');\">#{csv_title}</button>"
+        button_html << "<button name='new_csv_button' class='new_csv_button' id='new_csv_button' onclick=\"get_new_download('#{send_id}');\">#{csv_title}</button>"
         
         return button_html
     end

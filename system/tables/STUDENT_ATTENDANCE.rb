@@ -211,6 +211,12 @@ end
         sids = $tables.attach("k12_withdrawal").students_with_records
         sids.each{|sid|
             
+            attendance_mode_record = $tables.attach("student_attendance_mode").by_studentid(sid)
+            if attendance_mode_record
+                attendance_mode_record.fields["attendance_mode"].value = "Withdrawn"
+                attendance_mode_record.save
+            end
+            
             wd_effective_date = $tables.attach("k12_withdrawal").by_studentid_old(sid).fields["schoolwithdrawdate"].value
             records = $tables.attach("student_attendance").records("WHERE date >= '#{wd_effective_date}' AND student_id = '#{sid}'")
             records.each{|record|
@@ -229,7 +235,7 @@ end
                     att_mast_record.save
                 end
             end
-        }
+        } if sids
         
     end
     
