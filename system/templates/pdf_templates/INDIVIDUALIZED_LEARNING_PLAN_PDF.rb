@@ -198,7 +198,7 @@ end
         ftc         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
         
         hr_record  = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
-        hr         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
+        hr         = (hr_record ? hr_record[0].fields["team_id"].to_name(:full_name) : "")
         
         @pdf.table [
             
