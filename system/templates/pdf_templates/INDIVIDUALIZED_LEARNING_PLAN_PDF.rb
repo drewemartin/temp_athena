@@ -197,6 +197,9 @@ end
         ftc_record  = @student.relate.existing_records("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
         ftc         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
         
+        hr_record  = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
+        hr         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
+        
         @pdf.table [
             
             [
@@ -226,8 +229,8 @@ end
             [
                 "<b>Enroll Date:</b>",
                 @student.schoolenrolldate.to_user,
-                "<b>Cohort Year:</b>",
-                "#{@student.cohort_year.value}",
+                "<b>Homeroom Teacher:</b>",
+                hr
             ]
             
         ],

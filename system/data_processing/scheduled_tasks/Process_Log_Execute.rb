@@ -10,7 +10,7 @@ class Process_Log_Execute < Base
     def execute_processes
         
         rows = $tables.attach("Process_Log").by_status("NULL")
-        rows.each do |row|
+        rows.shift(1).each do |row|
             
             fields          = row.fields
             
