@@ -57,9 +57,11 @@ class Attendance_Processing
                     
                 when "Classroom Activity (50% or more)"
                     
-                    if classrooms_total && classrooms_total.length > 0
+                    tot = classrooms_total
+                    if tot && tot.length > 0
                         
-                        if (active = classrooms_active).length > 0
+                        active = classrooms_active
+                        if active && active.length > 0
                             @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
                         else
                             @finalize_code = "u"
@@ -76,6 +78,14 @@ class Attendance_Processing
                         raise "MODE CHANGE"
                         
                     end
+                    
+                when "Manual (default p)"
+                    
+                    @finalize_code = "p"
+                    
+                when "Manual (default u)"
+                    
+                    @finalize_code = "u"
                     
                 when "Not Enrolled"
                     
