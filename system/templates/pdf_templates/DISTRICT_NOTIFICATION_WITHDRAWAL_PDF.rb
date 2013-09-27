@@ -97,18 +97,20 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
       districts_index += 1
       
       #RENDER  AND ZIP THE RESULTS - district_batch_pdf
-      district_batch_pdf_path = $reports.save_document({
-          :pdf             => district_batch_pdf,
-          :category_name   => "Withdrawals",
-          :type_name       => "District Withdrawal Notification - By District",
-          :document_relate => [
-              {
-                  :table_name      => "DISTRICTS_AUN",
-                  :key_field       => "aun",
-                  :key_field_value => $tables.attach("districts_aun").find_field("aun","WHERE name='#{district}'").value
-              }
-          ]
-      })
+      if district_aun = $tables.attach("districts_aun").find_field("aun","WHERE name='#{district}'")
+        district_batch_pdf_path = $reports.save_document({
+            :pdf             => district_batch_pdf,
+            :category_name   => "Withdrawals",
+            :type_name       => "District Withdrawal Notification - By District",
+            :document_relate => [
+                {
+                    :table_name      => "DISTRICTS_AUN",
+                    :key_field       => "aun",
+                    :key_field_value => district_aun.value
+                }
+            ]
+        })
+      end
       
       email_name = "#{district}_#{$ifilestamp}.pdf"
       att_path   = district_batch_pdf_path
