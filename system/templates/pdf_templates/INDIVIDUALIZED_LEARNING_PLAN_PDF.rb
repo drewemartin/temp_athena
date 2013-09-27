@@ -196,7 +196,7 @@ end
         
         hr_gs_label     = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Guidance Couselor:</b>" : "<b>Homeroom Teacher:</b>"
         hr_gs_record    = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
-        hr_gs           = @student.grade.match(/9th|10th|11th|12th/) ? (hr_record ? hr_record[0].fields["team_id"].to_name(:full_name) : "") : @student.studentfirstname.value
+        hr_gs           = @student.grade.match(/9th|10th|11th|12th/) ? (hr_gs_record ? hr_gs_record[0].fields["team_id"].to_name(:full_name) : "") : @student.primaryteacher.value
         
         hs_hr_label     = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Homeroom Teacher:</b>" : ""
         hs_hr_record    = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
