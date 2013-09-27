@@ -191,12 +191,13 @@ end
             :border_colors      => "AED0EA"
         }
         
-        gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor' AND active IS TRUE")
-        gc          = (gc_record ? gc_record[0].fields["team_id"].to_name(:full_name) : "")
+        #gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor' AND active IS TRUE")
+        #gc          = (gc_record ? gc_record[0].fields["team_id"].to_name(:full_name) : "")
         
         ftc_record  = @student.relate.existing_records("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
         ftc         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
         
+        hr_label    = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Guidance Couselor:</b>" : "<b>Homeroom Teacher:</b>"
         hr_record  = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
         hr         = (hr_record ? hr_record[0].fields["team_id"].to_name(:full_name) : "")
         
@@ -223,14 +224,14 @@ end
             [
                 "<b>Grade Level:</b>",
                 "#{@student.grade.value.gsub(" Grade","")}",
-                "<b>Counselor:</b>",
-                gc
+                hr_label,
+                hr
             ],
             [
                 "<b>Enroll Date:</b>",
                 @student.schoolenrolldate.to_user,
-                "<b>Homeroom Teacher:</b>",
-                hr
+                "",
+                ""
             ]
             
         ],
