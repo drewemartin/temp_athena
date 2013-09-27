@@ -191,15 +191,16 @@ end
             :border_colors      => "AED0EA"
         }
         
-        #gc_record   = @student.relate.existing_records("WHERE role = 'Guidance Couselor' AND active IS TRUE")
-        #gc          = (gc_record ? gc_record[0].fields["team_id"].to_name(:full_name) : "")
+        ftc_record      = @student.relate.existing_records("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
+        ftc             = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
         
-        ftc_record  = @student.relate.existing_records("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
-        ftc         = (ftc_record ? ftc_record[0].fields["team_id"].to_name(:full_name) : "")
+        hr_gs_label     = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Guidance Couselor:</b>" : "<b>Homeroom Teacher:</b>"
+        hr_gs_record    = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
+        hr_gs           = (hr_record ? hr_record[0].fields["team_id"].to_name(:full_name) : "")
         
-        hr_label    = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Guidance Couselor:</b>" : "<b>Homeroom Teacher:</b>"
-        hr_record  = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
-        hr         = (hr_record ? hr_record[0].fields["team_id"].to_name(:full_name) : "")
+        hs_hr_label     = @student.grade.match(/9th|10th|11th|12th/) ? "<b>Homeroom Teacher:</b>" : ""
+        hs_hr_record    = @student.relate.existing_records("WHERE role = 'Homeroom Teacher' AND active IS TRUE")
+        hs_hr           = (hs_hr_record ? hs_hr_record[0].fields["team_id"].to_name(:full_name) : "")
         
         @pdf.table [
             
@@ -224,14 +225,14 @@ end
             [
                 "<b>Grade Level:</b>",
                 "#{@student.grade.value.gsub(" Grade","")}",
-                hr_label,
-                hr
+                hr_gs_label,
+                hr_gs
             ],
             [
                 "<b>Enroll Date:</b>",
                 @student.schoolenrolldate.to_user,
-                "",
-                ""
+                hs_hr_label,
+                hs_hr
             ]
             
         ],
