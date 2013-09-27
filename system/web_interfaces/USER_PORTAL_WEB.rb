@@ -270,17 +270,19 @@ end
         
         dlg_string << "<div id='student_search_fields'>"
         searchable_fields = [
-            "student_id:Student ID",
-            "studentfirstname:First Name",
-            "studentlastname:Last Name",
-            "familyid:Family ID",
-            "grade:Grade"
+            "student_id:Student ID:text",
+            "studentfirstname:First Name:text",
+            "studentlastname:Last Name:text",
+            "familyid:Family ID:text",
+            "grade:Grade:text",
+            "active:Active:checkbox"
         ]
         fields = $tables.attach("STUDENT").new_row.fields
         searchable_fields.each{|field_details|
             field_name      = field_details.split(":")[0]
             label           = field_details.split(":")[1]
-            dlg_string      << fields[field_name].web.text(:search=>true, :label_option=>"#{label}:")
+            field_type      = field_details.split(":")[2]
+            dlg_string      << fields[field_name].web.send(field_type,{:search=>true, :label_option=>"#{label}:"})
             html_field_id   = fields[field_name].web.field_id(:search=>true)
             search_params   << (search_params.empty? ? html_field_id : ",#{html_field_id}")
         }
