@@ -349,7 +349,7 @@ end
         process_attendance(obj)
     end
     
-    def DISABLED_after_insert(obj)
+    def after_insert(obj)
         process_attendance(obj)
     end
     
