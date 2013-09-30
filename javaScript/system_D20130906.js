@@ -392,7 +392,11 @@ function send(post_params, preCallback, callback){
 	
 	if (wait == true){
 		
-		setTimeout(function(){send(post_params, preCallback, callback)},200)
+		if(pleaseSaveIds.length != 0  || post_params != ""){
+			
+			setTimeout(function(){send(post_params, preCallback, callback)},200)
+			
+		}
 		
 	}else{
 		
@@ -404,9 +408,14 @@ function send(post_params, preCallback, callback){
 			
 		}
 		
-		//updateMessageBox("");
+		var add_comma = ""
+		if (post_params != "" && pleaseSaveIds.length > 1){
+			
+			add_comma = ","
+			
+		}
 		
-		var data = postString(post_params)
+		var data = postString(post_params+add_comma+pleaseSaveIds.join())
 		
 		if (preCallback != undefined){
 			
@@ -446,7 +455,7 @@ function send(post_params, preCallback, callback){
 					
 				}else if(textStatus == "error" && errorThrown == "Internal Server Error") {
 					
-					alert_message += "Your request seems to have caused an unexpected error.<br>Don't worry, it's not your fault, but if you were just making changes, they may not have saved correctly.<br>Please refresh this page, and try again in a few minutes.<br>If this error persists, please notify the system administrators using the link provided below, so the error may be corrected as soon as possible."
+					alert_message += "Your request seems to have caused an unexpected error.<br>Please refresh this page, and try again in a few minutes.<br>If this error persists, please notify the system administrators using the button provided below, so the error may be corrected as soon as possible."
 					
 				}else if(textStatus == "timeout"){
 					
@@ -1052,8 +1061,7 @@ function saveTimer(){
 	
 	if (pleaseSaveIds.length > 0){
 		
-		send(pleaseSaveIds.join())
-		pleaseSaveIds = []
+		send("", "pleaseSaveIds = []")
 		
 	}
 	
@@ -1114,11 +1122,10 @@ function send_unsaved(send_trigger){
 	
 	var saveIds    	 = pleaseSaveIds.join()
 	focusedElementId = [];
-	pleaseSaveIds    = [];
 	
 	if (send_bool==true && saveIds != ""){
 		wait = false;
-		send(saveIds)
+		send("", "pleaseSaveIds = []")
 		
 	}else if (send_bool==false && saveIds != ""){
 		
@@ -1382,6 +1389,7 @@ function x___________________JQUERY_UI_DIALOGS(){}
 				$(this).dialog("option", "position", ["center",dialog_Ypos()]);
 				$(".ui-dialog-titlebar-close", ui.dialog).hide();
 				$(this).html(message);
+				$(this).css("height", "auto");
 				
 			},
 			buttons		: {
@@ -1466,7 +1474,7 @@ function x___________________UNSORTED(){}
 		$(function () {
 			
 			window.onbeforeunload = function() {
-				if (pleaseSaveIds.length > 0) {
+				if (pleaseSaveIds.length > 0 || wait == true) {
 					return "You may lose some unsaved changes...";
 				};
 			};
@@ -1915,7 +1923,7 @@ function x___________________UNSORTED(){}
 								}
 							});
 							if (field_ids){
-								send("student_id,sid," + field_ids)
+								send_covered("student_id,sid," + field_ids)
 								$(this).html(spinner())
 								$(this).dialog( "close" );
 								$(window).scrollTop(0);
@@ -1970,7 +1978,7 @@ function x___________________UNSORTED(){}
 						);
 						
 						if (field_ids){
-							send(field_ids)
+							send_covered(field_ids)
 							$(this).dialog( "close" );
 							$(window).scrollTop(0);
 						}
