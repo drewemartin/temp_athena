@@ -241,10 +241,16 @@ end
         
         headers.push("Test Type")
         headers.push("Test Event")
+        headers.push("Test Subject")   if !section_name.match(/aims/)
+        headers.push("Check In Date")  if !section_name.match(/aims/)
+        headers.push("Serial Number")  if !section_name.match(/aims/)
         headers.push("Completed Date")
         headers.push("Test Administrator") if test_admin_dd
         headers.push("Test Event Site")
         headers.push("Test Results")
+        headers.push("Assigned")       if !section_name.match(/aims/)
+        headers.push("Drop Off Info")  if !section_name.match(/aims/)
+        headers.push("Pick Up Info")   if !section_name.match(/aims/)
         
         tables_array.push(headers)
         
@@ -254,6 +260,9 @@ end
             
             row.push(test.fields["test_id"              ].web.select(:dd_choices=>test_types_dd,  :disabled=>true) )  
             row.push(test.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd, :disabled=>true) )  
+            row.push(test.fields["test_subject_id"      ].web.select(:dd_choices=>test_subjects_dd(test.fields["test_id"].value)) ) if !section_name.match(/aims/)    
+            row.push(test.fields["checked_in"           ].web.default() )                                                           if !section_name.match(/aims/)
+            row.push(test.fields["serial_number"        ].web.text() )                                                              if !section_name.match(/aims/)
             row.push(test.fields["completed"            ].web.default() )            
             row.push(test.fields["test_administrator"   ].web.select({:dd_choices=>test_admin_dd}) )   if test_admin_dd #ELSE NO STAFF ASSIGNED
             row.push(test.fields["test_event_site_id"   ].web.select({:dd_choices=>$dd.test_events.event_sites(test.fields["test_event_id"].value)}, true) )  
@@ -263,6 +272,10 @@ end
             else
                 row.push(test.fields["test_results"     ].web.default() )
             end
+            
+            row.push(test.fields["assigned"             ].web.default() ) if !section_name.match(/aims/)
+            row.push(test.fields["drop_off"             ].web.default() ) if !section_name.match(/aims/)          
+            row.push(test.fields["pick_up"              ].web.default() ) if !section_name.match(/aims/)
             
             tables_array.push(row)
             
