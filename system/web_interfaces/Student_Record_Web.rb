@@ -437,7 +437,7 @@ end
             
             t = $team.by_sams_id(record.fields["staff_id"].value)
             if t
-                team_email_addresses.push(t.preferred_email.value)
+                team_email_addresses.push(t.preferred_email.value) if !team_email_addresses.include?(t.preferred_email.value)
             end 
             
         } if team_records
