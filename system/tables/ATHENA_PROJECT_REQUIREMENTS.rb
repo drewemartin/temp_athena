@@ -53,9 +53,17 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["project_id"   ] = {"data_type"=>"int",  "file_field"=>"project_id"    } if field_order.push("project_id")
-            structure_hash["fields"]["requirement"  ] = {"data_type"=>"text", "file_field"=>"requirement"   } if field_order.push("requirement")
-            structure_hash["fields"]["phase"        ] = {"data_type"=>"int",  "file_field"=>"phase"         } if field_order.push("phase")
+            structure_hash["fields"]["project_id"               ] = {"data_type"=>"int",  "file_field"=>"project_id"            } if field_order.push("project_id"              )
+            structure_hash["fields"]["requirement"              ] = {"data_type"=>"text", "file_field"=>"requirement"           } if field_order.push("requirement"             )
+            structure_hash["fields"]["phase"                    ] = {"data_type"=>"int",  "file_field"=>"phase"                 } if field_order.push("phase"                   )
+            structure_hash["fields"]["automated_process"        ] = {"data_type"=>"bool", "file_field"=>"automated_process"     } if field_order.push("automated_process"       )
+            structure_hash["fields"]["pdf_template"             ] = {"data_type"=>"bool", "file_field"=>"pdf_template"          } if field_order.push("pdf_template"            )
+            structure_hash["fields"]["process_improvement"      ] = {"data_type"=>"bool", "file_field"=>"process_improvement"   } if field_order.push("process_improvement"     )
+            structure_hash["fields"]["report"                   ] = {"data_type"=>"bool", "file_field"=>"report"                } if field_order.push("report"                  )
+            structure_hash["fields"]["system_interface"         ] = {"data_type"=>"bool", "file_field"=>"system_interface"      } if field_order.push("system_interface"        )
+            structure_hash["fields"]["user_interface"           ] = {"data_type"=>"bool", "file_field"=>"user_interface"        } if field_order.push("user_interface"          )
+            structure_hash["fields"]["change"                   ] = {"data_type"=>"bool", "file_field"=>"change"                } if field_order.push("change"                  )
+            structure_hash["fields"]["priority"                 ] = {"data_type"=>"text", "file_field"=>"priority"              } if field_order.push("priority"                )
             
         structure_hash["field_order"] = field_order
         
