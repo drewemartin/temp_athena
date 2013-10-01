@@ -24,6 +24,7 @@ end
     def after_load_sapphire_period_attendance_el
      
         $base.queue_process("ATTENDANCE_LOG", "sapphire_period_attendance", "EL")
+        $tables.attach("DAILY_ATTENDANCE_LOG").log_completed($idate, "sapphire_period_attendance_el")
         
     end
     

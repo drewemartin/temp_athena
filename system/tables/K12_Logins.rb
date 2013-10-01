@@ -48,10 +48,16 @@ end
     
     def after_load_k12_logins
         
-        $base.process("ATTENDANCE_LOG").k12_logins_students
-        $base.process("ATTENDANCE_LOG").k12_logins_learning_coaches
+        eval_date = ($instance_DateTime - 1).strftime("%Y-%m-%d")
         
-        $tables.attach("STUDENT_ATTENDANCE").create_new_attendance_records
+        $base.process("ATTENDANCE_LOG").k12_logins_students
+        $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins")
+        
+        $base.process("ATTENDANCE_LOG").k12_logins_learning_coaches
+        $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins_lc")
+        
+        $tables.attach("STUDENT_ATTENDANCE").create_new_attendance_records(eval_date)
+        $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "completed")
         
     end
     
