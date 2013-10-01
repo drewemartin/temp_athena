@@ -51,6 +51,13 @@ end
         
         #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
         tables_array.push([
+            $tools.button_new_csv("attendance_by_code", additional_params_str = nil),
+            "Attendance By Code",
+            "This report includes all a code breakdown for all schooldays that have attendance marked."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_master.is_true?
+        
+        #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
+        tables_array.push([
             $tools.button_new_csv("attendance_consecutive_absences", additional_params_str = nil, send_field_names = "consecutive_days,consecutive_target_date")+
             $field.new("type"=>"date","value"=>$base.yesterday.iso_date).web.select(:label_option=>"Target Date",:add_class=>"no_save",:field_id=>"consecutive_target_date",:field_name=>"consecutive_target_date",:dd_choices=>school_days_dd)+
             $field.new("type"=>"int", "value"=>"1"                     ).web.select(:label_option=>"Consecutive Absences",:add_class=>"no_save",:field_id=>"consecutive_days",:field_name=>"consecutive_days",:dd_choices=>[{:name=>"1",:value=>"1"},{:name=>"2",:value=>"2"},{:name=>"5",:value=>"5"},{:name=>"9",:value=>"9"}]),
@@ -304,6 +311,81 @@ end
         ]
         
         results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_attendance_by_code
+        
+        headers =
+        [
+            "Date",
+            "(me) excused - medical",
+            "(e) excused",
+            "(t) excused - technical",
+            "(p) present",
+            "(pap) present - academic plan",
+            "(pr) present - requested",
+            "(pt) present - test event",
+            "(ur) unexcused - requested",
+            "(u) unexcused",
+            "(uap) unexcused - academic plan",
+            "(ut) unexcused - test event",
+            "total enrolled"
+        ]
+        
+        sql_str =
+        "SELECT
+            student_attendance.date,
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'me'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'e'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 't'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'p'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'pap'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'pr'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'pt'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'ur'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'u'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'uap'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code = 'ut'
+            ),
+            (
+               SELECT COUNT(student_id) FROM student_attendance WHERE student_attendance.date = school_days.date AND official_code IS NOT NULL
+            )
+            
+        FROM `student_attendance`
+        LEFT JOIN school_days ON school_days.date = student_attendance.date
+        GROUP BY student_attendance.date"
+        
+        results = $db.get_data(sql_str)
+        
         if results
             return results.insert(0, headers)
             
