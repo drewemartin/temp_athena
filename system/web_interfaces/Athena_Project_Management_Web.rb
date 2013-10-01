@@ -26,11 +26,11 @@ end
     def load
         
         tabs = Array.new
-        tabs.push(["Systems",         load_tab_1]                                                           )
-        tabs.push(["Projects",        "Please Select the 'Projects' link in the 'Systems' tab."     ]       )
+        tabs.push(["Systems",         load_tab_1])
+        tabs.push(["Projects",        load_tab_2])
         tabs.push(["Requirements",    "Please Select the 'Requirements' link in the 'Projects' tab." ]       )
         tabs.push(["Specifications",  "Please Select the 'Specs' link in the 'Requirements' tab."   ]       )
-        tabs.push(["Bugs",            load_tab_5]                                                           )
+        tabs.push(["Bugs",            load_tab_5])
         
         $kit.tools.tabs(tabs,0)
         
@@ -140,7 +140,7 @@ end
             
         ]
      
-        pids = $tables.attach("ATHENA_PROJECT").primary_ids("WHERE system_id = '#{system_id}'")
+        pids = $tables.attach("ATHENA_PROJECT").primary_ids#("WHERE system_id = '#{system_id}'")
         pids.each{|pid|
             
             record              = $tables.attach("ATHENA_PROJECT").by_primary_id(pid)
@@ -163,7 +163,7 @@ end
             row.push(record.fields["estimated_completion_date"  ].web.default(  :disabled=>@disabled                                    ) )
             
             #SYSTEM DETERMINED
-            row.push(record.fields["requester_team_id"          ].to_name                                                                 )
+            row.push(record.fields["requester_team_id"          ].web.select(:dd_choices=>requestor_dd                                  ) )
             row.push(record.fields["created_date"               ].value                                                                   )
             
             tables_array.push(row)
@@ -452,7 +452,7 @@ end
         row = $tables.attach("ATHENA_PROJECT_REQUIREMENTS").new_row
         fields = row.fields
         
-        output << $tools.legend_open("sub", "Project Requirements")
+        output << $tools.legend_open("sub", "Requirement Description")
         
             output << fields["requirement"].web.default()
             
