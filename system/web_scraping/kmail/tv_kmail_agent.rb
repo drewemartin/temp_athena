@@ -1,5 +1,5 @@
 #!/usr/local/bin/ruby
-require 'tv_kmail'
+require "#{File.dirname(__FILE__)}/tv_kmail"
 
 ################################################################################
 #Description: Agents check for unsent kmail and send them.
