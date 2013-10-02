@@ -198,9 +198,11 @@ end
                 "Requirement",
                 "Type",
                 "Priority Level",
-                "Created Date",
                 "Phase",
-                "Status"
+                "Status",
+                "Progress",
+                "Requested By",
+                "Created Date"
             ]
             
         ]
@@ -213,23 +215,24 @@ end
             row = Array.new
             
             row.push($tools.button_load_tab(4, "Specs",    pid))
-            row.push(record.fields["requirement"        ].value)
+            row.push(record.fields["requirement"                ].value)
             
             type = String.new
-            type << record.fields["automated_process"    ].web.default(:label_option=>"Automated Process"    )
-            type << record.fields["pdf_template"         ].web.default(:label_option=>"PDF Template"         )
-            type << record.fields["process_improvement"  ].web.default(:label_option=>"Process Improvement"  )
-            type << record.fields["report"               ].web.default(:label_option=>"Report"               )
-            type << record.fields["system_interface"     ].web.default(:label_option=>"System Interface"     )
-            type << record.fields["user_interface"       ].web.default(:label_option=>"User Interface"       )
-            type << record.fields["change"               ].web.default(:label_option=>"Change"               )
+            type << record.fields["automated_process"           ].web.default(:label_option=>"Automated Process"    )
+            type << record.fields["pdf_template"                ].web.default(:label_option=>"PDF Template"         )
+            type << record.fields["process_improvement"         ].web.default(:label_option=>"Process Improvement"  )
+            type << record.fields["report"                      ].web.default(:label_option=>"Report"               )
+            type << record.fields["system_interface"            ].web.default(:label_option=>"System Interface"     )
+            type << record.fields["user_interface"              ].web.default(:label_option=>"User Interface"       )
+            type << record.fields["change"                      ].web.default(:label_option=>"Change"               )
             
             row.push(type)
-            row.push(record.fields["priority"           ].web.select(:dd_choices=>priority_level_dd ))
-            row.push(record.fields["status"             ].web.select(:dd_choices=>priority_status_dd))
-            
-            row.push(record.fields["created_date"       ].to_user)
-            row.push(record.fields["phase"  ].web.select(:dd_choices=>phase_dd(project_id))) 
+            row.push(record.fields["priority"                   ].web.select(:dd_choices=>priority_level_dd ))
+            row.push(record.fields["phase"                      ].web.select(:dd_choices=>phase_dd(project_id))) 
+            row.push(record.fields["status"                     ].web.select(:dd_choices=>project_status_dd))
+            row.push(record.fields["development_phase"          ].web.select(   :disabled=>@disabled, :dd_choices=>project_phase_dd     ) )
+            row.push(record.fields["requester_team_id"          ].web.select(:dd_choices=>requestor_dd                                  ) )
+            row.push(record.fields["created_date"               ].to_user)
             
             tables_array.push(row)
             
