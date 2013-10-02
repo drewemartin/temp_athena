@@ -140,7 +140,7 @@ end
             
         ]
      
-        pids = $tables.attach("ATHENA_PROJECT").primary_ids#("WHERE system_id = '#{system_id}'")
+        pids = $tables.attach("ATHENA_PROJECT").primary_ids("WHERE system_id = '#{system_id}'")
         pids.each{|pid|
             
             record              = $tables.attach("ATHENA_PROJECT").by_primary_id(pid)
