@@ -44,7 +44,7 @@ end
         end
         
         if $kit.params[:add_new_ATHENA_PROJECT]
-            $kit.modify_tag_content("tabs-2", load_tab_2($kit.params[:field_id____ATHENA_PROJECT__system_id])   , "update")
+            $kit.modify_tag_content("tabs-2", load_tab_2()   , "update")
         end
         
         if $kit.params[:add_new_ATHENA_PROJECT_REQUIREMENTS]
@@ -115,9 +115,9 @@ end
         
         output = String.new
         
-        output << "<input id='system_id' type='hidden' name='system_id' value='#{system_id}'/>"
+        #output << "<input id='system_id' type='hidden' name='system_id' value='#{system_id}'/>"
         
-        output << $tools.button_new_row(table_name = "ATHENA_PROJECT", "system_id")
+        #output << $tools.button_new_row(table_name = "ATHENA_PROJECT", "system_id")
         
         tables_array = [
             
@@ -196,6 +196,8 @@ end
                
                 "Specifications Link",
                 "Requirement",
+                "Type",
+                "Priority Level",
                 "Created Date",
                 "Phase"
             ]
@@ -211,6 +213,19 @@ end
             
             row.push($tools.button_load_tab(4, "Specs",    pid))
             row.push(record.fields["requirement"        ].value)
+            
+            type = String.new
+            type << record.fields["automated_process"    ].web.default(:label_option=>"Automated Process"    )
+            type << record.fields["pdf_template"         ].web.default(:label_option=>"PDF Template"         )
+            type << record.fields["process_improvement"  ].web.default(:label_option=>"Process Improvement"  )
+            type << record.fields["report"               ].web.default(:label_option=>"Report"               )
+            type << record.fields["system_interface"     ].web.default(:label_option=>"System Interface"     )
+            type << record.fields["user_interface"       ].web.default(:label_option=>"User Interface"       )
+            type << record.fields["change"               ].web.default(:label_option=>"Change"               )
+            
+            row.push(type)
+            row.push(record.fields["priority"           ].web.select(:dd_choices=>priority_level_dd))
+            
             row.push(record.fields["created_date"       ].to_user)
             row.push(record.fields["phase"  ].web.select(:dd_choices=>phase_dd(project_id))) 
             
@@ -425,13 +440,13 @@ end
         
         output << $tools.legend_open("sub", "Bug Details")
         
-            output << fields["system_id"].web.select(:label_option=>"System:",:onchange=>"fill_select_option('#{fields["project_id"].web.field_id}', this  );",:dd_choices=>systems_dd)
-            output << fields["project_id"].web.select(:label_option=>"Project:",:dd_choices=>existing_projects_dd)
-            output << fields["server"].web.select(:label_option=>"Server:",:dd_choices=>server_dd)
-            output << fields["location_found"].web.default(:label_option=>"Location Found:")
-            output << fields["description"].web.default(:label_option=>"Description:")
-            output << fields["error_message"].web.default(:label_option=>"Error Message:")
-            output << fields["notes"].web.default(:label_option=>"Notes:")
+            output << fields["system_id"        ].web.select( :label_option=>"System:"      ,:onchange=>"fill_select_option('#{fields["project_id"].web.field_id}', this  );",:dd_choices=>systems_dd)
+            output << fields["project_id"       ].web.select( :label_option=>"Project:"     ,:dd_choices=>existing_projects_dd)
+            output << fields["server"           ].web.select( :label_option=>"Server:"      ,:dd_choices=>server_dd)
+            output << fields["location_found"   ].web.default(:label_option=>"Location Found:")
+            output << fields["description"      ].web.default(:label_option=>"Description:")
+            output << fields["error_message"    ].web.default(:label_option=>"Error Message:")
+            output << fields["notes"            ].web.default(:label_option=>"Notes:")
             
             output << fields["status"].set("New").web.hidden
         
@@ -454,9 +469,19 @@ end
         
         output << $tools.legend_open("sub", "Requirement Description")
         
-            output << fields["requirement"].web.default()
-            
-            output << fields["project_id"].set($kit.params[:project_id]).web.hidden
+        output << fields["requirement"          ].web.default()
+        
+        output << fields["automated_process"    ].web.default(:label_option=>"Automated Process"    )
+        output << fields["pdf_template"         ].web.default(:label_option=>"PDF Template"         )
+        output << fields["process_improvement"  ].web.default(:label_option=>"Process Improvement"  )
+        output << fields["report"               ].web.default(:label_option=>"Report"               )
+        output << fields["system_interface"     ].web.default(:label_option=>"System Interface"     )
+        output << fields["user_interface"       ].web.default(:label_option=>"User Interface"       )
+        output << fields["change"               ].web.default(:label_option=>"Change"               )
+        
+        output << fields["priority"             ].web.select(:dd_choices=>priority_level_dd, :label_option=>"Priority Level")
+        
+        output << fields["project_id"           ].set($kit.params[:project_id]).web.hidden
         
         output << $tools.legend_close()
         
@@ -704,9 +729,22 @@ end
             
             div.ATHENA_PROJECT_REQUIREMENTS__requirement    textarea{width: 500px; height: 200px; resize: none; overflow-y: scroll;}
             
+            div.ATHENA_PROJECT_REQUIREMENTS__automated_process                  label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__automated_process                  input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                       label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                       input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__report                             label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__report                             input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__system_interface                   label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__system_interface                   input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__user_interface                     label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__user_interface                     input{width: 25px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__change                             label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__change                             input{width: 25px;}
             
             div.ATHENA_PROJECT_REQUIREMENTS_SPECS__specification    textarea{width: 500px; height: 200px; resize: none; overflow-y: scroll;}
-            
             
             div.ATHENA_PROJECT_BUGS__system_id          {margin-bottom: 2px;}
             div.ATHENA_PROJECT_BUGS__project_id         {margin-bottom: 2px;}
