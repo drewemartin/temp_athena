@@ -274,6 +274,7 @@ end
     
     def add_new_csv_athena_project(options = nil)
         ap_db  = $tables.attach("athena_project").data_base
+        apr_db = $tables.attach("athena_project_requirements").data_base
         aps_db = $tables.attach("athena_project_systems").data_base
         t_db   = $tables.attach("team").data_base
         sql_str =
@@ -300,31 +301,30 @@ end
             athena_project_requirements.development_phase
             
         FROM #{ap_db}.athena_project
-        LEFT JOIN athena_project_requirements ON project_id = athena_project.primary_id
+        LEFT JOIN #{apr_db}.athena_project_requirements ON project_id = athena_project.primary_id
         "
         
         headers = [
-            "Project ID"                ,
-            "Project Name"              ,
-            "Description"               ,
-            "Requested Priority"        ,
-            "Requested ETA"             ,
-            "Project Status"            ,
-            "Development Phase"         ,
-            "System"                    ,
-            "Priority Level"            ,
-            "ETA"                       ,
-            "Requestor"                 ,
-            "Date Submitted"            ,
-            "Requirement Description"   ,
-            "Automated Process?"        ,
-            "PDF Template"              ,
-            "Process Improvement"       ,
-            "Report"                    ,
-            "System Interface"          ,
-            "User Interface"            ,
-            "Requirement Status"        ,
-            "Development Progress"
+            "Project Status"                    ,
+            "Project/Module/Process Name"       ,
+            "Description"                       ,
+            "Requested Priority"                ,
+            "Requested ETA"                     ,
+            "Development Progress"              ,
+            "System"                            ,
+            "Priority Level"                    ,
+            "ETA"                               ,
+            "Requestor"                         ,
+            "Date Submitted"                    ,
+            "Requirement Description"           ,
+            "Automated Process?"                ,
+            "PDF Template"                      ,
+            "Process Improvement"               ,
+            "Report"                            ,
+            "System Interface"                  ,
+            "User Interface"                    ,
+            "Requirement Status"                ,
+            "Requirement Progress"
             
         ]
         
