@@ -27,9 +27,9 @@ end
         
         tabs = Array.new
         tabs.push(["Systems",         load_tab_1])
-        tabs.push(["Projects",        load_tab_2])
-        tabs.push(["Requirements",    "Please Select the 'Requirements' link in the 'Projects' tab." ]       )
-        tabs.push(["Specifications",  "Please Select the 'Specs' link in the 'Requirements' tab."   ]       )
+        tabs.push(["Projects",        "Please Select the 'Projects' link in the 'Systems' tab."         ]       )
+        tabs.push(["Requirements",    "Please Select the 'Requirements' link in the 'Projects' tab."    ]       )
+        tabs.push(["Specifications",  "Please Select the 'Specs' link in the 'Requirements' tab."       ]       )
         tabs.push(["Bugs",            load_tab_5])
         
         $kit.tools.tabs(tabs,0)
@@ -115,9 +115,9 @@ end
         
         output = String.new
         
-        #output << "<input id='system_id' type='hidden' name='system_id' value='#{system_id}'/>"
+        output << "<input id='system_id' type='hidden' name='system_id' value='#{system_id}'/>"
         
-        #output << $tools.button_new_row(table_name = "ATHENA_PROJECT", "system_id")
+        output << $tools.button_new_row(table_name = "ATHENA_PROJECT", "system_id")
         
         tables_array = [
             
