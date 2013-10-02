@@ -278,35 +278,53 @@ end
         t_db   = $tables.attach("team").data_base
         sql_str =
         "SELECT
-            athena_project.primary_id,               
+            athena_project.status,               
             athena_project.project_name,                       
             athena_project.brief_description,
             athena_project.requested_priority_level,
-            athena_project.requested_completion_date,
-            athena_project.status,    
+            athena_project.requested_completion_date,   
             athena_project.development_phase,
             (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
             athena_project.priority_level,           
             athena_project.estimated_completion_date,
             (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = athena_project.requester_team_id),
-            athena_project.created_date
+            athena_project.created_date,
+            athena_project_requirements.requirement,
+            athena_project_requirements.automated_process,   
+            athena_project_requirements.pdf_template,         
+            athena_project_requirements.process_improvement, 
+            athena_project_requirements.report,               
+            athena_project_requirements.system_interface,     
+            athena_project_requirements.user_interface,
+            athena_project_requirements.status,
+            athena_project_requirements.development_phase
             
         FROM #{ap_db}.athena_project
+        LEFT JOIN athena_project_requirements ON project_id = athena_project.primary_id
         "
         
         headers = [
-            "Project ID"        ,
-            "Project Name"      ,
-            "Description"       ,
-            "Requested Priority",
-            "Requested ETA"     ,
-            "Status"            ,
-            "Development Phase" ,
-            "System"            ,
-            "Priority Level"    ,
-            "ETA"               ,
-            "Requestor"         ,
-            "Date Submitted"
+            "Project ID"                ,
+            "Project Name"              ,
+            "Description"               ,
+            "Requested Priority"        ,
+            "Requested ETA"             ,
+            "Project Status"            ,
+            "Development Phase"         ,
+            "System"                    ,
+            "Priority Level"            ,
+            "ETA"                       ,
+            "Requestor"                 ,
+            "Date Submitted"            ,
+            "Requirement Description"   ,
+            "Automated Process?"        ,
+            "PDF Template"              ,
+            "Process Improvement"       ,
+            "Report"                    ,
+            "System Interface"          ,
+            "User Interface"            ,
+            "Requirement Status"        ,
+            "Development Progress"
             
         ]
         
