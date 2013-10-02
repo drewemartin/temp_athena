@@ -64,6 +64,7 @@ end
             structure_hash["fields"]["user_interface"           ] = {"data_type"=>"bool", "file_field"=>"user_interface"        } if field_order.push("user_interface"          )
             structure_hash["fields"]["change"                   ] = {"data_type"=>"bool", "file_field"=>"change"                } if field_order.push("change"                  )
             structure_hash["fields"]["priority"                 ] = {"data_type"=>"text", "file_field"=>"priority"              } if field_order.push("priority"                )
+            structure_hash["fields"]["status"                   ] = {"data_type"=>"text", "file_field"=>"status"                } if field_order.push("status"                  )
             
         structure_hash["field_order"] = field_order
         
