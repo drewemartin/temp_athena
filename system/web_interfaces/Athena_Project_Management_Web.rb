@@ -199,7 +199,8 @@ end
                 "Type",
                 "Priority Level",
                 "Created Date",
-                "Phase"
+                "Phase",
+                "Status"
             ]
             
         ]
@@ -224,7 +225,8 @@ end
             type << record.fields["change"               ].web.default(:label_option=>"Change"               )
             
             row.push(type)
-            row.push(record.fields["priority"           ].web.select(:dd_choices=>priority_level_dd))
+            row.push(record.fields["priority"           ].web.select(:dd_choices=>priority_level_dd ))
+            row.push(record.fields["status"             ].web.select(:dd_choices=>priority_status_dd))
             
             row.push(record.fields["created_date"       ].to_user)
             row.push(record.fields["phase"  ].web.select(:dd_choices=>phase_dd(project_id))) 
