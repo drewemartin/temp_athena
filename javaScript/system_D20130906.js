@@ -307,8 +307,14 @@ function postString(post_params){
 		
 	};
 	
-	post_params_array = post_params.split(",");
+	if (post_params != ""){
+		post_params_array = post_params.split(",");
+	}else{
+		post_params_array = [];
+	}
+	
 	post_params_array.push("student_id");
+	
 	for (param_i in post_params_array){
 		var param = post_params_array[param_i]
 		if ($("#"+param).length >= 1){
@@ -409,7 +415,8 @@ function send(post_params, preCallback, callback){
 		}
 		
 		var add_comma = ""
-		if (post_params != "" && pleaseSaveIds.length > 1){
+		
+		if (post_params != "" && pleaseSaveIds.length >= 1){
 			
 			add_comma = ","
 			
