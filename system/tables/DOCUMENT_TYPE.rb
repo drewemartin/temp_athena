@@ -84,33 +84,6 @@ end
         pre_reqs.push({:name=>"Converted SID To PID CSV" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         pre_reqs.push({:name=>"Mass Kmail Students List" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         
-        cat_id_k12_reports = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='K12 Reports'")
-        pre_reqs.push({:name=>"Aggregate Progress"          , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"All Students"                , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Attendance Modified"         , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"CALMS Aggregate Progress"    , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Class List Teacher View VHS" , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"ECollege Activity Duration"  , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"ECollege Detail"             , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"EITR V2"                     , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Elluminate Session"          , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Highschool Classroom"        , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Home Language"               , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Learning Coach Report"       , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Lessons Count Daily"         , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Logins"                      , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Logins - Afternoon"          , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Omnibus"                     , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Pal Assessment"              , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"SalesForce Case Report"      , :category_id => cat_id_k12_reports.value, :file_extension=>"xls"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Progress And Achievement"    , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Staff List"                  , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"STI Combined Report"         , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"STI Intervention"            , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Student Course"              , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"Withdraw"                    , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        pre_reqs.push({:name=>"High School Activity"        , :category_id => cat_id_k12_reports.value, :file_extension=>"csv"}) if cat_id_k12_reports
-        
         max = pre_reqs.length
         (0...max).each{|i|
             

@@ -30,7 +30,7 @@ class Truancy_Withdrawals_Report
                             num_within_truancy_span = 0
                             truancy_dates           = Array.new
                             
-                            absences.each_pair{|date, details|
+                            absences.each{|date|
                                 if truancy_span.include?(date)
                                     num_within_truancy_span += 1 
                                     truancy_dates.push(date)

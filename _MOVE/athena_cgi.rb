@@ -1112,7 +1112,7 @@ end
         
         output = String.new
         
-        doc_type_name = params[:accordion_doctype].gsub("_"," ")
+        doc_type_name = params[:accordion_doctype]
         
         category_id = params[:accordion_category_id]
         
@@ -1123,6 +1123,8 @@ end
         
         pids = $tables.attach("documents").document_pids(type_id)
         
+        nice_name = $tables.attach(report_name).nice_name
+        
         pids.each_with_index do |pid, i|
             
             row = i%2 == 0 ? "even" : "odd"
@@ -1131,7 +1133,7 @@ end
             
             output << "<div class='#{row}'>"
             output << "<div class='img'><img src='/#{$config.code_set_name}/javaScript/jqueryFileTree/images/#{ext}.png'></div>"
-            output << "<div class='file_link'>#{report_name} - #{created_date}</div>"
+            output << "<div class='file_link'>#{nice_name} - #{created_date}</div>"
             output << "<div id='link_#{pid}' class='link_div'><button class='get_link' role='button' onclick=\"return load_secure_doc('#{pid}',true,false);\"></button></div>"
             output << "<input id='doc_id_#{pid}' name='doc_id' value='#{pid}' style='display:none;'>"
             output << $tools.newlabel("bottom")

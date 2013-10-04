@@ -1,5 +1,5 @@
 #!/usr/local/bin/ruby
-require 'tv_interface'
+require "#{File.dirname(__FILE__)}/tv_interface"
 
 ################################################################################
 #Description: 
