@@ -7,6 +7,7 @@ class Attendance_Processing
         
         #start = Time.new
         
+        @present_codes          = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'present'",          {:value_only=>true}) || []
         @excused_codes          = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'excused'",          {:value_only=>true}) || []
         @unexcused_codes        = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE code_type = 'unexcused'",        {:value_only=>true}) || []
         @override_codes         = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE",    {:value_only=>true}) || []
@@ -24,10 +25,12 @@ class Attendance_Processing
         
         #if @sid != "1291086"
             
-            @override       = attendance_department_override  unless @override
-            @override       = orientation_override            unless @override
-            @override       = testing_day_override            unless @override
-            @override       = academic_plan_override          unless @override
+            @department_override    = attendance_department_override    unless @override
+            @override               = orientation_override              unless @override || @department_override
+            @override               = testing_day_override              unless @override || @department_override
+            @override               = academic_plan_override            unless @override || @department_override
+            
+            grace_period_check unless @override || @department_override
             
         #else
         #    @override       = orientation_override            unless @override
@@ -104,6 +107,10 @@ class Attendance_Processing
             
         end
         
+        if @department_override && !@present_codes.include?(@finalize_code)
+            @finalize_code = @department_override
+        end
+        
         student_attendance_master_field.set(                    @finalize_code              ).save
         student_attendance_record.fields["official_code"].set(  @finalize_code              ).save
         student_attendance_record.fields["logged"       ].set(  true                        ).save if $user == "Athena-SIS"
@@ -144,6 +151,44 @@ end
         
     end
     
+    def grace_period_check
+        
+        if @stu_daily_procedure_type == "Classroom Activity (50% or more)"
+            
+            student_enroll_date         = $students.get(@sid).schoolenrolldate.mathable
+            grade                       = $students.get(@sid).grade.value
+            att_date                    = $base.mathable("date", @date)
+            
+            eligible_dates_enroll       = $school.school_days_after(student_enroll_date).shift(10)
+            eligible_dates_school       = $school.school_days.shift(10)
+            
+            if (
+                
+                student_enroll_date &&
+                
+                (
+                    (
+                        grade.match(/6th|7th|8th|9th|10th|11th|12th/) && 
+                        (
+                            (att_date >= student_enroll_date    && eligible_dates_enroll.include?(@date) ) ||
+                            (att_date >= @school_start          && eligible_dates_school.include?(@date) )
+                        )
+                    )
+                )
+                
+            )
+                
+                @stu_daily_mode             = "Scheduling"
+                @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").field_value("procedure_type", "WHERE mode = '#{@stu_daily_mode}'")
+                
+                student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                
+            end
+            
+        end
+        
+    end
+
     def has_activity
         
         @student.attendance_activity.table.primary_ids(
@@ -200,9 +245,7 @@ end
         master_code = student_attendance_master_field.value
         if @override_codes.include?(master_code)
             
-            @finalize_code = master_code
-            
-            return true
+            return master_code
             
         else
             
