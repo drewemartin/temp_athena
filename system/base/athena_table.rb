@@ -138,6 +138,25 @@ def x______________FUNCTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    def add_import_document_type
+        
+        category_name = "Table Imports"
+        category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='#{category_name}'").value
+        
+        if !$tables.attach("document_type").find_field("primary_id",  "WHERE name='#{name}' AND category_id='#{category_id}'")
+            
+            category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='#{category_name}'").value
+            
+            new_record = $tables.attach("document_type").new_row
+            new_record.fields["category_id"   ].value = category_id
+            new_record.fields["name"          ].value = name
+            new_record.fields["file_extension"].value = "csv"
+            new_record.save
+            
+        end
+        
+    end
+    
     def bulk_field_by_pid(csv_path, reason_str, authorizor)
         header          = true
         csv_fieldname   = nil
@@ -526,7 +545,8 @@ end
             
             if import_file_exists?
                 
-                $reports.save_document({:category_name=>"K12 Reports", :type_name=>nice_name, :file_path=>file_path}) if source_type == "k12_report" && nice_name
+                add_import_document_type
+                $reports.save_document({:category_name=>"Table Imports", :type_name=>name, :file_path=>file_path})
                 
                 processed_filename = file_name.gsub(".csv","_#{$ifilestamp}.csv")
                 FileUtils.cp(file_path, "#{report_path}#{processed_filename}")

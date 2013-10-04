@@ -38,7 +38,7 @@ end
             {:name=> "Individualized Learning Plan"     },
             {:name=> "Athena"                           },
             {:name=> "Scantron"                         },
-            {:name=> "K12 Reports"                      }
+            {:name=> "Table Imports"                    }
             
         ]
         

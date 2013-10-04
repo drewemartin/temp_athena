@@ -29,13 +29,13 @@ end
         
         output = "<div id='student_container'>"
         
-        category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='K12 Reports'").value
+        category_id = $tables.attach("document_category").find_field("primary_id", "WHERE name='Table Imports'").value
         
         output << "<div id='file_link'><input id='accordion_doctype' name='accordion_doctype' style='display:none;'><input id='accordion_category_id' name='accordion_category_id' value='#{category_id}' style='display:none;'></div>"
         
         output << "<div id='file_viewer'>"
         
-        k12_type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}'")
+        k12_type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}' AND name REGEXP 'k12_'")
         
         k12_type_ids.each do |type_id|
             
@@ -46,9 +46,9 @@ end
             
             count = pids ? pids.length : 0
             
-            output << "<h3>#{report_name} (#{count})</h3>"
+            output << "<h3>#{$tables.attach(report_name).nice_name} (#{count})</h3>"
             
-            output << "<div id='#{report_name.gsub(" ","_").downcase}'></div>"
+            output << "<div id='#{report_name.downcase}'></div>"
             
         end if k12_type_ids
         
