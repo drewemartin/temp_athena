@@ -26,11 +26,11 @@ end
     def load
         
         tabs = Array.new
-        tabs.push(["Systems",         load_tab_1])
-        tabs.push(["Projects",        "Please Select the 'Projects' link in the 'Systems' tab."         ]       )
-        tabs.push(["Requirements",    "Please Select the 'Requirements' link in the 'Projects' tab."    ]       )
-        tabs.push(["Specifications",  "Please Select the 'Specs' link in the 'Requirements' tab."       ]       )
-        tabs.push(["Bugs",            load_tab_5])
+        tabs.push(["System/Module/Process",                     load_tab_1                                                              ]           )
+        tabs.push(["Projects",                                  "Please Select the 'Projects' link in the 'Systems' tab."               ]           )
+        tabs.push(["Project Requirements/Use Cases",            "Please Select the 'Use Cases' link in the 'Projects' tab."             ]           )
+        tabs.push(["Technical Specifications",                  "Please Select the 'Technical Specs' link in the 'Requirements' tab."   ]           )
+        tabs.push(["Bugs",                                      load_tab_5                                                              ]           )
         
         $kit.tools.tabs(tabs,0)
         
@@ -44,7 +44,7 @@ end
         end
         
         if $kit.params[:add_new_ATHENA_PROJECT]
-            $kit.modify_tag_content("tabs-2", load_tab_2()   , "update")
+            $kit.modify_tag_content("tabs-2", load_tab_2($kit.params[:field_id____ATHENA_PROJECT__system_id])   , "update")
         end
         
         if $kit.params[:add_new_ATHENA_PROJECT_REQUIREMENTS]
@@ -77,7 +77,7 @@ end
             #HEADERS
             [
                 "Projects Link",
-                "System Name",
+                "System/Module/Process Name",
                 "Primary Contact",
                 "Status"
                 
@@ -92,8 +92,11 @@ end
             
             row = Array.new
             
-            row.push($tools.button_load_tab(2, "Projects",    pid))
-            row.push(record.fields["system_name"               ].to_user()              )
+            project_tot        = $tables.attach("ATHENA_PROJECT").primary_ids("WHERE system_id = '#{pid}'")
+            project_complete   = $tables.attach("ATHENA_PROJECT").primary_ids("WHERE system_id = '#{pid}' AND development_phase = 'Production/Technical Support'")
+            row.push($tools.button_load_tab(2, "Projects (#{project_tot ? "#{project_complete ? project_complete.length : "0"}/#{project_tot.length}" : "0/0"})",    pid))
+            
+            row.push(record.fields["system_name"               ].value)#web.default()              )
             row.push(record.fields["owner_team_id"             ].to_name(:full_name)    )
             row.push(record.fields["status"                    ].to_user()              )
             
@@ -119,24 +122,25 @@ end
         
         output << $tools.button_new_row(table_name = "ATHENA_PROJECT", "system_id")
         
+        headers = Array.new
+        
+        headers.push("Use Cases"             )
+        headers.push("System"                ) if system_id == "19"
+        headers.push("Status"                )
+        headers.push("Development Progress"  )
+        headers.push("Project Name"          )
+        headers.push("Description"           )
+        headers.push("Requested Priority"    )
+        headers.push("Requested ETA"         )
+        headers.push("Type"                  )
+        headers.push("Priority Level"        )
+        headers.push("ETA"                   )
+        headers.push("Requestor"             )
+        headers.push("Date Submitted"        )
+        
         tables_array = [
             
-            #HEADERS
-            [
-                "Requirements Link" ,
-                "Project Name"      ,
-                "Description"       ,
-                "Requested Priority",
-                "Requested ETA"     ,
-                "Status"            ,
-                "Development Phase" ,
-                "System"            ,
-                "Type"              ,
-                "Priority Level"    ,
-                "ETA"               ,
-                "Requestor"         ,
-                "Date Submitted"
-            ]
+            headers
             
         ]
      
@@ -148,16 +152,19 @@ end
             row = Array.new
             
             #REQUESTER ENTERED
-            row.push($tools.button_load_tab(3, "Requirements",    pid))
+            requirements_tot        = $tables.attach("ATHENA_PROJECT_REQUIREMENTS").primary_ids("WHERE project_id = '#{pid}'")
+            requirements_complete   = $tables.attach("ATHENA_PROJECT_REQUIREMENTS").primary_ids("WHERE project_id = '#{pid}' AND development_phase = 'Production/Technical Support'")
+            row.push($tools.button_load_tab(3, "Use Cases (#{requirements_tot ? "#{requirements_complete ? requirements_complete.length : "0"}/#{requirements_tot.length}" : "0/0"})",    pid))
+            
+            row.push(record.fields["system_id"                  ].web.select(   :disabled=>@disabled, :dd_choices=>systems_dd           ) ) if system_id == "19"
+            row.push(record.fields["status"                     ].web.select(   :disabled=>@disabled, :dd_choices=>project_status_dd    ) )
+            row.push(record.fields["development_phase"          ].web.select(   :disabled=>@disabled, :dd_choices=>project_phase_dd     ) )
             row.push(record.fields["project_name"               ].web.text(                                                             ) )
             row.push(record.fields["brief_description"          ].web.default(  :disabled=>true                                         ) )
             row.push(record.fields["requested_priority_level"   ].web.label(                                                            ) )
             row.push(record.fields["requested_completion_date"  ].web.label(                                                            ) )
             
             #ASSIGNER ENTERED
-            row.push(record.fields["status"                     ].web.select(   :disabled=>@disabled, :dd_choices=>project_status_dd    ) )
-            row.push(record.fields["development_phase"          ].web.select(   :disabled=>@disabled, :dd_choices=>project_phase_dd     ) )
-            row.push(record.fields["system_id"                  ].web.select(   :disabled=>@disabled, :dd_choices=>systems_dd           ) )
             row.push(record.fields["project_type"               ].web.select(   :disabled=>@disabled, :dd_choices=>project_type_dd      ) )
             row.push(record.fields["priority_level"             ].web.select(   :disabled=>@disabled, :dd_choices=>priority_level_dd    ) )
             row.push(record.fields["estimated_completion_date"  ].web.default(  :disabled=>@disabled                                    ) )
@@ -194,7 +201,7 @@ end
             #HEADERS
             [
                
-                "Specifications Link",
+                "Technical Specs",
                 "Requirement",
                 "Type",
                 "Priority Level",
@@ -214,8 +221,8 @@ end
             
             row = Array.new
             
-            row.push($tools.button_load_tab(4, "Specs",    pid))
-            row.push(record.fields["requirement"                ].value)
+            row.push($tools.button_load_tab(4, "Technical Specs",    pid))
+            row.push(record.fields["requirement"                ].web.default(:disabled=>true))
             
             type = String.new
             type << record.fields["automated_process"           ].web.default(:label_option=>"Automated Process"    )
@@ -483,6 +490,7 @@ end
         output << fields["system_interface"     ].web.default(:label_option=>"System Interface"     )
         output << fields["user_interface"       ].web.default(:label_option=>"User Interface"       )
         output << fields["change"               ].web.default(:label_option=>"Change"               )
+        output << fields["requester_team_id"    ].web.select( :label_option=>"Requested By", :dd_choices=>requestor_dd              )
         
         output << fields["priority"             ].web.select(:dd_choices=>priority_level_dd, :label_option=>"Priority Level")
         
@@ -601,10 +609,14 @@ end
     
     def requestor_dd
         
+        ap_db = $tables.attach("ATHENA_PROJECT_SYSTEMS").data_base
+        
         return $tables.attach("TEAM").dd_choices(
             "CONCAT(legal_first_name,' ',legal_last_name)",
-            "primary_id",
-            " ORDER BY CONCAT(legal_first_name,' ',legal_last_name) ASC "
+            "team.primary_id",
+            " JOIN #{ap_db}.athena_project_systems ON athena_project_systems.owner_team_id = team.primary_id
+            GROUP BY team.primary_id
+            ORDER BY CONCAT(legal_first_name,' ',legal_last_name) ASC "
         )
         
     end
@@ -623,13 +635,13 @@ end
         
         dd_options = Array.new
         
-        dd_options.push({:name=>"N/A (Adhoc)"                   , :value=>"N/A (Adhoc)"                    })
         dd_options.push({:name=>"Requirements Gathering"        , :value=>"Requirements Gathering"         })
         dd_options.push({:name=>"Requirements Analysis"         , :value=>"Requirements Analysis"          })
         dd_options.push({:name=>"Design & Prototype"            , :value=>"Design & Prototype"             })
         dd_options.push({:name=>"Demo/Develop Iterations"       , :value=>"Demo/Develop Iterations"        })
         dd_options.push({:name=>"Quality Assurance"             , :value=>"Quality Assurance"              })
         dd_options.push({:name=>"Production/Technical Support"  , :value=>"Production/Technical Support"   })
+        dd_options.push({:name=>"No Longer Used/Deprecated"     , :value=>"No Longer Used/Deprecated"      })
         
         return dd_options
         
@@ -639,9 +651,11 @@ end
         
         dd_options = Array.new
         
-        dd_options.push({:name=>"Approval - Pending"    , :value=>"Approval - Pending"    })
-        dd_options.push({:name=>"Approval - Received"   , :value=>"Approval - Received"   })
-        dd_options.push({:name=>"Approval - Denied"     , :value=>"Approval - Denied"     })
+        dd_options.push({:name=>"Approval - Pending"        , :value=>"Approval - Pending"          })
+        dd_options.push({:name=>"Approval - Received"       , :value=>"Approval - Received"         })
+        dd_options.push({:name=>"Approval - Denied"         , :value=>"Approval - Denied"           })
+        dd_options.push({:name=>"Approval - Not Required"   , :value=>"Approval - Not Required"     })
+        dd_options.push({:name=>"Released"                  , :value=>"Released"                    })
         
         return dd_options
         
@@ -734,19 +748,26 @@ end
             
             div.ATHENA_PROJECT_REQUIREMENTS__requirement    textarea{width: 500px; height: 200px; resize: none; overflow-y: scroll;}
             
-            div.ATHENA_PROJECT_REQUIREMENTS__automated_process                  label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__automated_process                       {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__automated_process                  label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__automated_process                  input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                       label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                            {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                       label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__pdf_template                       input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                     {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__process_improvement                input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__report                             label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__report                                  {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__report                             label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__report                             input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__system_interface                   label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__system_interface                        {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__system_interface                   label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__system_interface                   input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__user_interface                     label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__user_interface                          {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__user_interface                     label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__user_interface                     input{width: 25px;}
-            div.ATHENA_PROJECT_REQUIREMENTS__change                             label{display: inline-block; width: 230px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__change                                  {width: 200px;}
+            div.ATHENA_PROJECT_REQUIREMENTS__change                             label{display: inline-block; width: 130px;}
             div.ATHENA_PROJECT_REQUIREMENTS__change                             input{width: 25px;}
             
             div.ATHENA_PROJECT_REQUIREMENTS_SPECS__specification    textarea{width: 500px; height: 200px; resize: none; overflow-y: scroll;}
