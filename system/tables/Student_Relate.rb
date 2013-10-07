@@ -292,7 +292,6 @@ end
             "DELETE from #{@temp_existing_records_table} WHERE unique_id = '#{Mysql.quote(unique_id)}'",
             data_base
         )
-        #@existing_records.delete("#{@params[:sid]}#{@params[:team_id]}#{@params[:staff_id]}#{@params[:role]}#{@params[:role_details]}#{@params[:source]}") if @existing_records
         
     end
     
@@ -589,6 +588,7 @@ end
             home_room_teachers
             primary_teachers
             special_education_teachers
+            truancy_prevention_coordinator
     end
     
     def family_teacher_coaches
@@ -669,6 +669,36 @@ end
         deactivate_existing_records
     end
     
+    def truancy_prevention_coordinator
+        
+        params = field_params
+        params[:role            ] = "Truancy Prevention Coordinator"
+        params[:role_details    ] = "Truancy Prevention Coordinator"
+        params[:source          ] = "K12_Omnibus"
+        
+        get_existing_records
+        
+        sids = $students.list(:complete_enrolled=>true)#current_students
+        sids.each{|sid|
+            
+            params[:sid]    = sid
+            district        = $students.get(sid).districtofresidence.value
+            aun             = $tables.attach("DISTRICTS_AUN"    ).field_value("aun",        "WHERE name = '#{district}'"                                                            )
+            team_ids        = $tables.attach("TEAM_DISTRICTS"   ).field_value("team_id",    "WHERE role = 'Truancy Prevention Coordinator' AND aun = '#{aun}' AND active IS TRUE"   )
+            team_ids.each{|team_id|
+                
+                params[:team_id ] = team_id
+                params[:staff_id] = $tables.attach("TEAM_SAMS_IDS").field_values("sams_id", "WHERE team_id = '#{params[:team_id ]}'")[0]
+                active_record
+                
+            } if team_ids
+          
+        } if sids
+        
+        deactivate_existing_records
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def X_______AFTER_LOAD_SAPPHIRE_CLASS_ROSTER
 end
@@ -813,7 +843,7 @@ end
         relate_record.save
         
     end
-    
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 private
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
@@ -1035,6 +1065,11 @@ end
     end
     alias :current_students_only :currently_enrolled
     
+    def districtofresidence(arg)
+        where_addon = " AND student.districtofresidence = '#{arg}' "
+        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+    end
+
     def dropout_truancy(arg)
         if arg == true
             wr = "D2 - School Attendance/Progress Policy|D3 - W/D for Non-Attendance|I2 - Student wants to drop out of school|W/D for Non-Attendance|Drop Out"
