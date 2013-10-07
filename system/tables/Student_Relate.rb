@@ -258,12 +258,20 @@ end
     
     def active_record
         
-        record  = by_student_staff_role(@params[:sid], @params[:team_id], @params[:staff_id], @params[:role], @params[:role_details ])
+        params = Array.new
+        params.push( Struct::WHERE_PARAMS.new("studentid",      "=", @params[:sid               ]       ) )
+        params.push( Struct::WHERE_PARAMS.new("team_id",        "=", @params[:team_id           ]       ) )
+        params.push( Struct::WHERE_PARAMS.new("staff_id",       "=", @params[:staff_id          ]       ) )
+        params.push( Struct::WHERE_PARAMS.new("source",         "=", @params[:source            ]       ) )
+        params.push( Struct::WHERE_PARAMS.new("role",           "=", @params[:role              ]       ) )
+        params.push( Struct::WHERE_PARAMS.new("role_details",   "=", @params[:role_details      ]       ) )
+        where_clause = $db.where_clause(params)
+        this_record = record(where_clause)
         
-        if record
+        if this_record
             
-            record.fields["active"        ].value = true  
-            record.save
+            this_record.fields["active"        ].value = true  
+            this_record.save
             
         else
             
