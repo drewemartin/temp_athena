@@ -487,7 +487,9 @@ end
             
             "Student ID",
             "First Name",
-            "Last Name"
+            "Last Name",
+            "Grade",
+            "Family Coach"
             
         ]
         
@@ -509,8 +511,10 @@ end
             
         end if prev_x_schooldays
         
-        sam_db   = $tables.attach("student_attendance_master").data_base
-        s_db     = $tables.attach("student").data_base
+        sam_db   = $tables.attach("student_attendance_master"   ).data_base
+        s_db     = $tables.attach("student"                     ).data_base
+        t_db     = $tables.attach("team"                        ).data_base
+        sr_db    = $tables.attach("student_relate"              ).data_base
         
         if $school.school_days(target_date).length > x
             
@@ -528,6 +532,22 @@ end
             student.student_id,
             student.studentfirstname,
             student.studentlastname,
+            student.grade,
+            (
+                SELECT
+                    CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{sr_db}.student_relate
+                    WHERE studentid = student_attendance_master.student_id
+                    AND role = 'Family Teacher Coach'
+                    AND active IS TRUE
+                    GROUP BY team.primary_id
+                )
+                GROUP BY team.primary_id
+            ),
             #{school_days_sql}
             
         FROM #{sam_db}.student_attendance_master
@@ -677,7 +697,17 @@ end
             student_scantron_performance_level.stron_ext_perf_r,
             
             (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.title1teacher ) ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Truancy Prevention') AND region = student.region ),
+            (SELECT
+                CONCAT(legal_first_name,' ',legal_last_name)
+            FROM #{t_db}.team
+            WHERE team.primary_id = (
+                SELECT
+                    team_id
+                FROM student_relate
+                WHERE studentid = student.student_id
+                AND role = 'Truancy Prevention'
+                AND active IS TRUE
+            ),
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
             student.schoolenrolldate,
