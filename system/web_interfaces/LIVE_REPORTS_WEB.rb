@@ -49,6 +49,13 @@ end
             "This report includes all Athena Projects."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_athena_project.is_true?
         
+        #ATHENA PROJECT REQUIREMENTS
+        tables_array.push([
+            $tools.button_new_csv("athena_project_requirements", additional_params_str = nil),
+            "Athena Project Requirements",
+            "This report includes all Requirements for Athena Projects."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_athena_project.is_true?
+        
         #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
         tables_array.push([
             $tools.button_new_csv("attendance_by_code", additional_params_str = nil),
@@ -279,52 +286,41 @@ end
         t_db   = $tables.attach("team").data_base
         sql_str =
         "SELECT
-            athena_project.status,               
+            (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
+            athena_project.status,
+            athena_project.development_phase,
+            CONCAT(
+                (SELECT COUNT(primary_id) FROM #{apr_db}.athena_project_requirements WHERE project_id = athena_project.primary_id AND development_phase = 'Production/Technical Support'),
+                '/',
+                (SELECT COUNT(primary_id) FROM #{apr_db}.athena_project_requirements WHERE project_id = athena_project.primary_id)
+            ),
             athena_project.project_name,                       
             athena_project.brief_description,
             athena_project.requested_priority_level,
             athena_project.requested_completion_date,   
-            athena_project.development_phase,
+            
             (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
             athena_project.priority_level,           
             athena_project.estimated_completion_date,
             (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = athena_project.requester_team_id),
-            athena_project.created_date,
-            athena_project_requirements.requirement,
-            athena_project_requirements.automated_process,   
-            athena_project_requirements.pdf_template,         
-            athena_project_requirements.process_improvement, 
-            athena_project_requirements.report,               
-            athena_project_requirements.system_interface,     
-            athena_project_requirements.user_interface,
-            athena_project_requirements.status,
-            athena_project_requirements.development_phase
+            athena_project.created_date
             
-        FROM #{ap_db}.athena_project
-        LEFT JOIN #{apr_db}.athena_project_requirements ON project_id = athena_project.primary_id
-        "
+        FROM #{ap_db}.athena_project"
         
         headers = [
+            "System/Module/Process Name"        ,
             "Project Status"                    ,
+            "Development Progress"              ,
+            "Requirements"                      ,
             "Project/Module/Process Name"       ,
             "Description"                       ,
             "Requested Priority"                ,
             "Requested ETA"                     ,
-            "Development Progress"              ,
             "System"                            ,
             "Priority Level"                    ,
             "ETA"                               ,
             "Requestor"                         ,
-            "Date Submitted"                    ,
-            "Requirement Description"           ,
-            "Automated Process?"                ,
-            "PDF Template"                      ,
-            "Process Improvement"               ,
-            "Report"                            ,
-            "System Interface"                  ,
-            "User Interface"                    ,
-            "Requirement Status"                ,
-            "Requirement Progress"
+            "Date Submitted"                    
             
         ]
         
@@ -339,6 +335,61 @@ end
         
     end
     
+    def add_new_csv_athena_project_requirements(options = nil)
+        ap_db  = $tables.attach("athena_project").data_base
+        apr_db = $tables.attach("athena_project_requirements").data_base
+        aps_db = $tables.attach("athena_project_systems").data_base
+        t_db   = $tables.attach("team").data_base
+        sql_str =
+        "SELECT
+            athena_project.project_name,
+            athena_project_systems.system_name,
+            athena_project_requirements.requirement,
+            athena_project_requirements.priority,
+            athena_project_requirements.status,
+            athena_project_requirements.development_phase,
+            athena_project_requirements.automated_process,
+            athena_project_requirements.pdf_template,
+            athena_project_requirements.process_improvement,
+            athena_project_requirements.report,
+            athena_project_requirements.system_interface,
+            athena_project_requirements.user_interface,
+            athena_project_requirements.change,
+            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE primary_id = athena_project_requirements.requester_team_id)
+        FROM #{         apr_db  }.athena_project_requirements
+        LEFT JOIN #{    ap_db   }.athena_project            ON athena_project_requirements.project_id   = athena_project.primary_id
+        LEFT JOIN #{    aps_db  }.athena_project_systems    ON athena_project.system_id                 = athena_project_systems.primary_id"
+        
+        headers = [
+            
+            "System Name",
+            "Project Name",
+            "Requirement",
+            "Priority Level",
+            "Status",
+            "Development Progress",
+            "Automation?",
+            "PDF Template?",
+            "Process Improvement?",
+            "Report?",
+            "System Interface",
+            "User Interface?",
+            "Change?",
+            "Requestor"
+            
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_attendance_by_code
         
         headers =
@@ -436,7 +487,9 @@ end
             
             "Student ID",
             "First Name",
-            "Last Name"
+            "Last Name",
+            "Grade",
+            "Family Coach"
             
         ]
         
@@ -458,8 +511,10 @@ end
             
         end if prev_x_schooldays
         
-        sam_db   = $tables.attach("student_attendance_master").data_base
-        s_db     = $tables.attach("student").data_base
+        sam_db   = $tables.attach("student_attendance_master"   ).data_base
+        s_db     = $tables.attach("student"                     ).data_base
+        t_db     = $tables.attach("team"                        ).data_base
+        sr_db    = $tables.attach("student_relate"              ).data_base
         
         if $school.school_days(target_date).length > x
             
@@ -477,6 +532,22 @@ end
             student.student_id,
             student.studentfirstname,
             student.studentlastname,
+            student.grade,
+            (
+                SELECT
+                    CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{sr_db}.student_relate
+                    WHERE studentid = student_attendance_master.student_id
+                    AND role = 'Family Teacher Coach'
+                    AND active IS TRUE
+                    GROUP BY team.primary_id
+                )
+                GROUP BY team.primary_id
+            ),
             #{school_days_sql}
             
         FROM #{sam_db}.student_attendance_master
@@ -565,6 +636,7 @@ end
             "Grade Level",
             "Family ID",
             "Birthday",
+            "Age",
             
             "Teacher/Guidance",
             
@@ -604,8 +676,9 @@ end
         
         headers.concat(date_headers)
         
-        t_db = $tables.attach("team").data_base
-        tsids_db = $tables.attach("team_sams_ids").data_base
+        t_db        = $tables.attach("team"             ).data_base
+        tsids_db    = $tables.attach("team_sams_ids"    ).data_base
+        relate_db   = $tables.attach("STUDENT_RELATE"   ).data_base
         
         sql_str = String.new
         sql_str << "
@@ -617,6 +690,7 @@ end
             student.grade,
             student.familyid,
             student.birthday,
+            (YEAR(CURDATE())-YEAR(student.birthday)) - (RIGHT(CURDATE(),5)<RIGHT(student.birthday,5)),
             (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = ( SELECT team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
             
             student.title1teacher,
@@ -626,7 +700,19 @@ end
             student_scantron_performance_level.stron_ext_perf_r,
             
             (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.title1teacher ) ),
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Truancy Prevention') AND region = student.region ),
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM agora_master.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Truancy Prevention Coordinator'
+                    AND active IS TRUE
+                )
+            ),
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
             student.schoolenrolldate,
@@ -881,6 +967,28 @@ end
         
         sql_str =
         "SELECT
+            IF(
+                (
+                    SELECT
+                        primary_id
+                    FROM #{sr_db}.student_relate
+                    WHERE team_id = '#{$team_member.primary_id.value}'
+                    AND student_relate.studentid = student.student_id
+                    AND active IS TRUE
+                    GROUP BY team_id
+                ),
+                'Yes',
+                'No'
+            ),
+            (
+                SELECT
+                    created_date
+                FROM #{sr_db}.student_relate
+                WHERE team_id = '#{$team_member.primary_id.value}'
+                AND student_relate.studentid = student.student_id
+                GROUP BY team_id
+                ORDER BY created_date ASC
+            ),
             student_id,
             studentlastname,
             studentfirstname,
@@ -926,6 +1034,8 @@ end
         
         headers =
         [
+            "Active?",
+            "1st Assigned Date",
             "student_id",
             "studentlastname",
             "studentfirstname",

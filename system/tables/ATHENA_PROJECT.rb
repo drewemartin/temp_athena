@@ -51,8 +51,8 @@ end
         
         $team.find(:full_name=>"Jenifer Halverson").send_email(
             :subject                => "Athena Project #{row_obj.primary_id}",
-            :content                => content_table,
-            :additional_recipients  => "kayoung@agora.org"
+            :content                => content_table#,
+            #:additional_recipients  => ["kayoung@agora.org"]
         )
         
     end
