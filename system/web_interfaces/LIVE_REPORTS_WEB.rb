@@ -638,6 +638,7 @@ end
             "Birthday",
             "Age",
             
+            "Learning Center Classroom Coach",
             "Teacher/Guidance",
             
             "Family Coach/Comm Cord",
@@ -693,6 +694,21 @@ end
             
             #STUDENT AGE
             (YEAR(CURDATE())-YEAR(student.birthday)) - (RIGHT(CURDATE(),5)<RIGHT(student.birthday,5)),
+            
+            #LEARNING CENTER CLASSROOM COACH
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM agora_master.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Learning Center Classroom Coach'
+                    AND active IS TRUE
+                )
+            ),
             
             #FAMILY TEACHER COACH
             (
