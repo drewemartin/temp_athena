@@ -65,7 +65,8 @@ end
     def related_team_records(option = nil)
         
         where_clause = " WHERE studentid = '#{@sid}'
-            AND active IS TRUE "
+            AND active IS TRUE
+            AND role != 'Truancy Prevention Coordinator'"
         where_clause <<
             " AND role REGEXP 'Primary Teacher|High School Teacher|Middle School Teacher' " if option == :academic
         where_clause <<
