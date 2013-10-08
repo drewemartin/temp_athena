@@ -690,8 +690,22 @@ end
             student.grade,
             student.familyid,
             student.birthday,
+            
+            #STUDENT AGE
             (YEAR(CURDATE())-YEAR(student.birthday)) - (RIGHT(CURDATE(),5)<RIGHT(student.birthday,5)),
-            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = ( SELECT team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
+            
+            #FAMILY TEACHER COACH
+            (
+                SELECT
+                    CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{tsids_db}.team_sams_ids
+                    WHERE team_sams_ids.sams_id = student.primaryteacherid
+                )
+            ),
             
             student.title1teacher,
             student_scantron_performance_level.stron_ent_perf_m,
@@ -699,7 +713,21 @@ end
             student_scantron_performance_level.stron_ent_perf_r,
             student_scantron_performance_level.stron_ext_perf_r,
             
-            (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.title1teacher ) ),
+            #FAMILY TEACHER COACH SUPPORT
+            (
+                SELECT
+                    CONCAT(team.legal_first_name,' ',team.legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        supervisor_team_id
+                    FROM #{t_db}.team
+                    LEFT JOIN #{tsids_db}.team_sams_ids ON team.primary_id = team_sams_ids.team_id
+                    WHERE team_sams_ids.sams_id = student.primaryteacherid
+                )
+            ),
+            
+            #TRUANCY PREVENTION COORDINATOR
             (
                 SELECT
                     GROUP_CONCAT(legal_first_name,' ',legal_last_name)
@@ -713,6 +741,7 @@ end
                     AND active IS TRUE
                 )
             ),
+            
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
             student.schoolenrolldate,
