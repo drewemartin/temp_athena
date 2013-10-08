@@ -206,7 +206,7 @@ end
                 "Type",
                 "Priority Level",
                 "Phase",
-                "Status",
+                "Approval Status",
                 "Progress",
                 "Requested By",
                 "Created Date"
@@ -655,7 +655,6 @@ end
         dd_options.push({:name=>"Approval - Received"       , :value=>"Approval - Received"         })
         dd_options.push({:name=>"Approval - Denied"         , :value=>"Approval - Denied"           })
         dd_options.push({:name=>"Approval - Not Required"   , :value=>"Approval - Not Required"     })
-        dd_options.push({:name=>"Released"                  , :value=>"Released"                    })
         
         return dd_options
         
