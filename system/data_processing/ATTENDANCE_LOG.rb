@@ -26,7 +26,7 @@ end
         
         pids.each{|pid|
             
-            date = source_table.field_value_by_pid("last_login", pid)
+            date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
             
             if $field.is_schoolday?(date)
               
@@ -77,7 +77,7 @@ end
         
         pids.each{|pid|
             
-            date = source_table.field_value_by_pid("last_login", pid)
+            date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
             
             if $field.is_schoolday?(date)
                 

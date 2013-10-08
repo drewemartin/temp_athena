@@ -122,19 +122,15 @@ end
             record.fields[k.to_s].value = v
         }
         
-        if !(
-         
-            self.attendance_activity.table.primary_ids(
-                "WHERE student_id = '#{@sid}'
-                 AND date    = '#{record.fields["date"       ].to_db}'
-                 AND source  = '#{record.fields["source"     ].to_db}'
-                 AND period  = '#{record.fields["period"     ].to_db}'
-                 AND class   = '#{record.fields["class"      ].to_db}'
-                 AND code    = '#{record.fields["code"       ].to_db}'
-                 AND team_id = '#{record.fields["team_id"    ].to_db}'"
-            )
-            
-        )
+        where_str = "WHERE student_id = '#{@sid}' "
+        where_str = record.fields["date"    ].value ? where_str + "AND date    = '#{record.fields["date"    ].to_db}' " : where_str + "AND date IS NULL "
+        where_str = record.fields["source"  ].value ? where_str + "AND source  = '#{record.fields["source"  ].to_db}' " : where_str + "AND source IS NULL "
+        where_str = record.fields["period"  ].value ? where_str + "AND period  = '#{record.fields["period"  ].to_db}' " : where_str + "AND period IS NULL "
+        where_str = record.fields["class"   ].value ? where_str + "AND class   = '#{record.fields["class"   ].to_db}' " : where_str + "AND class IS NULL "
+        where_str = record.fields["code"    ].value ? where_str + "AND code    = '#{record.fields["code"    ].to_db}' " : where_str + "AND code IS NULL "
+        where_str = record.fields["team_id" ].value ? where_str + "AND team_id = '#{record.fields["team_id" ].to_db}' " : where_str + "AND team_id IS NULL "
+        
+        if !(self.attendance_activity.table.primary_ids(where_str))
             
             record.save
             
