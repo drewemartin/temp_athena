@@ -636,6 +636,7 @@ end
             "Grade Level",
             "Family ID",
             "Birthday",
+            "Age",
             
             "Teacher/Guidance",
             
@@ -675,8 +676,9 @@ end
         
         headers.concat(date_headers)
         
-        t_db = $tables.attach("team").data_base
-        tsids_db = $tables.attach("team_sams_ids").data_base
+        t_db        = $tables.attach("team"             ).data_base
+        tsids_db    = $tables.attach("team_sams_ids"    ).data_base
+        relate_db   = $tables.attach("STUDENT_RELATE"   ).data_base
         
         sql_str = String.new
         sql_str << "
@@ -688,6 +690,7 @@ end
             student.grade,
             student.familyid,
             student.birthday,
+            (YEAR(CURDATE())-YEAR(student.birthday)) - (RIGHT(CURDATE(),5)<RIGHT(student.birthday,5)),
             (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = ( SELECT team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.primaryteacherid ) ),
             
             student.title1teacher,
@@ -697,16 +700,18 @@ end
             student_scantron_performance_level.stron_ext_perf_r,
             
             (SELECT CONCAT(team.legal_first_name,' ',team.legal_last_name) FROM #{t_db}.team WHERE team.primary_id = (SELECT supervisor_team_id FROM #{tsids_db}.team_sams_ids WHERE team_sams_ids.sams_id = student.title1teacher ) ),
-            (SELECT
-                CONCAT(legal_first_name,' ',legal_last_name)
-            FROM #{t_db}.team
-            WHERE team.primary_id = (
+            (
                 SELECT
-                    team_id
-                FROM student_relate
-                WHERE studentid = student.student_id
-                AND role = 'Truancy Prevention'
-                AND active IS TRUE
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM agora_master.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Truancy Prevention Coordinator'
+                    AND active IS TRUE
+                )
             ),
             (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
             
