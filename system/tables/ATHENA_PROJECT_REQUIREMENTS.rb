@@ -65,7 +65,8 @@ end
             structure_hash["fields"]["change"                   ] = {"data_type"=>"bool", "file_field"=>"change"                } if field_order.push("change"                  )
             structure_hash["fields"]["priority"                 ] = {"data_type"=>"text", "file_field"=>"priority"              } if field_order.push("priority"                )
             structure_hash["fields"]["status"                   ] = {"data_type"=>"text", "file_field"=>"status"                } if field_order.push("status"                  )
-            structure_hash["fields"]["development_phase"        ] = {"data_type"=>"text", "file_field"=>"development_phase"         } if field_order.push("development_phase")
+            structure_hash["fields"]["type"                     ] = {"data_type"=>"text", "file_field"=>"type"                  } if field_order.push("type"                    )
+            structure_hash["fields"]["development_phase"        ] = {"data_type"=>"text", "file_field"=>"development_phase"     } if field_order.push("development_phase"       )
             structure_hash["fields"]["requester_team_id"        ] = {"data_type"=>"text", "file_field"=>"requester_team_id"     } if field_order.push("requester_team_id"       )
             
         structure_hash["field_order"] = field_order
