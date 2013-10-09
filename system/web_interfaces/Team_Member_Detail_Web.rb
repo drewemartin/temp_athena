@@ -513,12 +513,12 @@ end
         
         table_array = [
             
-            [
-                $focus_team_member.rights.super_user_group.web.checkbox(
-                    :label_option   => "Super User",
-                    :disabled       => disabled("super_user_group")
-                )
-            ],
+            #[
+            #    $focus_team_member.rights.super_user_group.web.checkbox(
+            #        :label_option   => "Super User",
+            #        :disabled       => disabled("super_user_group")
+            #    )
+            #],
             [
                 $focus_team_member.rights.student_search.web.checkbox(
                     :label_option   => "Search All Students",
