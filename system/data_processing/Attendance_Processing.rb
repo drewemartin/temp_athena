@@ -194,7 +194,13 @@ end
         @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
-            AND code            = 'p'
+            AND (
+                
+                code            = 'p'
+                    OR
+                code            = 'pb'
+                
+            )
             AND source REGEXP '#{@activity_sources.join("|")}'"
         )
         
@@ -205,7 +211,13 @@ end
         results = @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
-            AND code            = 'p'
+            AND (
+                
+                code            = 'p'
+                    OR
+                code            = 'pb'
+                
+            )
             AND source REGEXP '#{@live_sources.join("|")}'"
         )
         
@@ -218,7 +230,13 @@ end
         @student.attendance_activity.table.primary_ids(
             "WHERE student_id   = '#{@sid}'
             AND date            = '#{@date}'
-            AND code            = 'p'
+            AND (
+                
+                code            = 'p'
+                    OR
+                code            = 'pb'
+                
+            )
             AND period REGEXP '#{@orientation_sources.join("|")}'"
         )
         
