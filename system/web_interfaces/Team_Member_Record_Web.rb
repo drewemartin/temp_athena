@@ -112,7 +112,7 @@ class TEAM_MEMBER_RECORD_WEB
             
         end
         
-        if $team_member.enrolled_students
+        if $team_member.enrolled_students && $team_member.enrolled_students.length < 2000
             
             output.push(
                 :name       => "MyStudents (#{$team_member.enrolled_students ? $team_member.enrolled_students.length : 0})",

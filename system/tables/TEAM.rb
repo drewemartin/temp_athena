@@ -53,6 +53,56 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    def after_insert(this_record)
+        
+        defaults = [ #can probably go somewhere better...
+            
+            "student_search",
+            "live_reports_access",
+            "live_reports_my_students_general",
+            "live_reports_my_students_tests",
+            "module_student_attendance_ap",
+            "module_student_contacts",
+            "module_student_rtii",
+            "module_tep_agreements",
+            "module_withdraw_requests",
+            "module_ink_orders",
+            "module_pssa_entry",
+            "module_record_requests",
+            "module_dnc_students",
+            "module_student_attendance",
+            "module_student_tests",
+            "module_student_specialists",
+            "module_student_assessments",
+            "module_student_ilp",
+            "module_student_psychological_evaluation",
+            "student_contacts_edit",
+            "student_ilp_edit",
+            "student_tests_edit"
+        ]
+        
+        tid = this_record.primary_id
+        
+        rights_record = $tables.attach("team_rights").record("WHERE team_id = '#{tid}'")
+        
+        if !rights_record
+            
+            new_row = $tables.attach("team_rights").new_row
+            
+            new_row.fields["team_id"].value = tid
+            
+            defaults.each do |default|
+                
+                new_row.fields[default].value = "1"
+                
+            end
+            
+            new_row.save
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SELECT_DD_CHOICES
 end
