@@ -132,7 +132,7 @@ end
         headers.push("Description"           )
         headers.push("Requested Priority"    )
         headers.push("Requested ETA"         )
-        headers.push("Type"                  )
+        headers.push("Size"                  )
         headers.push("Priority Level"        )
         headers.push("ETA"                   )
         headers.push("Requestor"             )
@@ -205,7 +205,7 @@ end
                 "Requirement",
                 "Type",
                 "Priority Level",
-                "Phase",
+                "Size",
                 "Approval Status",
                 "Progress",
                 "Requested By",
@@ -234,9 +234,9 @@ end
             type << record.fields["change"                      ].web.default(:label_option=>"Change"               )
             
             row.push(type)
-            row.push(record.fields["priority"                   ].web.select(:dd_choices=>priority_level_dd ))
-            row.push(record.fields["phase"                      ].web.select(:dd_choices=>phase_dd(project_id))) 
-            row.push(record.fields["status"                     ].web.select(:dd_choices=>project_status_dd))
+            row.push(record.fields["priority"                   ].web.select(:dd_choices=>priority_level_dd     ))
+            row.push(record.fields["type"                       ].web.select(:dd_choices=>project_type_dd       )) 
+            row.push(record.fields["status"                     ].web.select(:dd_choices=>project_status_dd     ))
             row.push(record.fields["development_phase"          ].web.select(   :disabled=>@disabled, :dd_choices=>project_phase_dd     ) )
             row.push(record.fields["requester_team_id"          ].web.select(:dd_choices=>requestor_dd                                  ) )
             row.push(record.fields["created_date"               ].to_user)
@@ -597,12 +597,9 @@ end
     def project_type_dd
         
         return [
-            {:name=>"Adhoc"             ,   :value=>"Adhoc"             },
-            {:name=>"New System"        ,   :value=>"New System"        },
-            {:name=>"Research"          ,   :value=>"Research"          },
-            {:name=>"Update - Small"    ,   :value=>"Update - Small"    },
-            {:name=>"Update - Medium"   ,   :value=>"Update - Medium"   },
-            {:name=>"Update - Large"    ,   :value=>"Update - Large"    } 
+            {:name=>"Small"    ,   :value=>"Small"    },
+            {:name=>"Medium"   ,   :value=>"Medium"   },
+            {:name=>"Large"    ,   :value=>"Large"    } 
         ]
         
     end
