@@ -64,10 +64,12 @@ end
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_master.is_true?
         
         #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
+        select_absences = Array.new
+        (1..20).each{|x| select_absences.push({:name=>x.to_s,:value=>x.to_s})}
         tables_array.push([
             $tools.button_new_csv("attendance_consecutive_absences", additional_params_str = nil, send_field_names = "consecutive_days,consecutive_target_date")+
             $field.new("type"=>"date","value"=>$base.yesterday.iso_date).web.select(:label_option=>"Target Date",:add_class=>"no_save",:field_id=>"consecutive_target_date",:field_name=>"consecutive_target_date",:dd_choices=>school_days_dd)+
-            $field.new("type"=>"int", "value"=>"1"                     ).web.select(:label_option=>"Consecutive Absences",:add_class=>"no_save",:field_id=>"consecutive_days",:field_name=>"consecutive_days",:dd_choices=>[{:name=>"1",:value=>"1"},{:name=>"2",:value=>"2"},{:name=>"5",:value=>"5"},{:name=>"9",:value=>"9"}]),
+            $field.new("type"=>"int", "value"=>"1"                     ).web.select(:label_option=>"Consecutive Absences",:add_class=>"no_save",:field_id=>"consecutive_days",:field_name=>"consecutive_days",:dd_choices=>select_absences),
             "Attendance Consecutive Absences",
             "This report includes students with the number of selected unexcused absences relative to the selected target school date."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_consecutive_absences.is_true?
@@ -931,42 +933,58 @@ end
     def add_new_csv_student_contacts(options = nil)
         
         sc_db = $tables.attach("student_contacts").data_base
+        s_db  = $tables.attach("student").data_base
+        t_db  = $tables.attach("team").data_base
         
         sql_str =
         "SELECT
-            student_id,
-            datetime,
-            successful,
-            notes,
-            contact_type,
-            tep_initial,
-            tep_followup,
-            attendance,
-            rtii_behavior_id,
-            test_site_selection,
-            scantron_performance,
-            study_island_assessments,
-            course_progress,
-            work_submission,
-            grades,
-            communications,
-            retention_risk,
-            escalation,
-            welcome_call,
-            initial_home_visit,
-            tech_issue,
-            low_engagement,
-            ilp_conference,
-            other,
-            other_description,
-            created_by,
-            created_date
-        FROM #{sc_db}.student_contacts"
+            student_contacts.student_id,
+            student.studentlastname,
+            student.studentfirstname,
+            student_contacts.datetime,
+            student_contacts.successful,
+            student_contacts.notes,
+            student_contacts.contact_type,
+            student_contacts.tep_initial,
+            student_contacts.tep_followup,
+            student_contacts.attendance,
+            student_contacts.rtii_behavior_id,
+            student_contacts.test_site_selection,
+            student_contacts.scantron_performance,
+            student_contacts.study_island_assessments,
+            student_contacts.course_progress,
+            student_contacts.work_submission,
+            student_contacts.grades,
+            student_contacts.communications,
+            student_contacts.retention_risk,
+            student_contacts.escalation,
+            student_contacts.welcome_call,
+            student_contacts.initial_home_visit,
+            student_contacts.tech_issue,
+            student_contacts.low_engagement,
+            student_contacts.ilp_conference,
+            student_contacts.other,
+            student_contacts.other_description,
+            team.legal_last_name,
+            team.legal_first_name,
+            student_contacts.created_by,
+            team.department,
+            student_contacts.created_date,
+            TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
+        FROM #{sc_db}.student_contacts
+        LEFT JOIN #{s_db}.student
+        ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
+        LEFT JOIN #{t_db}.team_email
+        ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
+        LEFT JOIN #{t_db}.team
+        ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
         
         headers =
         [
-            "student_id",
-            "datetime",
+            "Student ID",
+            "Student Last Name",
+            "Student First Name",
+            "Contact Datetime",
             "successful",
             "notes",
             "contact_type",
@@ -990,8 +1008,12 @@ end
             "ilp_conference",
             "other",
             "other_description",
-            "created_by",
-            "created_date"
+            "Created By Last Name",
+            "Created By First Name",
+            "Created By Email",
+            "Created By Department",
+            "Created Date",
+            "Days Between Contact And Entry"
         ]
         
         results = $db.get_data(sql_str)

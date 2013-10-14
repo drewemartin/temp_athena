@@ -245,6 +245,7 @@ end
             tried = 0
             begin
                 ftp = Net::FTP.new('ftp.snaphealthcenter.com')
+                ftp.passive = true
                 ftp.login("AgoraCyberSchool", "ruprup7AdE")
                 
                 location = "Snap_Update"
@@ -290,7 +291,7 @@ end
                     
                 end
                 
-                $reports.save_document({:csv_rows=>snap_students, :category_name=>"Nursing", :type_name=>"Snap Students Update"})
+                $reports.save_document({:csv_rows=>snap_students.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Students Update"})
                 
                 filename = "Caregivers"
                 headers  = [
@@ -319,7 +320,7 @@ end
                     
                 end
                 
-                $reports.save_document({:csv_rows=>snap_caregivers, :category_name=>"Nursing", :type_name=>"Snap Caregivers Update"})
+                $reports.save_document({:csv_rows=>snap_caregivers.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Caregivers Update"})
                 
                 ftp.close
                 
