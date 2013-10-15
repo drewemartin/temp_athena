@@ -55,7 +55,7 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def after_load_k12_aggregate_progress
+    def DISABLED_after_load_k12_aggregate_progress
         
         data_source = "K12_Aggregate_Progress"
         
@@ -93,7 +93,7 @@ end
         
     end
     
-    def after_load_k12_calms_aggregate_progress
+    def DISABLED_after_load_k12_calms_aggregate_progress
         
         data_source	= "K12_Calms_Aggregate_Progress"
         pids            = $tables.attach("K12_Calms_Aggregate_Progress").primary_ids
@@ -131,7 +131,7 @@ end
         
     end
     
-    def after_load_jupiter_grades
+    def DISABLED_after_load_jupiter_grades
         
         data_source     = "Jupiter_Grades"
         pids            = $tables.attach("Jupiter_Grades").primary_ids
@@ -177,7 +177,7 @@ end
         } if pids
     end
     
-    def after_load_k12_ecollege_detail
+    def DISABLED_after_load_k12_ecollege_detail
         
         data_source = "K12_Ecollege_Detail"
         pids        = $tables.attach("K12_Ecollege_Detail").primary_ids
