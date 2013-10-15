@@ -432,11 +432,13 @@ function send(post_params, preCallback, callback){
 		
 		$.ajax({
 			
-			type:     'POST',
-			url:      '/cgi-bin/'+athena+'.rb',
-			dataType: 'html',
-			data:      data,
-			timeout:   120000,
+			type:      'POST',
+			url:       '/cgi-bin/'+athena+'.rb',
+			dataType:  'html',
+			data:       data,
+			timeout:    120000,
+			tryCount:   0,
+			retryLimit: 5,
 			success: function(data){
 				
 				clearSpinner();
@@ -453,20 +455,35 @@ function send(post_params, preCallback, callback){
 				
 			},
 			error: function(jqXHR, textStatus, errorThrown){
+				//alert(jqXHR.status + "," + textStatus + "," + errorThrown)
 				
 				var alert_message = "<img src='/athena/images/dialog_error.png' style='display:block; margin-left:auto; margin-right:auto; padding:10px'/>"
 				
-				if(textStatus == "error" && errorThrown == ""){
+				if((textStatus == "error" && errorThrown == "") || textStatus == "timeout"){
 					
-					alert_message += "You don't appear to be connected to the internet at this moment<br>Please check your internet connection for any connectivity issues.<br>It is reccommended that you refresh this page, and check for any unsaved work due to a disconnection."
+					this.tryCount++;
 					
-				}else if(textStatus == "error" && errorThrown == "Internal Server Error") {
+					if (this.tryCount <= this.retryLimit) {
+						
+						sleep(1000);
+						$.ajax(this);
+						return;
+						
+					}else{
+						
+						alert_message += "Unable to establish a connection with the server<br>Please check your internet connection.<br>It is reccommended that you refresh this page, and check for any unsaved work due to a disconnection."
+						warning_dialog(alert_message, textStatus, errorThrown, jqXHR.status)
+						clearSpinner();
+						setErrorBorder(post_params);
+						wait = false
+						
+					}
+					
+					return;
+					
+				}else if(jqXHR.status == "500") {
 					
 					alert_message += "Your request seems to have caused an unexpected error.<br>Please refresh this page, and try again in a few minutes.<br>If this error persists, please notify the system administrators using the button provided below, so the error may be corrected as soon as possible."
-					
-				}else if(textStatus == "timeout"){
-					
-					alert_message += "Your request timed out<br>This happens if you become disconnected from the internet while your computer is waiting for information from Athena.<br>You may be disconnected from the internet, or are receiving an unrelaible wirelss signal.<br>It is reccommended that you check your internet connection, refresh this page, and check for any unsaved work due to a disconnection."
 					
 				}else{
 					
@@ -474,7 +491,7 @@ function send(post_params, preCallback, callback){
 					
 				}
 				
-				warning_dialog(alert_message, textStatus, errorThrown)
+				warning_dialog(alert_message, textStatus, errorThrown, jqXHR.status)
 				clearSpinner();
 				setErrorBorder(post_params);
 				wait = false
@@ -1376,7 +1393,7 @@ function x___________________JQUERY_UI_DIALOGS(){}
 		
 	}
 	
-	function warning_dialog(message, textStatus, errorThrown) {
+	function warning_dialog(message, textStatus, errorThrown, errorCode) {
 		
 		$('#warning_dialog').dialog({
 			
@@ -1404,7 +1421,7 @@ function x___________________JQUERY_UI_DIALOGS(){}
 				"Report This Error": function() {
 					
 					$(this).html("")
-					window.location.href = "mailto:jhalverson@agora.org;esaddler@agora.org?Subject=Athena Error Report&Body=Reporting Refererence ID: " + $("#student_page_view").attr("value") + " - " + errorThrown +":"+ textStatus + "%0D%0A%0D%0A" + "In the space below, please provide any additional information or steps to reproduce the problem:%0D%0A%0D%0A(Please be as detailed as possible, as this allows us to more quickly replicate, and correct the issue)" + "%0D%0A%0D%0A";
+					window.location.href = "mailto:jhalverson@agora.org;esaddler@agora.org?Subject=Athena Error Report&Body=Reporting Refererence ID: " + $("#student_page_view").attr("value") + "%0D%0A" + "Error Code: " + errorCode + "%0D%0A" + "Error Thrown: " + errorThrown + "%0D%0A" + "Text Status: " + textStatus + "%0D%0A%0D%0A" + "In the space below, please provide any additional information or steps to reproduce the problem:%0D%0A(Please be as detailed as possible, as this allows us to more quickly replicate, and correct the issue)" + "%0D%0A%0D%0A";
 					$(this).dialog( "close" );
 					
 				},
@@ -1424,7 +1441,16 @@ function x___________________JQUERY_UI_DIALOGS(){}
 //Unsorted-------------------------------------------------------------------
 function x___________________UNSORTED(){}
 //------------------------------------------------------------------------------
-
+	
+	function sleep(milliseconds) {
+		setTimeout(function(){
+			var start = new Date().getTime();
+			while ((new Date().getTime() - start) < milliseconds){
+				// Do nothing
+			}
+		},0);
+	}
+	
 	// FNORD - When this is read into the ruby output change this explicit path to a $config reference
 	function maintenance(){
 		window.location = "http://athena-sis.com/athena/maintenance.html"
