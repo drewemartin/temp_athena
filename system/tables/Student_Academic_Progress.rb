@@ -264,28 +264,30 @@ end
             
         )
             
-            staff_id = sapphire_record.fields["teacher_rid"   ].value
-            
-            if team_member  = $team.find(:sams_id=>staff_id)
-                team_id = team_member.primary_id.value
-            else
-                team_id = nil
-            end
-            
             record = new_row
-            
             record.fields["student_id"          ].value = sapphire_record.fields["student_id"       ].value
             record.fields["course_code"         ].value = sapphire_record.fields["course_id"        ].value
             record.fields["section_id"          ].value = sapphire_record.fields["section_id"       ].value
-            record.fields["teacher_staff_id"    ].value = staff_id
-            record.fields["teacher_team_id"     ].value = team_id   
-            record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
-            record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
-            record.fields["data_source"         ].value = "Sapphire Current Class Grades"
-            
-            record.save
             
         end
+        
+        staff_id = sapphire_record.fields["teacher_rid"   ].value
+        
+        if team_member  = $team.find(:sams_id=>staff_id)
+            team_id = team_member.primary_id.value
+        else
+            team_id = nil
+        end
+        
+        record = new_row
+        
+        record.fields["teacher_staff_id"    ].value = staff_id
+        record.fields["teacher_team_id"     ].value = team_id   
+        record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
+        record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
+        record.fields["data_source"         ].value = "Sapphire Current Class Grades"
+        
+        record.save
         
     end
     
