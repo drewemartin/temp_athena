@@ -252,6 +252,43 @@ end
         end
     end
     
+    def update_sapphire_grades(sapphire_record)
+        
+        if !(
+            
+            record = record(
+                "WHERE student_id   = '#{sapphire_record.fields["student_id"    ].value}'
+                AND course_code     = '#{sapphire_record.fields["course_id"     ].value}'
+                AND section_id      = '#{sapphire_record.fields["section_id"    ].value}'"
+            )
+            
+        )
+            
+            staff_id = sapphire_record.fields["teacher_rid"   ].value
+            
+            if team_member  = $team.find(:sams_id=>staff_id)
+                team_id = team_member.primary_id.value
+            else
+                team_id = nil
+            end
+            
+            record = new_row
+            
+            record.fields["student_id"          ].value = sapphire_record.fields["student_id"       ].value
+            record.fields["course_code"         ].value = sapphire_record.fields["course_id"        ].value
+            record.fields["section_id"          ].value = sapphire_record.fields["section_id"       ].value
+            record.fields["teacher_staff_id"    ].value = staff_id
+            record.fields["teacher_team_id"     ].value = team_id   
+            record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
+            record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
+            record.fields["data_source"         ].value = "Sapphire Current Class Grades"
+            
+            record.save
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 private
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
@@ -279,20 +316,22 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["student_id"]              = {"data_type"=>"int",          "file_field"=>"student_id"}                 if field_order.push("student_id")
-            structure_hash["fields"]["classroom_name"]          = {"data_type"=>"text",         "file_field"=>"classroom_name"}             if field_order.push("classroom_name")
-            structure_hash["fields"]["course_code"]             = {"data_type"=>"text",         "file_field"=>"course_code"}                if field_order.push("course_code")
-            structure_hash["fields"]["course_name"]             = {"data_type"=>"text",         "file_field"=>"course_name"}                if field_order.push("course_name")
-            structure_hash["fields"]["start_date"]              = {"data_type"=>"date",         "file_field"=>"start_date"}                 if field_order.push("start_date")
-            structure_hash["fields"]["completion"]              = {"data_type"=>"decimal(5,4)", "file_field"=>"completion"}                 if field_order.push("completion")
-            structure_hash["fields"]["progress"]                = {"data_type"=>"decimal(5,4)", "file_field"=>"progress"}                   if field_order.push("progress")
-            structure_hash["fields"]["teacher_name"]            = {"data_type"=>"text",         "file_field"=>"teacher_name"}               if field_order.push("teacher_name")
-            structure_hash["fields"]["teacher_staff_id"]        = {"data_type"=>"int",          "file_field"=>"teacher_staff_id"}           if field_order.push("teacher_staff_id")
-            structure_hash["fields"]["class_risk_level"]        = {"data_type"=>"int",          "file_field"=>"class_risk_level"}           if field_order.push("class_risk_level")
-            structure_hash["fields"]["class_risk_level_recent"] = {"data_type"=>"int",          "file_field"=>"class_risk_level_recent"}    if field_order.push("class_risk_level_recent")
-            structure_hash["fields"]["engagement_level"]        = {"data_type"=>"int",          "file_field"=>"engagement_level"}           if field_order.push("engagement_level")
-            structure_hash["fields"]["data_source"]             = {"data_type"=>"text",         "file_field"=>"data_source"}                if field_order.push("data_source")
-            structure_hash["fields"]["term"]                    = {"data_type"=>"text",         "file_field"=>"term"}                       if field_order.push("term")
+            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",                "file_field"=>"student_id"              } if field_order.push("student_id"              )
+            structure_hash["fields"]["classroom_name"           ] = {"data_type"=>"text",               "file_field"=>"classroom_name"          } if field_order.push("classroom_name"          )
+            structure_hash["fields"]["section_id"               ] = {"data_type"=>"int",                "file_field"=>"SECTION_ID"              } if field_order.push("section_id"              )
+            structure_hash["fields"]["course_code"              ] = {"data_type"=>"text",               "file_field"=>"course_code"             } if field_order.push("course_code"             )
+            structure_hash["fields"]["course_name"              ] = {"data_type"=>"text",               "file_field"=>"course_name"             } if field_order.push("course_name"             )
+            structure_hash["fields"]["start_date"               ] = {"data_type"=>"date",               "file_field"=>"start_date"              } if field_order.push("start_date"              )
+            structure_hash["fields"]["completion"               ] = {"data_type"=>"decimal(5,4)",       "file_field"=>"completion"              } if field_order.push("completion"              )
+            structure_hash["fields"]["progress"                 ] = {"data_type"=>"decimal(5,4)",       "file_field"=>"progress"                } if field_order.push("progress"                )
+            structure_hash["fields"]["teacher_name"             ] = {"data_type"=>"text",               "file_field"=>"teacher_name"            } if field_order.push("teacher_name"            )
+            structure_hash["fields"]["teacher_staff_id"         ] = {"data_type"=>"int",                "file_field"=>"teacher_staff_id"        } if field_order.push("teacher_staff_id"        )
+            structure_hash["fields"]["teacher_team_id"          ] = {"data_type"=>"int",                "file_field"=>"teacher_team_id"         } if field_order.push("teacher_team_id"         )
+            structure_hash["fields"]["class_risk_level"         ] = {"data_type"=>"int",                "file_field"=>"class_risk_level"        } if field_order.push("class_risk_level"        )
+            structure_hash["fields"]["class_risk_level_recent"  ] = {"data_type"=>"int",                "file_field"=>"class_risk_level_recent" } if field_order.push("class_risk_level_recent" )
+            structure_hash["fields"]["engagement_level"         ] = {"data_type"=>"int",                "file_field"=>"engagement_level"        } if field_order.push("engagement_level"        )
+            structure_hash["fields"]["data_source"              ] = {"data_type"=>"text",               "file_field"=>"data_source"             } if field_order.push("data_source"             )
+            structure_hash["fields"]["term"                     ] = {"data_type"=>"text",               "file_field"=>"term"                    } if field_order.push("term"                    )
         structure_hash["field_order"] = field_order
         return structure_hash
     end
