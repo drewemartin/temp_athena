@@ -107,8 +107,14 @@ class Attendance_Processing
             
         end
         
-        if @department_override && !@present_codes.include?(@finalize_code)
+        if (
+            
+            @department_override == "ur" || (@department_override && !@present_codes.include?(@finalize_code))
+            
+        )
+            
             @finalize_code = @department_override
+            
         end
         
         student_attendance_master_field.set(                    @finalize_code              ).save
