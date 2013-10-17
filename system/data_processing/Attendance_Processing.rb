@@ -26,11 +26,11 @@ class Attendance_Processing
         #if @sid != "1291086"
             
             @department_override    = attendance_department_override    unless @override
-            @override               = orientation_override              unless @override || @department_override
-            @override               = testing_day_override              unless @override || @department_override
-            @override               = academic_plan_override            unless @override || @department_override
+            @override               = orientation_override              unless @override 
+            @override               = testing_day_override              unless @override 
+            @override               = academic_plan_override            unless @override 
             
-            grace_period_check unless @override || @department_override
+            grace_period_check unless @override
             
         #else
         #    @override       = orientation_override            unless @override
