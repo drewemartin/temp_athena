@@ -281,7 +281,7 @@ end
         
         record = new_row
         
-        record.fields["teacher_staff_id"    ].value = staff_id
+        record.fields["teacher_staff_id"    ].value = (staff_id == "Missing") ? nil : staff_id
         record.fields["teacher_team_id"     ].value = team_id   
         record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
         record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
