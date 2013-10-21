@@ -5,10 +5,6 @@ class TEAM_MEMBER_DETAIL_WEB
     #---------------------------------------------------------------------------
     def initialize()
         
-        directors   = $team.directors || []
-        @director   = directors.include?($team_member.primary_id.value)
-        @supervisor = ($team_member.primary_id.value == $focus_team_member.supervisor_team_id.value)
-        
     end
     #---------------------------------------------------------------------------
     
@@ -974,22 +970,12 @@ end
     
     def disabled(rights_name = nil)
         
-        if @director
-            
-            return false
-            
-        elsif @supervisor && rights_name
+        if rights_name
             
             return ($team_member.rights.send(rights_name).is_true? ? false : true)
             
-        elsif @supervisor
-            
-            return false
-            
         else
-            
-            return true
-            
+            return false
         end
         
     end
