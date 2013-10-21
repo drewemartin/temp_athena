@@ -115,7 +115,7 @@ end
             $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
             "Student ILP Survey Completion",
             "This report includes an ILP Survey count (completed/total) for all students."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_rtii_behavior.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
         
         #RTII BEHAVIOR REPORT
         tables_array.push([
