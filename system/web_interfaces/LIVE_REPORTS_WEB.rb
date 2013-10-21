@@ -110,6 +110,13 @@ end
             "This report includes all contact records that exist. Only students with contacts will be included."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
         
+        #ILP SURVEY COMPLETION
+        tables_array.push([
+            $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
+            "Student ILP Survey Completion",
+            "This report includes an ILP Survey count (completed/total) for all students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_rtii_behavior.is_true?
+        
         #RTII BEHAVIOR REPORT
         tables_array.push([
             $tools.button_new_csv("student_rtii_behavior", additional_params_str = nil),
@@ -1285,6 +1292,60 @@ end
         
     end
     
+    def add_new_csv_student_ilp_survey_completion(options = nil)
+        
+        s_db    = $tables.attach("STUDENT"      ).data_base
+        silp_db = $tables.attach("STUDENT_ILP"  ).data_base
+        
+        sql_str =
+        "SELECT
+            student_id,
+            CONCAT(
+                
+                '(',
+                
+                (
+                    SELECT
+                        count(primary_id)
+                    FROM #{silp_db}.student_ilp
+                    WHERE student_ilp.student_id = student.student_id
+                    AND description IS NOT NULL
+                    AND `ilp_entry_category_id` = '7'
+                ),
+                
+                '/',
+                
+                (
+                    SELECT
+                        count(primary_id)
+                    FROM #{silp_db}.student_ilp
+                    WHERE student_ilp.student_id = student.student_id
+                    AND `ilp_entry_category_id` = '7'
+                ),
+                
+                ')'
+                
+            ) 
+        FROM #{s_db}.`student`
+        WHERE student.active IS TRUE"
+        
+        headers =
+        [
+            "student_id",
+            "survey_completion"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_student_rtii_behavior(options = nil)
         
         srtiib_db = $tables.attach("student_rtii_behavior").data_base
