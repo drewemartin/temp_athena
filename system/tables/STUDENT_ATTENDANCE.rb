@@ -353,6 +353,10 @@ end
         process_attendance(obj)
     end
     
+    #def after_save(obj)
+    #    process_attendance(obj)
+    #end
+    
     def process_attendance(obj)
         unless caller.find{|x|x.match(/Attendance_Processing/)}
             record = by_primary_id(obj.primary_id)
