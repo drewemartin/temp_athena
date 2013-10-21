@@ -112,10 +112,17 @@ end
         
         #ILP SURVEY COMPLETION
         tables_array.push([
+            $tools.button_new_csv("student_ilp", additional_params_str = nil),
+            "Student ILP",
+            "This report includes an ILP Entries for all active students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp.is_true?
+        
+        #ILP SURVEY COMPLETION
+        tables_array.push([
             $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
             "Student ILP Survey Completion",
-            "This report includes an ILP Survey count (completed/total) for all students."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
+            "This report includes an ILP Survey count (completed/total) for all active students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp.is_true?
         
         #RTII BEHAVIOR REPORT
         tables_array.push([
@@ -1308,6 +1315,88 @@ end
         
     end
     
+    def add_new_csv_student_ilp(options = nil)
+        
+        s_db        = $tables.attach("STUDENT"              ).data_base
+        silp_db     = $tables.attach("STUDENT_ILP"          ).data_base
+        ilp_cat_db  = $tables.attach("ILP_ENTRY_CATEGORY"   ).data_base
+        ilp_typ_db  = $tables.attach("ILP_ENTRY_TYPE"       ).data_base
+        
+        sql_str =
+        "SELECT
+            
+            student_ilp.student_id,
+            ilp_entry_category.name,
+            ilp_entry_type.name,
+            student_ilp.description,
+            student_ilp.solution,
+            student_ilp.completed,
+            student_ilp.progress,
+            student_ilp.monday,
+            student_ilp.tuesday,
+            student_ilp.wednesday,
+            student_ilp.thursday,
+            student_ilp.friday,
+            student_ilp.day1,
+            student_ilp.day2,
+            student_ilp.day3,
+            student_ilp.day4,
+            student_ilp.day5,
+            student_ilp.day6,
+            student_ilp.day7,
+            student_ilp.expiration_date,
+            student_ilp.pdf_excluded,
+            student_ilp.created_date,
+            student_ilp.created_by
+            
+        FROM #{silp_db}.`student_ilp`
+        
+        LEFT JOIN   #{s_db      }.student               ON student.student_id                   =  student_ilp.student_id  
+        LEFT JOIN   #{ilp_cat_db}.ilp_entry_category    ON student_ilp.ilp_entry_category_id    =  ilp_entry_category.primary_id
+        LEFT JOIN   #{ilp_typ_db}.ilp_entry_type        ON student_ilp.ilp_entry_type_id        =  ilp_entry_type.primary_id
+        
+        WHERE student.active IS TRUE"
+        
+        headers =
+        [
+            
+            "student_id",
+            "ilp_entry_category.name",
+            "ilp_entry_type.name",
+            "student_ilp.description",
+            "solution",
+            "completed",
+            "progress",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "day1",
+            "day2",
+            "day3",
+            "day4",
+            "day5",
+            "day6",
+            "day7",
+            "expiration_date",
+            "pdf_excluded",
+            "student_ilp.created_date",
+            "student_ilp.created_by"
+           
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_student_ilp_survey_completion(options = nil)
         
         s_db    = $tables.attach("STUDENT"      ).data_base
