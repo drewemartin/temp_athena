@@ -51,7 +51,8 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            
+        
+            structure_hash["fields"]["student_id"   ] = {"data_type"=>"int",  "file_field"=>"student_id"    } if field_order.push("student_id"      )
             structure_hash["fields"]["under_review" ] = {"data_type"=>"bool", "file_field"=>"under_review"  } if field_order.push("under_review"    )
             structure_hash["fields"]["general_ed"   ] = {"data_type"=>"bool", "file_field"=>"general_ed"    } if field_order.push("general_ed"      )
             structure_hash["fields"]["special_ed"   ] = {"data_type"=>"bool", "file_field"=>"special_ed"    } if field_order.push("special_ed"      )

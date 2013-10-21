@@ -1,5 +1,5 @@
 #!/usr/local/bin/ruby
-require "#{File.dirname(__FILE__)}/tv_interface"
+require 'tv_interface'
 
 ################################################################################
 #Description: 
@@ -66,10 +66,16 @@ class TV_Kmail < TV_Interface
                     new_kmail_link_xpath    = "/html/body/div/div[2]/div/div/div[2]/div/div[2]/div/form/table/tbody/tr/td/div/ul/li/a"
                     new_kmail_link          = @browser.link(:xpath, new_kmail_link_xpath)
                     link_loaded = false
+                    i=0
                     until link_loaded
                         if new_kmail_link.exists?  
                             new_kmail_link.click
                             link_loaded = true
+                        elsif i >= 15
+                            raise "execution expired - New Kmail Link" 
+                        else
+                            i+= 1
+                            sleep 1
                         end
                     end
                     new_window("K-Mail")
@@ -159,6 +165,9 @@ class TV_Kmail < TV_Interface
         #this need to take a screenshot, name with appropriate labels (perhaps just the kmail id #) and save the path to @screen_shot_path
         #and catch and report any errors to @error
         @browser.link(:text, "Send Now").click
+        until @browser.windows.length <= 1
+            sleep 1
+        end
         #find way to verify success, error etc
         @successfull        = true
         @screenshot_path    = ''

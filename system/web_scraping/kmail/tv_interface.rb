@@ -82,13 +82,17 @@ class TV_Interface
                 until student_tab_confirmed
                     if @browser.button(:value, "Display All Students").exists?
                         student_tab_confirmed = true
-                    elsif i == 30
+                    elsif i >= 30
                         raise "execution expired - `Students` tab" 
                     else
                         i+= 1
                     end
                 end
                 link_found = true
+            elsif i >= 30
+                raise "execution expired - `Students` tab" 
+            else
+                i+= 1
             end
         end
         search_select(search_params)
