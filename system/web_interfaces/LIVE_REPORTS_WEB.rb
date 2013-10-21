@@ -716,6 +716,7 @@ end
                     WHERE studentid = student.student_id
                     AND role = 'Learning Center Classroom Coach'
                     AND active IS TRUE
+                    LIMIT 0, 1
                 )
             ),
             
@@ -729,6 +730,7 @@ end
                         team_id
                     FROM #{tsids_db}.team_sams_ids
                     WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    LIMIT 0, 1
                 )
             ),
             
@@ -749,6 +751,7 @@ end
                     FROM #{t_db}.team
                     LEFT JOIN #{tsids_db}.team_sams_ids ON team.primary_id = team_sams_ids.team_id
                     WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    LIMIT 0, 1
                 )
             ),
             
@@ -764,10 +767,23 @@ end
                     WHERE studentid = student.student_id
                     AND role = 'Truancy Prevention Coordinator'
                     AND active IS TRUE
+                    LIMIT 0, 1
                 )
             ),
             
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
+            (
+                SELECT
+                    GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
+                FROM #{t_db}.team
+                WHERE department_id = (
+                    SELECT
+                        primary_id
+                    FROM #{$tables.attach("DEPARTMENT").data_base}.department
+                    WHERE name = 'Advisors'
+                    LIMIT 0, 1
+                )
+                AND region = student.region
+            ),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
