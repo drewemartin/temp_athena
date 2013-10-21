@@ -5,10 +5,6 @@ class TEAM_MEMBER_DETAIL_WEB
     #---------------------------------------------------------------------------
     def initialize()
         
-        directors   = $team.directors || []
-        @director   = directors.include?($team_member.primary_id.value)
-        @supervisor = ($team_member.primary_id.value == $focus_team_member.supervisor_team_id.value)
-        
     end
     #---------------------------------------------------------------------------
     
@@ -695,6 +691,7 @@ end
             [$focus_team_member.rights.live_reports_student_contacts.web.checkbox(                      :label_option=>"Student Contacts",                      :disabled=>disabled("live_reports_student_contacts"))                   ],
             [$focus_team_member.rights.live_reports_my_students_general.web.checkbox(                   :label_option=>"My Students General",                   :disabled=>disabled("live_reports_my_students_general"))                ],
             [$focus_team_member.rights.live_reports_my_students_tests.web.checkbox(                     :label_option=>"My Students Tests",                     :disabled=>disabled("live_reports_my_students_tests"))                  ],
+            [$focus_team_member.rights.live_reports_student_ilp_survey_completion.web.checkbox(         :label_option=>"Student ILP Survey Completion",         :disabled=>disabled("live_reports_student_ilp_survey_completion"))      ],
             [$focus_team_member.rights.live_reports_student_rtii_behavior.web.checkbox(                 :label_option=>"Student RTII Behavior",                 :disabled=>disabled("live_reports_student_rtii_behavior"))              ],
             [$focus_team_member.rights.live_reports_student_scantron_participation.web.checkbox(        :label_option=>"Student Scantron Participation",        :disabled=>disabled("live_reports_student_scantron_participation"))     ],
             [$focus_team_member.rights.live_reports_student_testing_events_attendance.web.checkbox(     :label_option=>"Student Testing Events - Attendance",   :disabled=>disabled("live_reports_student_testing_events_attendance"))  ],
@@ -973,22 +970,12 @@ end
     
     def disabled(rights_name = nil)
         
-        if @director
-            
-            return false
-            
-        elsif @supervisor && rights_name
+        if rights_name
             
             return ($team_member.rights.send(rights_name).is_true? ? false : true)
             
-        elsif @supervisor
-            
-            return false
-            
         else
-            
-            return true
-            
+            return false
         end
         
     end

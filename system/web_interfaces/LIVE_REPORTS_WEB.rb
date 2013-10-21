@@ -110,6 +110,13 @@ end
             "This report includes all contact records that exist. Only students with contacts will be included."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
         
+        #ILP SURVEY COMPLETION
+        tables_array.push([
+            $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
+            "Student ILP Survey Completion",
+            "This report includes an ILP Survey count (completed/total) for all students."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
+        
         #RTII BEHAVIOR REPORT
         tables_array.push([
             $tools.button_new_csv("student_rtii_behavior", additional_params_str = nil),
@@ -709,6 +716,7 @@ end
                     WHERE studentid = student.student_id
                     AND role = 'Learning Center Classroom Coach'
                     AND active IS TRUE
+                    LIMIT 0, 1
                 )
             ),
             
@@ -722,6 +730,7 @@ end
                         team_id
                     FROM #{tsids_db}.team_sams_ids
                     WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    LIMIT 0, 1
                 )
             ),
             
@@ -742,6 +751,7 @@ end
                     FROM #{t_db}.team
                     LEFT JOIN #{tsids_db}.team_sams_ids ON team.primary_id = team_sams_ids.team_id
                     WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    LIMIT 0, 1
                 )
             ),
             
@@ -757,10 +767,23 @@ end
                     WHERE studentid = student.student_id
                     AND role = 'Truancy Prevention Coordinator'
                     AND active IS TRUE
+                    LIMIT 0, 1
                 )
             ),
             
-            (SELECT  GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name)) FROM #{t_db}.team WHERE department_id = (SELECT primary_id FROM #{$tables.attach("DEPARTMENT").data_base}.department WHERE name = 'Advisors') AND region = student.region ),
+            (
+                SELECT
+                    GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
+                FROM #{t_db}.team
+                WHERE department_id = (
+                    SELECT
+                        primary_id
+                    FROM #{$tables.attach("DEPARTMENT").data_base}.department
+                    WHERE name = 'Advisors'
+                    LIMIT 0, 1
+                )
+                AND region = student.region
+            ),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
@@ -1285,6 +1308,60 @@ end
         
     end
     
+    def add_new_csv_student_ilp_survey_completion(options = nil)
+        
+        s_db    = $tables.attach("STUDENT"      ).data_base
+        silp_db = $tables.attach("STUDENT_ILP"  ).data_base
+        
+        sql_str =
+        "SELECT
+            student_id,
+            CONCAT(
+                
+                '(',
+                
+                (
+                    SELECT
+                        count(primary_id)
+                    FROM #{silp_db}.student_ilp
+                    WHERE student_ilp.student_id = student.student_id
+                    AND description IS NOT NULL
+                    AND `ilp_entry_category_id` = '7'
+                ),
+                
+                '/',
+                
+                (
+                    SELECT
+                        count(primary_id)
+                    FROM #{silp_db}.student_ilp
+                    WHERE student_ilp.student_id = student.student_id
+                    AND `ilp_entry_category_id` = '7'
+                ),
+                
+                ')'
+                
+            ) 
+        FROM #{s_db}.`student`
+        WHERE student.active IS TRUE"
+        
+        headers =
+        [
+            "student_id",
+            "survey_completion"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_student_rtii_behavior(options = nil)
         
         srtiib_db = $tables.attach("student_rtii_behavior").data_base

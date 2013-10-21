@@ -114,7 +114,8 @@ end
             exact_match_only = [
                 "primary_id",
                 "sams_id",
-                "active"
+                "active",
+                "email_address"
             ]
             where_clause << " WHERE 1"
             a.each_pair{|k,v|
