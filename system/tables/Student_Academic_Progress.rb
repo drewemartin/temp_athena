@@ -286,6 +286,7 @@ end
         record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
         record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
         record.fields["data_source"         ].value = "Sapphire Current Class Grades"
+        record.fields["progress"            ].value = sapphire_record.fields["grade_numeric_tgb"].value
         
         record.save
         
