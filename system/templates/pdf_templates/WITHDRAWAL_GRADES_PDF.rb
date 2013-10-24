@@ -146,7 +146,8 @@ www.agora.org"
           [
             "Class",
             "Term",
-            "Percent"
+            "Percent",
+            "Type"
           ]
         ]
         
@@ -157,6 +158,11 @@ www.agora.org"
           row.push(record.fields["course_name"  ].to_user)
           row.push(record.fields["term"         ].to_user)
           row.push(record.fields["progress"     ].to_user)
+          if record.fields["data_source"  ].to_user.match("Sapphire")
+            row.push("Grade")
+          else
+            row.push("Progress")
+          end
           progress_table.push(row)
           
         } if records
@@ -164,7 +170,7 @@ www.agora.org"
         pdf.table(
           progress_table,
           :cell_style     => {:size=>8,:padding=>3},
-          :column_widths  => [375,75],
+          :column_widths  => [350,35,40],
           :row_colors     => ["E0E0E0", "FFFFFF"]
         )
         
