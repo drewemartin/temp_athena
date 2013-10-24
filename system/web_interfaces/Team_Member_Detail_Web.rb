@@ -59,7 +59,7 @@ end
         
         tabs = Array.new
         tabs.push(["Basic Information",     identity                ])
-        tabs.push(["Team Assignement",      team_assignment         ])
+        tabs.push(["Team Assignment",       team_assignment         ])
         tabs.push(["Student Management",    student_management      ])
         tabs.push(["Team Member Students",  team_member_students    ])
         tabs.push(["Team",                  team                    ])
