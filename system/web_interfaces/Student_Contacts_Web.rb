@@ -108,11 +108,19 @@ end
                     
                 ]
                 
+                directors   = $team.directors || []
+                is_director = directors.include?($team_member.primary_id.value)
+                
+                
                 records.each{|record|
                     
                     f = record.fields
                     
-                    disabled = $kit.params[:user_id] == f["created_by"].value ? false : true
+                    creator         = $team.find(:email_address=>f["created_by"].value)
+                    is_creator      = $kit.params[:user_id] == f["created_by"].value
+                    is_supervisor   = ($team_member.primary_id.value == creator.supervisor_team_id.value)
+                    
+                    disabled        = (is_director || is_supervisor || is_creator) ? false : true
                     
                     row = Array.new
                     ########################################################################

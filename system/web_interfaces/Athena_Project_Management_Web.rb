@@ -611,7 +611,12 @@ end
         return $tables.attach("TEAM").dd_choices(
             "CONCAT(legal_first_name,' ',legal_last_name)",
             "team.primary_id",
-            " JOIN #{ap_db}.athena_project_systems ON athena_project_systems.owner_team_id = team.primary_id
+            "LEFT JOIN #{ap_db}.athena_project_systems ON athena_project_systems.owner_team_id = team.primary_id
+            WHERE (
+                athena_project_systems.owner_team_id IS NOT NULL
+                OR employee_type = 'Principal'
+                OR employee_type = 'Director'
+            )
             GROUP BY team.primary_id
             ORDER BY CONCAT(legal_first_name,' ',legal_last_name) ASC "
         )

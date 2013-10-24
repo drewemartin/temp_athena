@@ -242,9 +242,10 @@ end
     end
     
     def update(create_audit_trail)
+        pre_update_record = table.by_primary_id(primary_id)
         fields.each_pair do |field_name, field|
             unless field_name == "primary_id" || field_name == "created_by" || field_name == "created_date"
-                current_value = get_field(field_name)
+                current_value = pre_update_record.fields[field_name].value
                 current_value = current_value && current_value.length > 0 ? current_value : "NULL"
                 if $base.to_db(field.datatype, current_value).to_s != field.to_db.to_s
                     
