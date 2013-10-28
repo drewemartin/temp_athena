@@ -1,20 +1,14 @@
 #!/usr/local/bin/ruby
-require 'firewatir'
-require 'watir'
+require 'watir-webdriver'
 
 class Sapphire_Interface
 
     #---------------------------------------------------------------------------
     def initialize()
         
-        @structure              = structure
-        @timeout                = 5
-        @current_school_year    = $tables.attach("SCHOOL_YEAR_DETAIL").field_value("WHERE current IS TRUE").split("-")[-1]
-        
-        login(
-            :school_code    => "EL",
-            :module         => "Student Information System"
-        )
+        @structure  = structure
+        @timeout    = 5
+        @params     = {}
         
     end
     #---------------------------------------------------------------------------
@@ -24,31 +18,54 @@ public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    def login(a={})
-    # :school_code  => "EL"
+    
+    def process_queue(queue_pid)
         
-        set_username
-        set_password  
-        click_login
-        select_school(      a[:school_code])
-        select_school_year( @current_school_year)
-        click_signon
+        @params[:queue_record   ] = $tables.attach("SAPPHIRE_INTERFACE_QUEUE"       ).by_primary_id(queue_pid)
+        #queue_record.fields["started_datetime"].set($base.right_now.to_db).save
         
-        if a.has_key?(:module)
+        @params[:map_record     ] = $tables.attach("SAPPHIRE_INTERFACE_MAP"         ).by_primary_id(queue_record.fields["map_id"              ].value)
+        @params[:options_record ] = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS"     ).by_primary_id(map_record.fields[  "sapphire_option_id"  ].value)
+        
+        school_id       = "EL"
+       
+        if options_record.fields["module_name"].match(/Student Information System/)
             
-            browser("https://agora-sapphire.k12system.com/Gradebook/CMS/SISLanding.cfm"                                                 ) if a[:module]=="Student Information System"
-            browser("https://agora-sapphire.k12system.com/Gradebook/CMS/IEPWriter/Landing.cfm"                                          ) if a[:module]=="Special Education / IEP Writer"
-            browser("https://agora-sapphire.k12system.com/Gradebook/CMS/AssessmentTracker.cfm?SID=A7F1E37C-040C-F841-875D0B001547EF40"  ) if a[:module]=="Assessment Tracker"
+            src_record  = $tables.attach(map_record.fields["athena_table"].value).by_primary_id(queue_record.fields["athena_pid"].value)
+            sid         = src_record.fields["student_id"].value
+            student     = $students.get(sid)
+            school_id   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
+            
+            @params[:school_code        ] = school_id
+            @params[:school_year        ] = $school.current_school_year.split("-")[-1]
+            @params[:module             ] = options_record.fields["module_name"].value
+            @params[:sid                ] = sid
+            @params[:new_value          ] = src_record.fields[map_record.fields["athena_field"].value].value
+            
+            student_update_record
             
         end
         
-        click(
-            :option_type    =>"id",
-            :option_value   =>"ulaitem0z0"
-        )
+        #queue_record.fields["completed_datetime"].set($base.right_now.to_db).save
+        
     end
-
+    
+    def follow_options_path(options_record, field_value = false)
+        
+        if options_record.fields["parent_option_id"].is_true?
+            this_options_record = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS").by_primary_id(options_record.fields["parent_option_id"].value)
+            follow_options_path(this_options_record)
+        end
+        
+        options_hash = {}
+        options_hash[:option_type  ] = options_record.fields["option_type"   ].value    
+        options_hash[:option_value ] = options_record.fields["option_value"  ].value     
+        options_hash[:field_value  ] = field_value                                      if field_value     
+        
+        send(options_record.fields["action"].value, options_hash)
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________STRUCTURE
 end
@@ -82,7 +99,7 @@ end
             
             page = "https://agora-sapphire.k12system.com/Gradebook/main.cfm"
             
-            Watir::Browser.default = "firefox"
+            #Watir::Browser.default = "firefox"
             session = Watir::Browser.new
             sleep 2
             session.goto(page)
@@ -170,7 +187,107 @@ end
         end
         
     end
+    
+    def goto_module
+        
+        selected_module = @params[:options_record ].fields["module_name"].value
+        
+        browser("https://agora-sapphire.k12system.com/Gradebook/CMS/SISLanding.cfm"                                                 ) if selected_module=="Student Information System"
+        browser("https://agora-sapphire.k12system.com/Gradebook/CMS/IEPWriter/Landing.cfm"                                          ) if selected_module=="Special Education / IEP Writer"
+        browser("https://agora-sapphire.k12system.com/Gradebook/CMS/AssessmentTracker.cfm?SID=A7F1E37C-040C-F841-875D0B001547EF40"  ) if selected_module=="Assessment Tracker"
+        
+    end
+    
+    
+    
+    
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________ACTIONS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    def click
+        
+        field_found         = false
+        i = 0
+        until field_found
+            
+            if browser.link(@params[:option_type].to_sym, @params[:option_value]).exists?
+                
+                browser.link(@params[:option_type].to_sym,@params[:option_value]).click
+                field_found = true
+                
+            else
+                sleep 1
+            end
+            if i >= @timeout
+                notify_timeout
+            end
+            i+=1
+        end
+        
+    end
 
+    def select_value(params={})
+        
+        field_found         = false
+        i = 0
+        until field_found
+            if browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
+                
+                browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).select_value(params ? params[:new_value] : @params[:new_value])
+                field_found = true
+                
+            else
+                sleep 1
+            end
+            if i >= @timeout
+                notify_timeout
+            end
+            i+=1
+        end
+        
+    end
+
+    def set
+        
+        field_found         = false
+        i = 0
+        until field_found
+            
+            if browser.text_field(@params[:option_type].to_sym, @params[:option_value]).exists?
+                
+                browser.text_field(@params[:option_type].to_sym, @params[:option_value]).set @params[:new_value]
+                field_found = true
+                
+            else
+                sleep 1
+            end
+            if i >= @timeout
+                notify_timeout
+            end
+            i+=1
+        end
+        
+    end
+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________LOGIN
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def login
+        
+        set_username
+        set_password  
+        click_login
+        select_school(      @params[:school_code])
+        select_school_year( @params[:school_year])
+        click_signon
+        
+    end
+    
     def select_school(school_code)
         
         field_identifier    = "school_id"
@@ -256,22 +373,55 @@ end
         
     end
     
-    def click(a={})
-    # :option_type=>nil,
-    # :option_value=>nil
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________STUDENT_INFORMATION_SYSTEM
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
+    def goto_student_demographics
+        
+        browser("https://agora-sapphire.k12system.com/Gradebook/CMS/StudentDemographics.cfm")
+        
+    end
+    
+    def save_student
+        
+        sleep 3
+        
+        browser.execute_script(
+            "if ($('main_form').onsubmit()) {
+                
+                $('main_form').Action.value='Save';
+                $('main_form').Action.disabled=false;
+                if ($('main_form').smartsubmit) {
+                    $('main_form').smartsubmit(true);
+                } else {
+                    $('main_form').submit();
+                }
+                
+            }else{
+                alert('onsubmit NOT executed');
+            }"
+        )
+       
+    end
+    
+    def search_students
         
         field_found         = false
         i = 0
         until field_found
-            if a[:option_type]=="id" && browser.link(:id, a[:option_value]).exists?
-                x = browser.link(:id,a[:option_value]).click
-                test = "window.alert('test');"
-                realsies = "document.getElementById('toolbar_box').className = 'ihover iactive';"
-                x = browser.execute_script("document.getElementById('ulaitem0z0').onmouseover();") 
+            if browser.text_field(:id, "namesrch_string").exists?
+                
+                browser.text_field(:id, "namesrch_string").focus
+                driver = browser.driver
+               
+                @params[:sid].each do |c|
+                    driver.switch_to.active_element.send_keys(c)
+                end
+                
                 field_found = true
-            elsif a[:option_type]=="xpath" && browser.link(:xpath, a[:option_value]).exists?
-                browser.link(:id, "ulaitem0z0z1z1").click
-                field_found = true
+                
             else
                 sleep 1
             end
@@ -282,6 +432,42 @@ end
         end
         
     end
+    
+    def select_student
+        
+        field_found         = false
+        i = 0
+        until field_found
+            if browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").exists?
+                
+                browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").click
+                field_found = true
+                
+            else
+                sleep 1
+            end
+            if i >= @timeout
+                notify_timeout
+            end
+            i+=1
+        end
+        
+    end
+    
+    def student_update_record
+        
+        login
+        goto_module
+        goto_student_demographics
+        search_students
+        select_student
+        
+        follow_options_path(options_record)
+        
+        save_student
+        
+    end
+    
 end
 
 Sapphire_Interface.new
