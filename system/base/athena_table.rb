@@ -1224,6 +1224,23 @@ end
         when :after_change_field
             #looks in own class for :after_change_field for the field passed, requires the parameter of a Field object to be passed
             
+            #SAPPHIRE UPDATE
+            #SEARCH FOR ACTIVE MAP DEFINITION THAT INCLUDES THE CURRENT TABLE AND FIELD.
+            #IF ANY ARE FOUND QUEUE THE PROCESS
+            if map_id = $tables.attach("SAPPHIRE_INTERFACE_MAP").field_value(
+                "primary_id",
+                "WHERE athena_table     = '#{table_name         }'
+                AND athena_field        = '#{args.field_name    }'
+                AND trigger_event       = 'after_change_field'"
+            )
+                
+                queue_record = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").new_row
+                queue_record.fields["map_id"            ].value = map_id
+                queue_record.fields["athena_pid"        ].value = args.primary_id
+                queue_record.save
+                
+            end
+            
             #CALL FOR A SPECIFIC FIELD THAT HAS CHANGED
             trigger_function_name = "#{:after_change_field}_#{args.field_name}"
             send(trigger_function_name, args) if respond_to?(trigger_function_name)
