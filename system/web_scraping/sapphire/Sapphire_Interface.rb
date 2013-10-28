@@ -22,35 +22,37 @@ end
     def process_queue(queue_pid)
         
         @params[:queue_record   ] = $tables.attach("SAPPHIRE_INTERFACE_QUEUE"       ).by_primary_id(queue_pid)
-        #queue_record.fields["started_datetime"].set($base.right_now.to_db).save
+        @params[:queue_record   ].fields["started_datetime"].set($base.right_now.to_db).save
         
-        @params[:map_record     ] = $tables.attach("SAPPHIRE_INTERFACE_MAP"         ).by_primary_id(queue_record.fields["map_id"              ].value)
-        @params[:options_record ] = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS"     ).by_primary_id(map_record.fields[  "sapphire_option_id"  ].value)
+        @params[:map_record     ] = $tables.attach("SAPPHIRE_INTERFACE_MAP"         ).by_primary_id(@params[:queue_record   ].fields["map_id"              ].value)
+        @params[:options_record ] = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS"     ).by_primary_id(@params[:map_record     ].fields["sapphire_option_id"  ].value)
         
         school_id       = "EL"
        
-        if options_record.fields["module_name"].match(/Student Information System/)
+        if @params[:options_record].fields["module_name"].match(/Student Information System/)
             
-            src_record  = $tables.attach(map_record.fields["athena_table"].value).by_primary_id(queue_record.fields["athena_pid"].value)
-            sid         = src_record.fields["student_id"].value
-            student     = $students.get(sid)
-            school_id   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
+            @params[:src_record]        = $tables.attach(@params[:map_record].fields["athena_table"].value).by_primary_id(@params[:queue_record].fields["athena_pid"].value)
+            sid                         = @params[:src_record].fields["student_id"].value
+            student                     = $students.get(sid)
+            school_id                   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
             
             @params[:school_code        ] = school_id
             @params[:school_year        ] = $school.current_school_year.split("-")[-1]
-            @params[:module             ] = options_record.fields["module_name"].value
+            @params[:module             ] = @params[:options_record].fields["module_name"].value
             @params[:sid                ] = sid
-            @params[:new_value          ] = src_record.fields[map_record.fields["athena_field"].value].value
+            @params[:new_value          ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value
             
             student_update_record
             
         end
         
-        #queue_record.fields["completed_datetime"].set($base.right_now.to_db).save
+        @params[:queue_record   ].fields["completed_datetime"].set($base.right_now.to_db).save
+        
+        browser.close
         
     end
     
-    def follow_options_path(options_record, field_value = false)
+    def follow_options_path(options_record = @params[:options_record], field_value = false)
         
         if options_record.fields["parent_option_id"].is_true?
             this_options_record = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS").by_primary_id(options_record.fields["parent_option_id"].value)
@@ -60,8 +62,8 @@ end
         options_hash = {}
         options_hash[:option_type  ] = options_record.fields["option_type"   ].value    
         options_hash[:option_value ] = options_record.fields["option_value"  ].value     
-        options_hash[:field_value  ] = field_value                                      if field_value     
-        
+        options_hash[:field_value  ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value   
+        puts options_hash
         send(options_record.fields["action"].value, options_hash)
         
     end
@@ -207,15 +209,14 @@ def x______________ACTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def click
+    def click(params={})
         
-        field_found         = false
+        field_found = false
         i = 0
         until field_found
-            
-            if browser.link(@params[:option_type].to_sym, @params[:option_value]).exists?
+            if browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
                 
-                browser.link(@params[:option_type].to_sym,@params[:option_value]).click
+                browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).click
                 field_found = true
                 
             else
@@ -231,7 +232,7 @@ end
 
     def select_value(params={})
         
-        field_found         = false
+        field_found = false
         i = 0
         until field_found
             if browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
@@ -250,15 +251,14 @@ end
         
     end
 
-    def set
+    def set(params={})
         
-        field_found         = false
+        field_found = false
         i = 0
         until field_found
-            
-            if browser.text_field(@params[:option_type].to_sym, @params[:option_value]).exists?
+            if browser.text_field(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
                 
-                browser.text_field(@params[:option_type].to_sym, @params[:option_value]).set @params[:new_value]
+                browser.text_field(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).set(params ? params[:field_value] : @params[:field_value])
                 field_found = true
                 
             else
@@ -462,7 +462,7 @@ end
         search_students
         select_student
         
-        follow_options_path(options_record)
+        follow_options_path
         
         save_student
         
