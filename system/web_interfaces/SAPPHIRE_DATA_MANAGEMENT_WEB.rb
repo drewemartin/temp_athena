@@ -27,8 +27,9 @@ end
         
         tabs = Array.new
         
-        tabs.push(["Dictionaries",  load_tab_1  ])
-        tabs.push(["Calendars",     load_tab_2  ])
+        tabs.push(["Dictionaries",              load_tab_1  ])
+        tabs.push(["Calendars",                 load_tab_2  ])
+        tabs.push(["Auto Update - Sapphire",    load_tab_3  ])
         
         output = $kit.tools.tabs(
             tabs,
@@ -45,6 +46,10 @@ end
     end
     
     def response
+        
+        if $kit.params[:add_new_SAPPHIRE_INTERFACE_MAP]
+            $kit.modify_tag_content("tabs-3", load_tab_3 , "update")
+        end
         
         #if $kit.params[:add_new_SAPPHIRE_CALENDARS_CALENDARS]
         #    
@@ -161,6 +166,64 @@ end
         
     end
     
+    def add_new_record_sapphire_interface_map
+        
+        output = String.new
+        
+        table_array = Array.new
+        
+        table_array.push(
+            
+            #HEADERS
+            [
+             
+                "Settings",
+                "active"             
+                
+            ]
+            
+        )
+        
+        record = $tables.attach("SAPPHIRE_INTERFACE_MAP").new_row
+        
+        setting_field = "<DIV class='settings_container'>"
+        setting_field << record.fields["sapphire_option_id"  ].web.select(
+            :label_option   => "Sapphire Option",
+            :dd_choices     => sapphire_options_dd
+        )
+        setting_field << record.fields["athena_table"        ].web.select(
+            :label_option   => "Athena Table",
+            :dd_choices     => $dd.from_array($tables.student_table_names),
+            :onchange       => "fill_select_option('#{record.fields["athena_field" ].web.field_id}', this  );",
+            :validate       => true
+        )
+        setting_field << record.fields["athena_field"        ].web.select(
+            :label_option   => "Athena Field",
+            :dd_choices     =>
+                !record.fields["athena_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["athena_table"].value).field_order) : nil,
+            :validate       => true
+        )
+        setting_field << record.fields["trigger_event"       ].web.select(
+            :label_option   => "Trigger Event",
+            :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
+        setting_field << "</DIV>"
+        
+        row = Array.new
+        row.push(
+            
+            setting_field,
+            record.fields["active"].set('1').web.select(:dd_choices=>$dd.bool)
+            
+        )
+        
+        table_array.push(row) 
+        
+        output << $kit.tools.data_table(table_array, "SAPPHIRE_INTERFACE_MAP", type = "NewRecord")
+        
+        return output
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
@@ -277,6 +340,17 @@ end
     end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________DROP_DOWN_FILL_SELECT_OPTION
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def fill_select_option_athena_field(field_name, field_value, pid)
+        
+        return $tables.attach("SAPPHIRE_INTERFACE_MAP").new_row.fields["athena_field"].web.select(:dd_choices=>$dd.from_array($tables.attach(field_value).field_order))
+        
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DROP_DOWN_OPTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -331,6 +405,16 @@ end
         )
     end
     
+    def sapphire_options_dd
+        
+        $tables.attach("SAPPHIRE_INTERFACE_OPTIONS").dd_choices(
+            "CONCAT(IFNULL(IF(module_name = 'Student Information System','SIS',module_name),''), ' - ', path, ' - ', option_name)",
+            "primary_id",
+            "WHERE standard IS TRUE"
+        )
+        
+    end
+    
     def schools_dd
         $dd.from_array(
             [
@@ -369,6 +453,79 @@ end
         
     end
 
+    def load_tab_3(arg = nil)#AUTO UPDATE
+        
+        output = String.new
+        
+        table_array = Array.new
+        
+        output << "<div class='table_container'>"
+        
+        output << $tools.button_new_row(table_name = "SAPPHIRE_INTERFACE_MAP")
+        
+        table_array.push(
+            
+            #HEADERS
+            [
+             
+                "Settings",
+                "active"             
+                
+            ]
+            
+        )
+        
+        pids = $tables.attach("SAPPHIRE_INTERFACE_MAP").primary_ids
+        pids.each{|pid|
+            
+            record = $tables.attach("SAPPHIRE_INTERFACE_MAP").by_primary_id(pid)
+            
+            setting_field = "<DIV class='settings_container'>"
+            setting_field << record.fields["sapphire_option_id"  ].web.select(
+                :disabled       => true,
+                :label_option   => "Sapphire Option",
+                :dd_choices     => sapphire_options_dd
+            )
+            setting_field << record.fields["athena_table"        ].web.select(
+                :disabled       => true,
+                :label_option   => "Athena Table",
+                :dd_choices     => $dd.from_array($tables.student_table_names),
+                :onchange       => "fill_select_option('#{record.fields["athena_field" ].web.field_id}', this  );",
+                :validate       => true
+            )
+            setting_field << record.fields["athena_field"        ].web.select(
+                :disabled       => true,
+                :label_option   => "Athena Field",
+                :dd_choices     =>
+                    !record.fields["athena_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["athena_table"].value).field_order) : nil,
+                :validate       => true
+            )
+            setting_field << record.fields["trigger_event"       ].web.select(
+                :disabled       => true,
+                :label_option   => "Trigger Event",
+                :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
+            setting_field << "</DIV>"
+            
+            row = Array.new
+            row.push(
+                
+                setting_field,
+                record.fields["active"].web.select(:dd_choices=>$dd.bool)
+                
+            )
+            
+            table_array.push(row)
+            
+        } if pids
+        
+        output << $tools.data_table(table_array, "sapphire_calendars_calendars")
+        
+        output << "</div>"
+       
+        return output
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
@@ -389,6 +546,8 @@ end
             .table_container{
                 margin-bottom:25px;
             }
+            div.settings_container  select{ width: 600px;}
+            div.settings_container  label{  width: 100px; display: inline-block;}
         </style>"
         
         return output
