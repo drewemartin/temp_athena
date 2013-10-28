@@ -1325,7 +1325,7 @@ end
         sql_str =
         "SELECT
             
-            student_ilp.student_id,
+            student.student_id,
             ilp_entry_category.name,
             ilp_entry_type.name,
             student_ilp.description,
@@ -1349,9 +1349,9 @@ end
             student_ilp.created_date,
             student_ilp.created_by
             
-        FROM #{silp_db}.`student_ilp`
+        FROM #{silp_db}.student
         
-        LEFT JOIN   #{s_db      }.student               ON student.student_id                   =  student_ilp.student_id  
+        LEFT JOIN   #{s_db      }.student_ilp               ON student.student_id                   =  student_ilp.student_id  
         LEFT JOIN   #{ilp_cat_db}.ilp_entry_category    ON student_ilp.ilp_entry_category_id    =  ilp_entry_category.primary_id
         LEFT JOIN   #{ilp_typ_db}.ilp_entry_type        ON student_ilp.ilp_entry_type_id        =  ilp_entry_type.primary_id
         
