@@ -70,6 +70,14 @@ end
         return names
     end
 
+    def student_table_names
+        names = Array.new
+        Dir["#{File.dirname(__FILE__).gsub("apis","tables/student*.rb")}"].each {|file|
+            names.push(file.split("/").last.split(".").first)
+        }
+        return names
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 private
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
