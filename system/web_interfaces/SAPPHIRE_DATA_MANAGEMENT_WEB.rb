@@ -203,7 +203,7 @@ end
                 !record.fields["athena_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["athena_table"].value).field_order) : nil,
             :validate       => true
         )
-        setting_field << record.fields["trigger_event"       ].web.select(
+        setting_field << record.fields["trigger_event"       ].set("after_change_field").web.select(
             :label_option   => "Trigger Event",
             :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
         setting_field << "</DIV>"
@@ -503,7 +503,7 @@ end
             setting_field << record.fields["trigger_event"       ].web.select(
                 :disabled       => true,
                 :label_option   => "Trigger Event",
-                :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
+                :dd_choices     => $dd.from_array(["after_change_field"]))
             setting_field << "</DIV>"
             
             row = Array.new
