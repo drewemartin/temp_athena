@@ -63,7 +63,7 @@ end
         options_hash[:option_type  ] = options_record.fields["option_type"   ].value    
         options_hash[:option_value ] = options_record.fields["option_value"  ].value     
         options_hash[:field_value  ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value   
-        puts options_hash
+        
         send(options_record.fields["action"].value, options_hash)
         
     end
