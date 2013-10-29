@@ -129,7 +129,7 @@ end
                     row.push(f["datetime"                      ].web.default(:disabled=>disabled, :date_range_end=>"#{$iuser}")+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
                     row.push(f["successful"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["successful"                    ].to_user()+"</div>")
                     row.push(f["notes"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
-                    row.push(f["contact_type"                  ].web.label()) 
+                    row.push(f["contact_type"                  ].web.select( :disabled=>disabled, :dd_choices=>type_dd)) 
                     row.push(f["tep_initial"                   ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["tep_initial"                   ].to_user()+"</div>")
                     row.push(f["tep_followup"                  ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["tep_followup"                  ].to_user()+"</div>")
                     row.push(f["attendance"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["attendance"                    ].to_user()+"</div>")
@@ -481,7 +481,6 @@ end
             #datetime_1{                                                        width:183px;}                                           
             div#blank.STUDENT_CONTACTS__datetime label{                         width:160px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__successful label{                       width:135px; display:inline-block;} 
-            div#blank.STUDENT_CONTACTS__contact_type label{                     width:100px; display:inline-block; vertical-align:top;}
             
             div#blank.STUDENT_CONTACTS__notes textarea{                         resize:none;}
             div#blank.STUDENT_CONTACTS__contact_type textarea{                  width:500px; height:100px; resize:none;}
@@ -593,7 +592,7 @@ end
             input.datetimepick{                                                 width:145px; font-size:11px;}
             div.STUDENT_CONTACTS__notes textarea{                               width:648px; height:75px;}
             
-            div.STUDENT_CONTACTS__contact_type{                                 width:100px; margin-left:auto; margin-right:auto;}
+            div.STUDENT_CONTACTS__contact_type{                                 width:200px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__successful{                                   width:20px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__other{                                        width:20px; margin-left:auto; margin-right:auto;}
             
