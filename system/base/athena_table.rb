@@ -1233,14 +1233,17 @@ end
             #IF ANY ARE FOUND QUEUE THE PROCESS
             if args.table.field_order.include?("student_id")
                 
-                if $students.get($tables.attach(args.table.table_name).field_value("student_id", "WHERE primary_id = '#{args.primary_id}'")).active.is_true?
+                if map_id = $tables.attach("SAPPHIRE_INTERFACE_MAP").field_value(
+                    "primary_id",
+                    "WHERE athena_table     = '#{table_name         }'
+                    AND athena_field        = '#{args.field_name    }'
+                    AND trigger_event       = 'after_change_field'"
+                )
                     
-                    if map_id = $tables.attach("SAPPHIRE_INTERFACE_MAP").field_value(
-                        "primary_id",
-                        "WHERE athena_table     = '#{table_name         }'
-                        AND athena_field        = '#{args.field_name    }'
-                        AND trigger_event       = 'after_change_field'"
-                    )
+                    sid     = $tables.attach(args.table.table_name).field_value("student_id", "WHERE primary_id = '#{args.primary_id}'")
+                    student = $students.get(sid)
+                    
+                    if student && student.active.is_true?
                         
                         queue_record = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").new_row
                         queue_record.fields["map_id"            ].value = map_id
