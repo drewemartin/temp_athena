@@ -191,9 +191,21 @@ end
             :label_option   => "Sapphire Option",
             :dd_choices     => sapphire_options_dd
         )
+        setting_field << record.fields["sapphire_table"        ].web.select(
+            :label_option   => "Sapphire Table",
+            :dd_choices     => $dd.from_array($tables.sapphire_student_table_names),
+            :onchange       => "fill_select_option('#{record.fields["sapphire_field" ].web.field_id}', this  );",
+            :validate       => true
+        )
+        setting_field << record.fields["sapphire_field"        ].web.select(
+            :label_option   => "Sapphire Field",
+            :dd_choices     =>
+                !record.fields["sapphire_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["sapphire_table"].value).field_order) : nil,
+            :validate       => true
+        )
         setting_field << record.fields["athena_table"        ].web.select(
             :label_option   => "Athena Table",
-            :dd_choices     => $dd.from_array($tables.student_table_names),
+            :dd_choices     => $dd.from_array($tables.student_table_names(:one_to_one)),
             :onchange       => "fill_select_option('#{record.fields["athena_field" ].web.field_id}', this  );",
             :validate       => true
         )
@@ -350,6 +362,12 @@ end
         
     end
     
+    def fill_select_option_sapphire_field(field_name, field_value, pid)
+        
+        return $tables.attach("SAPPHIRE_INTERFACE_MAP").new_row.fields["sapphire_field"].web.select(:dd_choices=>$dd.from_array($tables.attach(field_value).field_order))
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DROP_DOWN_OPTIONS
 end
@@ -486,10 +504,24 @@ end
                 :label_option   => "Sapphire Option",
                 :dd_choices     => sapphire_options_dd
             )
+            setting_field << record.fields["sapphire_table"        ].web.select(
+                :disabled       => true,
+                :label_option   => "Sapphire Table",
+                :dd_choices     => $dd.from_array($tables.sapphire_student_table_names),
+                :onchange       => "fill_select_option('#{record.fields["sapphire_field" ].web.field_id}', this  );",
+                :validate       => true
+            )
+            setting_field << record.fields["sapphire_field"        ].web.select(
+                :disabled       => true,
+                :label_option   => "Sapphire Field",
+                :dd_choices     =>
+                    !record.fields["sapphire_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["sapphire_table"].value).field_order) : nil,
+                :validate       => true
+            )
             setting_field << record.fields["athena_table"        ].web.select(
                 :disabled       => true,
                 :label_option   => "Athena Table",
-                :dd_choices     => $dd.from_array($tables.student_table_names),
+                :dd_choices     => $dd.from_array($tables.student_table_names(:one_to_one)),
                 :onchange       => "fill_select_option('#{record.fields["athena_field" ].web.field_id}', this  );",
                 :validate       => true
             )

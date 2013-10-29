@@ -53,6 +53,8 @@ end
         structure_hash["fields"] = Hash.new
             
             structure_hash["fields"]["sapphire_option_id"   ] = {"data_type"=>"int",  "file_field"=>"sapphire_option_id"    } if field_order.push("sapphire_option_id"      )
+            structure_hash["fields"]["sapphire_table"       ] = {"data_type"=>"text", "file_field"=>"sapphire_table"        } if field_order.push("sapphire_table"          )
+            structure_hash["fields"]["sapphire_field"       ] = {"data_type"=>"text", "file_field"=>"sapphire_field"        } if field_order.push("sapphire_field"          )
             structure_hash["fields"]["athena_table"         ] = {"data_type"=>"text", "file_field"=>"athena_table"          } if field_order.push("athena_table"            )
             structure_hash["fields"]["athena_field"         ] = {"data_type"=>"text", "file_field"=>"athena_field"          } if field_order.push("athena_field"            )
             structure_hash["fields"]["trigger_event"        ] = {"data_type"=>"text", "file_field"=>"trigger_event"         } if field_order.push("trigger_event"           )
