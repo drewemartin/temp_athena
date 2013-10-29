@@ -1231,17 +1231,25 @@ end
             #SAPPHIRE UPDATE
             #SEARCH FOR ACTIVE MAP DEFINITION THAT INCLUDES THE CURRENT TABLE AND FIELD.
             #IF ANY ARE FOUND QUEUE THE PROCESS
-            if map_id = $tables.attach("SAPPHIRE_INTERFACE_MAP").field_value(
-                "primary_id",
-                "WHERE athena_table     = '#{table_name         }'
-                AND athena_field        = '#{args.field_name    }'
-                AND trigger_event       = 'after_change_field'"
-            )
+            if args.table.field_order.include?("student_id")
                 
-                queue_record = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").new_row
-                queue_record.fields["map_id"            ].value = map_id
-                queue_record.fields["athena_pid"        ].value = args.primary_id
-                queue_record.save
+                if $students.get($tables.attach(args.table.table_name).field_value("student_id", "WHERE primary_id = '#{args.primary_id}'")).active.is_true?
+                    
+                    if map_id = $tables.attach("SAPPHIRE_INTERFACE_MAP").field_value(
+                        "primary_id",
+                        "WHERE athena_table     = '#{table_name         }'
+                        AND athena_field        = '#{args.field_name    }'
+                        AND trigger_event       = 'after_change_field'"
+                    )
+                        
+                        queue_record = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").new_row
+                        queue_record.fields["map_id"            ].value = map_id
+                        queue_record.fields["athena_pid"        ].value = args.primary_id
+                        queue_record.save
+                        
+                    end
+                    
+                end
                 
             end
             
