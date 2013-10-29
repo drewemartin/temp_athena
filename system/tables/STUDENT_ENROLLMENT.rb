@@ -66,6 +66,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "student_enrollment",
                 "file_name"         => "student_enrollment.csv",
                 "file_location"     => "student_enrollment",
@@ -74,7 +75,7 @@ end
                 "download_times"    => nil,
                 "trigger_events"    => nil,
                 "audit"             => true,
-                :relationship       => :one_to_many
+                :relationship       => :one_to_one
             }
             @table_structure = set_fields(structure_hash)
         end
@@ -84,20 +85,13 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["student_id"]              = {"data_type"=>"int",  "file_field"=>"student_id"}                 if field_order.push("student_id")
-            structure_hash["fields"]["enrollment_start"]        = {"data_type"=>"date", "file_field"=>"enrollment_start"}           if field_order.push("enrollment_start")
-            structure_hash["fields"]["initial_enrollment_year"] = {"data_type"=>"year", "file_field"=>"initial_enrollment_year"}    if field_order.push("initial_enrollment_year")
-            structure_hash["fields"]["enrollreceiveddate"]      = {"data_type"=>"date", "file_field"=>"enrollreceiveddate"}         if field_order.push("enrollreceiveddate")
-            structure_hash["fields"]["enrollapproveddate"]      = {"data_type"=>"date", "file_field"=>"enrollapproveddate"}         if field_order.push("enrollapproveddate")
-            structure_hash["fields"]["schoolenrolldate"]        = {"data_type"=>"date", "file_field"=>"schoolenrolldate"}           if field_order.push("schoolenrolldate")
-            structure_hash["fields"]["districtofresidence"]     = {"data_type"=>"text", "file_field"=>"districtofresidence"}        if field_order.push("districtofresidence")
-            structure_hash["fields"]["withdrawreason"]          = {"data_type"=>"text", "file_field"=>"withdrawreason"}             if field_order.push("withdrawreason")
-            structure_hash["fields"]["withdrawdate"]            = {"data_type"=>"date", "file_field"=>"withdrawdate"}               if field_order.push("withdrawdate")
-            structure_hash["fields"]["schoolwithdrawdate"]      = {"data_type"=>"date", "file_field"=>"schoolwithdrawdate"}         if field_order.push("schoolwithdrawdate")
-            structure_hash["fields"]["do_not_call"]             = {"data_type"=>"text", "file_field"=>"do_not_call"}                if field_order.push("do_not_call")
-            structure_hash["fields"]["transferring_to"]         = {"data_type"=>"text", "file_field"=>"transferring_to"}            if field_order.push("transferring_to")
-            structure_hash["fields"]["enrollment_end"]          = {"data_type"=>"date", "file_field"=>"enrollment_end"}             if field_order.push("enrollment_end")
-            structure_hash["fields"]["active"]                  = {"data_type"=>"bool", "file_field"=>"active"}                     if field_order.push("active")
+            structure_hash["fields"]["student_id"]              = {"data_type"=>"int",  "file_field"=>"student_id"             } if field_order.push("student_id")
+            structure_hash["fields"]["preferred_name"]          = {"data_type"=>"text", "file_field"=>"preferred_name"         } if field_order.push("preferred_name")
+            structure_hash["fields"]["enrollreceiveddate"]      = {"data_type"=>"date", "file_field"=>"enrollreceiveddate"     } if field_order.push("enrollreceiveddate")
+            structure_hash["fields"]["language"]                = {"data_type"=>"text", "file_field"=>"language"               } if field_order.push("language")
+            structure_hash["fields"]["stu_lang_first_aquired"]  = {"data_type"=>"text", "file_field"=>"stu_lang_first_aquired" } if field_order.push("stu_lang_first_aquired")
+            structure_hash["fields"]["homelangsurv"]            = {"data_type"=>"bool", "file_field"=>"homelangsurv"           } if field_order.push("homelangsurv")
+            structure_hash["fields"]["countryofbirth"]          = {"data_type"=>"text", "file_field"=>"countryofbirth"         } if field_order.push("countryofbirth")
         structure_hash["field_order"] = field_order
         return structure_hash
     end
