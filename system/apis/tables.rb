@@ -70,10 +70,19 @@ end
         return names
     end
 
-    def student_table_names
+    def sapphire_student_table_names
+        names = Array.new
+        Dir["#{File.dirname(__FILE__).gsub("apis","tables/sapphire_student*.rb")}"].each {|file|
+            names.push(file.split("/").last.split(".").first)
+        }
+        return names
+    end
+
+    def student_table_names(relationship = nil)
         names = Array.new
         Dir["#{File.dirname(__FILE__).gsub("apis","tables/student*.rb")}"].each {|file|
-            names.push(file.split("/").last.split(".").first)
+            filename = file.split("/").last.split(".").first
+            names.push(filename) if (!relationship || $tables.attach(filename).relationship == relationship) 
         }
         return names
     end
