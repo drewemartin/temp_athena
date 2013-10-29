@@ -730,7 +730,7 @@ end
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>school)
         pids = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").primary_ids(
             "WHERE course_id = 'FC1314'
-            AND section_id < 132
+            AND section_id < 150
             AND student_id IN(#{sids.join(',')})"
         ) if sids
         pids.each{|pid|
@@ -758,7 +758,7 @@ end
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>school)
         pids = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").primary_ids(
             "WHERE course_id = 'FC1314'
-            AND section_id >= 132
+            AND section_id >= 150
             AND student_id IN(#{sids.join(',')})"
         ) if sids
         pids.each{|pid|

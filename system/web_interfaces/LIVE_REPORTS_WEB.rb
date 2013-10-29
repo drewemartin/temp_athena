@@ -999,6 +999,7 @@ end
             team.legal_first_name,
             student_contacts.created_by,
             team.department,
+            team.title,
             student_contacts.created_date,
             TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
         FROM #{sc_db}.student_contacts
@@ -1042,6 +1043,7 @@ end
             "Created By First Name",
             "Created By Email",
             "Created By Department",
+            "Created By Title",
             "Created Date",
             "Days Between Contact And Entry"
         ]
