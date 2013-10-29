@@ -1351,9 +1351,9 @@ end
             student_ilp.created_date,
             student_ilp.created_by
             
-        FROM #{silp_db}.student
+        FROM #{s_db}.student
         
-        LEFT JOIN   #{s_db      }.student_ilp               ON student.student_id                   =  student_ilp.student_id  
+        LEFT JOIN   #{silp_db   }.student_ilp           ON student.student_id                   =  student_ilp.student_id  
         LEFT JOIN   #{ilp_cat_db}.ilp_entry_category    ON student_ilp.ilp_entry_category_id    =  ilp_entry_category.primary_id
         LEFT JOIN   #{ilp_typ_db}.ilp_entry_type        ON student_ilp.ilp_entry_type_id        =  ilp_entry_type.primary_id
         
