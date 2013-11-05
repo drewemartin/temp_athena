@@ -85,13 +85,13 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["student_id"]              = {"data_type"=>"int",  "file_field"=>"student_id"             } if field_order.push("student_id")
-            structure_hash["fields"]["preferred_name"]          = {"data_type"=>"text", "file_field"=>"preferred_name"         } if field_order.push("preferred_name")
-            structure_hash["fields"]["enrollreceiveddate"]      = {"data_type"=>"date", "file_field"=>"enrollreceiveddate"     } if field_order.push("enrollreceiveddate")
-            structure_hash["fields"]["language"]                = {"data_type"=>"text", "file_field"=>"language"               } if field_order.push("language")
-            structure_hash["fields"]["stu_lang_first_aquired"]  = {"data_type"=>"text", "file_field"=>"stu_lang_first_aquired" } if field_order.push("stu_lang_first_aquired")
-            structure_hash["fields"]["homelangsurv"]            = {"data_type"=>"bool", "file_field"=>"homelangsurv"           } if field_order.push("homelangsurv")
-            structure_hash["fields"]["countryofbirth"]          = {"data_type"=>"text", "file_field"=>"countryofbirth"         } if field_order.push("countryofbirth")
+            structure_hash["fields"]["student_id"]              = {"data_type"=>"int",  "file_field"=>"student_id"              } if field_order.push("student_id")
+            structure_hash["fields"]["preferredname"]           = {"data_type"=>"text", "file_field"=>"preferredname"           } if field_order.push("preferredname")
+            structure_hash["fields"]["enrollreceiveddate"]      = {"data_type"=>"date", "file_field"=>"enrollreceiveddate"      } if field_order.push("enrollreceiveddate")
+            structure_hash["fields"]["language"]                = {"data_type"=>"text", "file_field"=>"language"                } if field_order.push("language")
+            structure_hash["fields"]["stu_lang_first_acquired"] = {"data_type"=>"text", "file_field"=>"stu_lang_first_acquired" } if field_order.push("stu_lang_first_acquired")
+            structure_hash["fields"]["homelangsurv"]            = {"data_type"=>"bool", "file_field"=>"homelangsurv"            } if field_order.push("homelangsurv")
+            structure_hash["fields"]["countryofbirth"]          = {"data_type"=>"text", "file_field"=>"countryofbirth"          } if field_order.push("countryofbirth")
         structure_hash["field_order"] = field_order
         return structure_hash
     end
