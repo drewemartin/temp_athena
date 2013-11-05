@@ -1516,7 +1516,22 @@ end
             student_scantron_performance_level.`stron_ent_score_r`,
             student_scantron_performance_level.`stron_ext_perf_r`,
             student_scantron_performance_level.`stron_ext_score_r`,
-            (SELECT created_date FROM #{spe_db}.scantron_performance_extended WHERE primary_id =1) AS 'Last Updated'
+            (
+                SELECT
+                    modified_date
+                FROM    #{sspl_db}.zz_student_scantron_performance_level
+                WHERE   modified_pid = student_scantron_performance_level.primary_id
+                GROUP BY modified_pid
+                ORDER BY modified_date DESC
+                
+            ),
+            (
+                SELECT
+                    created_date
+                FROM #{spe_db}.scantron_performance_extended
+                WHERE primary_id =1
+                
+            )
         FROM #{s_db}.student
         LEFT JOIN #{sspl_db}.student_scantron_performance_level ON #{sspl_db}.student_scantron_performance_level.student_id = #{s_db}.student.student_id
         LEFT JOIN #{k12_db}.k12_omnibus ON #{k12_db}.k12_omnibus.student_id = #{s_db}.student.student_id
@@ -1539,7 +1554,8 @@ end
             "stron_ent_score_r",
             "stron_ext_perf_r",
             "stron_ext_score_r",
-            "last updated"
+            "last student update",
+            "last scantron update"
         ]
         
         results = $db.get_data(sql_str)
