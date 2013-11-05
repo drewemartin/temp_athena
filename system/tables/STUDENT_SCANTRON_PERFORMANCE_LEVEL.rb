@@ -289,7 +289,7 @@ end
                 
                 test_phase  = $school.scantron.current_test_phase
                 
-                team_ids    = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
+                team_ids    = ["103"]#$tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE")
                 
                 if team_ids
                     
@@ -433,8 +433,9 @@ end
                         att_override = "scantron_participation_incomplete_overall_#{$ifilestamp}.csv"
                     )
                     
-                    $team.find(:full_name=>"Joel Gowman"  ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"})
-                    $team.find(:full_name=>"Tim Kreider"  ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
+                    $team.find(:full_name=>"Joel Gowman"        ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"})
+                    $team.find(:full_name=>"Tim Kreider"        ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
+                    $team.find(:full_name=>"Sharon Williams"    ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
                     
                 end
                 
