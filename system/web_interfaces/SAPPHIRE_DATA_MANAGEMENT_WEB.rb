@@ -189,7 +189,8 @@ end
         setting_field = "<DIV class='settings_container'>"
         setting_field << record.fields["sapphire_option_id"  ].web.select(
             :label_option   => "Sapphire Option",
-            :dd_choices     => sapphire_options_dd
+            :dd_choices     => sapphire_options_dd,
+            :validate       => true
         )
         setting_field << record.fields["sapphire_table"        ].web.select(
             :label_option   => "Sapphire Table",
@@ -201,7 +202,7 @@ end
             :label_option   => "Sapphire Field",
             :dd_choices     =>
                 !record.fields["sapphire_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["sapphire_table"].value).field_order) : nil,
-            :validate       => true
+            :validate       => false
         )
         setting_field << record.fields["athena_table"        ].web.select(
             :label_option   => "Athena Table",
