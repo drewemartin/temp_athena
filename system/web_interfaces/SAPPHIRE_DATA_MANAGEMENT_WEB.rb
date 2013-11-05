@@ -217,7 +217,7 @@ end
         )
         setting_field << record.fields["trigger_event"       ].set("after_change_field").web.select(
             :label_option   => "Trigger Event",
-            :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
+            :dd_choices     => $dd.from_array(["after_change_field"]))
         setting_field << "</DIV>"
         
         row = Array.new
