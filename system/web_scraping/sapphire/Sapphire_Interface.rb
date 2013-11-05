@@ -12,7 +12,10 @@ class Sapphire_Interface
         
     end
     #---------------------------------------------------------------------------
-   
+    
+    def instance_params
+        @params
+    end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
@@ -63,6 +66,8 @@ end
         options_hash[:option_type  ] = options_record.fields["option_type"   ].value    
         options_hash[:option_value ] = options_record.fields["option_value"  ].value     
         options_hash[:field_value  ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value   
+        
+        puts options_hash
         
         send(options_record.fields["action"].value, options_hash)
         
@@ -209,14 +214,14 @@ def x______________ACTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def click(params={})
+    def click(params=@params)
         
         field_found = false
         i = 0
         until field_found
-            if browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
+            if browser.link(params[:option_type].to_sym, params[:option_value]).exists?
                 
-                browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).click
+                browser.link(params[:option_type].to_sym, params[:option_value]).click
                 field_found = true
                 
             else
@@ -230,14 +235,14 @@ end
         
     end
 
-    def select_value(params={})
+    def select(params=@params)
         
         field_found = false
         i = 0
         until field_found
-            if browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
+            if browser.select_list(params[:option_type].to_sym, params[:option_value]).exists?
                 
-                browser.link(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).select_value(params ? params[:new_value] : @params[:new_value])
+                browser.select_list(params[:option_type].to_sym,params[:option_value]).select_value(params[:field_value])
                 field_found = true
                 
             else
@@ -251,14 +256,14 @@ end
         
     end
 
-    def set(params={})
+    def set(params=@params)
         
         field_found = false
         i = 0
         until field_found
-            if browser.text_field(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
+            if browser.text_field(params[:option_type].to_sym, params[:option_value]).exists?
                 
-                browser.text_field(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).set(params ? params[:field_value] : @params[:field_value])
+                browser.text_field(params[:option_type].to_sym, params[:option_value]).set(params[:field_value])
                 field_found = true
                 
             else
