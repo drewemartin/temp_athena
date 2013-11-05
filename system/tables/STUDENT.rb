@@ -156,12 +156,12 @@ end
         
         #IDENTIFY NEWLY WITHDRAWN STUDENTS
         #MARK THEM APPROPRIATELY
-        
+        k12_db = $tables.attach("K12_WITHDRAWAL").data_base
         pids = primary_ids(
-            
-            "WHERE active IS NOT FALSE
-            AND withdrawdate IS NOT NULL"
-            
+            "LEFT JOIN #{k12_db}.k12_withdrawal
+            ON k12_withdrawal.student_id = student.student_id
+            WHERE active IS NOT FALSE
+            AND k12_withdrawal.withdrawdate IS NOT NULL"
         )
         
         pids.each{|pid|
