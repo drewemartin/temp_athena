@@ -195,7 +195,7 @@ end
             :label_option   => "Sapphire Table",
             :dd_choices     => $dd.from_array($tables.sapphire_student_table_names),
             :onchange       => "fill_select_option('#{record.fields["sapphire_field" ].web.field_id}', this  );",
-            :validate       => true
+            :validate       => false
         )
         setting_field << record.fields["sapphire_field"        ].web.select(
             :label_option   => "Sapphire Field",
