@@ -369,9 +369,20 @@ end
     end
     
     def textarea(arg = nil)
+        
         self.options = arg
-        element = "<textarea #{options} #{identifiers} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
+        
+        if structure[:resizable]
+            
+            resizable = "resize"
+            
+        else
+            resizable = nil
+        end
+        
+        element = "<textarea #{options} #{identifiers.insert(-2, resizable)} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
         div(element)
+        
     end
     
     def file(arg = nil)
