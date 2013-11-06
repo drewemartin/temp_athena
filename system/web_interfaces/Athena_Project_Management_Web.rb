@@ -425,7 +425,7 @@ end
         output << $tools.legend_open("sub", "Project Details")
         
             output << fields["project_name"].web.text(:label_option=>"Project Name:")
-            output << fields["brief_description"].web.textarea(:label_option=>"Description:", :resizable=>true)
+            output << fields["brief_description"].web.textarea(:label_option=>"Description:")
             output << fields["requested_priority_level"].web.select(:label_option=>"Requested Priority:", :dd_choices=>priority_level_dd)
             output << fields["requested_completion_date"].web.default(:label_option=>"Requested ETA:")
             
