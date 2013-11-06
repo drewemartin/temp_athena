@@ -1501,6 +1501,7 @@ function x___________________UNSORTED(){}
 	//Attaches all JQuery objects
 	function attachJQuery(){
 		
+		$(".resize" ).resizable();
 		$(".new_row").click(function(event){
 				event.stopPropagation();
 			});
