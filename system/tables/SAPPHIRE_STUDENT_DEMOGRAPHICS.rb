@@ -68,7 +68,7 @@ end
             structure_hash["fields"]["gender"           ] = {"data_type"=>"text", "file_field"=>"GENDER"                } if field_order.push("gender"                  )
             structure_hash["fields"]["other_name"       ] = {"data_type"=>"text", "file_field"=>"OTHER_NAME"            } if field_order.push("other_name"              )
             structure_hash["fields"]["township_code"    ] = {"data_type"=>"text", "file_field"=>"TOWNSHIP_CODE"         } if field_order.push("township_code"           )
-            structure_hash["fields"]["address_county"   ] = {"data_type"=>"int",  "file_field"=>"ADDRESS_COUNTY"        } if field_order.push("address_county"          )
+            structure_hash["fields"]["address_county"   ] = {"data_type"=>"text", "file_field"=>"ADDRESS_COUNTY"        } if field_order.push("address_county"          )
             structure_hash["fields"]["address_zip_ext"  ] = {"data_type"=>"int",  "file_field"=>"ADDRESS_ZIP_EXT"       } if field_order.push("address_zip_ext"         )
             structure_hash["fields"]["address_zip"      ] = {"data_type"=>"int",  "file_field"=>"ADDRESS_ZIP"           } if field_order.push("address_zip"             )
             structure_hash["fields"]["address_state"    ] = {"data_type"=>"text", "file_field"=>"ADDRESS_STATE"         } if field_order.push("address_state"           )
