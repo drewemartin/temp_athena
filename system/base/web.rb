@@ -369,9 +369,12 @@ end
     end
     
     def textarea(arg = nil)
+        
         self.options = arg
+        
         element = "<textarea #{options} #{identifiers} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
         div(element)
+        
     end
     
     def file(arg = nil)

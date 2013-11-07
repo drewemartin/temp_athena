@@ -66,6 +66,7 @@ end
                     
                     #HEADERS
                     [
+                        "Created Date",
                         "Created By",
                         "Date & Time",
                         "Live Contact Made? #{how_to_button_live_contact}",
@@ -125,6 +126,7 @@ end
                     row = Array.new
                     ########################################################################
                     #FNORD - MOVE THE 'DISPLAY:NONE' DIV INTO WEB AS AN OPTION
+                    row.push(f["created_date"                  ].to_user)
                     row.push($team.by_team_email(f["created_by"].value) ? $team.by_team_email(f["created_by"].value).full_name : f["created_by"].value)
                     row.push(f["datetime"                      ].web.default(:disabled=>disabled, :date_range_end=>"#{$iuser}")+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
                     row.push(f["successful"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["successful"                    ].to_user()+"</div>")

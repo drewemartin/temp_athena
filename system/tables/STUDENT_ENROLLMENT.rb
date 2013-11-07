@@ -35,27 +35,6 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  
-    def after_change_field_withdrawdate(changed_field)
-        if !changed_field.value.nil?
-            this_record = by_primary_id(changed_field.primary_id)
-            this_record.fields["active"].value = false
-            this_record.save
-            
-            sid = this_record.fields["student_id"]
-            student_record = $tables.attach("STUDENT").by_studentid_old(sid)
-            student_record.fields["active"].value = false
-            student_record.save
-        end
-    end
-    
-    def after_insert(this_record)
-        this_record.fields["active"].value = true
-        sid     = this_record.fields["student_id"].value
-        student = $students.attach(sid)
-        student.active.value = true
-        student.active.save
-    end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 private

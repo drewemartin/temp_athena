@@ -55,7 +55,7 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def DISABLED_after_load_k12_aggregate_progress
+    def after_load_k12_aggregate_progress
         
         data_source = "K12_Aggregate_Progress"
         
@@ -93,7 +93,7 @@ end
         
     end
     
-    def DISABLED_after_load_k12_calms_aggregate_progress
+    def after_load_k12_calms_aggregate_progress
         
         data_source	= "K12_Calms_Aggregate_Progress"
         pids            = $tables.attach("K12_Calms_Aggregate_Progress").primary_ids
@@ -177,7 +177,7 @@ end
         } if pids
     end
     
-    def DISABLED_after_load_k12_ecollege_detail
+    def after_load_k12_ecollege_detail
         
         data_source = "K12_Ecollege_Detail"
         pids        = $tables.attach("K12_Ecollege_Detail").primary_ids
@@ -185,7 +185,7 @@ end
         pids.each{|pid|
             
             e               = $tables.attach("K12_Ecollege_Detail").by_primary_id(pid)
-            progress        = e.fields["course_average_to_date"]
+            progress        = e.fields["course_progress_overall"]
             
             if progress.mathable
                 
@@ -254,41 +254,43 @@ end
     
     def update_sapphire_grades(sapphire_record)
         
-        if !(
+        if true
             
-            record = record(
-                "WHERE student_id   = '#{sapphire_record.fields["student_id"    ].value}'
-                AND course_code     = '#{sapphire_record.fields["course_id"     ].value}'
-                AND section_id      = '#{sapphire_record.fields["section_id"    ].value}'"
+            if !(
+                
+                record = record(
+                    "WHERE student_id   = '#{sapphire_record.fields["student_id"    ].value}'
+                    AND course_code     = '#{sapphire_record.fields["course_id"     ].value}'
+                    AND section_id      = '#{sapphire_record.fields["section_id"    ].value}'"
+                )
+                
             )
+                
+                record = new_row
+                record.fields["student_id"          ].value = sapphire_record.fields["student_id"       ].value
+                record.fields["course_code"         ].value = sapphire_record.fields["course_id"        ].value
+                record.fields["section_id"          ].value = sapphire_record.fields["section_id"       ].value
+                
+            end
             
-        )
+            staff_id = sapphire_record.fields["teacher_rid"   ].value
             
-            record = new_row
-            record.fields["student_id"          ].value = sapphire_record.fields["student_id"       ].value
-            record.fields["course_code"         ].value = sapphire_record.fields["course_id"        ].value
-            record.fields["section_id"          ].value = sapphire_record.fields["section_id"       ].value
+            if team_member  = $team.find(:sams_id=>staff_id)
+                team_id = team_member.primary_id.value
+            else
+                team_id = nil
+            end
+            
+            record.fields["teacher_staff_id"    ].value = (staff_id == "Missing") ? nil : staff_id
+            record.fields["teacher_team_id"     ].value = team_id   
+            record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
+            record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
+            record.fields["data_source"         ].value = "Sapphire Current Class Grades"
+            record.fields["progress"            ].value = sapphire_record.fields["grade_numeric_tgb"].value
+            
+            record.save
             
         end
-        
-        staff_id = sapphire_record.fields["teacher_rid"   ].value
-        
-        if team_member  = $team.find(:sams_id=>staff_id)
-            team_id = team_member.primary_id.value
-        else
-            team_id = nil
-        end
-        
-        record = new_row
-        
-        record.fields["teacher_staff_id"    ].value = (staff_id == "Missing") ? nil : staff_id
-        record.fields["teacher_team_id"     ].value = team_id   
-        record.fields["course_name"         ].value = sapphire_record.fields["course_title"     ].value
-        record.fields["term"                ].value = sapphire_record.fields["duration_code"    ].value
-        record.fields["data_source"         ].value = "Sapphire Current Class Grades"
-        record.fields["progress"            ].value = sapphire_record.fields["grade_numeric_tgb"].value
-        
-        record.save
         
     end
     

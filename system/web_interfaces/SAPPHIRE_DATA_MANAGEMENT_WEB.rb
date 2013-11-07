@@ -189,19 +189,20 @@ end
         setting_field = "<DIV class='settings_container'>"
         setting_field << record.fields["sapphire_option_id"  ].web.select(
             :label_option   => "Sapphire Option",
-            :dd_choices     => sapphire_options_dd
+            :dd_choices     => sapphire_options_dd(unused_only = true),
+            :validate       => true
         )
         setting_field << record.fields["sapphire_table"        ].web.select(
             :label_option   => "Sapphire Table",
             :dd_choices     => $dd.from_array($tables.sapphire_student_table_names),
             :onchange       => "fill_select_option('#{record.fields["sapphire_field" ].web.field_id}', this  );",
-            :validate       => true
+            :validate       => false
         )
         setting_field << record.fields["sapphire_field"        ].web.select(
             :label_option   => "Sapphire Field",
             :dd_choices     =>
                 !record.fields["sapphire_table"].value.nil? ? $dd.from_array($tables.attach(record.fields["sapphire_table"].value).field_order) : nil,
-            :validate       => true
+            :validate       => false
         )
         setting_field << record.fields["athena_table"        ].web.select(
             :label_option   => "Athena Table",
@@ -217,7 +218,7 @@ end
         )
         setting_field << record.fields["trigger_event"       ].set("after_change_field").web.select(
             :label_option   => "Trigger Event",
-            :dd_choices     => $dd.from_array(["after_change_field","after_insert"]))
+            :dd_choices     => $dd.from_array(["after_change_field"]))
         setting_field << "</DIV>"
         
         row = Array.new
@@ -423,12 +424,21 @@ end
         )
     end
     
-    def sapphire_options_dd
+    def sapphire_options_dd(unused_only = false)
+        
+        if unused_only
+            where_clause = "LEFT JOIN #{$tables.attach("sapphire_interface_map").data_base}.sapphire_interface_map ON sapphire_interface_map.sapphire_option_id = sapphire_interface_options.primary_id
+            WHERE standard IS TRUE
+            AND sapphire_interface_map.primary_id IS NULL
+            GROUP BY sapphire_interface_options.primary_id"
+        else
+            where_clause = "WHERE standard IS TRUE"
+        end
         
         $tables.attach("SAPPHIRE_INTERFACE_OPTIONS").dd_choices(
             "CONCAT(IFNULL(IF(module_name = 'Student Information System','SIS',module_name),''), ' - ', path, ' - ', option_name)",
-            "primary_id",
-            "WHERE standard IS TRUE"
+            "sapphire_interface_options.primary_id",
+            where_clause
         )
         
     end

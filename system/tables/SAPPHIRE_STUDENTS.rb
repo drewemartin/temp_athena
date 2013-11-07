@@ -122,6 +122,10 @@ end
             case field_name
             when "districtid"
                 select_str = "(SELECT aun FROM #{daun_db}.districts_aun WHERE K12_Omnibus.districtofresidence = districts_aun.name)"
+                
+            when /[^i]city/
+                select_str = "IF(CHAR_LENGTH(#{field_name})<=20, #{field_name}, LEFT(#{field_name},20))"
+                
             else
                 select_str = "K12_Omnibus.#{field_name}"
             end

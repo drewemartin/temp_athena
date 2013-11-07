@@ -40,7 +40,7 @@ class Load_K12_History < Base
                      
                      date_string           = last_record.split("Date generated ")[1].split(" in  seconds")[0].gsub("@"," ")
                      $base.created_date    = DateTime.parse(date_string).strftime("%Y-%m-%d %H:%M:%S")
-                     table.load(:k12_history_directory=>dir_name, :after_load=>after_load_tables)
+                     table.load(:k12_history_directory=>dir_name, :after_load=> !after_load_tables.empty? ? after_load_tables : nil)
                   else
                      puts "LOAD_K12_HISTORY #{table_name} FAILED!!!"
                      puts "K12 GENERATION TIMESTAMP NOT VALID: #{last_record}"

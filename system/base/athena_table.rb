@@ -800,9 +800,9 @@ end
                         
                         log_message =  "DB_CONFIG_SOURCE_MAP Field Mismatch Error!\n"
                         log_message << "SOURCE TABLE:      #{table_name}\n"
-                        log_message << "SOURCE FIELD:      #{source_field_name}\n"
+                        log_message << "SOURCE FIELD:      #{source_to_dest_hash[:source_field]}\n"
                         log_message << "DESTINATION TABLE: #{destination_table}\n"
-                        log_message << "DESTINATION FIELD: #{destination_field_name}\n"
+                        log_message << "DESTINATION FIELD: #{source_to_dest_hash[:destination_field]}\n"
                         $base.system_notification("Source Import Error - DB_CONFIG_SOURCE_MAP",log_message)
                         
                         return false
@@ -1411,6 +1411,7 @@ end
         end
         
     end
+    alias :by_student_id :by_studentid
     
     def by_tid(arg)
         
