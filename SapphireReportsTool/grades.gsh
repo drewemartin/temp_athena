@@ -1,7 +1,7 @@
 def date = new Date().format("yyyy-MM-dd")
 q = 1
 /* CLASS ROSTER */
-for ( school in ["EL","MS","HS"] ) {
+for ( school in ["MS"] ) {
     
     switch ( school ) {
         
