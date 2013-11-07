@@ -372,15 +372,7 @@ end
         
         self.options = arg
         
-        if structure[:resizable]
-            
-            resizable = "resize"
-            
-        else
-            resizable = nil
-        end
-        
-        element = "<textarea #{options} #{identifiers.insert(-2, resizable)} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
+        element = "<textarea #{options} #{identifiers} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
         div(element)
         
     end
