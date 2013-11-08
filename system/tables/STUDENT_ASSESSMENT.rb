@@ -90,17 +90,18 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",   "file_field"=>"student_id"               } if field_order.push("student_id")
-            structure_hash["fields"]["aims_exempt"              ] = {"data_type"=>"bool",  "file_field"=>"aims_exempt"              } if field_order.push("aims_exempt")
-            structure_hash["fields"]["scantron_exempt_ent_m"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ent_m"    } if field_order.push("scantron_exempt_ent_m")
-            structure_hash["fields"]["scantron_exempt_ent_r"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ent_r"    } if field_order.push("scantron_exempt_ent_r")
-            structure_hash["fields"]["scantron_exempt_ext_m"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ext_m"    } if field_order.push("scantron_exempt_ext_m")
-            structure_hash["fields"]["scantron_exempt_ext_r"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ext_r"    } if field_order.push("scantron_exempt_ext_r")
-            structure_hash["fields"]["study_island_exempt"      ] = {"data_type"=>"bool",  "file_field"=>"study_island_exempt"      } if field_order.push("study_island_exempt")
-            structure_hash["fields"]["pasa_eligible"            ] = {"data_type"=>"bool",  "file_field"=>"pasa_eligible"            } if field_order.push("pasa_eligible")
-            structure_hash["fields"]["tier_level_math"          ] = {"data_type"=>"text",  "file_field"=>"tier_level_math"          } if field_order.push("tier_level_math")
-            structure_hash["fields"]["tier_level_reading"       ] = {"data_type"=>"text",  "file_field"=>"tier_level_reading"       } if field_order.push("tier_level_reading")
-            structure_hash["fields"]["engagement_level"         ] = {"data_type"=>"int",   "file_field"=>"engagement_level"         } if field_order.push("engagement_level")
+            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",   "file_field"=>"student_id"               } if field_order.push("student_id"              )
+            structure_hash["fields"]["aims_exempt"              ] = {"data_type"=>"bool",  "file_field"=>"aims_exempt"              } if field_order.push("aims_exempt"             )
+            structure_hash["fields"]["scantron_exempt_ent_m"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ent_m"    } if field_order.push("scantron_exempt_ent_m"   )
+            structure_hash["fields"]["scantron_exempt_ent_r"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ent_r"    } if field_order.push("scantron_exempt_ent_r"   )
+            structure_hash["fields"]["scantron_exempt_ext_m"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ext_m"    } if field_order.push("scantron_exempt_ext_m"   )
+            structure_hash["fields"]["scantron_exempt_ext_r"    ] = {"data_type"=>"bool",  "file_field"=>"scantron_exempt_ext_r"    } if field_order.push("scantron_exempt_ext_r"   )
+            structure_hash["fields"]["study_island_exempt"      ] = {"data_type"=>"bool",  "file_field"=>"study_island_exempt"      } if field_order.push("study_island_exempt"     )
+            structure_hash["fields"]["pasa_eligible"            ] = {"data_type"=>"bool",  "file_field"=>"pasa_eligible"            } if field_order.push("pasa_eligible"           )
+            structure_hash["fields"]["tier_level_math"          ] = {"data_type"=>"text",  "file_field"=>"tier_level_math"          } if field_order.push("tier_level_math"         )
+            structure_hash["fields"]["tier_level_reading"       ] = {"data_type"=>"text",  "file_field"=>"tier_level_reading"       } if field_order.push("tier_level_reading"      )
+            structure_hash["fields"]["engagement_level"         ] = {"data_type"=>"int",   "file_field"=>"engagement_level"         } if field_order.push("engagement_level"        )
+            structure_hash["fields"]["religious_exempt"         ] = {"data_type"=>"bool",  "file_field"=>"religious_exempt"         } if field_order.push("religious_exempt"        )
             
         structure_hash["field_order"] = field_order
         return structure_hash
