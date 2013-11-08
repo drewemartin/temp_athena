@@ -152,6 +152,13 @@ end
             "This report includes all test records for only your related students."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_my_students_tests.is_true?
         
+        #STUDENT ASSESSMENT EXEMPTIONS
+        tables_array.push([
+            $tools.button_new_csv("student_assessment_exemptions", additional_params_str = nil),
+            "Student Assessment Exemptions",
+            "This report includes all exemptions records for active students."
+        ]) if $team_member.super_user? || $team_member.rights.student_assessments_edit.is_true?
+        
         #STUDENT_SCANTRON_PARTICIPATION
         tables_array.push([
             $tools.button_new_csv("student_scantron_participation", additional_params_str = nil),
@@ -1424,6 +1431,62 @@ end
         
     end
     
+    def add_new_csv_student_assessment_exemptions(options = nil)
+        
+        s_db        = $tables.attach("STUDENT"              ).data_base
+        sa_db       = $tables.attach("STUDENT_ASSESSMENT"   ).data_base
+        
+        sql_str =
+        "SELECT
+            
+            student.student_id,
+            student_assessment.aims_exempt,           
+            student_assessment.scantron_exempt_ent_m, 
+            student_assessment.scantron_exempt_ent_r, 
+            student_assessment.scantron_exempt_ext_m, 
+            student_assessment.scantron_exempt_ext_r, 
+            student_assessment.study_island_exempt,   
+            student_assessment.pasa_eligible,         
+            student_assessment.tier_level_math,       
+            student_assessment.tier_level_reading,    
+            student_assessment.engagement_level,      
+            student_assessment.religious_exempt     
+          
+        FROM #{s_db}.student
+        
+        LEFT JOIN   #{sa_db}.student_assessment ON student_assessment.student_id = student.student_id
+        
+        WHERE student.active IS TRUE"
+        
+        headers =
+        [
+            
+            "student_id",
+            "aims_exempt",          
+            "scantron_exempt_ent_m",
+            "scantron_exempt_ent_r",
+            "scantron_exempt_ext_m",
+            "scantron_exempt_ext_r",
+            "study_island_exempt",  
+            "pasa_eligible",        
+            "tier_level_math",      
+            "tier_level_reading",   
+            "engagement_level",     
+            "religious_exempt"    
+           
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_student_ilp(options = nil)
         
         s_db        = $tables.attach("STUDENT"              ).data_base

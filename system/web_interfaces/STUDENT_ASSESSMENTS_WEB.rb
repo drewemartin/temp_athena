@@ -155,8 +155,8 @@ end
             #ELIGIBILITIES
             $tools.table(
                 :table_array    => [
-                    [$focus_student.assessment.pasa_eligible.web.default(             :label_option=>"PASA"                         )],
-                    [blank],
+                    [$focus_student.assessment.pasa_eligible.web.default(           :label_option=>"PASA"                         )],
+                    [$focus_student.assessment.religious_exempt.web.default(        :label_option=>"PASA/PSSA Religious Exemption")],
                     [blank],
                     [blank],
                     [blank],
