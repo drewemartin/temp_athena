@@ -103,11 +103,18 @@ end
             "This is a mail merge csv for making shipping labels for ink orders who don't have a staples id yet."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_ink_orders_manual.is_true?
         
-        #TRACKER REPORT
+        #ALL CONTACTS REPORT
         tables_array.push([
             $tools.button_new_csv("student_contacts", additional_params_str = "complete"),
             "Student Contacts - Complete",
             "This report includes all contact records that exist. Only students with contacts will be included."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_my_student_contacts.is_true?
+        
+        #MY CONTACTS REPORT
+        tables_array.push([
+            $tools.button_new_csv("my_student_contacts", additional_params_str = nil),
+            "My Student Contacts",
+            "This report includes all contact records that you created."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
         
         #ILP SURVEY COMPLETION
@@ -1016,6 +1023,106 @@ end
         ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
         LEFT JOIN #{t_db}.team
         ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
+        
+        headers =
+        [
+            "Student ID",
+            "Student Last Name",
+            "Student First Name",
+            "Contact Datetime",
+            "successful",
+            "notes",
+            "contact_type",
+            "tep_initial",
+            "tep_followup",
+            "attendance",
+            "rtii_behavior_id",
+            "test_site_selection",
+            "scantron_performance",
+            "study_island_assessments",
+            "course_progress",
+            "work_submission",
+            "grades",
+            "communications",
+            "retention_risk",
+            "escalation",
+            "welcome_call",
+            "initial_home_visit",
+            "tech_issue",
+            "low_engagement",
+            "ilp_conference",
+            "other",
+            "other_description",
+            "Created By Last Name",
+            "Created By First Name",
+            "Created By Email",
+            "Created By Department",
+            "Created By Title",
+            "Created Date",
+            "Days Between Contact And Entry"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_my_student_contacts(options = nil)
+        
+        sc_db = $tables.attach("student_contacts").data_base
+        s_db  = $tables.attach("student").data_base
+        t_db  = $tables.attach("team").data_base
+        
+        sql_str =
+        "SELECT
+            student_contacts.student_id,
+            student.studentlastname,
+            student.studentfirstname,
+            student_contacts.datetime,
+            student_contacts.successful,
+            student_contacts.notes,
+            student_contacts.contact_type,
+            student_contacts.tep_initial,
+            student_contacts.tep_followup,
+            student_contacts.attendance,
+            student_contacts.rtii_behavior_id,
+            student_contacts.test_site_selection,
+            student_contacts.scantron_performance,
+            student_contacts.study_island_assessments,
+            student_contacts.course_progress,
+            student_contacts.work_submission,
+            student_contacts.grades,
+            student_contacts.communications,
+            student_contacts.retention_risk,
+            student_contacts.escalation,
+            student_contacts.welcome_call,
+            student_contacts.initial_home_visit,
+            student_contacts.tech_issue,
+            student_contacts.low_engagement,
+            student_contacts.ilp_conference,
+            student_contacts.other,
+            student_contacts.other_description,
+            team.legal_last_name,
+            team.legal_first_name,
+            student_contacts.created_by,
+            team.department,
+            team.title,
+            student_contacts.created_date,
+            TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
+        FROM #{sc_db}.student_contacts
+        LEFT JOIN #{s_db}.student
+        ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
+        LEFT JOIN #{t_db}.team_email
+        ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
+        LEFT JOIN #{t_db}.team
+        ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id
+        WHERE student_contacts.created_by = '#{$user.email_address_k12.value||$user}'"
         
         headers =
         [
