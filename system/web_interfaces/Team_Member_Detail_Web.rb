@@ -858,7 +858,7 @@ end
         )
         student_assessments = $tools.table(
             :table_array    => [
-                $focus_team_member.rights.student_specialists_edit.web.checkbox( :label_option=>"Edit",                         :disabled=>disabled("student_specialists_edit"))    
+                $focus_team_member.rights.student_assessments_edit.web.checkbox( :label_option=>"Edit",                         :disabled=>disabled("student_assessments_edit"))    
             ],
             :unique_name    => "module_rights",
             :footers        => false,
