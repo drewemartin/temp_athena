@@ -366,13 +366,36 @@ end
     end
     
     def add_new_csv_athena_project_requirements(options = nil)
-        ap_db  = $tables.attach("athena_project").data_base
-        apr_db = $tables.attach("athena_project_requirements").data_base
-        aps_db = $tables.attach("athena_project_systems").data_base
-        t_db   = $tables.attach("team").data_base
+        
+        ap_db  = $tables.attach("athena_project"                ).data_base
+        apr_db = $tables.attach("athena_project_requirements"   ).data_base
+        aps_db = $tables.attach("athena_project_systems"        ).data_base
+        t_db   = $tables.attach("team"                          ).data_base
+        
         sql_str =
         "SELECT
+            
             athena_project.project_name,
+            
+            (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
+            athena_project.status,
+            athena_project.development_phase,
+            CONCAT(
+                (SELECT COUNT(primary_id) FROM #{apr_db}.athena_project_requirements WHERE project_id = athena_project.primary_id AND development_phase = 'Production/Technical Support'),
+                'of',
+                (SELECT COUNT(primary_id) FROM #{apr_db}.athena_project_requirements WHERE project_id = athena_project.primary_id)
+            ),
+            athena_project.project_name,                       
+            athena_project.brief_description,
+            athena_project.requested_priority_level,
+            athena_project.requested_completion_date,   
+            
+            (SELECT system_name FROM #{aps_db}.athena_project_systems WHERE athena_project_systems.primary_id = athena_project.system_id),
+            athena_project.priority_level,           
+            athena_project.estimated_completion_date,
+            (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE team.primary_id = athena_project.requester_team_id),
+            athena_project.created_date,
+            
             athena_project_systems.system_name,
             athena_project_requirements.requirement,
             athena_project_requirements.priority,
@@ -386,13 +409,29 @@ end
             athena_project_requirements.user_interface,
             athena_project_requirements.change,
             (SELECT CONCAT(legal_first_name,' ',legal_last_name) FROM #{t_db}.team WHERE primary_id = athena_project_requirements.requester_team_id)
-        FROM #{         apr_db  }.athena_project_requirements
-        LEFT JOIN #{    ap_db   }.athena_project            ON athena_project_requirements.project_id   = athena_project.primary_id
-        LEFT JOIN #{    aps_db  }.athena_project_systems    ON athena_project.system_id                 = athena_project_systems.primary_id"
+            
+        FROM #{         apr_db  }.athena_project
+        LEFT JOIN #{    ap_db   }.athena_project_requirements   ON athena_project_requirements.project_id   = athena_project.primary_id
+        LEFT JOIN #{    aps_db  }.athena_project_systems        ON athena_project.system_id                 = athena_project_systems.primary_id"
         
         headers = [
             
             "System Name",
+            
+            "System/Module/Process Name"        ,
+            "Project Status"                    ,
+            "Development Progress"              ,
+            "Requirements"                      ,
+            "Project/Module/Process Name"       ,
+            "Description"                       ,
+            "Requested Priority"                ,
+            "Requested ETA"                     ,
+            "System"                            ,
+            "Priority Level"                    ,
+            "ETA"                               ,
+            "Requestor"                         ,
+            "Date Submitted",
+            
             "Project Name",
             "Requirement",
             "Priority Level",
