@@ -170,37 +170,68 @@ end
         
         if $field.is_schoolday?(eval_date)
             
-            sids = $students.list(:currently_enrolled=>true)
-            sids.each{|sid|
+            sa_db = $tables.attach("STUDENT_ATTENDANCE").data_base
+            
+            sids = $students.list(
+                :currently_enrolled => true,
+                :join_addon         => " LEFT JOIN #{sa_db}.student_attendance ON student_attendance.student_id = student.student_id ",
+                :where_clause_addon => " AND student.student_id NOT IN(
+                    SELECT
+                        student_id
+                    FROM #{sa_db}.student_attendance
+                    WHERE student_attendance.date = '#{eval_date}'
+                ) "
+            )
+            
+            focus_sid = nil
+            
+            begin
                 
-                student = $students.get(sid)
-                
-                #CREATE A DAILY ATTENDANCE MASTER RECORD IF ONE DOES NOT EXIST
-                student.attendance_master.existing_record || student.attendance_master.new_record.save
-                
-                #CREATE A DAILY ATTENDANCE RECORD IF ONE DOES NOT EXIST
-                if !student.attendance.existing_records("WHERE date = '#{eval_date}'")
+                sids.each{|sid|
                     
-                    #CREATE A MODE RECORD WITH THE DEFAULT SETTING IF ONE DOES NOT EXIST
-                    if !student.attendance_mode.existing_record
-                        record = student.attendance_mode.new_record
-                        record.fields["attendance_mode"].set("Synchronous")
+                    focus_sid   = sid
+                    
+                    student     = $students.get(sid)
+                    
+                    #CREATE A DAILY ATTENDANCE MASTER RECORD IF ONE DOES NOT EXIST
+                    student.attendance_master.existing_record || student.attendance_master.new_record.save
+                    
+                    #CREATE A DAILY ATTENDANCE RECORD IF ONE DOES NOT EXIST
+                    if !student.attendance.existing_records("WHERE date = '#{eval_date}'")
+                        
+                        #CREATE A MODE RECORD WITH THE DEFAULT SETTING IF ONE DOES NOT EXIST
+                        if !student.attendance_mode.existing_record
+                            record = student.attendance_mode.new_record
+                            record.fields["attendance_mode"].set("Synchronous")
+                            record.save
+                        end
+                        
+                        mode            = student.attendance_mode.attendance_mode.value
+                        procedure_type  = $tables.attach("ATTENDANCE_MODES").field_value("procedure_type", "WHERE mode = '#{mode}'")
+                        code            = procedure_type.match(/Manual/) ? (procedure_type.match(/(default p)/) ? "p" : "u") : "u"
+                        
+                        record  = student.attendance.new_record
+                        record.fields["date"            ].value = eval_date
+                        record.fields["mode"            ].value = mode
+                        record.fields["official_code"   ].value = code
                         record.save
+                        
                     end
                     
-                    mode            = student.attendance_mode.attendance_mode.value
-                    procedure_type  = $tables.attach("ATTENDANCE_MODES").field_value("procedure_type", "WHERE mode = '#{mode}'")
-                    code            = procedure_type.match(/Manual/) ? (procedure_type.match(/(default p)/) ? "p" : "u") : "u"
-                    
-                    record  = student.attendance.new_record
-                    record.fields["date"            ].value = eval_date
-                    record.fields["mode"            ].value = mode
-                    record.fields["official_code"   ].value = code
-                    record.save
-                    
-                end
+                } if sids
                 
-            } if sids
+            rescue=>e
+                
+                $base.system_notification(
+                    
+                    subject = "Student Attendance - Create Record Failed!",
+                    content = "FOCUS SID AT TIME OF ERROR: #{focus_sid}",
+                    caller[0],
+                    e
+                    
+                )
+                
+            end
             
         end
         
