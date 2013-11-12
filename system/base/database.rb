@@ -96,13 +96,17 @@ end
       m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless selected_db == "information_schema"
       m.select_db(selected_db || $config.db_name)
       
-      m.query(
-        "INSERT INTO `agora_20132014`.`temp_query_log` (
-          `PRIMARY_ID` ,
-          `query_text` 
+      if false
+        
+        m.query(
+          "INSERT INTO `agora_20132014`.`temp_query_log` (
+            `PRIMARY_ID` ,
+            `query_text` 
+          )
+          VALUES (NULL , '#{Mysql.quote(sql)}');"
         )
-        VALUES (NULL , '#{Mysql.quote(sql)}');"
-      )
+        
+      end
       
       results         = m.query(sql)
       
