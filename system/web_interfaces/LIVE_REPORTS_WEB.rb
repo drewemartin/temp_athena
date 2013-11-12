@@ -108,14 +108,14 @@ end
             $tools.button_new_csv("student_contacts", additional_params_str = "complete"),
             "Student Contacts - Complete",
             "This report includes all contact records that exist. Only students with contacts will be included."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_my_student_contacts.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
         
         #MY CONTACTS REPORT
         tables_array.push([
             $tools.button_new_csv("my_student_contacts", additional_params_str = nil),
             "My Student Contacts",
             "This report includes all contact records that you created."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_my_student_contacts.is_true?
         
         #ILP SURVEY COMPLETION
         tables_array.push([
