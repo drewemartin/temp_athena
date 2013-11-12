@@ -21,9 +21,41 @@ class Sapphire_Interface_Processing < Base
             
         )
             
-            Sapphire_Interface.new.process_queue(pid)
-            
-        end
+            x = Sapphire_Interface.new.process_queue(pid)
+            i=1
+            #x.process_queue(pid)
+            #x.login
+            #x.goto_module
+            #x.goto_student_demographics
+            #x.search_students
+            #x.select_student
+            #
+            #params      = nil
+            #field_found = false
+            #i = 0
+            #
+            #if browser.select_list(params ? params[:option_type].to_sym : @params[:option_type].to_sym, params ? params[:option_value] : @params[:option_value]).exists?
+            #    
+            #    browser.select_list(params ? params[:option_type].to_sym : @params[:option_type].to_sym,params ? params[:option_value] : @params[:option_value]).select_value(params ? params[:new_value] : @params[:new_value])
+            #    field_found = true
+            #    
+            #else
+            #    sleep 1
+            #end
+            #
+            #until field_found
+            #    if x.browser.text_field(params ? params[:option_type].to_sym : puts x.instance_params[:option_type].to_sym, params ? params[:option_value] : x.instance_params[:option_value]).exists?
+            #        
+            #        browser.text_field(params ? params[:option_type].to_sym : x.instance_params[:option_type].to_sym,params ? params[:option_value] : x.instance_params[:option_value]).set(params ? params[:field_value] : x.instance_params[:field_value])
+            #        field_found = true
+            #        
+            #    else
+            #        sleep 1
+            #    end
+            #    i+=1
+            #end
+                
+            end
         
     end
     

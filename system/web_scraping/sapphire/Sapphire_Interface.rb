@@ -37,6 +37,12 @@ end
             @params[:src_record]        = $tables.attach(@params[:map_record].fields["athena_table"].value).by_primary_id(@params[:queue_record].fields["athena_pid"].value)
             sid                         = @params[:src_record].fields["student_id"].value
             student                     = $students.get(sid)
+            if !student.active.is_true?
+                $base.system_notification(
+                    subject = "Sapphire Update Failed - SID: #{sid}",
+                    content = "Student is not active"
+                )
+            end
             school_id                   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
             
             @params[:school_code        ] = school_id
@@ -44,6 +50,8 @@ end
             @params[:module             ] = @params[:options_record].fields["module_name"].value
             @params[:sid                ] = sid
             @params[:new_value          ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value
+            
+            puts @params
             
             student_update_record
             
@@ -87,18 +95,24 @@ end
     end
     
     def notify_timeout
+        
+        @params[:queue_record   ].fields["started_datetime"     ].set(nil).save
+        @params[:queue_record   ].fields["completed_datetime"   ].set(nil).save
+        
         $base.system_notification(
             subject = "Sapphire Interface - Timeout!",
             content = caller[0]
         )
-        raise "Sapphire Interface - Timeout!"
+        
+        return false
+        
     end
     
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-private
-def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
-end
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+##+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#private
+#def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
+#end
+##+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def browser(page=nil)
         
