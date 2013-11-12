@@ -28,6 +28,11 @@ end
             
             date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
             
+            ##---If we are using a later logins report to create activity for an earlier date
+            #foo_dates = ["2013-11-09","2013-11-10"]         #the login dates that wouldn't normally count, but are being substituted
+            #date = "2013-11-08" if foo_dates.include?(date) #replace the date with the schooldate, if it should be replaced
+            ##---
+            
             if $field.is_schoolday?(date)
               
                 identity_id = source_table.field_value_by_pid("identityid", pid)
@@ -78,6 +83,11 @@ end
         pids.each{|pid|
             
             date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
+            
+            ##---If we are using a later logins report to create activity for an earlier date
+            #foo_dates = ["2013-11-09","2013-11-10"]         #the login dates that wouldn't normally count, but are being substituted
+            #date = "2013-11-08" if foo_dates.include?(date) #replace the date with the schooldate, if it should be replaced
+            ##---
             
             if $field.is_schoolday?(date)
                 
