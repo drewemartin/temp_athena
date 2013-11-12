@@ -21,6 +21,83 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_load_sapphire_student_demographics
+        
+        issues  = Array.new
+        issues.push(
+            
+            [
+                "Queue ID"          ,
+                "Athena Table"      ,
+                "Athena Value"      ,
+                "Sapphire Table"    ,
+                "Sapphire Value"
+            ]
+            
+        )
+        
+        pids    = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").primary_ids("WHERE confirmed_datetime IS NULL AND completed_datetime IS NOT NULL")
+        pids.each{|pid|
+            
+            map_id      = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("map_id", "WHERE primary_id = '#{pid}'")
+            map_record  = $tables.attach("SAPPHIRE_INTERFACE_MAP"   ).by_primary_id(map_id)
+            
+            athena_id   = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("athena_pid", "WHERE primary_id = '#{pid}'")
+            a_table     = map_record.field["athena_table"       ].value
+            a_field     = map_record.field["athena_field"       ].value
+            a_value     = $tables.attach(a_table).field_value(a_field,      "WHERE primary_id = '#{athena_id}'")
+            
+            sid         = $tables.attach(a_table).field_value("student_id", "WHERE primary_id = '#{athena_id}'")
+            
+            s_table     = map_record.field["sapphire_table"     ].value
+            s_field     = map_record.field["sapphire_field"     ].value
+            s_value     = $tables.attach(s_table).field_value(s_field, "WHERE student_id = '#{sid}'")
+            
+            if a_value == s_value
+                $tables.attach("SAPPHIRE_INTERFACE_QUEUE").by_primary_id(pid).fields["confirmed_datetime"].set($base.right_now.to_db).save
+            else
+                issues.push(
+                    
+                    [
+                        pid     ,
+                        a_table ,
+                        a_value ,
+                        s_table ,
+                        s_value
+                    ]
+                    
+                )
+                
+            end
+            
+        } if pids
+        
+        if issues.length>1
+            
+            issues_table = $base.web_tools.table(
+                :table_array    => issues,
+                :unique_name    => "issues",
+                :footers        => false,
+                :head_section   => true,
+                :title          => false,
+                :caption        => false,
+                :embedded_style => {
+                    :table  => "font-family:\"Trebuchet MS\", Arial, Helvetica, sans-serif; width:100%; border-collapse:collapse;",
+                    :th     => "font-size:1.4em; border:1px solid #98bf21; text-align:left; padding-top:5px; padding-bottom:4px; background-color:#A7C942; color:#fff;",
+                    :tr     => nil,
+                    :tr_alt => "color:#000; background-color:#EAF2D3;",
+                    :td     => "font-size:1.2em; border:1px solid #98bf21; padding:3px 7px 2px 7px;",
+                }
+            )
+            $base.system_notification(
+                subject = "Sapphire Interface Queue Confirmation Failed!",
+                content = issues_table
+            )
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
