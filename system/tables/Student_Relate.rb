@@ -818,29 +818,36 @@ end
         end
         
         sid                 = specialist_record.fields["student_id"].value
-        team_id             = specialist_record.fields["team_id"   ].value
-        
-        sams_id             = $team.get(team_id).sams_ids.existing_records[0].fields["sams_id"].value
         
         previous_records    = unique_student_role_records(sid, role, role_details = role, active = true)
         previous_records.each{|record|
             record.fields["active"].set(false).save
         } if previous_records
         
-        relate_record       = by_student_staff_role(sid, sams_id, team_id, role, role_details = role)
-        if !relate_record
+        team_id             = specialist_record.fields["team_id"   ].value
+        
+        if team_id
             
-            relate_record = new_row
-            relate_record.fields["studentid"    ].value = sid
-            relate_record.fields["team_id"      ].value = team_id
-            relate_record.fields["staff_id"     ].value = sams_id
-            relate_record.fields["role"         ].value = role
-            relate_record.fields["role_details" ].value = role 
-            relate_record.fields["source"       ].value = "Data Entry"  
+            sams_id         = $team.get(team_id).sams_ids.existing_records[0].fields["sams_id"].value
+            
+            relate_record   = by_student_staff_role(sid, team_id, sams_id, role, role_details = role)
+            
+            if !relate_record
+                
+                relate_record = new_row
+                relate_record.fields["studentid"    ].value = sid
+                relate_record.fields["team_id"      ].value = team_id
+                relate_record.fields["staff_id"     ].value = sams_id
+                relate_record.fields["role"         ].value = role
+                relate_record.fields["role_details" ].value = role 
+                relate_record.fields["source"       ].value = "Data Entry"  
+                
+            end
+            
+            relate_record.fields["active"       ].value = true
+            relate_record.save
             
         end
-        relate_record.fields["active"       ].value = true
-        relate_record.save
         
     end
 

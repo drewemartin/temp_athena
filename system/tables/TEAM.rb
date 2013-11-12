@@ -61,6 +61,7 @@ end
             "live_reports_access",
             "live_reports_my_students_general",
             "live_reports_my_students_tests",
+            "live_reports_my_student_contacts",
             "module_student_attendance_ap",
             "module_student_contacts",
             "module_student_rtii",
