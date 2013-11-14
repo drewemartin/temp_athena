@@ -16,12 +16,12 @@ runReportAndSave(
 		]
 	],
 	["RUN_OUTPUT_FORMAT":"CSV"],
-	/*"Q:/athena_files/imports/sapphire_student_demographics.csv"*/
-	"C:/Users/Parnassus/athena-sis/htdocs/athena_files/imports/sapphire_student_demographics.csv"
+	"Q:/athena_files/imports/sapphire_student_demographics.csv"
+	/*"C:/Users/Parnassus/athena-sis/htdocs/athena_files/imports/sapphire_student_demographics.csv"*/
 )
 
-def command = """ruby C:/Users/Parnassus/athena-sis/htdocs/athena/system/commands/load.rb sapphire_student_demographics"""
-/*def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_student_demographics"""*/
+/*def command = """ruby C:/Users/Parnassus/athena-sis/htdocs/athena/system/commands/load.rb sapphire_student_demographics"""*/
+def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_student_demographics"""
 
 def proc    = command.execute()               
 proc.waitFor()
