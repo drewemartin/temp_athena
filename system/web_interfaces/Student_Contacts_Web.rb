@@ -487,38 +487,38 @@ end
             div#blank.STUDENT_CONTACTS__notes textarea{                         resize:none;}
             div#blank.STUDENT_CONTACTS__contact_type textarea{                  width:500px; height:100px; resize:none;}
             
-            div#blank.STUDENT_CONTACTS__tep_followup{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__tep_initial{                            width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__attendance{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__test_site_selection{                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__scantron_performance{                   width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__study_island_assessments{               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__course_progress{                        width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__work_submission{                        width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__grades{                                 width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__communications{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__retention_risk{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__escalation{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__welcome_call{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__initial_home_visit{                     width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__tech_issue{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ilp_conference{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__low_engagement{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ado{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__truancy_court_outcome{                  width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__court_preparation{                      width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__residency{                              width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ses{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__sap_invitation{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__sap_followup{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__evaluation_request_psych{               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__evaluation_under_review_psych{          width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ell{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__phlote_identification{                  width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__cys{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__homeless{                               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__aircard{                                width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__court_district_go{                      width:100%; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tep_followup{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tep_initial{                            width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__attendance{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__test_site_selection{                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__scantron_performance{                   width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__study_island_assessments{               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__course_progress{                        width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__work_submission{                        width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__grades{                                 width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__communications{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__retention_risk{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__escalation{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__welcome_call{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__initial_home_visit{                     width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tech_issue{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ilp_conference{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__low_engagement{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ado{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__truancy_court_outcome{                  width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__court_preparation{                      width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__residency{                              width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ses{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__sap_invitation{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__sap_followup{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__evaluation_request_psych{               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__evaluation_under_review_psych{          width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ell{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__phlote_identification{                  width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__cys{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__homeless{                               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__aircard{                                width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__court_district_go{                      width:100%; height:20px; margin-bottom:2px;}
             
             div#blank.STUDENT_CONTACTS__other{                                  float:left; clear:left; width:25%; padding-top:10px;}
             div#blank.STUDENT_CONTACTS__other_description{                      float:left; clear:left; width:25%; padding-top:10px;}
