@@ -1,5 +1,5 @@
 def date = new Date().format("yyyy-MM-dd")
-q = 1
+q = 2
 /* CLASS ROSTER */
 for ( school in ["MS"] ) {
     
