@@ -1,4 +1,4 @@
-def date = "2013-11-13"
+def date = new Date().format("yyyy-MM-dd")
 
 /* CLASS ROSTER */
 for ( school in ["EL","MS","HS"] ) {
