@@ -58,6 +58,9 @@ end
             structure_hash["fields"]["started_datetime"     ] = {"data_type"=>"datetime",   "file_field"=>"started_datetime"    } if field_order.push("started_datetime"    )
             structure_hash["fields"]["completed_datetime"   ] = {"data_type"=>"datetime",   "file_field"=>"completed_datetime"  } if field_order.push("completed_datetime"  )
             
+            structure_hash["fields"]["successful"           ] = {"data_type"=>"bool",       "file_field"=>"successful"          } if field_order.push("successful"          )
+            structure_hash["fields"]["notes"                ] = {"data_type"=>"text",       "file_field"=>"notes"               } if field_order.push("notes"               )
+            
             structure_hash["fields"]["confirmed_datetime"   ] = {"data_type"=>"datetime",   "file_field"=>"confirmed_datetime"  } if field_order.push("confirmed_datetime"  )
             
         structure_hash["field_order"] = field_order
