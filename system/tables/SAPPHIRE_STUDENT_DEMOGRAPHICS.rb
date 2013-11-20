@@ -30,8 +30,10 @@ end
                 "Queue ID"          ,
                 "Student ID"        ,
                 "Athena Table"      ,
+                "Athena Field"      ,
                 "Athena Value"      ,
                 "Sapphire Table"    ,
+                "Sapphire Field"    ,
                 "Sapphire Value"
             ]
             
@@ -63,8 +65,10 @@ end
                         pid     ,
                         sid     ,
                         a_table ,
+                        a_field ,
                         a_value ,
                         s_table ,
+                        s_field ,
                         s_value
                     ]
                     
