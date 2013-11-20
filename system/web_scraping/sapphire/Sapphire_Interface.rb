@@ -23,43 +23,47 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     def process_queue(queue_pid)
-        
+        puts queue_pid
         @params[:queue_record   ] = $tables.attach("SAPPHIRE_INTERFACE_QUEUE"       ).by_primary_id(queue_pid)
         @params[:queue_record   ].fields["started_datetime"].set($base.right_now.to_db).save
         
         @params[:map_record     ] = $tables.attach("SAPPHIRE_INTERFACE_MAP"         ).by_primary_id(@params[:queue_record   ].fields["map_id"              ].value)
         @params[:options_record ] = $tables.attach("SAPPHIRE_INTERFACE_OPTIONS"     ).by_primary_id(@params[:map_record     ].fields["sapphire_option_id"  ].value)
         
-        school_id       = "EL"
+        school_id = "EL"
        
         if @params[:options_record].fields["module_name"].match(/Student Information System/)
             
             @params[:src_record]        = $tables.attach(@params[:map_record].fields["athena_table"].value).by_primary_id(@params[:queue_record].fields["athena_pid"].value)
             sid                         = @params[:src_record].fields["student_id"].value
             student                     = $students.get(sid)
-            if !student.active.is_true?
-                $base.system_notification(
-                    subject = "Sapphire Update Failed - SID: #{sid}",
-                    content = "Student is not active"
-                )
+            
+            if student.active.is_true?
+                
+                school_id                   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
+                
+                @params[:school_code        ] = school_id
+                @params[:school_year        ] = $school.current_school_year.split("-")[-1]
+                @params[:module             ] = @params[:options_record].fields["module_name"].value
+                @params[:sid                ] = sid
+                @params[:new_value          ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value
+                
+                puts @params
+                
+                student_update_record
+                
+                @params[:queue_record   ].fields["completed_datetime"].set($base.right_now.to_db).save
+                
+            else
+                
+                #$base.system_notification(
+                #    subject = "Sapphire Update Failed - SID: #{sid}",
+                #    content = "Student is not active"
+                #)
+                
             end
-            school_id                   = (student && student.grade.match(/K|1st|2nd|3rd|4th|5th/)) ? "EL" : (student && student.grade.match(/6th|7th|8th/)) ? "MS" : "HS"
             
-            @params[:school_code        ] = school_id
-            @params[:school_year        ] = $school.current_school_year.split("-")[-1]
-            @params[:module             ] = @params[:options_record].fields["module_name"].value
-            @params[:sid                ] = sid
-            @params[:new_value          ] = @params[:src_record].fields[@params[:map_record].fields["athena_field"].value].value
-            
-            puts @params
-            
-            student_update_record
-            
-        end
-        
-        @params[:queue_record   ].fields["completed_datetime"].set($base.right_now.to_db).save
-        
-        browser.close
+        end 
         
     end
     
@@ -405,7 +409,7 @@ end
     
     def save_student
         
-        sleep 3
+        sleep 5
         
         browser.execute_script(
             "if ($('main_form').onsubmit()) {
@@ -423,6 +427,8 @@ end
             }"
         )
        
+        sleep 5
+        
     end
     
     def search_students
@@ -454,21 +460,37 @@ end
     
     def select_student
         
-        field_found         = false
+        field_found = false
         i = 0
-        until field_found
-            if browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").exists?
+        
+        begin
+            
+            until (field_found || i >= @timeout)
                 
-                browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").click
-                field_found = true
+                if browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").exists?
+                    
+                    browser.div(:id, "namesrch_auto").li(:id, "stu_#{@params[:sid]}").click
+                    field_found = true
+                    
+                else
+                    sleep 1
+                end
                 
-            else
-                sleep 1
+                i+=1
+                
             end
-            if i >= @timeout
-                notify_timeout
-            end
+            
+        rescue => e
+            
             i+=1
+            retry if i < @timeout
+            
+        end
+        
+        if i >= @timeout
+            
+            notify_timeout
+            
         end
         
     end
@@ -484,6 +506,8 @@ end
         follow_options_path
         
         save_student
+        
+        browser.close
         
     end
     
