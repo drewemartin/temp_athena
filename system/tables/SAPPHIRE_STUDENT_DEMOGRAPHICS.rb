@@ -28,6 +28,7 @@ end
             
             [
                 "Queue ID"          ,
+                "Student ID"        ,
                 "Athena Table"      ,
                 "Athena Value"      ,
                 "Sapphire Table"    ,
@@ -60,6 +61,7 @@ end
                     
                     [
                         pid     ,
+                        sid     ,
                         a_table ,
                         a_value ,
                         s_table ,
