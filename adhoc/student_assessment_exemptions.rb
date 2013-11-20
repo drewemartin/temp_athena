@@ -16,10 +16,10 @@ class Student_Assessment_Exemptions < Base
                 
                 pasa_eligible       = row[9 ] == "PASA"                 ? true : nil
                 religious_exempt    = row[9 ] == "Religious Exemption"  ? true : nil
-                study_island_exempt = row[10] == "Yes"                  ? true : nil
-                aims_exempt         = row[12] == "Yes"                  ? true : nil
+                study_island_exempt = row[10] && row[10].match(/y/i)               ? true : nil
+                aims_exempt         = row[12] && row[12].match(/y/i)               ? true : nil
                 
-                if row[11] == "Yes"
+                if row[11] && row[11].match(/y/i)
                   
                     scantron_exempt_ent_m = true
                     scantron_exempt_ent_r = true
