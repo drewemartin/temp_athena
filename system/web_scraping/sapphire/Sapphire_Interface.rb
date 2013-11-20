@@ -117,7 +117,7 @@ end
         #    content = caller[0]
         #)
         
-        return false
+        raise
         
     end
     
@@ -506,17 +506,30 @@ end
     
     def student_update_record
         
-        login
-        goto_module
-        goto_student_demographics
-        search_students
-        select_student
+        begin
+            
+            login
+            goto_module
+            goto_student_demographics
+            search_students
+            select_student
+            
+            follow_options_path
+            
+            save_student
+            
+            browser.close
+            
+        rescue => e
+            
+            return false
+            
+        ensure
+            
+            browser.close if (structure.has_key?("browser") && browser.exists?)
+            
+        end
         
-        follow_options_path
-        
-        save_student
-        
-        browser.close
         
     end
     
