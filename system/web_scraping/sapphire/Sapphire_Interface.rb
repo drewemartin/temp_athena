@@ -50,9 +50,12 @@ end
                 
                 puts @params
                 
-                student_update_record
-                
-                @params[:queue_record   ].fields["completed_datetime"].set($base.right_now.to_db).save
+                if student_update_record
+                    
+                    @params[:queue_record   ].fields["successful"           ].set(true                  ).save 
+                    @params[:queue_record   ].fields["completed_datetime"   ].set($base.right_now.to_db ).save
+                    
+                end
                 
             else
                 
@@ -60,6 +63,9 @@ end
                 #    subject = "Sapphire Update Failed - SID: #{sid}",
                 #    content = "Student is not active"
                 #)
+                
+                @params[:queue_record   ].fields["successful"   ].set(false                 ).save
+                @params[:queue_record   ].fields["notes"        ].set("Inactive Student"    ).save
                 
             end
             
@@ -100,13 +106,16 @@ end
     
     def notify_timeout
         
-        @params[:queue_record   ].fields["started_datetime"     ].set(nil).save
-        @params[:queue_record   ].fields["completed_datetime"   ].set(nil).save
+        #@params[:queue_record   ].fields["started_datetime"     ].set(nil).save
+        #@params[:queue_record   ].fields["completed_datetime"   ].set(nil).save
         
-        $base.system_notification(
-            subject = "Sapphire Interface - Timeout!",
-            content = caller[0]
-        )
+        @params[:queue_record   ].fields["successful"   ].set(false                     ).save
+        @params[:queue_record   ].fields["notes"        ].set("Timeout - #{caller[0]}"  ).save
+        
+        #$base.system_notification(
+        #    subject = "Sapphire Interface - Timeout!",
+        #    content = caller[0]
+        #)
         
         return false
         
