@@ -269,7 +269,16 @@ end
         until field_found
             if browser.select_list(params[:option_type].to_sym, params[:option_value]).exists?
                 
-                browser.select_list(params[:option_type].to_sym,params[:option_value]).select_value(params[:field_value])
+                if browser.select_list(params[:option_type].to_sym,params[:option_value]).option(:value, params[:field_value]).exists?
+                    
+                    browser.select_list(params[:option_type].to_sym,params[:option_value]).select_value(params[:field_value])
+                    
+                elsif browser.select_list(params[:option_type].to_sym,params[:option_value]).option(:text, params[:field_value]).exists?
+                    
+                    browser.select_list(params[:option_type].to_sym,params[:option_value]).select(params[:field_value])
+                    
+                end
+                
                 field_found = true
                 
             else
