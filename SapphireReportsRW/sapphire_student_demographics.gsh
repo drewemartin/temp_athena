@@ -10,7 +10,7 @@ runReportAndSave(
 			"HS",
 			"MS"
 		],
-		"SCHOOL_YEAR_1"	: new Date().format("yyyy"),
+		"SCHOOL_YEAR_1"	: "2014",
 		"STATUS_FLG_1"	: [
 			"E"
 		]
