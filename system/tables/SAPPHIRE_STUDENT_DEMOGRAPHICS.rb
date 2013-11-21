@@ -56,8 +56,18 @@ end
             s_field     = map_record.fields["sapphire_field"     ].value
             s_value     = $tables.attach(s_table).field_value(s_field, "WHERE student_id = '#{sid}'")
             
-            if a_value == s_value
+            if (
+                
+                s_field == a_field ||
+                (!s_field.nil? && !a_field.nil?) && s_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') == a_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') ||
+                s_field == "M" && a_field == "Male" ||
+                s_field == "F" && a_field == "Female"
+                
+            )
+            #a_value == s_value
+                
                 $tables.attach("SAPPHIRE_INTERFACE_QUEUE").by_primary_id(pid).fields["confirmed_datetime"].set($base.right_now.to_db).save
+                
             else
                 issues.push(
                     
