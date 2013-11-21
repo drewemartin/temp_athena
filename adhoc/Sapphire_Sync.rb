@@ -35,7 +35,14 @@ class Sapphire_Sync < Base
                     s_field = $tables.attach("SAPPHIRE_STUDENT_DEMOGRAPHICS").field_value(mapped_fields[field_name],  "WHERE student_id = '#{sid}'")
                     a_field = $tables.attach("STUDENT"                      ).field_value(field_name,                 "WHERE student_id = '#{sid}'")
                     
-                    if !(s_field == a_field)
+                    if !(
+                     
+                        s_field                                                         == a_field                                                      ||
+                        (!s_field.nil? && !a_field.nil?) && s_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') == a_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','')  ||
+                        s_field                                                         == "M" && a_field == "Male"                                     ||
+                        s_field                                                         == "F" && a_field == "Female"
+                        
+                    )
                       
                         t.find_and_trigger_event(:after_change_field, s.send(field_name))
                       
