@@ -124,6 +124,12 @@ end
             structure_hash["fields"]["homeless"                      ] = {"data_type"=>"bool", "file_field"=>"homeless"                      } if field_order.push("homeless")
             structure_hash["fields"]["aircard"                       ] = {"data_type"=>"bool", "file_field"=>"aircard"                       } if field_order.push("aircard")
             structure_hash["fields"]["court_district_go"             ] = {"data_type"=>"bool", "file_field"=>"court_district_go"             } if field_order.push("court_district_go")
+            structure_hash["fields"]["counselor_one_on_one"          ] = {"data_type"=>"bool", "file_field"=>"counselor_one_on_one"          } if field_order.push("counselor_one_on_one")
+            structure_hash["fields"]["counselor_face_to_face"        ] = {"data_type"=>"bool", "file_field"=>"counselor_face_to_face"        } if field_order.push("counselor_face_to_face")
+            structure_hash["fields"]["counselor_graduation_meeting"  ] = {"data_type"=>"bool", "file_field"=>"counselor_graduation_meeting"  } if field_order.push("counselor_graduation_meeting")
+            structure_hash["fields"]["counselor_intervention"        ] = {"data_type"=>"bool", "file_field"=>"counselor_intervention"        } if field_order.push("counselor_intervention")
+            structure_hash["fields"]["504_conference"                ] = {"data_type"=>"bool", "file_field"=>"504_conference"                } if field_order.push("504_conference")
+            structure_hash["fields"]["progress_monitoring"           ] = {"data_type"=>"bool", "file_field"=>"progress_monitoring"           } if field_order.push("progress_monitoring")
             structure_hash["fields"]["other"                         ] = {"data_type"=>"bool", "file_field"=>"other"                         } if field_order.push("other")
             structure_hash["fields"]["other_description"             ] = {"data_type"=>"text", "file_field"=>"other_description"             } if field_order.push("other_description")
             
