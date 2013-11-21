@@ -28,9 +28,12 @@ end
             
             [
                 "Queue ID"          ,
+                "Student ID"        ,
                 "Athena Table"      ,
+                "Athena Field"      ,
                 "Athena Value"      ,
                 "Sapphire Table"    ,
+                "Sapphire Field"    ,
                 "Sapphire Value"
             ]
             
@@ -43,14 +46,14 @@ end
             map_record  = $tables.attach("SAPPHIRE_INTERFACE_MAP"   ).by_primary_id(map_id)
             
             athena_id   = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("athena_pid", "WHERE primary_id = '#{pid}'")
-            a_table     = map_record.field["athena_table"       ].value
-            a_field     = map_record.field["athena_field"       ].value
+            a_table     = map_record.fields["athena_table"       ].value
+            a_field     = map_record.fields["athena_field"       ].value
             a_value     = $tables.attach(a_table).field_value(a_field,      "WHERE primary_id = '#{athena_id}'")
             
             sid         = $tables.attach(a_table).field_value("student_id", "WHERE primary_id = '#{athena_id}'")
             
-            s_table     = map_record.field["sapphire_table"     ].value
-            s_field     = map_record.field["sapphire_field"     ].value
+            s_table     = map_record.fields["sapphire_table"     ].value
+            s_field     = map_record.fields["sapphire_field"     ].value
             s_value     = $tables.attach(s_table).field_value(s_field, "WHERE student_id = '#{sid}'")
             
             if a_value == s_value
@@ -60,9 +63,12 @@ end
                     
                     [
                         pid     ,
+                        sid     ,
                         a_table ,
+                        a_field ,
                         a_value ,
                         s_table ,
+                        s_field ,
                         s_value
                     ]
                     
