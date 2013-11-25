@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 #require "#{File.dirname(__FILE__)}/base"
-class Email #< Base
+class Email# < Base
 
     #---------------------------------------------------------------------------
     def initialize()
@@ -176,16 +176,29 @@ end
     # Let's put our code in safe area
     begin
         
-        #GMAIL VERSION IF NEEDED:
-        smtp = Net::SMTP.new('smtp.gmail.com', 587)
-        smtp.enable_starttls
-        smtp.start('gmail.com', "agora.athenasis@gmail.com", "Lemodie_23", :plain) do |s|
-            s.send_message(mailtext, from_override, recipient_arr)
-        end
+        ##GMAIL VERSION IF NEEDED:
+        #smtp = Net::SMTP.new('smtp.gmail.com', 587)
+        #smtp.enable_starttls
+        #smtp.start('gmail.com', "agora.athenasis@gmail.com", "Lemodie_23", :plain) do |s|
+        #    s.send_message(mailtext, from_override, recipient_arr)
+        #end
         
         #donotreply@athena-sis.com version - we should use this for district notifications
         #smtp = Net::SMTP.start('smtpout.secureserver.net', 25, 'smtpout.secureserver.net', sender_email, sender_secret, :plain)
         #return smtp.send_message(msgstr = mailtext, from_addr = "donotreply@athena-sis.com", to_addrs = recipient_arr)
+        
+        #MS EXCHANGE VERSION
+        x = "69.25.45.82"
+        Net::SMTP.start(x, 25, :plain) do |smtp|
+        #Net::SMTP.start(x, 25, "mail.k12.com", sender_email, sender_secret, :plain) do |smtp|
+            results1 = smtp.sendmail(
+                mailtext,
+                sender_email,
+                recipient_arr
+            )
+            results = results1.message #"#{results1.message} #{results2.message}"
+            #$base.system_log("SMTP EMAIL RESULTS: #{results}")
+        end 
         
         #Net::SMTP.start('dedrelay.secureserver.net', 25, 'smtpout.secureserver.net', sender_email, sender_secret, :cram_md5) do |smtp|
         #    results1 = smtp.sendmail(
@@ -201,6 +214,7 @@ end
         #    results = results1.message #"#{results1.message} #{results2.message}"
         #    #$base.system_log("SMTP EMAIL RESULTS: #{results}")
         #end
+        
     rescue Exception => e
         $base.system_log(
             subject = "SMTP Email Failed!
@@ -240,3 +254,13 @@ end
 end
 
 #Email.new.athena_smtp_email("jhalverson@agora.org", "teLIHVHVst", "teLKHVYUKVst", attachment_path = nil, from_override = nil)
+#Email.new.smtp_email(
+#    sender_email                = "jhalverson@agora.org",
+#    sender_secret               = "JAq5dP37",
+#    recipient_email             = "madsci523@gmail.com",
+#    subject                     = "a",
+#    content                     = "b",
+#    attachment_path             = nil,
+#    from_override               = nil,
+#    attachment_name_override    = nil
+#)
