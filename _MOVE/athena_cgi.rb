@@ -1123,7 +1123,7 @@ end
         
         pids = $tables.attach("documents").document_pids(type_id)
         
-        nice_name = $tables.attach(report_name).nice_name
+        nice_name = $tables.attach(report_name) ? $tables.attach(report_name).nice_name : report_name
         
         pids.each_with_index do |pid, i|
             

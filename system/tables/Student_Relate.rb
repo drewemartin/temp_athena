@@ -468,33 +468,42 @@ end
     end
     
     def guidance_counselors
+        
         params = field_params
         params[:role            ] = "Guidance Counselor"
         params[:role_details    ] = "Guidance Counselor"
         params[:source          ] = "K12_Ecollege_Detail"
-        get_existing_records
         
         pids = $tables.attach("k12_ecollege_detail").primary_ids(" WHERE sams_course_name regexp 'Finding Your Path' ")
-        pids.each{|pid|
+        
+        if pids
             
-            record  = $tables.attach("k12_ecollege_detail").by_primary_id(pid)
+            get_existing_records
             
-            teach_f  = record.fields["teacher_first_name"].value
-            teach_l  = record.fields["teacher_last_name" ].value
-            sid      = record.fields["sams_id"           ].value
+            pids.each{|pid|
+                
+                record  = $tables.attach("k12_ecollege_detail").by_primary_id(pid)
+                
+                teach_f  = record.fields["teacher_first_name"].value
+                teach_l  = record.fields["teacher_last_name" ].value
+                sid      = record.fields["sams_id"           ].value
+                
+                params[:sid]    = sid
+                tid             = $tables.attach("TEAM").primary_ids("WHERE k12_first_name = '#{teach_f}' AND k12_last_name = #{teach_l}")
+                staff           = $team.by_k12_name("#{teach_f} #{teach_l}")
+                if tid
+                    params[:team_id]  = (tid ? tid[0] : nil)
+                    params[:staff_id] = staff.samsid.value
+                    active_record
+                end
+                
+            }
             
-            params[:sid]    = sid
-            tid             = $tables.attach("TEAM").primary_ids("WHERE k12_first_name = '#{teach_f}' AND k12_last_name = #{teach_l}")
-            staff           = $team.by_k12_name("#{teach_f} #{teach_l}")
-            if tid
-                params[:team_id]  = (tid ? tid[0] : nil)
-                params[:staff_id] = staff.samsid.value
-                active_record
-            end
+            #puts "#{@existing_records.length} Remaining Records." if @existing_records
             
-        } if pids
-        #puts "#{@existing_records.length} Remaining Records." if @existing_records
-        deactivate_existing_records if pids #THIS ONLY DEACTIVATES THEM IF THERE ARE ANY BECAUSE K12 RECENTLY DROPPED ALL 'FINDING YOUR PATH' COURSES
+            deactivate_existing_records #THIS ONLY DEACTIVATES THEM IF THERE ARE ANY BECAUSE K12 RECENTLY DROPPED ALL 'FINDING YOUR PATH' COURSES
+            
+        end
         
     end
 

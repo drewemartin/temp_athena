@@ -145,6 +145,7 @@ end
     def after_load_k12_omnibus
         
         reactivate_reinstates
+        deactivate_cancelled_enrollment
         #mark_active_students
         #mark_enrolled_students
         
@@ -227,6 +228,26 @@ end
                 attendance_mode_record.fields["attendance_mode"].value = "Synchronous"
                 attendance_mode_record.save
             end
+            
+        } if pids
+        
+    end
+    
+    def deactivate_cancelled_enrollment
+        
+        o_db = $tables.attach("K12_OMNIBUS").data_base
+        pids = primary_ids(
+            "LEFT JOIN #{o_db}.k12_omnibus ON k12_omnibus.student_id = student.student_id
+            WHERE k12_omnibus.student_id IS NOT NULL
+            AND (k12_omnibus.enrollmentstatus = 'Cancelled' OR k12_omnibus.enrollmentstatus = 'Not Approved')
+            AND student.active IS NOT FALSE"
+        )
+        
+        pids.each{|pid|
+            
+            record = by_primary_id(pid)
+            record.fields["active"].value = 0     
+            record.save
             
         } if pids
         

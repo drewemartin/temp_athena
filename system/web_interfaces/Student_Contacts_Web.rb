@@ -102,6 +102,12 @@ end
                         "Homeless",                            
                         "Aircard",
                         "Court/District/Go",
+                        "Counselor One-on-One",
+                        "Counselor Face to Face",
+                        "Counselor Graduation Meeting",
+                        "Counselor Intervention",
+                        "504 Conference",
+                        "Progress Monitoring",
                         "Other",
                         "Other Description",
                         "RTII Behavior"
@@ -162,6 +168,12 @@ end
                     row.push(f["homeless"                      ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["homeless"                      ].to_user()+">/div>")
                     row.push(f["aircard"                       ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["aircard"                       ].to_user()+">/div>")
                     row.push(f["court_district_go"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["court_district_go"             ].to_user()+">/div>")
+                    row.push(f["counselor_one_on_one"          ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["counselor_one_on_one"          ].to_user()+">/div>")
+                    row.push(f["counselor_face_to_face"        ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["counselor_face_to_face"        ].to_user()+">/div>")
+                    row.push(f["counselor_graduation_meeting"  ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["counselor_graduation_meeting"  ].to_user()+">/div>")
+                    row.push(f["counselor_intervention"        ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["counselor_intervention"        ].to_user()+">/div>")
+                    row.push(f["504_conference"                ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["504_conference"                ].to_user()+">/div>")
+                    row.push(f["progress_monitoring"           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["progress_monitoring"           ].to_user()+">/div>")
                     row.push(f["other"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["other"                         ].to_user()+"</div>")
                     row.push(f["other_description"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
                     row.push(f["rtii_behavior_id"              ].web.select(:disabled=>disabled, :dd_choices=>rtii_dd_options)   )
@@ -220,6 +232,10 @@ end
                     
                     record.fields["aircard"                       ].web.default( :label_option=>"Aircard",                              :div_id=>"blank"),
                     record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank"),
+                    record.fields["counselor_one_on_one"          ].web.default( :label_option=>"Counselor One-on-One",                 :div_id=>"blank"),
+                    record.fields["counselor_face_to_face"        ].web.default( :label_option=>"Counselor Face to Face",               :div_id=>"blank"),
+                    record.fields["counselor_graduation_meeting"  ].web.default( :label_option=>"Counselor Graduation Meeting",         :div_id=>"blank"),
+                    record.fields["counselor_intervention"        ].web.default( :label_option=>"Counselor Intervention",               :div_id=>"blank"),
                     record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank"),
                     record.fields["court_district_go"             ].web.default( :label_option=>"Court/district/Go",                    :div_id=>"blank"),
                     record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank"),
@@ -234,6 +250,7 @@ end
                     record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Face-to-Face",                 :div_id=>"blank"),
                     record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank"),
                     record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank"),
+                    record.fields["progress_monitoring"           ].web.default( :label_option=>"Progress Monitoring",                  :div_id=>"blank"),
                     record.fields["residency"                     ].web.default( :label_option=>"Residency",                            :div_id=>"blank"),
                     record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank"),
                     record.fields["sap_followup"                  ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank"),
@@ -247,8 +264,9 @@ end
                     record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank"),
                     record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank"),
                     record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank"),
-                    record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank")
-                    
+                    record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank"),
+                    record.fields["504_conference"                ].web.default( :label_option=>"504 Conference",                       :div_id=>"blank")
+
                 )
                 
                 output << alphabetize_contact_reasons(reasons)
@@ -487,38 +505,45 @@ end
             div#blank.STUDENT_CONTACTS__notes textarea{                         resize:none;}
             div#blank.STUDENT_CONTACTS__contact_type textarea{                  width:500px; height:100px; resize:none;}
             
-            div#blank.STUDENT_CONTACTS__tep_followup{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__tep_initial{                            width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__attendance{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__test_site_selection{                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__scantron_performance{                   width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__study_island_assessments{               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__course_progress{                        width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__work_submission{                        width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__grades{                                 width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__communications{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__retention_risk{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__escalation{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__welcome_call{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__initial_home_visit{                     width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__tech_issue{                             width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ilp_conference{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__low_engagement{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ado{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__truancy_court_outcome{                  width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__court_preparation{                      width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__residency{                              width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ses{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__sap_invitation{                         width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__sap_followup{                           width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__evaluation_request_psych{               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__evaluation_under_review_psych{          width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__ell{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__phlote_identification{                  width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__cys{                                    width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__homeless{                               width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__aircard{                                width:100%; margin-bottom:2px;}
-            div#blank.STUDENT_CONTACTS__court_district_go{                      width:100%; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tep_followup{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tep_initial{                            width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__attendance{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__test_site_selection{                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__scantron_performance{                   width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__study_island_assessments{               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__course_progress{                        width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__work_submission{                        width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__grades{                                 width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__communications{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__retention_risk{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__escalation{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__welcome_call{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__initial_home_visit{                     width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__tech_issue{                             width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ilp_conference{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__low_engagement{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ado{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__truancy_court_outcome{                  width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__court_preparation{                      width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__residency{                              width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ses{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__sap_invitation{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__sap_followup{                           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__evaluation_request_psych{               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__evaluation_under_review_psych{          width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__ell{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__phlote_identification{                  width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__cys{                                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__homeless{                               width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__aircard{                                width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__court_district_go{                      width:100%; height:20px; margin-bottom:2px;}         
+            div#blank.STUDENT_CONTACTS__counselor_one_on_one{                   width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__counselor_face_to_face{                 width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__counselor_graduation_meeting{           width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__counselor_intervention{                 width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__504_conference{                         width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__progress_monitoring{                    width:100%; height:20px; margin-bottom:2px;}
+            
             
             div#blank.STUDENT_CONTACTS__other{                                  float:left; clear:left; width:25%; padding-top:10px;}
             div#blank.STUDENT_CONTACTS__other_description{                      float:left; clear:left; width:25%; padding-top:10px;}
@@ -555,6 +580,12 @@ end
             div#blank.STUDENT_CONTACTS__homeless input{                         float:left;}
             div#blank.STUDENT_CONTACTS__aircard input{                          float:left;}
             div#blank.STUDENT_CONTACTS__court_district_go input{                float:left;}
+            div#blank.STUDENT_CONTACTS__counselor_one_on_one input{             float:left;}
+            div#blank.STUDENT_CONTACTS__counselor_face_to_face input{           float:left;}
+            div#blank.STUDENT_CONTACTS__counselor_graduation_meeting input{     float:left;}
+            div#blank.STUDENT_CONTACTS__counselor_intervention input{           float:left;}
+            div#blank.STUDENT_CONTACTS__504_conference input{                   float:left;}
+            div#blank.STUDENT_CONTACTS__progress_monitoring input{              float:left;}
             
             div#blank.STUDENT_CONTACTS__other input{                            float:left;}
             
