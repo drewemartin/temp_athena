@@ -205,20 +205,31 @@ end
         
         student             = $students.attach($focus_student.student_id.value)#FNORD - DELETE THIS OBJECT ASAP
         
+        excused_breakdown = student.attendance.excused_absences_breakdown
+        
         att_array = Array.new
         a1, b1 = "Enroll Date:"     , $focus_student.schoolenrolldate.to_user
         a2, b2 = "Days Enrolled:"   , student.attendance.enrolled_days.length
         a3, b3 = "Days Attended:"   , student.attendance.attended_days.length
         a4, b4 = "Days Excused:"    , student.attendance.excused_absences.length
         a5, b5 = "Days Unexcused:"  , student.attendance.unexcused_absences.length
+        a6, b6 = "me:"              , excused_breakdown["me"].length
+        a7, b7 = "t:"               , excused_breakdown["t"].length
+        a8, b8 = "e:"               , excused_breakdown["e"].length
+        
         
         att_array.push([a1.to_s,b1.to_s])
         att_array.push([a2.to_s,b2.to_s])
         att_array.push([a3.to_s,b3.to_s])
         att_array.push([a4.to_s,b4.to_s])
         att_array.push([a5.to_s,b5.to_s])
+        att_array.push([a6.to_s,b6.to_s])
+        att_array.push([a7.to_s,b7.to_s])
+        att_array.push([a8.to_s,b8.to_s])
         
-        output = $tools.table(
+        output = "<DIV style='height:120px; overflow:auto;'>"
+        
+        output << $tools.table(
             :table_array    => att_array,
             :unique_name    => "demo_section_att",
             :footers        => false,
@@ -226,6 +237,8 @@ end
             :title          => false,
             :caption        => false
         )
+        
+        output << "</DIV>"
         
         #CSS
         output << "<style>"
