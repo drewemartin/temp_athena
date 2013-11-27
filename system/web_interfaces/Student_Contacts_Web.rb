@@ -623,7 +623,7 @@ end
             
             input.STUDENT_CONTACTS__successful{                                 margin-left: 0px;}
             input.datetimepick{                                                 width:145px; font-size:11px;}
-            div.STUDENT_CONTACTS__notes textarea{                               width:648px; height:75px;}
+            div.STUDENT_CONTACTS__notes textarea{                               width:520px; height:75px;}
             
             div.STUDENT_CONTACTS__contact_type{                                 width:200px; margin-left:auto; margin-right:auto;}
             div.STUDENT_CONTACTS__successful{                                   width:20px; margin-left:auto; margin-right:auto;}

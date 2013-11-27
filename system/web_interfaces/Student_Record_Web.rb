@@ -271,7 +271,7 @@ end
         add_str << "#{!$focus_student.mailingaddress2.value.nil? ? $focus_student.mailingaddress2.value+"<br>" : ""}"
         add_str << "#{$focus_student.mailingcity.value}, #{$focus_student.mailingstate.value} #{$focus_student.mailingzip.value}"
         
-        a1, b1 = "Address:"                                     , add_str
+        a1, b1 = "Mailing Address:"                                     , add_str
         a2, b2 = "Phone:"                                       , $focus_student.studenthomephone.to_phone_number
         a3, b3 = "LC (#{$focus_student.lcrelationship.value}):"    , "#{$focus_student.lcfirstname.value} #{$focus_student.lclastname.value}" 	
         a4, b4 = "LG (#{$focus_student.lgrelationship.value}):"    , "#{$focus_student.lgfirstname.value} #{$focus_student.lglastname.value}"

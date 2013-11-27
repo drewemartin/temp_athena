@@ -157,7 +157,7 @@ end
             $tools.button_new_csv("student_assessment_exemptions", additional_params_str = nil),
             "Student Assessment Exemptions",
             "This report includes all exemptions records for active students."
-        ]) if $team_member.super_user? || $team_member.rights.student_assessments_edit.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_assessment_exemptions.is_true?
         
         #STUDENT_SCANTRON_PARTICIPATION
         tables_array.push([

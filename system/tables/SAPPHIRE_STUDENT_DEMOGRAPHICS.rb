@@ -39,7 +39,7 @@ end
             
         )
         
-        pids    = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").primary_ids("WHERE confirmed_datetime IS NULL AND completed_datetime IS NOT NULL")
+        pids = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").primary_ids("WHERE confirmed_datetime IS NULL AND completed_datetime IS NOT NULL")
         pids.each{|pid|
             
             map_id      = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("map_id", "WHERE primary_id = '#{pid}'")
@@ -56,7 +56,7 @@ end
             s_field     = map_record.fields["sapphire_field"     ].value
             s_value     = $tables.attach(s_table).field_value(s_field, "WHERE student_id = '#{sid}'")
             
-            if (
+            if !(
                 
                 s_field == a_field ||
                 (!s_field.nil? && !a_field.nil?) && s_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') == a_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') ||
