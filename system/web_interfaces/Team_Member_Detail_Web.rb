@@ -692,6 +692,9 @@ end
             [$focus_team_member.rights.live_reports_my_student_contacts.web.checkbox(                   :label_option=>"My Student Contacts",                   :disabled=>disabled("live_reports_my_student_contacts"))                ],
             [$focus_team_member.rights.live_reports_my_students_general.web.checkbox(                   :label_option=>"My Students General",                   :disabled=>disabled("live_reports_my_students_general"))                ],
             [$focus_team_member.rights.live_reports_my_students_tests.web.checkbox(                     :label_option=>"My Students Tests",                     :disabled=>disabled("live_reports_my_students_tests"))                  ],
+            
+            [$focus_team_member.rights.live_reports_student_assessment_exemptions.web.checkbox(         :label_option=>"Student Assessment Exemptions",         :disabled=>disabled("live_reports_student_assessment_exemptions"))                        ],
+            
             [$focus_team_member.rights.live_reports_student_ilp.web.checkbox(                           :label_option=>"Student ILP Reports",                   :disabled=>disabled("live_reports_student_ilp"))                        ],
             [$focus_team_member.rights.live_reports_student_rtii_behavior.web.checkbox(                 :label_option=>"Student RTII Behavior",                 :disabled=>disabled("live_reports_student_rtii_behavior"))              ],
             [$focus_team_member.rights.live_reports_student_scantron_participation.web.checkbox(        :label_option=>"Student Scantron Participation",        :disabled=>disabled("live_reports_student_scantron_participation"))     ],
