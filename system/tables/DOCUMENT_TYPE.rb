@@ -50,7 +50,7 @@ end
         pre_reqs.push({:name=>"Ink ID Requests"                                 , :category_id => cat_id_supplies.value,                        :file_extension=>"csv"}) if cat_id_supplies
         
         cat_id_enrollment               = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Enrollment'")
-        pre_reqs.push({:name=>"Duplicated Students Report"                      , :category_id => cat_id_enrollment.value,                      :file_extension=>"csv"}) if cat_id_enrollment
+        pre_reqs.push({:name=>"duplicated_students_report"                      , :category_id => cat_id_enrollment.value,                      :file_extension=>"csv"}) if cat_id_enrollment
         
         cat_id_attendance               = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Attendance'")
         pre_reqs.push({:name=>"Attendance Master"                               , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance

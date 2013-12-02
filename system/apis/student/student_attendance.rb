@@ -39,6 +39,20 @@ end
         return dates || []
     end
     
+    def excused_absences_breakdown
+        codes = $tables.attach("attendance_codes").find_fields("code", "WHERE code_type = 'excused'", {:value_only=>true})
+        
+        dates = Hash.new
+        
+        codes.each do |code|
+            
+            dates[code] = $tables.attach("student_attendance").find_fields("date","WHERE student_id = #{@stu.studentid} AND official_code = '#{code}'", {:value_only=>true}) || []
+            
+        end
+        
+        return dates
+    end
+    
     def exists?
         return record ? true : false
     end
