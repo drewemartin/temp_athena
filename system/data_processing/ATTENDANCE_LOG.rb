@@ -13,28 +13,20 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-    def k12_logins_students
+    def k12_logins_students(eval_date = ($instance_DateTime - 1).strftime("%Y-%m-%d"))
         
-        source          = "K12 Logins"
-        source_table    = $tables.attach("K12_LOGINS")
-        
-        pids            = source_table.primary_ids(
-            "WHERE role = '1001'
-            AND last_login IS NOT NULL
-            AND logged IS NULL"
-        )
-        
-        pids.each{|pid|
+        if $field.is_schoolday?(eval_date)
             
-            date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
+            source          = "K12 Logins"
+            source_table    = $tables.attach("K12_LOGINS")
             
-            ##---If we are using a later logins report to create activity for an earlier date
-            #foo_dates = ["2013-11-09","2013-11-10"]         #the login dates that wouldn't normally count, but are being substituted
-            #date = "2013-11-08" if foo_dates.include?(date) #replace the date with the schooldate, if it should be replaced
-            ##---
+            pids            = source_table.primary_ids(
+                "WHERE role = '1001'
+                AND last_login REGEXP '#{eval_date}'"
+            )
             
-            if $field.is_schoolday?(date)
-              
+            pids.each{|pid|
+                
                 identity_id = source_table.field_value_by_pid("identityid", pid)
                 
                 if sid = $tables.attach("STUDENT").field_value("student_id", "WHERE identityid = '#{identity_id}'")
@@ -42,65 +34,58 @@ end
                     student = $students.get(sid)
                     
                     if student
+                        
                         student.log_attendance_activity(
-                            :date       => date,
+                            :date       => eval_date,
                             :source     => source,
                             :period     => nil,
                             :class      => source_table.field_value_by_pid("rolename", pid),
                             :code       => "p",
                             :team_id    => nil
                         )
+                        
                     end
                     
                 end
                 
+            } if pids
+            
+            if pids
+                
+                source_table.query(
+                    "UPDATE #{source_table.table_name}
+                    SET logged = true
+                    WHERE primary_id IN(#{pids.join(",")})"
+                )
+                
             end
-            
-        } if pids
-        
-        if pids
-            
-            source_table.query(
-                "UPDATE #{source_table.table_name}
-                SET logged = true
-                WHERE primary_id IN(#{pids.join(",")})"
-            )
             
         end
         
     end
 
-    def k12_logins_learning_coaches
+    def k12_logins_learning_coaches(eval_date = ($instance_DateTime - 1).strftime("%Y-%m-%d"))
         
-        source          = "K12 Logins - LC"
-        source_table    = $tables.attach("K12_LOGINS")
-        pids            = source_table.primary_ids(
-            "WHERE role = '1000'
-            AND last_login IS NOT NULL
-            AND logged IS NULL"
-        )
-        
-        pids.each{|pid|
+        if $field.is_schoolday?(eval_date)
             
-            date = source_table.field_value_by_pid("last_login", pid).slice(0,10)
+            source          = "K12 Logins - LC"
+            source_table    = $tables.attach("K12_LOGINS")
+            pids            = source_table.primary_ids(
+                "WHERE role = '1000'
+                AND last_login REGEXP '#{eval_date}'"
+            )
             
-            ##---If we are using a later logins report to create activity for an earlier date
-            #foo_dates = ["2013-11-09","2013-11-10"]         #the login dates that wouldn't normally count, but are being substituted
-            #date = "2013-11-08" if foo_dates.include?(date) #replace the date with the schooldate, if it should be replaced
-            ##---
-            
-            if $field.is_schoolday?(date)
+            pids.each{|pid|
                 
                 family_id   = source_table.field_value_by_pid("familyid",   pid)
                 regkey      = source_table.field_value_by_pid("regkey",     pid)      
-                sids        = $tables.attach("STUDENT").student_ids("WHERE (familyid = '#{family_id}' OR lcregistrationid REGEXP '#{regkey}')")
-                
+                sids        = $tables.attach("STUDENT").student_ids("WHERE (familyid = '#{family_id}' OR lcregistrationid REGEXP '#{regkey}')") 
                 
                 sids.each{|sid|
                     
                     student = $students.get(sid)
                     student.log_attendance_activity(
-                        :date       => date,
+                        :date       => eval_date,
                         :source     => source,
                         :period     => nil,
                         :class      => source_table.field_value_by_pid("rolename", pid),
@@ -110,17 +95,17 @@ end
                     
                 } if sids
                 
+            } if pids
+            
+            if pids
+                
+                source_table.query(
+                    "UPDATE #{source_table.table_name}
+                    SET logged = true
+                    WHERE primary_id IN(#{pids.join(",")})"
+                )
+                
             end
-            
-        } if pids
-        
-        if pids
-            
-            source_table.query(
-                "UPDATE #{source_table.table_name}
-                SET logged = true
-                WHERE primary_id IN(#{pids.join(",")})"
-            )
             
         end
         
