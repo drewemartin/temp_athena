@@ -50,10 +50,10 @@ end
         
         eval_date = ($instance_DateTime - 1).strftime("%Y-%m-%d")
         
-        $base.process("ATTENDANCE_LOG").k12_logins_students
+        $base.process("ATTENDANCE_LOG").k12_logins_students(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins")
         
-        $base.process("ATTENDANCE_LOG").k12_logins_learning_coaches
+        $base.process("ATTENDANCE_LOG").k12_logins_learning_coaches(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins_lc")
         
         $tables.attach("STUDENT_ATTENDANCE").create_new_attendance_records(eval_date)
@@ -79,9 +79,6 @@ end
         if !@table_structure
             structure_hash = {
                 :data_base          => "#{$config.school_name}_k12",
-                :load_type          => :append,
-                :keys               => ["identityid","role","last_login"],
-                :update             => false,
                 "name"              => "k12_logins",
                 "file_name"         => "agora_logins.csv",
                 "file_location"     => "k12_reports",
@@ -101,22 +98,22 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
         
-        structure_hash["fields"]["accountid"]       = {"data_type"=>"int",      "file_field"=>"ACCOUNTID"}      if field_order.push("accountid")
-        structure_hash["fields"]["identityid"]      = {"data_type"=>"int",      "file_field"=>"IDENTITYID"}     if field_order.push("identityid")
-        structure_hash["fields"]["familyid"]        = {"data_type"=>"int",      "file_field"=>"FAMILYID"}       if field_order.push("familyid")
-        structure_hash["fields"]["integrationid"]   = {"data_type"=>"text",     "file_field"=>"INTEGRATIONID"}  if field_order.push("integrationid")
-        structure_hash["fields"]["status"]          = {"data_type"=>"text",     "file_field"=>"STATUS"}         if field_order.push("status")
-        structure_hash["fields"]["schoolid"]        = {"data_type"=>"int",      "file_field"=>"SCHOOLID"}       if field_order.push("schoolid")
-        structure_hash["fields"]["role"]            = {"data_type"=>"int",      "file_field"=>"ROLE"}           if field_order.push("role")
-        structure_hash["fields"]["rolename"]        = {"data_type"=>"text",     "file_field"=>"ROLENAME"}       if field_order.push("rolename")
-        structure_hash["fields"]["lastname"]        = {"data_type"=>"text",     "file_field"=>"LASTNAME"}       if field_order.push("lastname")
-        structure_hash["fields"]["firstname"]       = {"data_type"=>"text",     "file_field"=>"FIRSTNAME"}      if field_order.push("firstname")
-        structure_hash["fields"]["homephone"]       = {"data_type"=>"text",     "file_field"=>"HOMEPHONE"}      if field_order.push("homephone")
-        structure_hash["fields"]["regkey"]          = {"data_type"=>"text",     "file_field"=>"REGKEY"}         if field_order.push("regkey")
-        structure_hash["fields"]["first_login"]     = {"data_type"=>"datetime", "file_field"=>"FIRST_LOGIN"}    if field_order.push("first_login")
-        structure_hash["fields"]["last_login"]      = {"data_type"=>"datetime", "file_field"=>"LAST_LOGIN"}     if field_order.push("last_login")
-        structure_hash["fields"]["num_logins"]      = {"data_type"=>"int",      "file_field"=>"NUM_LOGINS"}     if field_order.push("num_logins")
-        structure_hash["fields"]["logged"]          = {"data_type"=>"bool",     "file_field"=>"logged"}         if field_order.push("logged")
+        structure_hash["fields"]["accountid"            ] = {"data_type"=>"int",      "file_field"=>"ACCOUNTID"         } if field_order.push("accountid"       )
+        structure_hash["fields"]["identityid"           ] = {"data_type"=>"int",      "file_field"=>"IDENTITYID"        } if field_order.push("identityid"      )
+        structure_hash["fields"]["familyid"             ] = {"data_type"=>"int",      "file_field"=>"FAMILYID"          } if field_order.push("familyid"        )
+        structure_hash["fields"]["integrationid"        ] = {"data_type"=>"text",     "file_field"=>"INTEGRATIONID"     } if field_order.push("integrationid"   )
+        structure_hash["fields"]["status"               ] = {"data_type"=>"text",     "file_field"=>"STATUS"            } if field_order.push("status"          )
+        structure_hash["fields"]["schoolid"             ] = {"data_type"=>"int",      "file_field"=>"SCHOOLID"          } if field_order.push("schoolid"        )
+        structure_hash["fields"]["role"                 ] = {"data_type"=>"int",      "file_field"=>"ROLE"              } if field_order.push("role"            )
+        structure_hash["fields"]["rolename"             ] = {"data_type"=>"text",     "file_field"=>"ROLENAME"          } if field_order.push("rolename"        )
+        structure_hash["fields"]["lastname"             ] = {"data_type"=>"text",     "file_field"=>"LASTNAME"          } if field_order.push("lastname"        )
+        structure_hash["fields"]["firstname"            ] = {"data_type"=>"text",     "file_field"=>"FIRSTNAME"         } if field_order.push("firstname"       )
+        structure_hash["fields"]["homephone"            ] = {"data_type"=>"text",     "file_field"=>"HOMEPHONE"         } if field_order.push("homephone"       )
+        structure_hash["fields"]["regkey"               ] = {"data_type"=>"text",     "file_field"=>"REGKEY"            } if field_order.push("regkey"          )
+        structure_hash["fields"]["first_login"          ] = {"data_type"=>"datetime", "file_field"=>"FIRST_LOGIN"       } if field_order.push("first_login"     )
+        structure_hash["fields"]["last_login"           ] = {"data_type"=>"datetime", "file_field"=>"LAST_LOGIN"        } if field_order.push("last_login"      )
+        structure_hash["fields"]["num_logins"           ] = {"data_type"=>"int",      "file_field"=>"NUM_LOGINS"        } if field_order.push("num_logins"      )
+        structure_hash["fields"]["logged"               ] = {"data_type"=>"bool",     "file_field"=>"logged"            } if field_order.push("logged"          )
       
         structure_hash["field_order"] = field_order
         return structure_hash
