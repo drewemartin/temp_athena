@@ -21,6 +21,16 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    def after_load_k12_logins
+        
+        system(
+            
+            "ruby #{$paths.commands_path}load.rb K12_LOGINS_COMPLETE"
+            
+        )
+        
+    end
+    
     def after_load_k12_logins_complete
         
         s_db    = $tables.attach("STUDENT"                      ).data_base
