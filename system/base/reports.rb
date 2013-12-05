@@ -237,7 +237,7 @@ end
         end
         
         ftp = login_athena_reports
-        transfer_offsite(new_file_path, ftp, putstext)
+        transfer_offsite(new_file_path, ftp, false, putstext)
         
         File.rename(new_file_path, file_path)
         
@@ -260,6 +260,11 @@ end
     def move_to_sapphire_inbox(file_path)
         ftp = login_sapphire_inbox
         transfer_offsite(file_path, ftp)
+    end
+    
+    def move_to_snap_inbox(file_path, rename=false)
+        ftp = login_snap_inbox
+        transfer_offsite(file_path, ftp, rename)
     end
     
     def name_replacements
@@ -355,7 +360,14 @@ end
         return ftp
     end
     
-    def transfer_offsite(file_path, ftp, putstext=true)
+    def login_snap_inbox
+        ftp = Net::FTP.new('ftp.snaphealthcenter.com')
+        ftp.login("AgoraCyberSchool", "ruprup7AdE")
+        ftp.passive = true
+        return ftp
+    end
+    
+    def transfer_offsite(file_path, ftp, rename=false, putstext=true)
         if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             file_name   = file_path.split("/")[-1]
             location    = file_path.split("/reports/")[-1].gsub(file_name,"")
@@ -412,6 +424,30 @@ end
                     
                 end
                 
+                if rename
+                    
+                    tries = 0
+                    begin
+                        ftp.rename(file_name, rename)
+                        
+                    rescue=>e
+                        if tries < 3
+                            tries += 1
+                            retry
+                        else
+                            $base.system_notification(
+                                "CREATE OFFSITE REPORT FAILED!",
+                                "LOCATION:  #{location}
+                                FILENAME:   #{file_name}
+                                ERROR:      #{e.message}",
+                                caller[0],
+                                e
+                            )
+                        end
+                        
+                    end
+                    
+                end
                 
                 if file_name.include?("IN_PROGRESS.csv")
                     

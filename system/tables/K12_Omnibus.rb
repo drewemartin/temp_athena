@@ -235,107 +235,113 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  
     def after_load_k12_omnibus
-        snap_update
+        snap_students_update
+        snap_caregivers_update
+        sed_changed_report
     end
     
-    def snap_update
+    def snap_students_update
         
-        if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
-            
-            tried = 0
-            begin
-                ftp = Net::FTP.new('ftp.snaphealthcenter.com')
-                ftp.passive = true
-                ftp.login("AgoraCyberSchool", "ruprup7AdE")
-                
-                location = "Snap_Update"
-                
-                filename = "Students"
-                headers  = [
-                    "studentid",
-                    "studentlastname",
-                    "studentfirstname",
-                    "studentmiddlename",
-                    "birthday",
-                    "studentgender",
-                    "school",
-                    "grade",
-                    "primaryteacher",
-                    "mailingaddress1",
-                    "mailingaddress2",
-                    "mailingcity",
-                    "mailingstate",
-                    "mailingzip",
-                    "studenthomephone",
-                    "ethnicity",
-                    "cityofbirth",
-                    "schoolenrolldate",
-                    "isspecialed"
-                ]
-                students_file = $reports.csv(location, filename, snap_students.insert(0, headers)   )
-                
-                begin
-                    
-                    ftp.puttextfile(students_file)
-                    ftp.rename("Students_#{$ifilestamp}.csv", "Students.csv")
-                    File.delete(students_file)
-                   
-                rescue=>e
-                    
-                    $base.system_notification(
-                        subject = "Snap Nursing - Export Failed",
-                        content = "The file already exists. Snap did not import the 'Student' file for the previous day.",
-                        caller[0],
-                        e
-                    )
-                    
-                end
-                
-                $reports.save_document({:csv_rows=>snap_students.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Students Update"})
-                
-                filename = "Caregivers"
-                headers  = [
-                    "studentid",
-                    "lglastname",
-                    "lgfirstname",
-                    "lgrelationship",
-                    "lgemail"
-                ]
-                caregivers_file = $reports.csv(location, filename, snap_caregivers.insert(0, headers)   )
-                
-                begin
-                    
-                    ftp.puttextfile(caregivers_file)
-                    ftp.rename("Caregivers_#{$ifilestamp}.csv", "Caregivers.csv")
-                    File.delete(caregivers_file)
-                   
-                rescue=>e
-                    
-                    $base.system_notification(
-                        subject = "Snap Nursing - Export Failed",
-                        content = "The file already exists. Snap did not import the 'Caregivers' file for the previous day.",
-                        caller[0],
-                        e
-                    )
-                    
-                end
-                
-                $reports.save_document({:csv_rows=>snap_caregivers.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Caregivers Update"})
-                
-                ftp.close
-                
-            rescue=>e
-                tried +=1
-                retry unless tried == 3
-                $base.system_notification(
-                    subject = "Snap Nursing - Export Failed",
-                    content = "Login Unsuccessful",
-                    caller[0],
-                    e
-                )
-            end
-            
-        end
+        filename = "Students"
+        
+        headers  = [
+            "studentid",
+            "studentlastname",
+            "studentfirstname",
+            "studentmiddlename",
+            "birthday",
+            "studentgender",
+            "school",
+            "grade",
+            "primaryteacher",
+            "mailingaddress1",
+            "mailingaddress2",
+            "mailingcity",
+            "mailingstate",
+            "mailingzip",
+            "studenthomephone",
+            "ethnicity",
+            "cityofbirth",
+            "schoolenrolldate",
+            "isspecialed"
+        ]
+        
+        students_file = $reports.csv("", filename, snap_students.insert(0, headers)   )
+        
+        $reports.move_to_snap_inbox(students_file, "Students.csv")
+        
+        File.delete(students_file)
+        
+        $reports.save_document({:csv_rows=>snap_students.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Students Update"})
+        
+    end
+    
+    def snap_caregivers_update
+        
+        filename = "Caregivers"
+        
+        headers  = [
+            "studentid",
+            "lglastname",
+            "lgfirstname",
+            "lgrelationship",
+            "lgemail"
+        ]
+        
+        caregivers_file = $reports.csv("", filename, snap_caregivers.insert(0, headers))
+        
+        $reports.move_to_snap_inbox(caregivers_file, "Caregivers.csv")
+        
+        File.delete(caregivers_file)
+        
+        $reports.save_document({:csv_rows=>snap_caregivers.insert(0, headers), :category_name=>"Nursing", :type_name=>"Snap Caregivers Update"})
+        
+    end
+    
+    def sed_changed_report
+        
+        s_db = $tables.attach("student").data_base
+        
+        sql_str = "
+            SELECT
+                student.student_id,
+                student.studentfirstname,
+                student.studentlastname,
+                student.grade,
+                zz_student.schoolenrolldate,
+                zz_student.modified_value
+            FROM #{s_db}.zz_student
+            LEFT JOIN #{s_db}.student
+            ON student.primary_id = zz_student.modified_pid
+            WHERE zz_student.modified_field = 'schoolenrolldate'
+            AND zz_student.schoolenrolldate != '0000-00-00'
+            AND zz_student.schoolenrolldate IS NOT NULL
+            AND CURDATE() <= zz_student.modified_date
+        "
+        
+        headers = [
+            "Student ID",
+            "First Name",
+            "Last Name",
+            "Grade",
+            "Old SED",
+            "New SED"
+        ]
+        
+        results = $db.get_data(sql_str) || []
+        
+        file_name = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Attendance", :type_name=>"changed_sed_report"})
+        
+        email_hash = {
+            :subject         => "Changed SED report - #{$idate}",
+            :content         => "Changed SED report - #{$idate}",
+            :attachment_name => "changed_sed_report_#{$ifilestamp}.csv",
+            :attachment_path => file_name
+        }
+        
+        $team.find(:email_address => "apickens@agora.org"       ).send_email(email_hash)
+        $team.find(:email_address => "childaccounting@agora.org").send_email(email_hash)
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

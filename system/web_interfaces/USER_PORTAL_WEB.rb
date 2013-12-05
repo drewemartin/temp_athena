@@ -166,7 +166,7 @@ end
         
         $kit.output << $tools.breakaway_button(
             
-            :button_text        => "Login Reminders Reports",
+            :button_text        => "Attendance Reports",
             :page_name          => "LOGIN_REMINDERS_REPORTS_WEB",
             :additional_params  => nil,
             :class              => "module_bar"

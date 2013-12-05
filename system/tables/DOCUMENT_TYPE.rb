@@ -58,6 +58,7 @@ end
         pre_reqs.push({:name=>"Bulk Change - Overall Mode"                      , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
         pre_reqs.push({:name=>"Bulk Change - Daily Mode"                        , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
         pre_reqs.push({:name=>"Bulk Change - Daily Code"                        , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
+        pre_reqs.push({:name=>"changed_sed_report"                              , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
 
         cat_id_sapphire_imports         = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Sapphire Imports'")
         pre_reqs.push({:name=>"Sapphire New Students"                           , :category_id => cat_id_sapphire_imports.value,                :file_extension=>"csv"}) if cat_id_sapphire_imports
