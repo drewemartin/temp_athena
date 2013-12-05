@@ -9,13 +9,13 @@ class LOGIN_REMINDERS_REPORTS_WEB
     
     def breakaway_caption
         
-        return "Login Reminders Reports"
+        return "Attendance Reports"
         
     end
     
     def page_title
         
-        "Login Reminders Reports"
+        "Attendance Reports"
         
     end
     #---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ end
         
         output << "<div id='file_viewer'>"
         
-        type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}' AND name='Login Reminders Report'")
+        type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}' AND name='changed_sed_report'")
         
         type_ids.each do |type_id|
             
