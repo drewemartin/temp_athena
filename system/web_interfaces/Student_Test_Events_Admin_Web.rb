@@ -323,6 +323,7 @@ end
             #HEADERS
             [
                 "Link",
+                "Event Site ID",
                 "Site Name",
                 "Test Site",
                 "Start Date",
@@ -342,6 +343,7 @@ end
             row     = Array.new
             
             row.push($tools.button_load_tab(5, "Staff List", record.fields["primary_id"].value)  )
+            row.push(record.primary_id)
             row.push(record.fields["site_name"           ].web.text()                            )
             row.push(record.fields["test_site_id"        ].web.select(:dd_choices=>sites_dd_this))
             row.push(record.fields["start_date"          ].web.date()                            )
