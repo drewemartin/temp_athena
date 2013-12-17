@@ -47,10 +47,8 @@ end
         test_record_pids.each do |pid|
             
             test_record = student_tests_table.by_primary_id(pid)
-           
-            field = test_record.fields["test_event_site_id"]
             
-            student_tests_table.update_attendance_record(field)
+            student_tests_table.update_attendance_record(test_record.fields["test_event_site_id"])
             
         end if test_record_pids
         
@@ -69,10 +67,8 @@ end
         test_record_pids.each do |pid|
             
             test_record = student_tests_table.by_primary_id(pid)
-           
-            field = test_record.fields["test_event_site_id"]
             
-            student_tests_table.update_attendance_record(field)
+            student_tests_table.update_attendance_record(test_record.fields["test_event_site_id"])
             
         end if test_record_pids
         
