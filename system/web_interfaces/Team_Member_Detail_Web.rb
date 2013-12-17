@@ -859,6 +859,16 @@ end
             :title          => false,
             :caption        => "#{$focus_team_member.rights.module_student_specialists.web.checkbox( :label_option=>"Student Specialists Module",    :disabled=>disabled("module_student_specialists"))}"
         )
+        student_sales_force_case = $tools.table(
+            :table_array    => [
+                $focus_team_member.rights.student_sales_force_case_edit.web.checkbox( :label_option=>"Edit",                         :disabled=>disabled("student_specialists_edit"))    
+            ],
+            :unique_name    => "module_rights",
+            :footers        => false,
+            :head_section   => false,
+            :title          => false,
+            :caption        => "#{$focus_team_member.rights.module_student_sales_force_case.web.checkbox( :label_option=>"Student Sales Force Case Module",    :disabled=>disabled("module_student_sales_force_case"))}"
+        )
         student_assessments = $tools.table(
             :table_array    => [
                 $focus_team_member.rights.student_assessments_edit.web.checkbox( :label_option=>"Edit",                         :disabled=>disabled("student_assessments_edit"))    
@@ -881,6 +891,7 @@ end
             [student_assessments],
             [student_attendance],
             [student_specialists],
+            [student_sales_force_case],
             [student_tests],
             [record_requests],
             [student_rtii],
