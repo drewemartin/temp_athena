@@ -314,6 +314,8 @@ end
         
         sites = (assigned_sites&&sites ? assigned_sites.concat(sites) : assigned_sites||sites)
         
+        sites = $tables.attach("TEST_EVENT_SITES").primary_ids if $kit.user == "jhalverson@agora.org"
+        
         if sites
             
             output = Array.new
