@@ -54,6 +54,8 @@ end
             
         end if test_record_pids
         
+        queue_update_test_event_site_staff(field)
+        
     end
     
     def after_change_field_end_date(field)
@@ -73,6 +75,18 @@ end
             student_tests_table.update_attendance_record(field)
             
         end if test_record_pids
+        
+        queue_update_test_event_site_staff(field)
+        
+    end
+    
+    def queue_update_test_event_site_staff(this_object)
+        
+        $base.queue_process(
+            class_name      = "TEST_EVENTS_PROCESSING",
+            function_name   = "update_team_test_event_attendance",
+            args            = this_object.primary_id
+        )
         
     end
     

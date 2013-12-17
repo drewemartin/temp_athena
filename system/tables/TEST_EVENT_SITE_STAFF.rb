@@ -48,6 +48,98 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(row_object)
+        
+        temporarily_insert_team_id(row_object)
+        update_team_attendance_records(row_object)
+        
+    end
+    
+    def update_team_attendance_records(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        start_date  = $tables.attach("TEST_EVENT_SITES").field_value("start_date",   "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'")
+        end_date    = $tables.attach("TEST_EVENT_SITES").field_value("end_date",     "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'")
+        
+        if start_date && end_date
+            
+            start_date = Date.parse(start_date  )
+            end_date   = Date.parse(end_date    )
+            
+            duration_array = Array.new
+            
+            date_check = start_date
+            
+            while date_check <= end_date do
+                
+                date_str = date_check.strftime("%Y-%m-%d")
+                
+                duration_array.push(date_str) if $school.school_days && $school.school_days.include?(date_str)
+                
+                date_check += 1
+                
+            end
+            
+            duration_array.each{|date|
+                
+                if !(
+                    
+                    test_date_record = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").record(
+                        
+                        "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                        AND date                = '#{date                                       }'
+                        AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'"
+                        
+                    )
+                    
+                )
+                    
+                    test_date_record = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").new_row
+                    test_date_record.fields["date"              ].value = date
+                    test_date_record.fields["team_id"           ].value = record.fields["team_id"].value
+                    test_date_record.fields["test_event_site_id"].value = record.fields["test_event_site_id"].value
+                    
+                end
+                
+                test_date_record.fields["status"].value = nil if test_date_record.fields["status"].value == "Test Date Canceled"
+                
+                test_date_record.save
+                
+            }
+            
+            pids = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").primary_ids(
+                
+                "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'"
+             
+            )
+            
+            pids.each{|pid|
+                
+                att_date_record = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").by_primary_id(pid)
+                
+                if !duration_array.include?(att_date_record.fields["date"].value)
+                    
+                    att_date_record.fields["status"].set("Test Date Canceled").save 
+                    
+                end
+                
+            } if pids
+            
+        end
+        
+    end
+
+    def temporarily_insert_team_id(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        team_id = $team.find(:sams_id=>record.fields["staff_id"].value).primary_id.value    
+        record.fields["team_id"].set(team_id).save
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
@@ -77,9 +169,12 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["test_event_site_id"   ] = {"data_type"=>"int", "file_field"=>"test_event_site_id" } if field_order.push("test_event_site_id")
-            structure_hash["fields"]["staff_id"             ] = {"data_type"=>"int",  "file_field"=>"staff_id"          } if field_order.push("staff_id")
-            structure_hash["fields"]["role"                 ] = {"data_type"=>"text", "file_field"=>"role"              } if field_order.push("role")
+            
+            structure_hash["fields"]["test_event_site_id"   ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"} if field_order.push("test_event_site_id"  )
+            structure_hash["fields"]["staff_id"             ] = {"data_type"=>"int",  "file_field"=>"staff_id"          } if field_order.push("staff_id"            )
+            structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",  "file_field"=>"team_id"           } if field_order.push("team_id"             )
+            structure_hash["fields"]["role"                 ] = {"data_type"=>"text", "file_field"=>"role"              } if field_order.push("role"                )
+            
         structure_hash["field_order"] = field_order
         return structure_hash
     end

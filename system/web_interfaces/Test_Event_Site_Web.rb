@@ -5,12 +5,12 @@ class TEST_EVENT_SITE_WEB
     
     #---------------------------------------------------------------------------
     def initialize()
-        @kmail_hash = Hash.new
+        @kmail_hash         = Hash.new
         @test_event_site_id = nil
-        @default_subject = "Winter Keystone Testing Reminder"
-        @kmail_log = $tables.attach("Kmail_Log").new_row
-        @subject = nil
-        @administrators = [
+        @default_subject    = "Winter Keystone Testing Reminder"
+        @kmail_log          = $tables.attach("Kmail_Log").new_row
+        @subject            = nil
+        @administrators     = [
             "esaddler@agora.org",
             "jhalverson@agora.org",
             "dfeldhaus@agora.org"
@@ -48,7 +48,8 @@ end
             
         }
         if @administrators.include?($team_member.preferred_email.value) || test_event_site_staff
-            tabs << ["Reminders", admin_kmail_queue]
+            tabs << ["Reminders",   admin_kmail_queue   ]
+            tabs << ["Site Staff",  site_staff_tab      ]
         end
         
         $kit.tools.tabs(tabs)
@@ -75,6 +76,64 @@ end
 def x______________INITIAL_TABS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def site_staff_tab
+        
+        tables_array = Array.new
+        
+        headers = [
+            "Staff",
+            "Role"
+        ]
+        
+        dates = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{@test_event_site_id}' ORDER BY DATE ASC")
+        headers.concat(dates) if dates
+        
+        records = $tables.attach("TEST_EVENT_SITE_STAFF").by_test_event_site_id(@test_event_site_id)
+        records.each{|record|
+            
+            row = Array.new
+            
+            row.push($team.by_sams_id(record.fields["staff_id"].value).full_name)
+            row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  ))
+            
+            test_dates = String.new
+            pids = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").primary_ids(
+                
+                "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'"
+             
+            )
+            
+            dates.each{|date|
+                
+                att_date_record = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").record(
+                    
+                    "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                    AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'
+                    AND date                = '#{date}'"
+                 
+                )
+                
+                if att_date_record.fields["status"].value == "Test Date Canceled"
+                    
+                    row.push("Test Date Canceled")
+                    
+                else
+                    
+                    row.push(att_date_record.fields["status"].web.select(:dd_choices=>$dd.from_array(["Attended", "Scheduled"])))
+                    
+                end
+                
+            } if dates
+            
+            tables_array.push(row)
+            
+        } if records
+        
+        return $kit.tools.data_table(tables_array.insert(0, headers), "staff")
+        
+    end
 
     def test_event_site_attendance_tab
         
@@ -429,6 +488,24 @@ end
         
     end
     
+    def role_dd
+        
+        return [
+            
+            {:name=>"Site Coordinator"      , :value=>"Site Coordinator"   },          
+            {:name=>"Assistant"             , :value=>"Assistant"          },
+            {:name=>"General Education"     , :value=>"General Education"  },
+            {:name=>"Special Education"     , :value=>"Special Education"  },
+            {:name=>"Test Administrator"    , :value=>"Test Administrator" },
+            {:name=>"Spec. Ed. Acc. Org."   , :value=>"Spec. Ed. Acc. Org."},
+            {:name=>"Primary Coder"         , :value=>"Primary Coder"      },
+            {:name=>"Attendance"            , :value=>"Attendance"         },
+            {:name=>"Support Staff"         , :value=>"Support Staff"      }
+            
+        ]
+        
+    end
+
     def test_events_dd
         
         $tables.attach("TEST_EVENTS").dd_choices("name", "primary_id")

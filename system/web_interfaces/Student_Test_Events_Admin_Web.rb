@@ -376,16 +376,16 @@ end
         
         output << $tools.button_new_row(table_name = "TEST_EVENT_SITE_STAFF", "test_event_site_id")
         
-        tables_array = [
-            
-            #HEADERS
-            [
-                "Staff",
-                "Role"
-            ]
-            
+        tables_array = Array.new
+        
+        headers = [
+            "Staff",
+            "Role"
         ]
-     
+        
+        dates   = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{test_event_site_id}' ORDER BY DATE ASC")
+        headers.concat(dates) if dates
+        
         records = $tables.attach("TEST_EVENT_SITE_STAFF").by_test_event_site_id(test_event_site_id)
         records.each{|record|
             
@@ -394,11 +394,41 @@ end
             row.push($team.by_sams_id(record.fields["staff_id"].value).full_name)
             row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  ))
             
+            test_dates = String.new
+            pids = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").primary_ids(
+                
+                "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'"
+             
+            )
+            
+            dates.each{|date|
+                
+                att_date_record = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").record(
+                    
+                    "WHERE team_id          = '#{record.fields["team_id"].value             }'
+                    AND test_event_site_id  = '#{record.fields["test_event_site_id"].value  }'
+                    AND date                = '#{date}'"
+                 
+                )
+                
+                if att_date_record.fields["status"].value == "Test Date Canceled"
+                    
+                    row.push("Test Date Canceled")
+                    
+                else
+                    
+                    row.push(att_date_record.fields["status"].web.select(:dd_choices=>$dd.from_array(["Attended", "Scheduled"])))
+                    
+                end
+                
+            } if dates
+            
             tables_array.push(row)
             
         } if records
         
-        output << $kit.tools.data_table(tables_array, "test_event_site_staff")
+        output << $kit.tools.data_table(tables_array.insert(0, headers), "test_event_site_staff")
         
         output << $tools.newlabel("bottom")
         

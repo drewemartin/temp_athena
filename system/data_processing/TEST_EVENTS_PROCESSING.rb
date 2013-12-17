@@ -78,6 +78,23 @@ class TEST_EVENTS_PROCESSING #< Base
         
     end
 
+    def update_team_test_event_attendance(test_event_site_id)
+        
+        pids = $tables.attach("TEST_EVENT_SITE_STAFF").primary_ids(
+            
+            "WHERE test_event_site_id = '#{test_event_site_id}' GROUP BY team_id"
+            
+        )
+        
+        pids.each{|pid|
+            
+            record = $tables.attach("TEST_EVENT_SITE_STAFF").by_primary_id(pid)
+            $tables.attach("TEST_EVENT_SITE_STAFF").update_team_attendance_records(record)
+            
+        } if pids
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
