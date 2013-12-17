@@ -80,6 +80,10 @@ end
             follow_options_path(this_options_record)
         end
         
+        if options_record.fields["path"].value.match("ETHNICITY")
+            select_tab("3")
+        end
+        
         options_hash = {}
         options_hash[:option_type  ] = options_record.fields["option_type"   ].value    
         options_hash[:option_value ] = options_record.fields["option_value"  ].value     
@@ -117,7 +121,7 @@ end
         #    content = caller[0]
         #)
         
-        raise
+        return false
         
     end
     
@@ -241,6 +245,31 @@ def x______________ACTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    def change_hidden(params=@params)
+        
+        if params[:option_type].to_sym == :id
+            
+            browser.execute_script(
+                "$('##{params[:option_value]}').value = '#{params[:field_value]}'"
+            )
+            
+            browser.execute_script(
+                
+                "$(\"select #{params[:option_value]} option\").each(
+                    function() {
+                        this.selected = (this.text == #{params[:field_value]});
+                    }
+                );"
+                
+            )
+            
+            browser.execute_script(
+                "alert($('STUDENT_ID'))"
+            )
+        end
+        
+    end
+    
     def click(params=@params)
         
         field_found = false
@@ -267,7 +296,21 @@ end
         field_found = false
         i = 0
         until field_found
-            if browser.select_list(params[:option_type].to_sym, params[:option_value]).exists?
+            
+            puts "test exists"
+            puts it_exists   = browser.select_list(params[:option_type].to_sym, params[:option_value]).exists?
+            
+            puts "test visible"
+            puts its_visible = browser.select_list(params[:option_type].to_sym, params[:option_value]).visible?
+            
+            puts "test presence"
+            puts its_present = browser.select_list(params[:option_type].to_sym, params[:option_value]).present?
+            
+            if (
+                
+                it_exists && its_visible 
+                
+            )
                 
                 if browser.select_list(params[:option_type].to_sym,params[:option_value]).option(:value, params[:field_value]).exists?
                     
@@ -313,6 +356,36 @@ end
         
     end
 
+    def select_tab(tab_number = nil)
+        
+        if tab_number
+            
+            tab_selected = false
+            
+            until tab_selected
+                
+                if browser.li(:id, "tab_#{tab_number}").exists?
+                    
+                    browser.execute_script(
+                        
+                        "SapphireLib.pingSIS(); tab_hide(#{tab_number}, 8); document.student_demographics.OPEN_TAB.value=#{tab_number};"
+                        
+                    )
+                    
+                    tab_selected = true
+                    
+                else
+                    
+                    sleep 1
+                    
+                end
+                
+            end
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________LOGIN
 end
@@ -515,30 +588,17 @@ end
     
     def student_update_record
         
-        begin
-            
-            login
-            goto_module
-            goto_student_demographics
-            search_students
-            select_student
-            
-            follow_options_path
-            
-            save_student
-            
-            browser.close
-            
-        rescue => e
-            
-            return false
-            
-        ensure
-            
-            browser.close if (structure.has_key?("browser") && browser.exists?)
-            
-        end
+        login
+        goto_module
+        goto_student_demographics
+        search_students
+        select_student
         
+        follow_options_path
+        
+        save_student
+        
+        browser.close
         
     end
     

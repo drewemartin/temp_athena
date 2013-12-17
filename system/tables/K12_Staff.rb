@@ -123,20 +123,17 @@ end
                     
                     t = $team.new_team_member
                     
-                    #FNORD - SINCE THIS INFO IS ONLY ADDED ONCE AND NEVER UPDATED AGAIN WE MAY NEED TO RE-EXAMINE THIS
-                    #IF WE EVEN NEED TO START SENDING ACTUAL MAIL.
-                    
-                    #TEAM RECORD
-                    t.legal_first_name.set(   k12_record.fields["firstname"      ].value ).save
-                    t.legal_last_name.set(    k12_record.fields["lastname"       ].value ).save
-                    t.mailing_address_1.set(  k12_record.fields["mailingaddress1"].value ).save
-                    t.mailing_address_2.set(  k12_record.fields["mailingaddress2"].value ).save
-                    t.mailing_city.set(       k12_record.fields["mailingcity"    ].value ).save
-                    t.mailing_state.set(      k12_record.fields["mailingstate"   ].value ).save
-                    t.mailing_zip.set(        k12_record.fields["mailingzip"     ].value ).save
-                    
                 end
-              
+                
+                #TEAM RECORD
+                t.legal_first_name.set(   k12_record.fields["firstname"      ].value ).save
+                t.legal_last_name.set(    k12_record.fields["lastname"       ].value ).save
+                t.mailing_address_1.set(  k12_record.fields["mailingaddress1"].value ).save
+                t.mailing_address_2.set(  k12_record.fields["mailingaddress2"].value ).save
+                t.mailing_city.set(       k12_record.fields["mailingcity"    ].value ).save
+                t.mailing_state.set(      k12_record.fields["mailingstate"   ].value ).save
+                t.mailing_zip.set(        k12_record.fields["mailingzip"     ].value ).save
+                
                 team_id = t.primary_id.value
                 
                 t.active.set(true).save

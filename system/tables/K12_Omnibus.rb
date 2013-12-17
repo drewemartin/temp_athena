@@ -333,14 +333,15 @@ end
         file_name = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Attendance", :type_name=>"changed_sed_report"})
         
         email_hash = {
-            :subject         => "Changed SED report - #{$idate}",
-            :content         => "Changed SED report - #{$idate}",
-            :attachment_name => "changed_sed_report_#{$ifilestamp}.csv",
-            :attachment_path => file_name
+            :subject                => "Changed SED report - #{$idate}",
+            :content                => "Changed SED report - #{$idate}",
+            :attachment_name        => "changed_sed_report_#{$ifilestamp}.csv",
+            :attachment_path        => file_name,
+            :additional_recipients  => ["childaccounting@agora.org"]
         }
         
         $team.find(:email_address => "apickens@agora.org"       ).send_email(email_hash)
-        $team.find(:email_address => "childaccounting@agora.org").send_email(email_hash)
+        #$team.find(:email_address => "childaccounting@agora.org").send_email(email_hash)
         
     end
     

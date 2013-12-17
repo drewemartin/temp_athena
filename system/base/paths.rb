@@ -76,30 +76,39 @@ end
     def documents_path
         if !structure.has_key?(:documents_path)
             
-            if !File.directory?( "A:/" )
+            #FNORD - must add addition nodes here if their functions include document handling.
+            if ENV["COMPUTERNAME"] == "ATHENA"
                 
-                require 'win32ole'
-                net = WIN32OLE.new('WScript.Network')
-                user_name = "Athena"
-                password  = "YEree77d3ysPQhYE"
-                net.MapNetworkDrive( 'A:', "\\\\10.1.10.254\\a", nil,  user_name, password )
+                if !File.directory?( "A:/" )
+                    require 'win32ole'
+                    net = WIN32OLE.new('WScript.Network')
+                    user_name = "Athena"
+                    password  = "YEree77d3ysPQhYE"
+                    net.MapNetworkDrive( 'A:', "\\\\10.1.10.254\\a", nil,  user_name, password )
+                end
+                
+                structure[:documents_path] = $config.init_path("A:/documents")
+                
+            else
+                
+                structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")  
                 
             end
             
-            structure[:documents_path] = $config.init_path("A:/documents")
-            
         end
+        
         return structure[:documents_path]
+        
     end
     
     def document_error_path
         if !structure.has_key?(:document_error_path)
             
-            #if ENV["COMPUTERNAME"] == "ATHENA"
-                structure[:document_error_path] = $config.init_path("A:/document_error")
-            #else
-                #structure[:document_error_path] = $config.init_path("#{htdocs_path}document_error")
-            #end
+            if ENV["COMPUTERNAME"] == "ATHENA"
+                structure[:document_error_path] = $config.init_path("#{documents_path}document_error")
+            else
+                structure[:document_error_path] = $config.init_path("#{$config.storage_root}document_error")
+            end
             
         end
         return structure[:document_error_path]
