@@ -412,7 +412,11 @@ end
                  
                 )
                 
-                if att_date_record.fields["status"].value == "Test Date Canceled"
+                if !att_date_record
+                    
+                    row.push("No Record Found")
+                    
+                elsif att_date_record.fields["status"].value == "Test Date Canceled"
                     
                     row.push("Test Date Canceled")
                     
