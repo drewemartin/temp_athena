@@ -86,7 +86,7 @@ end
             "Role"
         ]
         
-        dates = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{@test_event_site_id}' ORDER BY DATE ASC")
+        dates = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{@test_event_site_id}' GROUP BY date ORDER BY DATE ASC")
         headers.concat(dates) if dates
         
         records = $tables.attach("TEST_EVENT_SITE_STAFF").by_test_event_site_id(@test_event_site_id)
