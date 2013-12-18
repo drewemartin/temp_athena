@@ -86,6 +86,19 @@ end
         end
     end
     
+    def is_not_true?
+        if !self.value.nil?
+            true_values = ["true", "yes", "1", "y"]
+            if true_values.include?(self.value.to_s.downcase)
+                return false
+            else
+                return true
+            end
+        else
+            return true
+        end
+    end
+    
     def to_db
         if !is_null?
             @to_type = "db"
