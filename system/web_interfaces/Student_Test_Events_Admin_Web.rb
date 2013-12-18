@@ -75,6 +75,19 @@ end
             $kit.modify_tag_content("tabs-5", load_tab_5(event_site_id), "update")
         end
         
+        if $kit.rows
+            
+            this_row = $kit.rows.first[1]
+            
+            if this_row.fields.keys.include?("not_attending")
+                
+                event_site_id = $tables.attach("TEST_EVENT_SITE_STAFF").field_value("test_event_site_id", "WHERE primary_id = '#{this_row.primary_id}'")
+                $kit.modify_tag_content("tabs-5", load_tab_5(event_site_id), "update")
+                
+            end
+            
+        end
+        
     end
     
     def page_title
@@ -381,6 +394,7 @@ end
         tables_array = Array.new
         
         headers = [
+            "Not Attending",
             "Staff",
             "Role"
         ]
@@ -393,6 +407,7 @@ end
             
             row = Array.new
             
+            row.push(record.fields["not_attending"].web.checkbox)
             row.push($team.by_sams_id(record.fields["staff_id"].value).full_name)
             row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  ))
             
@@ -418,9 +433,9 @@ end
                     
                     row.push("No Record Found")
                     
-                elsif att_date_record.fields["status"].value == "Test Date Canceled"
+                elsif att_date_record.fields["status"].match(/Test Date Canceled|Not Attending/)
                     
-                    row.push("Test Date Canceled")
+                    row.push(att_date_record.fields["status"].value)
                     
                 else
                     
@@ -509,7 +524,7 @@ end
         
         output << $tools.legend_open("sub", "Staff Details")
         
-            output << fields["staff_id"].web.select(:label_option=>"Staff:", :dd_choices=>staff_dd)
+            output << fields["staff_id"].web.select(:label_option=>"Staff:", :dd_choices=>staff_dd($kit.params[:test_event_site_id]))
             output << fields["role"].web.select(:label_option=>"Role:", :dd_choices=>role_dd)
             fields["test_event_site_id"].value = $kit.params[:test_event_site_id]
             output << fields["test_event_site_id" ].web.hidden()
@@ -766,12 +781,16 @@ end
         
     end
     
-    def staff_dd
+    def staff_dd(test_event_site_id)
+        
+        tess_db = $tables.attach("TEST_EVENT_SITE_STAFF").data_base
         
         return $tables.attach("K12_STAFF").dd_choices(
             "CONCAT(firstname,' ',lastname)",
             "samspersonid",
-            " GROUP BY CONCAT(firstname,' ',lastname) ORDER BY CONCAT(firstname,' ',lastname) ASC "
+            " LEFT JOIN #{tess_db}.test_event_site_staff ON test_event_site_staff.staff_id = k12_staff.samspersonid
+            WHERE test_event_site_staff.primary_id IS NULL
+            GROUP BY CONCAT(firstname,' ',lastname) ORDER BY CONCAT(firstname,' ',lastname) ASC "
         )
         
     end
