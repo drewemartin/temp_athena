@@ -48,6 +48,12 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field_not_attending(field_obj)
+        
+        update_team_attendance_records(field_obj)
+        
+    end
+    
     def after_insert(row_object)
         
         temporarily_insert_team_id(row_object)
@@ -102,7 +108,15 @@ end
                     
                 end
                 
-                test_date_record.fields["status"].value = nil if test_date_record.fields["status"].value == "Test Date Canceled"
+                if test_date_record.fields["status"].value == "Test Date Canceled" || record.fields["not_attending"].is_not_true?
+                    
+                    test_date_record.fields["status"].value = nil
+                    
+                elsif record.fields["not_attending"].is_true?
+                    
+                    test_date_record.fields["status"].value = "Not Attending"
+                    
+                end
                 
                 test_date_record.save
                 
@@ -174,6 +188,7 @@ end
             structure_hash["fields"]["staff_id"             ] = {"data_type"=>"int",  "file_field"=>"staff_id"          } if field_order.push("staff_id"            )
             structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",  "file_field"=>"team_id"           } if field_order.push("team_id"             )
             structure_hash["fields"]["role"                 ] = {"data_type"=>"text", "file_field"=>"role"              } if field_order.push("role"                )
+            structure_hash["fields"]["not_attending"        ] = {"data_type"=>"bool", "file_field"=>"not_attending"     } if field_order.push("not_attending"       )
             
         structure_hash["field_order"] = field_order
         return structure_hash
