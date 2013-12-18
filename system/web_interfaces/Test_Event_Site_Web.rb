@@ -563,9 +563,13 @@ end
         return $tables.attach("K12_STAFF").dd_choices(
             "CONCAT(firstname,' ',lastname)",
             "samspersonid",
-            " LEFT JOIN #{tess_db}.test_event_site_staff ON test_event_site_staff.staff_id = k12_staff.samspersonid
-            WHERE test_event_site_staff.primary_id IS NULL
-            GROUP BY CONCAT(firstname,' ',lastname) ORDER BY CONCAT(firstname,' ',lastname) ASC "
+            "WHERE samspersonid NOT IN(
+                SELECT staff_id
+                FROM #{tess_db}.test_event_site_staff
+                WHERE test_event_site_id = '#{test_event_site_id}'
+            )
+            GROUP BY CONCAT(firstname,' ',lastname)
+            ORDER BY CONCAT(firstname,' ',lastname) ASC "
         )
         
     end
