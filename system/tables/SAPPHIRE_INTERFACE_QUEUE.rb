@@ -62,6 +62,7 @@ end
             structure_hash["fields"]["notes"                ] = {"data_type"=>"text",       "file_field"=>"notes"               } if field_order.push("notes"               )
             
             structure_hash["fields"]["confirmed_datetime"   ] = {"data_type"=>"datetime",   "file_field"=>"confirmed_datetime"  } if field_order.push("confirmed_datetime"  )
+            structure_hash["fields"]["confirmed"            ] = {"data_type"=>"bool",       "file_field"=>"confirmed"           } if field_order.push("confirmed"           )
             
         structure_hash["field_order"] = field_order
         return structure_hash
