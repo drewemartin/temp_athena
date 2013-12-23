@@ -20,8 +20,24 @@ class Sapphire_Interface_Processing < Base
             )
             
         )
+            x = Sapphire_Interface.new
+            x.process_queue(pid)
+            #y = x.browser.execute_script(
+            #    "if ($('main_form').onsubmit()) {
+            #        
+            #        $('main_form').Action.value='Save';
+            #        $('main_form').Action.disabled=false;
+            #        if ($('main_form').smartsubmit) {
+            #            $('main_form').smartsubmit(true);
+            #        } else {
+            #            $('main_form').submit();
+            #        }
+            #        
+            #    }else{
+            #        alert('onsubmit NOT executed');
+            #    }"
+            #)
             
-            x = Sapphire_Interface.new.process_queue(pid)
             i=1
             #x.process_queue(pid)
             #x.login

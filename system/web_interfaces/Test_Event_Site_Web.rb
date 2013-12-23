@@ -68,6 +68,20 @@ end
             sample              = $kit.params[:sample] ? true : false
             send_kmails_by_date(kmail_body, sample)
         end
+        
+        if $kit.rows
+            
+            this_row = $kit.rows.first[1]
+            
+            if this_row.fields.keys.include?("not_attending")
+                
+                event_site_id = $tables.attach("TEST_EVENT_SITE_STAFF").field_value("test_event_site_id", "WHERE primary_id = '#{this_row.primary_id}'")
+                $kit.modify_tag_content("tabs-4", site_staff_tab(event_site_id), "update")
+                
+            end
+            
+        end
+        
     end
     
     
@@ -77,23 +91,29 @@ def x______________INITIAL_TABS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
-    def site_staff_tab
+    def site_staff_tab(test_event_site_id = @test_event_site_id)
+        
+        output = String.new
+        
+        output << $tools.button_new_row(table_name = "TEST_EVENT_SITE_STAFF", "test_event_site_id")
         
         tables_array = Array.new
         
         headers = [
+            "Not Attending",
             "Staff",
             "Role"
         ]
         
-        dates = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{@test_event_site_id}' GROUP BY date ORDER BY DATE ASC")
+        dates = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").field_values("date", "WHERE test_event_site_id  = '#{test_event_site_id}' GROUP BY date ORDER BY DATE ASC")
         headers.concat(dates) if dates
         
-        records = $tables.attach("TEST_EVENT_SITE_STAFF").by_test_event_site_id(@test_event_site_id)
+        records = $tables.attach("TEST_EVENT_SITE_STAFF").by_test_event_site_id(test_event_site_id)
         records.each{|record|
             
             row = Array.new
             
+            row.push(record.fields["not_attending"].web.checkbox)
             row.push($team.by_sams_id(record.fields["staff_id"].value).full_name)
             row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  ))
             
@@ -115,9 +135,13 @@ end
                  
                 )
                 
-                if att_date_record.fields["status"].value == "Test Date Canceled"
+                if !att_date_record
                     
-                    row.push("Test Date Canceled")
+                    row.push("No Record Found")
+                    
+                elsif att_date_record.fields["status"].match(/Test Date Canceled|Not Attending/)
+                    
+                    row.push(att_date_record.fields["status"].value)
                     
                 else
                     
@@ -131,7 +155,9 @@ end
             
         } if records
         
-        return $kit.tools.data_table(tables_array.insert(0, headers), "staff")
+        output << $kit.tools.data_table(tables_array.insert(0, headers), "staff")
+        
+        return output
         
     end
 
@@ -306,7 +332,7 @@ end
         
         assigned_sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
             field_name      = "test_event_site_id",
-            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
+            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}') AND not_attending IS NOT TRUE",
             options         = {:value_only=>true}
         )
         
@@ -369,6 +395,30 @@ def x______________ADD_NEW_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
     
+    def add_new_record_test_event_site_staff()
+        
+        output = String.new
+        
+        output << $tools.div_open("test_event_site_staff_container", "test_event_site_staff_container")
+        
+        row = $tables.attach("test_event_site_staff").new_row
+        fields = row.fields
+        
+        output << $tools.legend_open("sub", "Staff Details")
+            
+            output << fields["staff_id"].web.select(:label_option=>"Staff:", :dd_choices=>staff_dd($kit.params[:test_event_site_id]))
+            output << fields["role"].web.select(:label_option=>"Role:", :dd_choices=>role_dd)
+            fields["test_event_site_id"].value = $kit.params[:test_event_site_id]
+            output << fields["test_event_site_id" ].web.hidden()
+            
+        output << $tools.legend_close()
+        
+        output << $tools.div_close()
+        
+        return output
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
@@ -503,6 +553,24 @@ end
             {:name=>"Support Staff"         , :value=>"Support Staff"      }
             
         ]
+        
+    end
+
+    def staff_dd(test_event_site_id)
+        
+        tess_db = $tables.attach("TEST_EVENT_SITE_STAFF").data_base
+        
+        return $tables.attach("K12_STAFF").dd_choices(
+            "CONCAT(firstname,' ',lastname)",
+            "samspersonid",
+            "WHERE samspersonid NOT IN(
+                SELECT staff_id
+                FROM #{tess_db}.test_event_site_staff
+                WHERE test_event_site_id = '#{test_event_site_id}'
+            )
+            GROUP BY CONCAT(firstname,' ',lastname)
+            ORDER BY CONCAT(firstname,' ',lastname) ASC "
+        )
         
     end
 

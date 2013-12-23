@@ -108,6 +108,8 @@ end
                         "Counselor Intervention",
                         "504 Conference",
                         "Progress Monitoring",
+                        "Target Time",
+                        "WIN",
                         "Other",
                         "Other Description",
                         "RTII Behavior"
@@ -174,6 +176,8 @@ end
                     row.push(f["counselor_intervention"        ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["counselor_intervention"        ].to_user()+">/div>")
                     row.push(f["504_conference"                ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["504_conference"                ].to_user()+">/div>")
                     row.push(f["progress_monitoring"           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["progress_monitoring"           ].to_user()+">/div>")
+                    row.push(f["target_time"                   ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["target_time"                   ].to_user()+">/div>")
+                    row.push(f["win"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["win"                           ].to_user()+">/div>")
                     row.push(f["other"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["other"                         ].to_user()+"</div>")
                     row.push(f["other_description"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
                     row.push(f["rtii_behavior_id"              ].web.select(:disabled=>disabled, :dd_choices=>rtii_dd_options)   )
@@ -258,12 +262,14 @@ end
                     record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank"),
                     record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank"),
                     record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank"),
+                    record.fields["target_time"                   ].web.default( :label_option=>"Target Time",                          :div_id=>"blank"),
                     record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank"),
                     record.fields["tep_followup"                  ].web.default( :label_option=>"TEP Follow-up",                        :div_id=>"blank"),
                     record.fields["tep_initial"                   ].web.default( :label_option=>"TEP Initiated",                        :div_id=>"blank"),
                     record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank"),
                     record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank"),
                     record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank"),
+                    record.fields["win"                           ].web.default( :label_option=>"WIN",                                  :div_id=>"blank"),
                     record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank"),
                     record.fields["504_conference"                ].web.default( :label_option=>"504 Conference",                       :div_id=>"blank")
 
@@ -543,6 +549,8 @@ end
             div#blank.STUDENT_CONTACTS__counselor_intervention{                 width:100%; height:20px; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__504_conference{                         width:100%; height:20px; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__progress_monitoring{                    width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__target_time{                            width:100%; height:20px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__win{                                    width:100%; height:20px; margin-bottom:2px;}
             
             
             div#blank.STUDENT_CONTACTS__other{                                  float:left; clear:left; width:25%; padding-top:10px;}
@@ -586,6 +594,8 @@ end
             div#blank.STUDENT_CONTACTS__counselor_intervention input{           float:left;}
             div#blank.STUDENT_CONTACTS__504_conference input{                   float:left;}
             div#blank.STUDENT_CONTACTS__progress_monitoring input{              float:left;}
+            div#blank.STUDENT_CONTACTS__target_time         input{              float:left;}
+            div#blank.STUDENT_CONTACTS__win                 input{              float:left;}
             
             div#blank.STUDENT_CONTACTS__other input{                            float:left;}
             

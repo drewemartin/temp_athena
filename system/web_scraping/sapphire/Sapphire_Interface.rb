@@ -64,8 +64,9 @@ end
                 #    content = "Student is not active"
                 #)
                 
-                @params[:queue_record   ].fields["successful"   ].set(false                 ).save
-                @params[:queue_record   ].fields["notes"        ].set("Inactive Student"    ).save
+                @params[:queue_record   ].fields["successful"           ].set(false                 ).save
+                @params[:queue_record   ].fields["completed_datetime"   ].set($base.right_now.to_db ).save
+                @params[:queue_record   ].fields["notes"                ].set("Inactive Student"    ).save
                 
             end
             
@@ -297,14 +298,11 @@ end
         i = 0
         until field_found
             
-            puts "test exists"
+            #puts "test exists"
             puts it_exists   = browser.select_list(params[:option_type].to_sym, params[:option_value]).exists?
             
-            puts "test visible"
+            #puts "test visible"
             puts its_visible = browser.select_list(params[:option_type].to_sym, params[:option_value]).visible?
-            
-            puts "test presence"
-            puts its_present = browser.select_list(params[:option_type].to_sym, params[:option_value]).present?
             
             if (
                 
