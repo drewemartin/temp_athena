@@ -140,8 +140,10 @@ end
         
         sec_array = Array.new
         
-        scantron_record = $focus_student.scantron_performance_level
-        assessment_record = $focus_student.assessment
+        scantron_record     = $focus_student.scantron_performance_level
+        assessment_record   = $focus_student.assessment
+        leap_record         = $focus_student.leap
+        
         a1, b1 = "Scantron Math     Ent:"   , ( scantron_record.stron_ent_perf_m ? scantron_record.stron_ent_perf_m.value : "") 
         a2, b2 = "Scantron Reading  Ent:"   , ( scantron_record.stron_ent_perf_r ? scantron_record.stron_ent_perf_r.value : "")
         a3, b3 = "Scantron Math     Ext:"   , ( scantron_record.stron_ext_perf_m ? scantron_record.stron_ext_perf_m.value : "")
@@ -157,6 +159,9 @@ end
             a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.value : "")
         end
         
+        a8, b8 = "LEAP Level:"   , ( leap_record.existing_record ? leap_record.leap_level : "0")
+        
+        sec_array.push([a8.to_s,b8.to_s])
         sec_array.push([a6.to_s,b6.to_s])
         sec_array.push([a7.to_s,b7.to_s])
         sec_array.push([a1.to_s,b1.to_s])
