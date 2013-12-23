@@ -159,7 +159,7 @@ end
             a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.value : "")
         end
         
-        a8, b8 = "LEAP Level:"   , ( leap_record.existing_record ? leap_record.leap_level : "0")
+        a8, b8 = "LEAP Level:"   , ( leap_record.existing_record ? leap_record.leap_level.value : "0")
         
         sec_array.push([a8.to_s,b8.to_s])
         sec_array.push([a6.to_s,b6.to_s])
