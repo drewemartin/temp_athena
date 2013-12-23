@@ -716,6 +716,8 @@ end
             "Scantron entrance reading",
             "Scantron exit reading",
             
+            "LEAP Level",
+            
             #"Program Support",
             
             "Family Coach Support",
@@ -799,6 +801,7 @@ end
             student_scantron_performance_level.stron_ext_perf_m,
             student_scantron_performance_level.stron_ent_perf_r,
             student_scantron_performance_level.stron_ext_perf_r,
+            IFNULL(student_leap.leap_level,'0'),
             
             #FAMILY TEACHER COACH SUPPORT
             (
@@ -891,15 +894,17 @@ end
         
         sql_str << "student_attendance_master.*"
         
-        sam_db = $tables.attach("student_attendance_master").data_base
-        s_db   = $tables.attach("student").data_base
-        sspl_db   = $tables.attach("student_scantron_performance_level").data_base
-        samo_db   = $tables.attach("student_attendance_mode").data_base
+        sam_db      = $tables.attach("STUDENT_ATTENDANCE_MASTER"            ).data_base
+        s_db        = $tables.attach("STUDENT"                              ).data_base
+        sspl_db     = $tables.attach("STUDENT_SCANTRON_PERFORMANCE_LEVEL"   ).data_base
+        samo_db     = $tables.attach("STUDENT_ATTENDANCE_MODE"              ).data_base
+        leap_db     = $tables.attach("STUDENT_LEAP"                         ).data_base
         
         sql_str << " FROM #{sam_db}.student_attendance_master
-            LEFT JOIN #{s_db}.student                                ON #{s_db}.student.student_id                                  = #{sam_db}.student_attendance_master.student_id                       
-            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON #{sspl_db}.student_scantron_performance_level.student_id    = #{sam_db}.student_attendance_master.student_id
-            LEFT JOIN #{samo_db}.student_attendance_mode             ON #{samo_db}.student_attendance_mode.student_id               = #{sam_db}.student_attendance_master.student_id"
+            LEFT JOIN #{s_db}.student                                ON student.student_id                              = student_attendance_master.student_id                       
+            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
+            LEFT JOIN #{samo_db}.student_attendance_mode             ON student_attendance_mode.student_id              = student_attendance_master.student_id
+            LEFT JOIN #{leap_db}.student_leap                        ON student_leap.student_id                         = student_attendance_master.student_id"
         
         results = $db.get_data(sql_str)
         if results
