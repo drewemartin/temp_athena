@@ -69,7 +69,7 @@ end
             send_kmails_by_date(kmail_body, sample)
         end
         
-        if $kit.rows
+        if $kit.rows && !$kit.rows.empty?
             
             this_row = $kit.rows.first[1]
             
