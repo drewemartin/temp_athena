@@ -2564,19 +2564,24 @@ end
         att_db   = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
         team_db  = $tables.attach("TEAM"                            ).data_base
         event_db = $tables.attach("TEST_EVENT_SITES"                ).data_base
+        sites_db = $tables.attach("TEST_SITES"                      ).data_base
         
         sql_str =
         "SELECT
+            
             team_test_event_site_attendance.team_id,
             team.legal_first_name,
             team.legal_last_name,
+            test_sites.region,
+            test_sites.facility_name, 
             test_event_sites.site_name,
             team_test_event_site_attendance.date,
             team_test_event_site_attendance.status
             
         FROM #{att_db}.team_test_event_site_attendance
         LEFT JOIN #{team_db }.team                  ON team.primary_id = team_test_event_site_attendance.team_id
-        LEFT JOIN #{event_db}.test_event_sites      ON test_event_sites.primary_id = test_event_sites.test_site_id"
+        LEFT JOIN #{event_db}.test_event_sites      ON test_event_sites.primary_id = team_test_event_site_attendance.test_event_site_id
+        LEFT JOIN #{sites_db}.test_sites            ON test_sites.primary_id = test_event_sites.test_site_id"
         
         headers =
         [
@@ -2584,7 +2589,9 @@ end
            "Team ID",
            "First Name",
            "Last Name",
-           "Test Event Site",
+           "Region",
+           "Facility Name",
+           "Test Event Site Name",
            "Date",
            "Status"
             
