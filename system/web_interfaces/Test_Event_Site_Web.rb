@@ -102,6 +102,7 @@ end
         headers = [
             "Not Attending",
             "Staff",
+            "Staff ID",
             "Role"
         ]
         
@@ -113,9 +114,10 @@ end
             
             row = Array.new
             
-            row.push(record.fields["not_attending"].web.checkbox)
-            row.push($team.by_sams_id(record.fields["staff_id"].value).full_name)
-            row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  ))
+            row.push(record.fields["not_attending"].web.checkbox                                )
+            row.push($team.by_sams_id(record.fields["staff_id"].value).full_name                )
+            row.push($team.by_sams_id(record.fields["staff_id"].value                           )
+            row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  )    )
             
             test_dates = String.new
             pids = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE").primary_ids(
