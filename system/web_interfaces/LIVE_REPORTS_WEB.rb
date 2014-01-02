@@ -194,6 +194,13 @@ end
             "This report includes all evaluations data entered into Athena for 'Engagement' category Team Members"
         ]) if $team_member.super_user? || $team_member.rights.live_reports_team_member_evaluations_engagement.is_true?
         
+        #TEAM MEMBER TEST EVENT SITE ATTENDANCE
+        tables_array.push([
+            $tools.button_new_csv("team_member_testing_events_attendance", additional_params_str = nil),
+            "Team Member Testing Events - Attendance",
+            "This report includes all team member's test site attendance records."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_team_member_testing_events_attendance.is_true?
+        
         #TRANSCRIPTS_RECEIVED
         tables_array.push([
             $tools.button_new_csv("transcripts_received", additional_params_str = nil),
@@ -2500,6 +2507,48 @@ end
         
     end
     
+    def add_new_csv_team_member_testing_events_attendance(options = nil)
+        
+        att_db   = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
+        team_db  = $tables.attach("TEAM"                            ).data_base
+        event_db = $tables.attach("TEST_EVENT_SITES"                ).data_base
+        
+        sql_str =
+        "SELECT
+            team_test_event_site_attendance.team_id,
+            team.legal_first_name,
+            team.legal_last_name,
+            test_event_sites.site_name,
+            team_test_event_site_attendance.date,
+            team_test_event_site_attendance.status
+            
+        FROM #{att_db}.team_test_event_site_attendance
+        LEFT JOIN #{team_db }.team                  ON team.primary_id = team_test_event_site_attendance.team_id
+        LEFT JOIN #{event_db}.test_event_sites      ON test_event_sites.primary_id = test_event_sites.test_site_id"
+        
+        headers =
+        [
+           
+           "Team ID",
+           "First Name",
+           "Last Name",
+           "Test Event Site",
+           "Date",
+           "Status"
+            
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+
     def add_new_csv_transcripts_received(options = nil)
         
         rrr_db = $tables.attach("record_requests_received").data_base
