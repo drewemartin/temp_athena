@@ -235,13 +235,13 @@ end
                 "Last Name",
                 "Grade",
                 "Family Coach",
-                "Primary Teacher",
+                "General Ed Teacher",
                 "Special Ed Teacher",
                 "Test Subject",      
                 "Test Type",
                 "Check In Date",
                 "Serial Number",      
-                "Date Completed",          
+                "Test Completed Date",          
                 "Test Administrator",
                 "Test Results",
                 "Assigned",           
@@ -628,6 +628,13 @@ end
         
     end
     
+    def reading_comp_read_dd
+        return [
+            {:name=>"Student Read",       :value=>"Student Read"        },
+            {:name=>"Teacher Read",       :value=>"Teacher Read"        }
+        ]
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
@@ -639,13 +646,26 @@ end
             
             #HEADERS
             [
+                "K-2 Skill Check Completed",
+                "Writing Sample Received",
+                "3rd - 5th Math Open-Ended Prompt Completed",
                 "CORE Phonics- Letter Names Upper Case (_/26)",
                 "CORE Phonics- Letter Names Lower Case (_/26)",
                 "CORE Phonics- Consonant Sounds (_/23)",
                 "CORE Phonics- Long Vowel Sounds (_/5)",
                 "CORE Phonics- Short Vowel Sounds (_/5)",
                 "CORE PHONICS- Short Vowels in CVC Words (_/10)",
+                "CORE PHONICS- Short Vowels, Digraphs, and -tch trigraph (_/10)",
+                "CORE PHONICS- Consonant Blends with Short Vowels (_/20)",
+                "CORE PHONICS- Long Vowel Spelling (_/10)",
+                "CORE PHONICS- R- and L- Controlled Words (_/10)",
+                "CORE PHONICS- Variant Vowels and Dipthongs (_/10)",
+                "CORE PHONICS- Multisyllabic Words (_/24)",
+                "CORE-PHONICS- Spelling A First Sounds (_/5)",
+                "CORE-PHONICS- Spelling B Last Sounds (_/5)",
+                "CORE-PHONICS- Spelling C Whole Words (_/10)",
                 "Reading Comprehension (correct/total)",
+                "Reading Comprehension (Student Read or Teacher Read)",
                 "LNF",
                 "LNF Errors",
                 "LSF",
@@ -656,7 +676,7 @@ end
                 "NWF Errors",
                 "R-CBM",
                 "R-CBM Errors",
-                "Reading Instructional Recommendation (K and 1)",
+                "Reading Instructional Recommendation (K - 2)",
                 "OCM",
                 "OCM Errors",
                 "NIM",
@@ -666,7 +686,7 @@ end
                 "MNM",
                 "MNM Errors",
                 "M-COMP", #Still M-CAP field
-                "Math Instructional Recommendation (K and 1)",
+                "Math Instructional Recommendation (K - 2)",
                 "Notes"
             ]
         ]
@@ -680,14 +700,26 @@ end
         end
         
         row = Array.new
-        
-        row.push(test.fields["core_phonics_letter_names_upper"          ].web.default() )
-        row.push(test.fields["core_phonics_letter_names_lower"          ].web.default() )
-        row.push(test.fields["core_phonics_consonant"                   ].web.default() )
-        row.push(test.fields["core_phonics_long_vowel"                  ].web.default() )
-        row.push(test.fields["core_phonics_short_vowel"                 ].web.default() )
-        row.push(test.fields["core_phonics_short_vowel_cvc"             ].web.default() )
-        row.push(test.fields["reading_comprehension"                    ].web.default() )
+        row.push(test.fields["k2_skill_check_complete"                  ].web.default() )
+        row.push(test.fields["writing_sample_received"                  ].web.default() )
+        row.push(test.fields["35_math_open_prompt_complete"             ].web.default() )
+        row.push(test.fields["core_phonics_letter_names_upper"          ].web.text() )
+        row.push(test.fields["core_phonics_letter_names_lower"          ].web.text() )
+        row.push(test.fields["core_phonics_consonant"                   ].web.text() )
+        row.push(test.fields["core_phonics_long_vowel"                  ].web.text() )
+        row.push(test.fields["core_phonics_short_vowel"                 ].web.text() )
+        row.push(test.fields["core_phonics_short_vowel_cvc"             ].web.text() )
+        row.push(test.fields["core_phonics_short_vowel_digraph"         ].web.text() )
+        row.push(test.fields["core_phonics_consonant_blend"             ].web.text() )
+        row.push(test.fields["core_phonics_long_vowel_spelling"         ].web.text() )
+        row.push(test.fields["core_phonics_rl_control"                  ].web.text() )
+        row.push(test.fields["core_phonics_variant_vowels"              ].web.text() )
+        row.push(test.fields["core_phonics_multisyllabic"               ].web.text() )
+        row.push(test.fields["core_phonics_spelling_a"                  ].web.text() )
+        row.push(test.fields["core_phonics_spelling_b"                  ].web.text() )
+        row.push(test.fields["core_phonics_spelling_c"                  ].web.text() )
+        row.push(test.fields["reading_comprehension"                    ].web.text() )
+        row.push(test.fields["reading_comprehension_who_read"           ].web.select(:dd_choices=>reading_comp_read_dd) )
         row.push(test.fields["lnf"                                      ].web.default() )
         row.push(test.fields["lnf_errors"                               ].web.default() )
         row.push(test.fields["lsf"                                      ].web.default() )

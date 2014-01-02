@@ -168,12 +168,26 @@ end
             structure_hash["fields"]["mcap_read_to_student"                     ] = {"data_type"=>"bool", "file_field"=>"mcap_read_to_student"                  } if field_order.push("mcap_read_to_student"                    )
             
             structure_hash["fields"]["reading_comprehension"                    ] = {"data_type"=>"text", "file_field"=>"reading_comprehension"                  } if field_order.push("reading_comprehension"                   )
+            structure_hash["fields"]["reading_comprehension_who_read"           ] = {"data_type"=>"text", "file_field"=>"reading_comprehension_who_read"         } if field_order.push("reading_comprehension_who_read"          )
             structure_hash["fields"]["core_phonics_short_vowel_cvc"             ] = {"data_type"=>"text", "file_field"=>"core_phonics_short_vowel_cvc"           } if field_order.push("core_phonics_short_vowel_cvc"            )
             structure_hash["fields"]["core_phonics_letter_names_upper"          ] = {"data_type"=>"text", "file_field"=>"core_phonics_letter_names_upper"        } if field_order.push("core_phonics_letter_names_upper"         )
             structure_hash["fields"]["core_phonics_letter_names_lower"          ] = {"data_type"=>"text", "file_field"=>"core_phonics_letter_names_lower"        } if field_order.push("core_phonics_letter_names_lower"         )
             structure_hash["fields"]["core_phonics_consonant"                   ] = {"data_type"=>"text", "file_field"=>"core_phonics_consonant"                 } if field_order.push("core_phonics_consonant"                  )
             structure_hash["fields"]["core_phonics_long_vowel"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_long_vowel"                } if field_order.push("core_phonics_long_vowel"                 )
             structure_hash["fields"]["core_phonics_short_vowel"                 ] = {"data_type"=>"text", "file_field"=>"core_phonics_short_vowel"               } if field_order.push("core_phonics_short_vowel"                )
+            structure_hash["fields"]["core_phonics_short_vowel_digraph"         ] = {"data_type"=>"text", "file_field"=>"core_phonics_short_vowel_digraph"       } if field_order.push("core_phonics_short_vowel_digraph"        )
+            structure_hash["fields"]["core_phonics_consonant_blend"             ] = {"data_type"=>"text", "file_field"=>"core_phonics_consonant_blend"           } if field_order.push("core_phonics_consonant_blend"            )
+            structure_hash["fields"]["core_phonics_long_vowel_spelling"         ] = {"data_type"=>"text", "file_field"=>"core_phonics_long_vowel_spelling"       } if field_order.push("core_phonics_long_vowel_spelling"        )
+            structure_hash["fields"]["core_phonics_rl_control"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_rl_control"                } if field_order.push("core_phonics_rl_control"                 )
+            structure_hash["fields"]["core_phonics_variant_vowels"              ] = {"data_type"=>"text", "file_field"=>"core_phonics_variant_vowels"            } if field_order.push("core_phonics_variant_vowels"             )
+            structure_hash["fields"]["core_phonics_multisyllabic"               ] = {"data_type"=>"text", "file_field"=>"core_phonics_multisyllabic"             } if field_order.push("core_phonics_multisyllabic"              )
+            structure_hash["fields"]["core_phonics_spelling_a"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_spelling_a"                } if field_order.push("core_phonics_spelling_a"                 )
+            structure_hash["fields"]["core_phonics_spelling_b"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_spelling_b"                } if field_order.push("core_phonics_spelling_b"                 )
+            structure_hash["fields"]["core_phonics_spelling_c"                  ] = {"data_type"=>"text", "file_field"=>"core_phonics_spelling_c"                } if field_order.push("core_phonics_spelling_c"                 )
+            
+            structure_hash["fields"]["k2_skill_check_complete"                  ] = {"data_type"=>"bool", "file_field"=>"k2_skill_check_complete"                } if field_order.push("k2_skill_check_complete"                 )
+            structure_hash["fields"]["writing_sample_received"                  ] = {"data_type"=>"bool", "file_field"=>"writing_sample_received"                } if field_order.push("writing_sample_received"                 )
+            structure_hash["fields"]["35_math_open_prompt_complete"             ] = {"data_type"=>"bool", "file_field"=>"35_math_open_prompt_complete"           } if field_order.push("35_math_open_prompt_complete"            )
             
         structure_hash["field_order"] = field_order
         return structure_hash
