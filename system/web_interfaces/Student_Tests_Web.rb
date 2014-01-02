@@ -107,7 +107,7 @@ end
         record = $focus_student.tests.new_record
         
         row.push( record.fields["student_id"           ].web.label() + record.fields["student_id"].web.hidden()) 
-        row.push( record.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd) )  
+        row.push( record.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd, :validate => true) )  
         
         tables_array.push(row)
       
