@@ -80,10 +80,10 @@ end
                 
                 queue_record = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).by_primary_id(pid)
                 
-                unless queue_record.field["notes"].value == "Inactive Student"
+                unless queue_record.fields["notes"].value == "Inactive Student"
                     
-                    queue_record.field["started_datetime"   ].set(nil)
-                    queue_record.field["completed_datetime" ].set(nil)
+                    queue_record.fields["started_datetime"   ].set(nil)
+                    queue_record.fields["completed_datetime" ].set(nil)
                     
                     queue_record.save
                     
