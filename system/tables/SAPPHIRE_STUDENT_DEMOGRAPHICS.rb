@@ -40,6 +40,7 @@ end
         )
         
         pids = $tables.attach("SAPPHIRE_INTERFACE_QUEUE").primary_ids("WHERE confirmed_datetime IS NULL AND completed_datetime IS NOT NULL")
+        
         pids.each{|pid|
             
             map_id      = $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("map_id", "WHERE primary_id = '#{pid}'")
@@ -56,33 +57,45 @@ end
             s_field     = map_record.fields["sapphire_field"     ].value
             s_value     = $tables.attach(s_table).field_value(s_field, "WHERE student_id = '#{sid}'")
             
-            if !(
-                
-                s_field == a_field ||
-                (!s_field.nil? && !a_field.nil?) && s_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') == a_field.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') ||
-                s_field == "M" && a_field == "Male" ||
-                s_field == "F" && a_field == "Female"
-                
+            fields_match            = s_value == a_value
+            parsed_phone_matches    = (!s_value.nil? && !a_value.nil?) && s_value.gsub('-','').gsub('(','').gsub(')','').gsub(' ','') == a_value.gsub('-','').gsub('(','').gsub(')','').gsub(' ','')
+            male_match              = s_value == "M" && a_value == "Male"
+            female_match            = s_value == "F" && a_value == "Female"
+            ethnicity_match         = (
+                s_value == "1"  && a_value == "American Indian"                                                                 ||
+                s_value == "9"  && a_value == "Asian"                                                                           ||
+                s_value == "3"  && a_value == "African-American"                                                                ||
+                s_value == "10" && (a_value == "Native Hawaiian or other Pacific Islander" || a_value == "Pacific Islander")    ||
+                s_value == "4"  && a_value == "Hispanic"                                                                        ||
+                s_value == "6"  && a_value == "Multi-racial"                                                                    ||
+                s_value == "7"  && (a_value == "Declined to State" || a_value == "Undefined")                                   ||
+                s_value == "5"  && a_value == "White"                                                                           
             )
-            #a_value == s_value
+            
+            if fields_match || parsed_phone_matches || male_match || female_match || ethnicity_match
                 
                 $tables.attach("SAPPHIRE_INTERFACE_QUEUE").by_primary_id(pid).fields["confirmed_datetime"].set($base.right_now.to_db).save
                 
             else
-                issues.push(
+                
+                unless $tables.attach("SAPPHIRE_INTERFACE_QUEUE" ).field_value("notes", "WHERE primary_id = '#{pid}'") == "Inactive Student"
                     
-                    [
-                        pid     ,
-                        sid     ,
-                        a_table ,
-                        a_field ,
-                        a_value ,
-                        s_table ,
-                        s_field ,
-                        s_value
-                    ]
+                    issues.push(
+                        
+                        [
+                            pid     ,
+                            sid     ,
+                            a_table ,
+                            a_field ,
+                            a_value ,
+                            s_table ,
+                            s_field ,
+                            s_value
+                        ]
+                        
+                    )
                     
-                )
+                end
                 
             end
             
