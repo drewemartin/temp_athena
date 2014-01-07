@@ -802,7 +802,8 @@ end
             student_test_row    = $tables.attach("Student_Tests").by_primary_id(pid)
             
             sid                 = student_test_row.fields["student_id"          ].value
-            subject             = $tables.attach("TEST_SUBJECTS").by_primary_id(student_test_row.fields["test_subject_id"].value).fields["name"].value
+            subject_id          = student_test_row.fields["test_subject_id"     ].value
+            subject             = (subject_id ? $tables.attach("TEST_SUBJECTS").by_primary_id(subject_id).fields["name"].value : "")
             test_event_site_id  = student_test_row.fields["test_event_site_id"  ].value
             
             test_event_site_row = $tables.attach("Test_Event_Sites").by_primary_id(test_event_site_id)
