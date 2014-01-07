@@ -1377,6 +1377,7 @@ end
             ON #{s_db}.student.student_id = #{sr_db}.student_relate.studentid
         WHERE (
             student_relate.team_id = '#{$team_member.primary_id.value}'
+        AND student_relate.active = TRUE
         )
         GROUP BY student.student_id"
         
@@ -1518,6 +1519,7 @@ end
         
         WHERE
             student_relate.team_id = '#{$team_member.primary_id.value}'
+        AND student_relate.active = TRUE
             
         GROUP BY student.student_id"
         

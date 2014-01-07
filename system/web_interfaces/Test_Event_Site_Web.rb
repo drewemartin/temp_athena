@@ -236,6 +236,7 @@ end
                 "First Name",
                 "Last Name",
                 "Grade",
+                "Active/Withdrawn",
                 "Family Coach",
                 "General Ed Teacher",
                 "Special Ed Teacher",
@@ -262,10 +263,13 @@ end
             
             test_id = test_record.fields["test_id"].value
             
+            status = $students.get(sid).active.value == "1" ? "Active":"Withdrawn"
+            
             row.push(test_record.fields["student_id"         ].web.label()  )
             row.push($students.get(sid      ).studentfirstname.web.label()  )
             row.push($students.get(sid       ).studentlastname.web.label()  )
             row.push($students.get(sid                 ).grade.web.label()  )
+            row.push(status)
             row.push($students.get(sid        ).primaryteacher.web.label()  )
             row.push($students.get(sid         ).title1teacher.web.label()  )
             row.push($students.get(sid      ).specialedteacher.web.label()  )
