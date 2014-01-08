@@ -111,7 +111,11 @@ end
           
             if $base.is_num?(sams_id)
                 
-                t = $team.by_team_email(sams_email)
+                t = $team.find(
+                    :email_address      => k12_record.fields["email"    ].value,
+                    :legal_first_name   => k12_record.fields["firstname"].value,
+                    :legal_last_name    => k12_record.fields["lastname" ].value
+                )
                 
                 if !t
                     
