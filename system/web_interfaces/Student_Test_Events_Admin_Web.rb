@@ -410,7 +410,7 @@ end
             
             row.push(record.fields["not_attending"].web.checkbox)
             row.push($team.by_sams_id(record.fields["staff_id"].value).full_name                )
-            row.push($team.by_sams_id(record.fields["staff_id"].value                           )
+            row.push(record.fields["staff_id"].value                                            )
             row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  )    )
             
             test_dates = String.new
