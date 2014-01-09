@@ -1519,9 +1519,7 @@ end
         
         WHERE
             student_relate.team_id = '#{$team_member.primary_id.value}'
-        AND student_relate.active = TRUE
-            
-        GROUP BY student.student_id"
+        AND student_relate.active = TRUE"
         
         headers = [
             "Student ID",

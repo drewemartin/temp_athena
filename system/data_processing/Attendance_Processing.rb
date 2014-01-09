@@ -297,7 +297,7 @@ end
                 
                 if attended_values.include?("0") #if anyone marks them unexcused then they are "uap"
                     
-                    remove_attendance_activity(source)
+                    #remove_attendance_activity(source)
                     @finalize_code = "uap"
                     
                 else
@@ -396,28 +396,32 @@ end
         if @stu_strict_attendance_testing_records
             
             test_site_event_id  = @stu_strict_attendance_testing_records[0].fields["test_event_site_id"].value
-            test_event_id       = $tables.attach("TEST_EVENT_SITES").find_field("test_event_id", "WHERE primary_id = '#{test_site_event_id}'", {:value_only=>true})
+            test_event_id       = $tables.attach("TEST_EVENT_SITES").find_field("test_event_id", "WHERE primary_id = '#{test_site_event_id}'").value
             
             source              = "Test Event ID: #{test_event_id}"
             
             @stu_strict_attendance_testing_records.each{|test_date_record|
                 
+                test_event_site_id  = test_date_record.fields["test_event_site_id"].value
+                test_event_id       = $tables.attach("TEST_EVENT_SITES" ).field_by_pid("test_event_id", test_event_site_id  ).value
+                test_name           = $tables.attach("TEST_EVENTS"      ).field_by_pid("name",          test_event_id       ).value
+                
                 @finalize_code = test_date_record.fields["attendance_code"].value
                 if @finalize_code == "pt"
-                    log_attendance_activity(source) 
+                    log_attendance_activity(source + " - " + test_name) 
                     return true
                 end
                 
             }
             
-            remove_attendance_activity(source)
+            #remove_attendance_activity(source)
             
             return true
             
         elsif @stu_lenient_attendance_testing_records
             
-            test_site_event_id  = @stu_strict_attendance_testing_records[0].fields["test_event_site_id"].value
-            test_event_id       = $tables.attach("TEST_EVENT_SITES").find_field("test_event_id", "WHERE primary_id = '#{test_site_event_id}'", {:value_only=>true})
+            test_site_event_id  = @stu_lenient_attendance_testing_records[0].fields["test_event_site_id"].value
+            test_event_id       = $tables.attach("TEST_EVENT_SITES").find_field("test_event_id", "WHERE primary_id = '#{test_site_event_id}'").value
             
             source              = "Test Event ID: #{test_event_id}"
             
@@ -426,18 +430,22 @@ end
                 
                 if test_date_record.fields["attendance_code"].value == "pt"
                     
+                    @finalize_code = test_date_record.fields["attendance_code"].value
+                    
                     test_event_site_id  = test_date_record.fields["test_event_site_id"].value
                     test_event_id       = $tables.attach("TEST_EVENT_SITES" ).field_by_pid("test_event_id", test_event_site_id  ).value
                     test_name           = $tables.attach("TEST_EVENTS"      ).field_by_pid("name",          test_event_id       ).value
                     
                     attended_this_event = true
-                    log_attendance_activity(source)
+                    log_attendance_activity(source + " - " + test_name)
+                    
+                    return true
                     
                 end
                 
             }
             
-            remove_attendance_activity(source) if !attended_this_event
+            #remove_attendance_activity(source) if !attended_this_event
             
             return false
             
@@ -455,7 +463,7 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+  
     
     def log_attendance_activity(source)
-        $students.get(@sid).log_attendance_activity(:date=>@date, :source=>source)
+        $students.get(@sid).log_attendance_activity(:date=>@date, :source=>source, :code=>"p")
         reset_activity(@sid, @date)
     end
     
