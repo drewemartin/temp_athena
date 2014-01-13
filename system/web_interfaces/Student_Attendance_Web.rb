@@ -179,24 +179,19 @@ end
         
         output  = String.new
         
-        sid                     = $focus_student.student_id.value
+        sid     = $focus_student.student_id.value
         student = $students.attach(sid)
         fields  = student.new_row("Student_Attendance").fields
         
         mode    = $tables.attach("student_attendance_mode").current_mode_by_studentid(sid).value
-        sources = $tables.attach("attendance_modes").sources_by_mode(mode)
         fields["mode"].value = mode
-        fields["sources"].value = sources.value if sources
         
         output << fields["student_id"   ].web.hidden()
         output << fields["date"         ].web.select({:dd_choices=>addable_day_choices})
         output << fields["mode"         ].web.hidden()
-        #attendance_record = student.attendance.record.fields[date_string]
-        #output << attendance_record.web.select({:label_option=>"Code", :dd_choices=>@code_choices})
-        #output << fields["code"         ].web.select({:label_option=>"Code", :dd_choices=>@code_choices})
-        output << fields["sources"      ].web.hidden()
         
         return output
+        
     end
     
     def attendance_weeks(sid)
