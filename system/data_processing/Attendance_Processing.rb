@@ -77,7 +77,7 @@ class Attendance_Processing
                         
                         student_attendance_record.fields["mode"].set(@stu_daily_mode).save
                         
-                        puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                        #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
                         raise "MODE CHANGE"
                         
                     end
