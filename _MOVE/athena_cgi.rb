@@ -1308,7 +1308,7 @@ end
                         search_type = field_info.to_s.split("__")[1] 
                         valid_search = true
                         option  = field_info.to_s.split("__")[2]
-                        options_hash[option] = Mysql.escape_string(value).gsub("\\","")
+                        options_hash[option] = Mysql.quote(Mysql.escape_string(value).gsub("\\",""))
                     end
                     
                 }
