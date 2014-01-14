@@ -138,11 +138,29 @@ end
             
             page = "https://agora-sapphire.k12system.com/Gradebook/main.cfm"
             
-            #Watir::Browser.default = "firefox"
-            session = Watir::Browser.new
-            sleep 2
-            session.goto(page)
-            structure["browser" ] = session
+            connected   = false
+            tried       = 0
+            until connected || tried == 3
+                
+                #Watir::Browser.default = "firefox"
+                session = Watir::Browser.new
+                sleep 2
+                session.goto(page)
+                sleep 2
+                
+                if session.text_field(:name, "j_username").exists?
+                    
+                    structure["browser" ]   = session
+                    connected               = true
+                    
+                else
+                    
+                    session.close
+                    tried+=1
+                    
+                end
+                
+            end
             
         elsif !page.nil? && !(structure["page"] == page)
             
@@ -150,9 +168,23 @@ end
             
         end
         
-        structure["page"] = page
-        
-        return structure["browser"]
+        if tried == 3
+            
+            $base.system_notification(
+                subject     = "Sapphire Interface Processing - Failed Initial Connection",
+                content     = "Three unsuccessful attempts were made to connect to #{page}",
+                this_caller = nil,
+                e_obj       = nil
+            )
+            
+            break
+            
+        else
+            
+            structure["page"] = page
+            return structure["browser"]
+            
+        end
         
     end
    
@@ -499,23 +531,40 @@ end
     def save_student
         
         sleep 5
-        
-        browser.execute_script(
-            "if ($('main_form').onsubmit()) {
-                
-                $('main_form').Action.value='Save';
-                $('main_form').Action.disabled=false;
-                if ($('main_form').smartsubmit) {
-                    $('main_form').smartsubmit(true);
-                } else {
-                    $('main_form').submit();
-                }
-                
-            }else{
-                alert('onsubmit NOT executed');
-            }"
-        )
        
+        tried   = 0
+        success = false
+        
+        until success || tried == 3
+            
+            puts tried
+            
+            tried+=1
+            
+            results = browser.execute_script(
+                "if ($('main_form').onsubmit()) {
+                    
+                    $('main_form').Action.value='Save';
+                    $('main_form').Action.disabled=false;
+                    if ($('main_form').smartsubmit) {
+                        $('main_form').smartsubmit(true);
+                    } else {
+                        $('main_form').submit();
+                    }
+                    
+                    return true;
+                    
+                }else{
+                    
+                    return false;
+                    
+                }"
+            )
+            
+            success = results == true
+            
+        end
+        
         sleep 5
         
     end
