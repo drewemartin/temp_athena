@@ -111,12 +111,15 @@ end
             exclude_options  = [
                 :ids_only
             ]
-            exact_match_only = [
-                "primary_id",
-                "sams_id",
-                "active",
-                "email_address"
-            ]
+            
+            exact_match_only = Array.new
+            exact_match_only.push("primary_id"       )
+            exact_match_only.push("sams_id"          )
+            exact_match_only.push("active"           )
+            exact_match_only.push("email_address"    )
+            exact_match_only.push("legal_first_name" ) unless a[:fuzzy] == true
+            exact_match_only.push("legal_last_name"  ) unless a[:fuzzy] == true
+            
             where_clause << " WHERE 1"
             a.each_pair{|k,v|
                 
@@ -124,7 +127,7 @@ end
                     
                     evaluation_operator = exact_match_only.include?(k.to_s)? "=" : "REGEXP"
                     
-                    where_clause << " AND #{k} #{evaluation_operator} '#{v}'"
+                    where_clause << " AND #{k} #{evaluation_operator} '#{Mysql.quote(v)}'"
                     
                 end
                 
@@ -146,7 +149,7 @@ end
                 raise
             end
             
-        rescue
+        rescue => e
             
             pass +=1
             retry 
