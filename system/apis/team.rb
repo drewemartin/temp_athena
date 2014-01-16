@@ -127,7 +127,7 @@ end
                     
                     evaluation_operator = exact_match_only.include?(k.to_s)? "=" : "REGEXP"
                     
-                    where_clause << " AND #{k} #{evaluation_operator} '#{Mysql.quote(v)}'"
+                    where_clause << " AND #{k} #{evaluation_operator} '#{Mysql.quote(v.to_s)}'"
                     
                 end
                 
