@@ -646,6 +646,15 @@ end
             ],
             [
                 (
+                    this_field = $focus_team_member.rights.schools_access
+                    this_field.web.checkbox(
+                        :label_option   => "Schools Directory",
+                        :disabled       => disabled("schools_access")
+                    )
+                )
+            ],
+            [
+                (
                     this_field = $focus_team_member.rights.test_event_admin_access
                     this_field.web.checkbox(
                         :label_option   => "Test Event Site Admin",

@@ -33,6 +33,11 @@ def x______________ELEMENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def blank_input(id_name, class_name, label_option="", value="")
+        temp = $field.new({"type" => "text", "field" => class_name, "value" => value})
+        return temp.web.text({:label_option=>label_option, :add_class=>"no_save", :field_id=>id_name})
+    end
+    
     def newlabel(class_name, message = "")
         temp = $field.new({"type" => "text", "field" => class_name, "value" => message})
         return temp.web.label()

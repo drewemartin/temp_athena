@@ -98,6 +98,7 @@ end
             structure_hash["fields"]["rtii_behavior_vault_access"                               ] = {"data_type"=>"bool", "file_field"=>"rtii_behavior_vault_access"                            } if field_order.push("rtii_behavior_vault_access"                              )
             structure_hash["fields"]["ilp_vault_access"                                         ] = {"data_type"=>"bool", "file_field"=>"ilp_vault_access"                                      } if field_order.push("ilp_vault_access"                                        )
             structure_hash["fields"]["sapphire_data_management_access"                          ] = {"data_type"=>"bool", "file_field"=>"sapphire_data_management_access"                       } if field_order.push("sapphire_data_management_access"                         )
+            structure_hash["fields"]["schools_access"                                           ] = {"data_type"=>"bool", "file_field"=>"schools_access"                                        } if field_order.push("schools_access"                                          )
             
             #LIVE_REPORTS_RIGHTS
             structure_hash["fields"]["live_reports_athena_project"                              ] = {"data_type"=>"bool", "file_field"=>"live_reports_athena_project"                           } if field_order.push("live_reports_athena_project"                             )

@@ -666,6 +666,57 @@ $(function () {
 		}
 		
 	});
+	
+	$("#school_search_dialog_button").button({
+		
+		icons: {secondary: "ui-icon-search"}
+		
+	}).bind("click", function() {
+		
+		$("#school_search_dialog").dialog("open");
+		
+	});
+	
+	$(":input[id^='search__SCHOOL']").bind("keyup", function(e){
+		
+		if (e.which == 13){
+			
+			$("#school_search_submit").click();
+			
+		}
+	});
+	
+	$("#school_search_dialog").dialog({
+		
+		autoOpen	: false,
+		draggable	: false,
+		resizable	: false,
+		closeOnEscape	: false,
+		modal		: true,
+		width		: 1100,
+		height		: 850,
+		position	: "top",
+		title		: "Search",
+		open		: function(event, ui) {
+			
+			$("div[ariaLabelledBy='ui-dialog-title-student_search_dialog']", ui.dialog).show();
+			
+		},
+		buttons		: {
+			
+			"Close": function() {
+				
+				$(this).dialog("close");
+				
+			}
+		},
+		create		:function () {
+			$(this).closest(".ui-dialog")
+			.find(".ui-button:first")
+			.attr("id","school_search_submit");
+		}
+		
+	});
 
 });
 
@@ -817,7 +868,7 @@ function set_aoColumn_sort(table){
 //Default DataTables Options
 var defaults = {
 	
-	'sDom'			: 'T<\"clear\">lfrtip',
+	'sDom'			: 'T<\"clear\">lrtip',
 	"sScrollX"		: "100%",
 	'aLengthMenu'		: [[10, 25, 50, -1], [10, 25, 50, "All"]],
 	"fnPreDrawCallback"	: function( oSettings ) {
@@ -834,6 +885,9 @@ var defaults = {
 				}
 			}
 		]
+	},
+	'oLanguage'		: {
+		'sSearch': 	"Filter records:"
 	}
 }
 
@@ -1794,9 +1848,12 @@ function x___________________UNSORTED(){}
 			$('table.dataTableDefault:not(.dataTable)').each( function(){
 				$(this).dataTable( $.extend( true, {}, defaults,
 					{
+						'sDom'			: 'T<\"clear\">lrtip',
 						"aoColumns"		: set_aoColumn_sort(this)
 					}
 				));
+				$("#" + $(this).attr("id") + "_filter input").addClass("no_save")
+				
 			});
 			
 			var select_index = $('#tabs').tabs('option', 'selected')+1

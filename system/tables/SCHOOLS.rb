@@ -24,8 +24,8 @@ end
     def after_insert(record_object)#Need to check to see if there are any existing schools in student_previous_school table that match this new school and mark them as verified.
         
         pids = $tables.attach("STUDENT_PREVIOUS_SCHOOL").primary_ids(
-            "WHERE  previous_school     = '#{record_object.fields["school_name"         ].value}'
-            AND     previous_district   = '#{record_object.fields["previous_district"   ].value}'"
+            "WHERE  previous_school     = \"#{record_object.fields["school_name" ].value}\"
+            AND     previous_district   = \"#{record_object.fields["district"    ].value}\""
         )
         
         pids.each{|pid|
@@ -54,8 +54,8 @@ end
         #CHANGE STATUS OF SCHOOLS THAT WERE PREVIOUSLY VERIFIED TO THE OLD VALUE TO FALSE
         if pids = $tables.attach("STUDENT_PREVIOUS_SCHOOL").primary_ids(
             
-            "WHERE  previous_school     = '#{this_record.fields["previous_school"   ].value}'
-            AND     previous_district   = '#{old_value}'"
+            "WHERE  previous_school     = \"#{this_record.fields["school_name"].value}\"
+            AND     previous_district   = \"#{old_value}\""
             
         )
             
@@ -71,8 +71,8 @@ end
         #CHANGE STATUS OF SCHOOLS THAT CURRENTLY VERIFY TO THE NEW VALUE TO TRUE
         if pids = $tables.attach("STUDENT_PREVIOUS_SCHOOL").primary_ids(
             
-            "WHERE  previous_school     = '#{field_object.value}'
-            AND     previous_district   = '#{this_record.fields["previous_district"   ].value}'"
+            "WHERE  previous_school     = \"#{field_object.value}\"
+            AND     previous_district   = \"#{this_record.fields["district"].value}\""
             
         )
             
@@ -104,8 +104,8 @@ end
         #CHANGE STATUS OF SCHOOLS THAT WERE PREVIOUSLY VERIFIED TO THE OLD VALUE TO FALSE
         if pids = $tables.attach("STUDENT_PREVIOUS_SCHOOL").primary_ids(
             
-            "WHERE  previous_school     = '#{old_value}'
-            AND     previous_district   = '#{this_record.fields["previous_district"   ].value}'"
+            "WHERE  previous_school     = \"#{old_value}\"
+            AND     previous_district   = \"#{this_record.fields["district"].value}\""
             
         )
             
@@ -121,8 +121,8 @@ end
         #CHANGE STATUS OF SCHOOLS THAT CURRENTLY VERIFY TO THE NEW VALUE TO TRUE
         if pids = $tables.attach("STUDENT_PREVIOUS_SCHOOL").primary_ids(
             
-            "WHERE  previous_school     = '#{field_object.value}'
-            AND     previous_district   = '#{this_record.fields["previous_district"   ].value}'"
+            "WHERE  previous_school     = \"#{field_object.value}\"
+            AND     previous_district   = \"#{this_record.fields["district"].value}\""
             
         )
             

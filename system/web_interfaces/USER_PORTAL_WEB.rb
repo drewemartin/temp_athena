@@ -191,6 +191,15 @@ end
             
         ) if $team_member.super_user? || $team_member.rights.sapphire_data_management_access.is_true?
         
+        $kit.output << $tools.breakaway_button(
+            
+            :button_text        => "Schools Directory",
+            :page_name          => "SCHOOLS_WEB",
+            :additional_params  => nil,
+            :class              => "module_bar"
+            
+        ) if $team_member.super_user? || $team_member.rights.schools_access.is_true?
+        
         $kit.output << "</div>"
         
         tabs_arr = Array.new
