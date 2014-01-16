@@ -140,6 +140,7 @@ end
             structure_hash["fields"]["student_sales_force_case_edit"                            ] = {"data_type"=>"bool", "file_field"=>"student_sales_force_case_edit"                         } if field_order.push("student_sales_force_case_edit"                           )
             structure_hash["fields"]["student_assessments_edit"                                 ] = {"data_type"=>"bool", "file_field"=>"student_assessments_edit"                              } if field_order.push("student_assessments_edit"                                )
             structure_hash["fields"]["student_ilp_edit"                                         ] = {"data_type"=>"bool", "file_field"=>"student_ilp_edit"                                      } if field_order.push("student_ilp_edit"                                        )
+            structure_hash["fields"]["student_isp_edit"                                         ] = {"data_type"=>"bool", "file_field"=>"student_isp_edit"                                      } if field_order.push("student_isp_edit"                                        )
             structure_hash["fields"]["student_psychological_evaluation_edit"                    ] = {"data_type"=>"bool", "file_field"=>"student_psychological_evaluation_edit"                 } if field_order.push("student_psychological_evaluation_edit"                   )
             
             #STUDENT_MODULE_RIGHTS 
@@ -158,6 +159,7 @@ end
             structure_hash["fields"]["module_student_sales_force_case"                          ] = {"data_type"=>"bool", "file_field"=>"module_student_sales_force_case"                       } if field_order.push("module_student_sales_force_case"                         )
             structure_hash["fields"]["module_student_assessments"                               ] = {"data_type"=>"bool", "file_field"=>"module_student_assessments"                            } if field_order.push("module_student_assessments"                              )
             structure_hash["fields"]["module_student_ilp"                                       ] = {"data_type"=>"bool", "file_field"=>"module_student_ilp"                                    } if field_order.push("module_student_ilp"                                      )
+            structure_hash["fields"]["module_student_isp"                                       ] = {"data_type"=>"bool", "file_field"=>"module_student_isp"                                    } if field_order.push("module_student_isp"                                      )
             structure_hash["fields"]["module_student_psychological_evaluation"                  ] = {"data_type"=>"bool", "file_field"=>"module_student_psychological_evaluation"               } if field_order.push("module_student_psychological_evaluation"                 )
             
         structure_hash["field_order"] = field_order
