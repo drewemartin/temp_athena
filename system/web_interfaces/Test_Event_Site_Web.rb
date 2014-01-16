@@ -265,14 +265,71 @@ end
             
             status = $students.get(sid).active.value == "1" ? "Active":"Withdrawn"
             
+            family_coach = String.new
+            
+            fc_relate = $tables.attach("STUDENT_RELATE").unique_student_role_records(sid, "Family Teacher Coach", "Family Coach", true)
+            
+            if fc_relate
+                
+                fc_relate.each_with_index do |record,i|
+                    
+                    family_coach << ", " if i != 0
+                    family_coach << $team.get(record.fields["team_id"].value).full_name
+                    
+                end
+                
+            else
+                
+                family_coach = "N/A"
+                
+            end
+            
+            primary_teacher = String.new
+            
+            pt_relate = $tables.attach("STUDENT_RELATE").unique_student_role_records(sid, "Primary Teacher", "Primary Teacher", true)
+            
+            if pt_relate
+                
+                pt_relate.each_with_index do |record,i|
+                    
+                    primary_teacher << ", " if i != 0
+                    primary_teacher << $team.get(record.fields["team_id"].value).full_name
+                    
+                end
+                
+            else
+                
+                primary_teacher = "N/A"
+                
+            end
+            
+            sed_teacher = String.new
+            
+            sed_relate = $tables.attach("STUDENT_RELATE").unique_student_role_records(sid, "Special Education Teachers", "Special Education Teachers", true)
+            
+            if sed_relate
+                
+                sed_relate.each_with_index do |record,i|
+                    
+                    sed_teacher << ", " if i != 0
+                    sed_teacher << $team.get(record.fields["team_id"].value).full_name
+                    
+                end
+                
+            else
+                
+                sed_teacher = "N/A"
+                
+            end
+            
             row.push(test_record.fields["student_id"         ].web.label()  )
             row.push($students.get(sid      ).studentfirstname.web.label()  )
             row.push($students.get(sid       ).studentlastname.web.label()  )
             row.push($students.get(sid                 ).grade.web.label()  )
             row.push(status)
-            row.push($students.get(sid        ).primaryteacher.web.label()  )
-            row.push($students.get(sid         ).title1teacher.web.label()  )
-            row.push($students.get(sid      ).specialedteacher.web.label()  )
+            row.push(family_coach)
+            row.push(primary_teacher)
+            row.push(sed_teacher)
             row.push(test_record.fields["test_subject_id"    ].web.select(:disabled=>true, :dd_choices=>test_subjects_dd(test_id) )  )
             row.push(test_record.fields["test_id"            ].web.select(:disabled=>true, :dd_choices=>test_types_dd    )  )
             row.push(test_record.fields["checked_in"         ].web.default())

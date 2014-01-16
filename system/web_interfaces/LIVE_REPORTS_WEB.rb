@@ -777,7 +777,7 @@ end
             (
                 SELECT
                     GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM agora_master.team
+                FROM #{t_db}.team
                 WHERE team.primary_id = (
                     SELECT
                         team_id
@@ -789,21 +789,37 @@ end
                 )
             ),
             
-            #FAMILY TEACHER COACH
+            #PRIMARY TEACHER
             (
                 SELECT
-                    CONCAT(legal_first_name,' ',legal_last_name)
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
                 FROM #{t_db}.team
                 WHERE team.primary_id = (
                     SELECT
                         team_id
-                    FROM #{tsids_db}.team_sams_ids
-                    WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Primary Teacher'
+                    AND active IS TRUE
                     LIMIT 0, 1
                 )
             ),
             
-            student.title1teacher,
+            #FAMILY TEACHER COACH
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        team_id
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Family Teacher Coach'
+                    AND active IS TRUE
+                    LIMIT 0, 1
+                )
+            ),
             student_scantron_performance_level.stron_ent_perf_m,
             student_scantron_performance_level.stron_ext_perf_m,
             student_scantron_performance_level.stron_ent_perf_r,
@@ -813,14 +829,15 @@ end
             #FAMILY TEACHER COACH SUPPORT
             (
                 SELECT
-                    CONCAT(team.legal_first_name,' ',team.legal_last_name)
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
                 FROM #{t_db}.team
                 WHERE team.primary_id = (
                     SELECT
                         supervisor_team_id
-                    FROM #{t_db}.team
-                    LEFT JOIN #{tsids_db}.team_sams_ids ON team.primary_id = team_sams_ids.team_id
-                    WHERE team_sams_ids.sams_id = student.primaryteacherid
+                    FROM #{relate_db}.student_relate
+                    WHERE studentid = student.student_id
+                    AND role = 'Family Teacher Coach'
+                    AND active IS TRUE
                     LIMIT 0, 1
                 )
             ),
@@ -829,7 +846,7 @@ end
             (
                 SELECT
                     GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM agora_master.team
+                FROM #{t_db}.team
                 WHERE team.primary_id = (
                     SELECT
                         team_id
@@ -1832,13 +1849,24 @@ end
         sspl_db = $tables.attach("student_scantron_performance_level").data_base
         s_db  = $tables.attach("student").data_base
         k12_db  = $tables.attach("k12_omnibus").data_base
+        sr_db  = $tables.attach("student_relate").data_base
+        t_db  = $tables.attach("team").data_base
         
         sql_str =
         "SELECT
             student.student_id,
             student.studentfirstname,
             student.studentlastname,
-            student.primaryteacher,
+            (
+                SELECT CONCAT(legal_first_name, ' ', legal_last_name)
+                FROM #{sr_db}.student_relate
+                LEFT JOIN #{t_db}.team
+                ON team.primary_id = student_relate.team_id
+                WHERE student_relate.studentid = student.student_id
+                AND role = 'Primary Teacher'
+                AND student_relate.active = 1
+                LIMIT 0,1
+            ),
             student_scantron_performance_level.`stron_ent_perf_m`,
             student_scantron_performance_level.`stron_ent_score_m`,
             student_scantron_performance_level.`stron_ext_perf_m`,
@@ -2679,13 +2707,25 @@ end
         uRegex = attendance_codes_table.find_fields("code", "WHERE code_type = 'present'", {:value_only=>true}).join("|")
         eRegex = attendance_codes_table.find_fields("code", "WHERE code_type = 'present'", {:value_only=>true}).join("|")
         
+        sr_db = $tables.attach("STUDENT_RELATE").data_base
+        t_db  = $tables.attach("TEAM").data_base
+        
         sql_str = "SELECT student_attendance_master.student_id,
                    student.studentlastname,
                    student.studentfirstname,
                    student.grade,
                    student.familyid,
                    student.birthday,
-                   student.primaryteacher,
+                    (
+                        SELECT CONCAT(legal_first_name, ' ', legal_last_name)
+                        FROM #{sr_db}.student_relate
+                        LEFT JOIN #{t_db}.team
+                        ON team.primary_id = student_relate.team_id
+                        WHERE student_relate.studentid = student_attendance_master.student_id
+                        AND role = 'Family Teacher Coach'
+                        AND student_relate.active IS TRUE
+                        LIMIT 0,1
+                    ),
                    student.schoolenrolldate,
                    student.schoolwithdrawdate,
                    student.districtofresidence,
