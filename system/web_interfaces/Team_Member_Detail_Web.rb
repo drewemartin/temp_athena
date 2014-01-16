@@ -889,12 +889,23 @@ end
             :title          => false,
             :caption        => "#{$focus_team_member.rights.module_student_assessments.web.checkbox( :label_option=>"Student Assessments Module",    :disabled=>disabled("module_student_assessments"))}"
         )
+        student_isp = $tools.table(
+            :table_array    => [
+                $focus_team_member.rights.student_isp_edit.web.checkbox( :label_option=>"Edit",                         :disabled=>disabled("student_isp_edit"))    
+            ],
+            :unique_name    => "module_rights",
+            :footers        => false,
+            :head_section   => false,
+            :title          => false,
+            :caption        => "#{$focus_team_member.rights.module_student_isp.web.checkbox( :label_option=>"Student ISP Module",    :disabled=>disabled("module_student_isp"))}"
+        )
         table_array = [
             
             [student_attendance_ap],
             [student_contacts],
             [dnc_students],
             [student_ilp],
+            [student_isp],
             [ink_orders],
             [student_psych],
             [pssa_entry],
@@ -908,7 +919,7 @@ end
             [tep_agreements],
             [withdraw_requests]
             
-        ] 
+        ]
         
         return $tools.table(
             :table_array    => table_array,
