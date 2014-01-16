@@ -181,7 +181,7 @@ end
         case field.datatype
         when "text"
             textarea(arg)
-        when "int", "year", "decimal(5,4)", "decimal(10,2)", "time"
+        when "int", "year", "decimal(5,4)", "decimal(10,2)", "time", "numeric(15,2)"
             text(arg)
         when "date"
             date(arg)
