@@ -1099,11 +1099,11 @@ end
             student_contacts.win,
             student_contacts.other,
             student_contacts.other_description,
-            #team_temp.legal_last_name,
-            #team_temp.legal_first_name,
+            team_temp.legal_last_name,
+            team_temp.legal_first_name,
             student_contacts.created_by,
-            #team_temp.department,
-            #team_temp.title,
+            team_temp.department,
+            team_temp.title,
             student_contacts.created_date
             #TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
         FROM #{sc_db}.student_contacts
@@ -1164,11 +1164,11 @@ end
             "WIN",
             "other",
             "other_description",
-            #"Created By Last Name",
-            #"Created By First Name",
+            "Created By Last Name",
+            "Created By First Name",
             "Created By Email",
-            #"Created By Department",
-            #"Created By Title",
+            "Created By Department",
+            "Created By Title",
             "Created Date"
             #"Days Between Contact And Entry"
         ]
