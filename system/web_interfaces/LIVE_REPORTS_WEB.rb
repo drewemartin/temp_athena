@@ -1109,10 +1109,10 @@ end
         FROM #{sc_db}.student_contacts
         LEFT JOIN #{s_db}.student
         ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
-        #LEFT JOIN #{t_db}.team_email
-        #ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
-        #LEFT JOIN #{t_db}.team_temp
-        #ON #{t_db}.team_temp.primary_id = #{t_db}.team_email.team_id"
+        LEFT JOIN #{t_db}.team_email
+        ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
+        LEFT JOIN #{t_db}.team_temp
+        ON #{t_db}.team_temp.primary_id = #{t_db}.team_email.team_id"
         
         headers =
         [
