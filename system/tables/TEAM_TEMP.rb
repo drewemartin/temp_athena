@@ -390,9 +390,9 @@ end
         if !@table_structure
             structure_hash = {
                 :data_base          => "#{$config.school_name}_master",
-                "name"              => "team",
-                "file_name"         => "team.csv",
-                "file_location"     => "team",
+                "name"              => "team_temp",
+                "file_name"         => "team_temp.csv",
+                "file_location"     => "team_temp",
                 "source_address"    => nil,
                 "source_type"       => nil,
                 "audit"             => true,
