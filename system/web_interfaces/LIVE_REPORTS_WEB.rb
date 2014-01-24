@@ -718,18 +718,18 @@ end
             "Teacher/Guidance",
             
             "Family Coach/Comm Cord",
-            "Scantron entrance math",
-            "Scantron exit math",
-            "Scantron entrance reading",
-            "Scantron exit reading",
+            #"Scantron entrance math",
+            #"Scantron exit math",
+            #"Scantron entrance reading",
+            #"Scantron exit reading",
             
             "LEAP Level",
             
             #"Program Support",
             
-            "Family Coach Support",
+            #"Family Coach Support",
             "Truancy Prevention",
-            "Advisor",
+            #"Advisor",
             
             "Enroll Date",
             "Withdraw Date",
@@ -790,20 +790,21 @@ end
             ),
             
             #PRIMARY TEACHER
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        team_id
-                    FROM #{relate_db}.student_relate
-                    WHERE studentid = student.student_id
-                    AND role = 'Primary Teacher'
-                    AND active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
+            student.primaryteacher,
+            #(
+            #    SELECT
+            #        GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+            #    FROM #{t_db}.team
+            #    WHERE team.primary_id = (
+            #        SELECT
+            #            team_id
+            #        FROM #{relate_db}.student_relate
+            #        WHERE studentid = student.student_id
+            #        AND role = 'Primary Teacher'
+            #        AND active IS TRUE
+            #        LIMIT 0, 1
+            #    )
+            #),
             
             #FAMILY TEACHER COACH
             (
@@ -820,27 +821,27 @@ end
                     LIMIT 0, 1
                 )
             ),
-            student_scantron_performance_level.stron_ent_perf_m,
-            student_scantron_performance_level.stron_ext_perf_m,
-            student_scantron_performance_level.stron_ent_perf_r,
-            student_scantron_performance_level.stron_ext_perf_r,
+            #student_scantron_performance_level.stron_ent_perf_m,
+            #student_scantron_performance_level.stron_ext_perf_m,
+            #student_scantron_performance_level.stron_ent_perf_r,
+            #student_scantron_performance_level.stron_ext_perf_r,
             IFNULL(student_leap.leap_level,'0'),
             
             #FAMILY TEACHER COACH SUPPORT
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        supervisor_team_id
-                    FROM #{relate_db}.student_relate
-                    WHERE studentid = student.student_id
-                    AND role = 'Family Teacher Coach'
-                    AND active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
+            #(
+            #    SELECT
+            #        GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+            #    FROM #{t_db}.team
+            #    WHERE team.primary_id = (
+            #        SELECT
+            #            supervisor_team_id
+            #        FROM #{relate_db}.student_relate
+            #        WHERE studentid = student.student_id
+            #        AND role = 'Family Teacher Coach'
+            #        AND active IS TRUE
+            #        LIMIT 0, 1
+            #    )
+            #),
             
             #TRUANCY PREVENTION COORDINATOR
             (
@@ -858,19 +859,19 @@ end
                 )
             ),
             
-            (
-                SELECT
-                    GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
-                FROM #{t_db}.team
-                WHERE department_id = (
-                    SELECT
-                        primary_id
-                    FROM #{$tables.attach("DEPARTMENT").data_base}.department
-                    WHERE name = 'Advisors'
-                    LIMIT 0, 1
-                )
-                AND region = student.region
-            ),
+            #(
+            #    SELECT
+            #        GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
+            #    FROM #{t_db}.team
+            #    WHERE department_id = (
+            #        SELECT
+            #            primary_id
+            #        FROM #{$tables.attach("DEPARTMENT").data_base}.department
+            #        WHERE name = 'Advisors'
+            #        LIMIT 0, 1
+            #    )
+            #    AND region = student.region
+            #),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
@@ -926,7 +927,7 @@ end
         
         sql_str << " FROM #{sam_db}.student_attendance_master
             LEFT JOIN #{s_db}.student                                ON student.student_id                              = student_attendance_master.student_id                       
-            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
+            #LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
             LEFT JOIN #{samo_db}.student_attendance_mode             ON student_attendance_mode.student_id              = student_attendance_master.student_id
             LEFT JOIN #{leap_db}.student_leap                        ON student_leap.student_id                         = student_attendance_master.student_id"
         
@@ -1098,20 +1099,20 @@ end
             student_contacts.win,
             student_contacts.other,
             student_contacts.other_description,
-            team.legal_last_name,
-            team.legal_first_name,
+            #team.legal_last_name,
+            #team.legal_first_name,
             student_contacts.created_by,
-            team.department,
-            team.title,
-            student_contacts.created_date,
-            TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
+            #team.department,
+            #team.title,
+            student_contacts.created_date
+            #TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
         FROM #{sc_db}.student_contacts
         LEFT JOIN #{s_db}.student
         ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
-        LEFT JOIN #{t_db}.team_email
-        ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
-        LEFT JOIN #{t_db}.team
-        ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
+        #LEFT JOIN #{t_db}.team_email
+        #ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
+        #LEFT JOIN #{t_db}.team
+        #ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
         
         headers =
         [
@@ -1163,13 +1164,13 @@ end
             "WIN",
             "other",
             "other_description",
-            "Created By Last Name",
-            "Created By First Name",
+            #"Created By Last Name",
+            #"Created By First Name",
             "Created By Email",
-            "Created By Department",
-            "Created By Title",
-            "Created Date",
-            "Days Between Contact And Entry"
+            #"Created By Department",
+            #"Created By Title",
+            "Created Date"
+            #"Days Between Contact And Entry"
         ]
         
         results = $db.get_data(sql_str)
