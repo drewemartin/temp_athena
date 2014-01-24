@@ -1047,7 +1047,7 @@ end
         
         sc_db = $tables.attach("student_contacts").data_base
         s_db  = $tables.attach("student").data_base
-        t_db  = $tables.attach("team").data_base
+        t_db  = $tables.attach("team_temp").data_base
         
         sql_str =
         "SELECT
@@ -1099,11 +1099,11 @@ end
             student_contacts.win,
             student_contacts.other,
             student_contacts.other_description,
-            #team.legal_last_name,
-            #team.legal_first_name,
+            #team_temp.legal_last_name,
+            #team_temp.legal_first_name,
             student_contacts.created_by,
-            #team.department,
-            #team.title,
+            #team_temp.department,
+            #team_temp.title,
             student_contacts.created_date
             #TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
         FROM #{sc_db}.student_contacts
@@ -1111,8 +1111,8 @@ end
         ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
         #LEFT JOIN #{t_db}.team_email
         #ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
-        #LEFT JOIN #{t_db}.team
-        #ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
+        #LEFT JOIN #{t_db}.team_temp
+        #ON #{t_db}.team_temp.primary_id = #{t_db}.team_email.team_id"
         
         headers =
         [
