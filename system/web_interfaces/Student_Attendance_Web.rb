@@ -121,7 +121,11 @@ end
                                 a_class  = a_fields["class"].value
                                 code     = a_fields["code"].value
                                 begin
-                                    team = $team.get(a_fields["team_id"].value).full_name
+                                    tid = a_fields["team_id"].value
+                                    t_fields = $tables.attach("team").by_primary_id(tid).fields
+                                    team = "#{t_fields['legal_first_name'].value} #{t_fields['legal_last_name'].value}"
+                                    
+                                    #team = $team.get(a_fields["team_id"].value).full_name
                                 rescue
                                     team = "Unknown"
                                 end
@@ -139,7 +143,7 @@ end
                                 :legend         => false,
                                 :caption        => false,
                                 :embedded_style => {
-                                    :table  => "width:500px;",
+                                    :table  => "width:450px;",
                                     :th     => nil,
                                     :tr     => nil,
                                     :tr_alt => nil,
@@ -319,6 +323,7 @@ end
         div.USER_ACTION_ITEMS__completed{                       float:left; margin-top:-2px;}
         div.student_link{                                       width:250px;}
         body{                                                   line-height:16px;}
+        .activity_container td{                                 font-size:12px;}
         "
         
         output << "</style>"

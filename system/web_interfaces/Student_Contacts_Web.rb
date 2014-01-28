@@ -56,7 +56,7 @@ end
         
         output      = String.new
         
-        if records  = $focus_student.contacts.existing_records
+        if pids  = $tables.attach("student_contacts").primary_ids("WHERE student_id = '#{$focus_student.student_id.value}'")
             
             output << $tools.div_open("student_contacts_container", "student_contacts_container")
             
@@ -120,13 +120,25 @@ end
                 directors   = $team.directors || []
                 is_director = directors.include?($team_member.primary_id.value)
                 
-                
-                records.each{|record|
+                pids.each{|pid|
+                    
+                    record = $tables.attach("student_contacts").by_primary_id(pid)
                     
                     f = record.fields
                     
-                    creator         = $team.find(:email_address=>f["created_by"].value)
-                    is_creator      = $kit.params[:user_id] == f["created_by"].value
+                    team_email   = f["created_by"].value
+                    
+                    begin
+                        email_row    = $tables.attach("team_email").record("WHERE email_address = '#{team_email}'")
+                        tid          = email_row.fields["team_id"].value
+                        team_row     = $tables.attach("team").by_primary_id(tid)
+                        creator_name = "#{team_row.fields['legal_first_name'].value} #{team_row.fields['legal_last_name'].value}"
+                    rescue
+                        creator_name = "#{team_email}"
+                    end
+                    
+                    creator         = $team.find(:email_address=>team_email)
+                    is_creator      = $kit.params[:user_id] == team_email
                     is_supervisor   = ($team_member.primary_id.value == creator.supervisor_team_id.value)
                     
                     disabled        = (is_director || is_supervisor || is_creator) ? false : true
@@ -135,7 +147,7 @@ end
                     ########################################################################
                     #FNORD - MOVE THE 'DISPLAY:NONE' DIV INTO WEB AS AN OPTION
                     row.push(f["created_date"                  ].to_user)
-                    row.push($team.by_team_email(f["created_by"].value) ? $team.by_team_email(f["created_by"].value).full_name : f["created_by"].value)
+                    row.push(creator_name)
                     row.push(f["datetime"                      ].web.default(:disabled=>disabled, :date_range_end=>"#{$iuser}")+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
                     row.push(f["successful"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["successful"                    ].to_user()+"</div>")
                     row.push(f["notes"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")

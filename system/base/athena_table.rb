@@ -1716,7 +1716,7 @@ end
                     if !$db.get_data("SHOW INDEX FROM #{@this_table} WHERE column_name = '#{field_name}'", data_base)
                         
                         case type
-                        when "int","date","bool","tinyint","year","timestamp","decimal(5,4)","decimal(10,2)"
+                        when "int","date","datetime","bool","tinyint","year","timestamp","decimal(5,4)","decimal(10,2)","decimal(15,2)"
                             alter_table("ADD INDEX (`#{field_name}`)")
                             indexes_assigned += 1
                         when "text"
