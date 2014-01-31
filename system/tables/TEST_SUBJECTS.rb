@@ -94,7 +94,8 @@ end
             structure_hash["fields"]["grade_10th"           ] = {"data_type"=>"bool", "file_field"=>"grade_10th"        } if field_order.push("grade_10th")
             structure_hash["fields"]["grade_11th"           ] = {"data_type"=>"bool", "file_field"=>"grade_11th"        } if field_order.push("grade_11th")
             structure_hash["fields"]["grade_12th"           ] = {"data_type"=>"bool", "file_field"=>"grade_12th"        } if field_order.push("grade_12th")
-            structure_hash["fields"]["pasa_included"        ] = {"data_type"=>"bool", "file_field"=>"pasa_included"     } if field_order.push("pasa_included")
+            structure_hash["fields"]["only_pasa"            ] = {"data_type"=>"bool", "file_field"=>"only_pasa"         } if field_order.push("only_pasa")
+            structure_hash["fields"]["exclude_pasa"         ] = {"data_type"=>"bool", "file_field"=>"exclude_pasa"      } if field_order.push("exclude_pasa")
         structure_hash["field_order"] = field_order
         return structure_hash
     end
