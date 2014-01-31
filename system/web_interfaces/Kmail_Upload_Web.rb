@@ -115,7 +115,8 @@ class KMAIL_UPLOAD_WEB
             {:name=>"Yvette Fleming",         :value=>"yvette_fleming"},
             {:name=>"Stephanie Boon",         :value=>"stephanie_boon"},
             {:name=>"Scott Feely",            :value=>"scott_feely"},
-            {:name=>"Bill Koch",              :value=>"bill_koch"}
+            {:name=>"Bill Koch",              :value=>"bill_koch"},
+            {:name=>"Regan Shebeck",          :value=>"regan_shebeck"}
         ]
     end
     
