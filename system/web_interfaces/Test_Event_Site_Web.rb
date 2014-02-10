@@ -116,67 +116,61 @@ end
             "grade_level"            ,
             "current_iep_no"         ,
             "iep_date"               ,
-            "iep_implementation_date",
-            "sg6_12"                 ,
-            "sg5"                    ,
-            "1_1sep"                 ,
-            "1_1home"                ,
-            "1_1onsite"              ,
-            "aims"                   ,
-            "chngsch"                ,
-            "bubble"                 ,
-            "overlay"                ,
-            "comdev"                 ,
-            "enlg"                   ,
-            "extraspac"              ,
-            "fb20"                   ,
-            "fb30"                   ,
-            "fb60"                   ,
-            "fbwmove"                ,
-            "lineup"                 ,
-            "la9"                    ,
-            "la4"                    ,
-            "la8"                    ,
-            "la2"                    ,
-            "la3"                    ,
-            "la10"                   ,
-            "la14"                   ,
-            "la"                     ,
-            "la6"                    ,
-            "la5"                    ,
-            "la7"                    ,
-            "la13"                   ,
-            "la11"                   ,
-            "la12"                   ,
-            "mtr"                    ,
-            "ptss"                   ,
-            "prefseat"               ,
-            "pswd"                   ,
-            "psback"                 ,
-            "psfront"                ,
-            "prompts"                ,
-            "ra"                     ,
-            "ramath"                 ,
-            "scribe2"                ,
-            "stressbal"              ,
-            "smab"                   ,
-            "siland2"                ,
-            "siland1"                ,
-            "siland3"                ,
-            "tscblgpt"               ,
-            "tscbmulti"              ,
-            "tscball"                ,
-            "tscbopen"               ,
-            "hgl"                    ,
-            "numline"                ,
-            "scribe"                 ,
-            "abacus"                 ,
-            "manip"                  ,
-            "music"                  ,
-            "reinforce"              ,
-            "wrdprc"    
+            "iep_implementation_date" 
             
         ]
+        titles = headers.dup
+        $tables.attach("STUDENT_SE_ACCOMMODATIONS").field_order.each{|field_name|
+            
+            unless field_name.match(/student_id|created_by|created_date/)
+                
+                headers.push(field_name)
+                titles.push($tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").field_value("accommodation_desc", "WHERE accommodation_code = '#{field_name.gsub('_','-')}'"))
+                
+            end
+            
+        }
+        
+        test_event_type = $tables.attach("TESTS").field_value(
+            "tests`.`name",
+            "LEFT JOIN #{$tables.attach("test_events").data_base}.test_events
+            ON test_events.test_id = tests.primary_id
+            LEFT JOIN #{$tables.attach("test_event_sites").data_base}.test_event_sites ON test_event_sites.test_event_id = test_events.primary_id
+            WHERE test_event_sites.primary_id = #{@test_event_site_id}"
+        )
+        
+        sapp_se_db = $tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").data_base
+        
+        acc_fields_sql = String.new
+        $tables.attach("STUDENT_SE_ACCOMMODATIONS").field_order.each{|field_name|
+            
+            unless field_name.match(/student_id|created_by|created_date/)
+                
+                acc_fields_sql << "
+                ,IF(
+                    (
+                        SELECT primary_id
+                        FROM agora_sapphire.sapphire_student_se_accommodations
+                        WHERE assessment_type_group = '#{test_event_type}'
+                        AND accommodation_code REGEXP '#{field_name.gsub('_','-')}'
+                        AND student_id = student_se_accommodations.student_id
+                        GROUP BY student_id
+                    ),
+                    CONCAT(
+                        'Yes',
+                        ' (',
+                        (SELECT GROUP_CONCAT(CONCAT(assessment_type_group,'-',LEFT(assessment_type_code,3)))
+                        FROM agora_sapphire.sapphire_student_se_accommodations
+                        WHERE student_id = student_se_accommodations.student_id
+                        AND assessment_type_group = '#{test_event_type}'),
+                        ')'
+                    ),
+                    ''
+                )"
+                
+            end
+            
+        }
         
         sql_strg = "
         SELECT
@@ -187,76 +181,26 @@ end
             sapphire_student_se_accommodations.grade_level              , 
             sapphire_student_se_accommodations.current_iep_no           , 
             sapphire_student_se_accommodations.iep_date                 , 
-            sapphire_student_se_accommodations.iep_implementation_date  , 
-            IF(sg6_12       , 'Yes', '')                              ,
-            IF(sg5          , 'Yes', '')                              ,
-            IF(1_1sep       , 'Yes', '')                              ,
-            IF(1_1home      , 'Yes', '')                              ,
-            IF(1_1onsite    , 'Yes', '')                              ,
-            IF(aims         , 'Yes', '')                              ,
-            IF(chngsch      , 'Yes', '')                              ,
-            IF(bubble       , 'Yes', '')                              ,
-            IF(overlay      , 'Yes', '')                              ,
-            IF(comdev       , 'Yes', '')                              ,
-            IF(enlg         , 'Yes', '')                              ,
-            IF(extraspac    , 'Yes', '')                              ,
-            IF(fb20         , 'Yes', '')                              ,
-            IF(fb30         , 'Yes', '')                              ,
-            IF(fb60         , 'Yes', '')                              ,
-            IF(fbwmove      , 'Yes', '')                              ,
-            IF(lineup       , 'Yes', '')                              ,
-            IF(la9          , 'Yes', '')                              ,
-            IF(la4          , 'Yes', '')                              ,
-            IF(la8          , 'Yes', '')                              ,
-            IF(la2          , 'Yes', '')                              ,
-            IF(la3          , 'Yes', '')                              ,
-            IF(la10         , 'Yes', '')                              ,
-            IF(la14         , 'Yes', '')                              ,
-            IF(la           , 'Yes', '')                              ,
-            IF(la6          , 'Yes', '')                              ,
-            IF(la5          , 'Yes', '')                              ,
-            IF(la7          , 'Yes', '')                              ,
-            IF(la13         , 'Yes', '')                              ,
-            IF(la11         , 'Yes', '')                              ,
-            IF(la12         , 'Yes', '')                              ,
-            IF(mtr          , 'Yes', '')                              ,
-            IF(ptss         , 'Yes', '')                              ,
-            IF(prefseat     , 'Yes', '')                              ,
-            IF(pswd         , 'Yes', '')                              ,
-            IF(psback       , 'Yes', '')                              ,
-            IF(psfront      , 'Yes', '')                              ,
-            IF(prompts      , 'Yes', '')                              ,
-            IF(ra           , 'Yes', '')                              ,
-            IF(ramath       , 'Yes', '')                              ,
-            IF(scribe2      , 'Yes', '')                              ,
-            IF(stressbal    , 'Yes', '')                              ,
-            IF(smab         , 'Yes', '')                              ,
-            IF(siland2      , 'Yes', '')                              ,
-            IF(siland1      , 'Yes', '')                              ,
-            IF(siland3      , 'Yes', '')                              ,
-            IF(tscblgpt     , 'Yes', '')                              ,
-            IF(tscbmulti    , 'Yes', '')                              ,
-            IF(tscball      , 'Yes', '')                              ,
-            IF(tscbopen     , 'Yes', '')                              ,
-            IF(hgl          , 'Yes', '')                              ,
-            IF(numline      , 'Yes', '')                              ,
-            IF(scribe       , 'Yes', '')                              ,
-            IF(abacus       , 'Yes', '')                              ,
-            IF(manip        , 'Yes', '')                              ,
-            IF(music        , 'Yes', '')                              ,
-            IF(reinforce    , 'Yes', '')                              ,
-            IF(wrdprc       , 'Yes', '')                              
+            sapphire_student_se_accommodations.iep_implementation_date
+            #{acc_fields_sql}
             
-        FROM #{$tables.attach("STUDENT_SE_ACCOMMODATIONS").data_base}.student_se_accommodations
-        LEFT JOIN #{$tables.attach("STUDENT_TESTS"                      ).data_base}.student_tests                      ON student_tests.student_id                         = student_se_accommodations.student_id
-        LEFT JOIN #{$tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS" ).data_base}.sapphire_student_se_accommodations ON sapphire_student_se_accommodations.student_id    = student_se_accommodations.student_id
+        FROM        #{$tables.attach("STUDENT_SE_ACCOMMODATIONS"            ).data_base}.student_se_accommodations
+        LEFT JOIN   #{$tables.attach("STUDENT_TESTS"                        ).data_base}.student_tests                      ON student_tests.student_id                         = student_se_accommodations.student_id
+        LEFT JOIN   #{sapp_se_db                                            }.sapphire_student_se_accommodations ON sapphire_student_se_accommodations.student_id    = student_se_accommodations.student_id
         WHERE student_tests.test_event_site_id = #{@test_event_site_id}
+        AND sapphire_student_se_accommodations.assessment_type_group = '#{test_event_type}'
         AND sapphire_student_se_accommodations.primary_id IS NOT NULL
         GROUP BY sapphire_student_se_accommodations.student_id"
         
         if tables_array = $db.get_data(sql_strg)
             
-            output << $kit.tools.data_table(tables_array.insert(0, headers), "se_accommodations") 
+            output << $kit.tools.data_table(
+                tables_array.insert(0, headers),
+                "se_accommodations",
+                "default",
+                true,
+                titles
+            ) 
             
         else
             
