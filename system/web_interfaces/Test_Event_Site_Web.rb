@@ -47,9 +47,20 @@ end
             test_event_site_staff = true if $tables.attach("Test_Event_Site_Staff").is_site_coordinator?(samsid, @test_event_site_id)
             
         }
+        
+        if @administrators.include?($team_member.preferred_email.value) || $team_member.preferred_email.value == "jrogers@agora.org" ||
+            $tables.attach("TEST_EVENT_SITE_STAFF").primary_ids(
+                "WHERE test_event_site_id = '#{@test_event_site_id}'
+                AND team_id = #{$team_member.primary_id.value}
+                AND role REGEXP 'Site Coordinatior|Spec. Ed. Acc. Org.'"
+            )
+            #NEEDS site cooredinator and special education accommodation organizer.
+            tabs << ["SE Accommodations",   se_accommodations_tab   ]
+        end
+        
         if @administrators.include?($team_member.preferred_email.value) || test_event_site_staff
-            tabs << ["Reminders",   admin_kmail_queue   ]
-            tabs << ["Site Staff",  site_staff_tab      ]
+            tabs << ["Reminders",           admin_kmail_queue       ]
+            tabs << ["Site Staff",          site_staff_tab          ]
         end
         
         $kit.tools.tabs(tabs)
@@ -90,6 +101,172 @@ end
 def x______________INITIAL_TABS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def se_accommodations_tab()
+        
+        output = String.new
+        
+        tables_array = Array.new
+        
+        headers = [
+            "student_id"             ,
+            "last_name"              ,
+            "first_name"             ,
+            "school_id"              ,
+            "grade_level"            ,
+            "current_iep_no"         ,
+            "iep_date"               ,
+            "iep_implementation_date",
+            "sg6_12"                 ,
+            "sg5"                    ,
+            "1_1sep"                 ,
+            "1_1home"                ,
+            "1_1onsite"              ,
+            "aims"                   ,
+            "chngsch"                ,
+            "bubble"                 ,
+            "overlay"                ,
+            "comdev"                 ,
+            "enlg"                   ,
+            "extraspac"              ,
+            "fb20"                   ,
+            "fb30"                   ,
+            "fb60"                   ,
+            "fbwmove"                ,
+            "lineup"                 ,
+            "la9"                    ,
+            "la4"                    ,
+            "la8"                    ,
+            "la2"                    ,
+            "la3"                    ,
+            "la10"                   ,
+            "la14"                   ,
+            "la"                     ,
+            "la6"                    ,
+            "la5"                    ,
+            "la7"                    ,
+            "la13"                   ,
+            "la11"                   ,
+            "la12"                   ,
+            "mtr"                    ,
+            "ptss"                   ,
+            "prefseat"               ,
+            "pswd"                   ,
+            "psback"                 ,
+            "psfront"                ,
+            "prompts"                ,
+            "ra"                     ,
+            "ramath"                 ,
+            "scribe2"                ,
+            "stressbal"              ,
+            "smab"                   ,
+            "siland2"                ,
+            "siland1"                ,
+            "siland3"                ,
+            "tscblgpt"               ,
+            "tscbmulti"              ,
+            "tscball"                ,
+            "tscbopen"               ,
+            "hgl"                    ,
+            "numline"                ,
+            "scribe"                 ,
+            "abacus"                 ,
+            "manip"                  ,
+            "music"                  ,
+            "reinforce"              ,
+            "wrdprc"    
+            
+        ]
+        
+        sql_strg = "
+        SELECT
+            student_se_accommodations.student_id                        , 
+            sapphire_student_se_accommodations.last_name                , 
+            sapphire_student_se_accommodations.first_name               , 
+            sapphire_student_se_accommodations.school_id                , 
+            sapphire_student_se_accommodations.grade_level              , 
+            sapphire_student_se_accommodations.current_iep_no           , 
+            sapphire_student_se_accommodations.iep_date                 , 
+            sapphire_student_se_accommodations.iep_implementation_date  , 
+            IF(sg6_12       , 'Yes', 'No')                              ,
+            IF(sg5          , 'Yes', 'No')                              ,
+            IF(1_1sep       , 'Yes', 'No')                              ,
+            IF(1_1home      , 'Yes', 'No')                              ,
+            IF(1_1onsite    , 'Yes', 'No')                              ,
+            IF(aims         , 'Yes', 'No')                              ,
+            IF(chngsch      , 'Yes', 'No')                              ,
+            IF(bubble       , 'Yes', 'No')                              ,
+            IF(overlay      , 'Yes', 'No')                              ,
+            IF(comdev       , 'Yes', 'No')                              ,
+            IF(enlg         , 'Yes', 'No')                              ,
+            IF(extraspac    , 'Yes', 'No')                              ,
+            IF(fb20         , 'Yes', 'No')                              ,
+            IF(fb30         , 'Yes', 'No')                              ,
+            IF(fb60         , 'Yes', 'No')                              ,
+            IF(fbwmove      , 'Yes', 'No')                              ,
+            IF(lineup       , 'Yes', 'No')                              ,
+            IF(la9          , 'Yes', 'No')                              ,
+            IF(la4          , 'Yes', 'No')                              ,
+            IF(la8          , 'Yes', 'No')                              ,
+            IF(la2          , 'Yes', 'No')                              ,
+            IF(la3          , 'Yes', 'No')                              ,
+            IF(la10         , 'Yes', 'No')                              ,
+            IF(la14         , 'Yes', 'No')                              ,
+            IF(la           , 'Yes', 'No')                              ,
+            IF(la6          , 'Yes', 'No')                              ,
+            IF(la5          , 'Yes', 'No')                              ,
+            IF(la7          , 'Yes', 'No')                              ,
+            IF(la13         , 'Yes', 'No')                              ,
+            IF(la11         , 'Yes', 'No')                              ,
+            IF(la12         , 'Yes', 'No')                              ,
+            IF(mtr          , 'Yes', 'No')                              ,
+            IF(ptss         , 'Yes', 'No')                              ,
+            IF(prefseat     , 'Yes', 'No')                              ,
+            IF(pswd         , 'Yes', 'No')                              ,
+            IF(psback       , 'Yes', 'No')                              ,
+            IF(psfront      , 'Yes', 'No')                              ,
+            IF(prompts      , 'Yes', 'No')                              ,
+            IF(ra           , 'Yes', 'No')                              ,
+            IF(ramath       , 'Yes', 'No')                              ,
+            IF(scribe2      , 'Yes', 'No')                              ,
+            IF(stressbal    , 'Yes', 'No')                              ,
+            IF(smab         , 'Yes', 'No')                              ,
+            IF(siland2      , 'Yes', 'No')                              ,
+            IF(siland1      , 'Yes', 'No')                              ,
+            IF(siland3      , 'Yes', 'No')                              ,
+            IF(tscblgpt     , 'Yes', 'No')                              ,
+            IF(tscbmulti    , 'Yes', 'No')                              ,
+            IF(tscball      , 'Yes', 'No')                              ,
+            IF(tscbopen     , 'Yes', 'No')                              ,
+            IF(hgl          , 'Yes', 'No')                              ,
+            IF(numline      , 'Yes', 'No')                              ,
+            IF(scribe       , 'Yes', 'No')                              ,
+            IF(abacus       , 'Yes', 'No')                              ,
+            IF(manip        , 'Yes', 'No')                              ,
+            IF(music        , 'Yes', 'No')                              ,
+            IF(reinforce    , 'Yes', 'No')                              ,
+            IF(wrdprc       , 'Yes', 'No')                              
+            
+        FROM #{$tables.attach("STUDENT_SE_ACCOMMODATIONS").data_base}.student_se_accommodations
+        LEFT JOIN #{$tables.attach("STUDENT_TESTS"                      ).data_base}.student_tests                      ON student_tests.student_id                         = student_se_accommodations.student_id
+        LEFT JOIN #{$tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS" ).data_base}.sapphire_student_se_accommodations ON sapphire_student_se_accommodations.student_id    = student_se_accommodations.student_id
+        WHERE student_tests.test_event_site_id = #{@test_event_site_id}
+        AND sapphire_student_se_accommodations.primary_id IS NOT NULL
+        GROUP BY sapphire_student_se_accommodations.student_id"
+        
+        if tables_array = $db.get_data(sql_strg)
+            
+            output << $kit.tools.data_table(tables_array.insert(0, headers), "se_accommodations") 
+            
+        else
+            
+            output << "No Data Found!"
+            
+        end
+        
+        return output
+        
+    end
 
     def site_staff_tab(test_event_site_id = @test_event_site_id)
         
