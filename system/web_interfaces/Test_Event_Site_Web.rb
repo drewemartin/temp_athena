@@ -125,7 +125,7 @@ end
             unless field_name.match(/student_id|created_by|created_date/)
                 
                 headers.push(field_name)
-                titles.push($tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").field_value("accommodation_desc", "WHERE accommodation_code = '#{field_name.gsub('_','-')}'"))
+                titles.push($tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").field_value("accommodation_desc", "WHERE accommodation_code = '#{field_name.gsub('_','-')}' GROUP BY accommodation_desc"))
                 
             end
             
