@@ -109,14 +109,14 @@ end
         tables_array = Array.new
         
         headers = [
-            "student_id"             ,
-            "last_name"              ,
-            "first_name"             ,
-            "school_id"              ,
-            "grade_level"            ,
-            "current_iep_no"         ,
-            "iep_date"               ,
-            "iep_implementation_date" 
+            "Student ID"                ,
+            "Last Name"                 ,
+            "First Name"                ,
+            "School ID"                 ,
+            "Gradde Level"              ,
+            "Current IEP #"             ,
+            "IEP Date"                  ,
+            "IEP Implementation Date" 
             
         ]
         titles = headers.dup
@@ -159,7 +159,7 @@ end
                     CONCAT(
                         'Yes',
                         ' (',
-                        (SELECT GROUP_CONCAT(CONCAT(assessment_type_group,'-',LEFT(assessment_type_code,3)))
+                        (SELECT GROUP_CONCAT(DISTINCT LEFT(assessment_type_code,3))
                         FROM agora_sapphire.sapphire_student_se_accommodations
                         WHERE student_id = student_se_accommodations.student_id
                         AND assessment_type_group = '#{test_event_type}'),
