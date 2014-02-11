@@ -84,6 +84,8 @@ class Base
     @created_by     = nil
     @created_date   = nil
     
+    @notifications = Hash.new
+    
   end
   #---------------------------------------------------------------------------
 
@@ -999,8 +1001,16 @@ end
   end
   
   def system_notification(subject, content, this_caller = caller[0], e_obj = nil)
+    
     system_log("SUBJECT: #{subject} CONTENT: #{content}", this_caller, e_obj)
-    email.athena_smtp_email($sys_admin_email, subject, content, attachment_path = nil, from_override = "Athena Alert")
+    
+    if !(@notifications.has_key?(subject))
+      
+      email.athena_smtp_email($sys_admin_email, subject, content, attachment_path = nil, from_override = "Athena Alert") 
+      @notifications[subject] = content
+      
+    end
+    
   end
   
   def new_file(location, filename)

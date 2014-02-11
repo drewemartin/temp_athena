@@ -259,122 +259,131 @@ end
     
     def download
         
-        db_config_record(
-            field_name  = "last_import_status",
-            new_value   = "DOWNLOAD STARTED"
-        )
-        
-        case source_type
-        when "k12_report"
+        begin #CATCH ANY RANDOM CRAP THAT WE DIDN"T ACCOUNT FOR
             
             db_config_record(
-                field_name  = "load_started_datetime",
-                new_value   = $idatetime
+                field_name  = "last_import_status",
+                new_value   = "DOWNLOAD STARTED"
             )
             
-            http            = Net::HTTP.new('reports.k12.com', 443)
-            http.use_ssl    = true
-            
-            http.start do |http|
+            case source_type
+            when "k12_report"
                 
-                begin
-                    
-                    request = Net::HTTP::Get.new(source_address)
-                    request.basic_auth 'jhalverson', 'dxo84tbw'
-                    response = http.request(request)
-                    
-                rescue => e
-                    
-                    return load_failed(message = "DOWNLOAD FAILED - #{e.message}", e)
-                    
-                end 
+                db_config_record(
+                    field_name  = "load_started_datetime",
+                    new_value   = $idatetime
+                )
                 
-                begin
+                http            = Net::HTTP.new('reports.k12.com', 443)
+                http.use_ssl    = true
+                
+                http.start do |http|
                     
-                    csv_text            = response.body
-                    last_comma_index    = csv_text.rindex(",")
-                    long_enough         = csv_text.length > (field_order.join.length * 2)
-                    
-                    if last_comma_index && csv_text.slice(last_comma_index..-1).match(/generated/i) && long_enough
+                    begin
                         
-                        if csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
+                        request = Net::HTTP::Get.new(source_address)
+                        request.basic_auth 'jhalverson', 'dxo84tbw'
+                        response = http.request(request)
+                        
+                    rescue => e
+                        
+                        return load_failed(message = "DOWNLOAD FAILED - #{e.message}", e)
+                        
+                    end 
+                    
+                    begin
+                        
+                        csv_text            = response.body
+                        last_comma_index    = csv_text.rindex(",")
+                        long_enough         = csv_text.length > (field_order.join.length * 2)
+                        
+                        if last_comma_index && csv_text.slice(last_comma_index..-1).match(/generated/i) && long_enough
                             
-                            file_1 = File.open( "#{import_path}#{file_name}", 'w' )
-                            file_1.puts csv_text
-                            file_1.close
-                            
-                            if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && table_name == "k12_all_students"
+                            if true #csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
                                 
-                                begin
+                                file_1 = File.open( "#{import_path}#{file_name}", 'w' )
+                                file_1.puts csv_text
+                                file_1.close
+                                
+                                if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && table_name == "k12_all_students"
                                     
-                                    out_file_path = "I:/all_students.csv"
+                                    begin
+                                        
+                                        out_file_path = "I:/all_students.csv"
+                                        
+                                        if !File.directory?( "I:/" )
+                                            require 'win32ole'
+                                            net = WIN32OLE.new('WScript.Network')
+                                            user_name = "Administrator"
+                                            password  = "Ag0ra2013"
+                                            net.MapNetworkDrive( 'I:', "\\\\10.1.10.100\\intactstorage", nil,  user_name, password )
+                                        end
+                                        
+                                        FileUtils.cp("#{import_path}#{file_name}", out_file_path)
+                                        
+                                    rescue=>e
+                                        
+                                        $base.system_notification(
+                                            subject = "Intact - all_students.csv Transfer Failed!",
+                                            content = "Do something about it. Here's the error:
+                                            #{e.message}"
+                                        )
+                                        
+                                    end                            
                                     
-                                    if !File.directory?( "I:/" )
-                                        require 'win32ole'
-                                        net = WIN32OLE.new('WScript.Network')
-                                        user_name = "Administrator"
-                                        password  = "Ag0ra2013"
-                                        net.MapNetworkDrive( 'I:', "\\\\10.1.10.100\\intactstorage", nil,  user_name, password )
-                                    end
-                                    
-                                    FileUtils.cp("#{import_path}#{file_name}", out_file_path)
-                                    
-                                rescue=>e
-                                    
-                                    $base.system_notification(
-                                        subject = "Intact - all_students.csv Transfer Failed!",
-                                        content = "Do something about it. Here's the error:
-                                        #{e.message}"
-                                    )
-                                    
-                                end                            
+                                end
+                                
+                                db_config_record(
+                                    field_name  = "last_import_status",
+                                    new_value   = "DOWNLOAD COMPLETED"
+                                )
+                                
+                                return true
+                                
+                            else
+                                
+                                return load_failed(message = "GENERATION DATE DOES NOT MATCH TODAYS DATE - CSV \nDATE GENERATED: #{csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s}\nTODAYS DATE: #{$idate}")
                                 
                             end
                             
-                            db_config_record(
-                                field_name  = "last_import_status",
-                                new_value   = "DOWNLOAD COMPLETED"
-                            )
+                        elsif csv_text.match(/generated/i)
                             
-                            return true
+                            return load_failed(message = "DOWNLOAD FAILED EMPTY FILE - CSV \nCONTENT: #{csv_text}")
                             
                         else
                             
-                            return load_failed(message = "GENERATION DATE DOES NOT MATCH TODAYS DATE - CSV \nDATE GENERATED: #{csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s}\nTODAYS DATE: #{$idate}")
+                            return load_failed(message = "DOWNLOAD FAILED - CSV \nCONTENT: #{csv_text}")
                             
                         end
                         
-                    elsif csv_text.match(/generated/i)
+                    rescue => e
                         
-                        return load_failed(message = "DOWNLOAD FAILED EMPTY FILE - CSV \nCONTENT: #{csv_text}")
-                        
-                    else
-                        
-                        return load_failed(message = "DOWNLOAD FAILED - CSV \nCONTENT: #{csv_text}")
+                        return load_failed(message = "DOWNLOAD FAILED - #{e.message} - #{csv_text}", e)
                         
                     end
                     
-                rescue => e
-                    
-                    return load_failed(message = "DOWNLOAD FAILED - #{e.message} - #{csv_text}", e)
-                    
                 end
                 
+            when "jupiter_grades"
+                require "#{File.dirname(__FILE__)}/jupiter_grades_interface"
+                i = Jupiter_Grades_Interface.new
+                i.download_grades_ms(school_year = $school.current_school_year)
+                #FileUtils.mv( "#{$paths.imports_path}Jupiter_Grades_&_Schedules.csv" , "#{import_path}/#{file_name}")
+                return true #this may need more work if downloads fail
+            when "scantron_performance"
+                require "#{File.dirname(__FILE__)}/scantron_performance_interface"
+                i = Scantron_Performance_Interface.new
+                dl_success = i.download_scores
+                #FileUtils.mv( "#{$paths.imports_path}scores.csv" , "#{import_path}/#{file_name}") if dl_success
+                return dl_success
             end
             
-        when "jupiter_grades"
-            require "#{File.dirname(__FILE__)}/jupiter_grades_interface"
-            i = Jupiter_Grades_Interface.new
-            i.download_grades_ms(school_year = $school.current_school_year)
-            #FileUtils.mv( "#{$paths.imports_path}Jupiter_Grades_&_Schedules.csv" , "#{import_path}/#{file_name}")
-            return true #this may need more work if downloads fail
-        when "scantron_performance"
-            require "#{File.dirname(__FILE__)}/scantron_performance_interface"
-            i = Scantron_Performance_Interface.new
-            dl_success = i.download_scores
-            #FileUtils.mv( "#{$paths.imports_path}scores.csv" , "#{import_path}/#{file_name}") if dl_success
-            return dl_success
+        rescue => e
+            
+            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED! QUICK! FIX IT!", e)
+            
         end
+        
     end
     
     def drop
@@ -1144,7 +1153,7 @@ end
         
     end
     
-    def field_values(field_name, where_clause)
+    def field_values(field_name, where_clause = nil)
         
         field_str = field_name.match(/concat/i) ? field_name : "`#{field_name}`"
         

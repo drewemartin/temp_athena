@@ -47,9 +47,20 @@ end
             test_event_site_staff = true if $tables.attach("Test_Event_Site_Staff").is_site_coordinator?(samsid, @test_event_site_id)
             
         }
+        
+        if @administrators.include?($team_member.preferred_email.value) || $team_member.preferred_email.value == "jrogers@agora.org" ||
+            $tables.attach("TEST_EVENT_SITE_STAFF").primary_ids(
+                "WHERE test_event_site_id = '#{@test_event_site_id}'
+                AND team_id = #{$team_member.primary_id.value}
+                AND role REGEXP 'Site Coordinatior|Spec. Ed. Acc. Org.'"
+            )
+            #NEEDS site cooredinator and special education accommodation organizer.
+            tabs << ["SE Accommodations",   se_accommodations_tab   ]
+        end
+        
         if @administrators.include?($team_member.preferred_email.value) || test_event_site_staff
-            tabs << ["Reminders",   admin_kmail_queue   ]
-            tabs << ["Site Staff",  site_staff_tab      ]
+            tabs << ["Reminders",           admin_kmail_queue       ]
+            tabs << ["Site Staff",          site_staff_tab          ]
         end
         
         $kit.tools.tabs(tabs)
@@ -90,6 +101,116 @@ end
 def x______________INITIAL_TABS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def se_accommodations_tab()
+        
+        output = String.new
+        
+        tables_array = Array.new
+        
+        headers = [
+            "Student ID"                ,
+            "Last Name"                 ,
+            "First Name"                ,
+            "School ID"                 ,
+            "Gradde Level"              ,
+            "Current IEP #"             ,
+            "IEP Date"                  ,
+            "IEP Implementation Date" 
+            
+        ]
+        titles = headers.dup
+        $tables.attach("STUDENT_SE_ACCOMMODATIONS").field_order.each{|field_name|
+            
+            unless field_name.match(/student_id|created_by|created_date/)
+                
+                headers.push(field_name)
+                titles.push($tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").field_value("accommodation_desc", "WHERE accommodation_code = '#{field_name.gsub('_','-')}' GROUP BY accommodation_desc"))
+                
+            end
+            
+        }
+        
+        test_event_type = $tables.attach("TESTS").field_value(
+            "tests`.`name",
+            "LEFT JOIN #{$tables.attach("test_events").data_base}.test_events
+            ON test_events.test_id = tests.primary_id
+            LEFT JOIN #{$tables.attach("test_event_sites").data_base}.test_event_sites ON test_event_sites.test_event_id = test_events.primary_id
+            WHERE test_event_sites.primary_id = #{@test_event_site_id}"
+        )
+        
+        sapp_se_db = $tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").data_base
+        
+        acc_fields_sql = String.new
+        $tables.attach("STUDENT_SE_ACCOMMODATIONS").field_order.each{|field_name|
+            
+            unless field_name.match(/student_id|created_by|created_date/)
+                
+                acc_fields_sql << "
+                ,IF(
+                    (
+                        SELECT primary_id
+                        FROM agora_sapphire.sapphire_student_se_accommodations
+                        WHERE assessment_type_group = '#{test_event_type}'
+                        AND accommodation_code REGEXP '#{field_name.gsub('_','-')}'
+                        AND student_id = student_se_accommodations.student_id
+                        GROUP BY student_id
+                    ),
+                    CONCAT(
+                        'Yes',
+                        ' (',
+                        (SELECT GROUP_CONCAT(DISTINCT LEFT(assessment_type_code,3))
+                        FROM agora_sapphire.sapphire_student_se_accommodations
+                        WHERE student_id = student_se_accommodations.student_id
+                        AND assessment_type_group = '#{test_event_type}'),
+                        ')'
+                    ),
+                    ''
+                )"
+                
+            end
+            
+        }
+        
+        sql_strg = "
+        SELECT
+            student_se_accommodations.student_id                        , 
+            sapphire_student_se_accommodations.last_name                , 
+            sapphire_student_se_accommodations.first_name               , 
+            sapphire_student_se_accommodations.school_id                , 
+            sapphire_student_se_accommodations.grade_level              , 
+            sapphire_student_se_accommodations.current_iep_no           , 
+            sapphire_student_se_accommodations.iep_date                 , 
+            sapphire_student_se_accommodations.iep_implementation_date
+            #{acc_fields_sql}
+            
+        FROM        #{$tables.attach("STUDENT_SE_ACCOMMODATIONS"            ).data_base}.student_se_accommodations
+        LEFT JOIN   #{$tables.attach("STUDENT_TESTS"                        ).data_base}.student_tests                      ON student_tests.student_id                         = student_se_accommodations.student_id
+        LEFT JOIN   #{sapp_se_db                                            }.sapphire_student_se_accommodations ON sapphire_student_se_accommodations.student_id    = student_se_accommodations.student_id
+        WHERE student_tests.test_event_site_id = #{@test_event_site_id}
+        AND sapphire_student_se_accommodations.assessment_type_group = '#{test_event_type}'
+        AND sapphire_student_se_accommodations.primary_id IS NOT NULL
+        GROUP BY sapphire_student_se_accommodations.student_id"
+        
+        if tables_array = $db.get_data(sql_strg)
+            
+            output << $kit.tools.data_table(
+                tables_array.insert(0, headers),
+                "se_accommodations",
+                "default",
+                true,
+                titles
+            ) 
+            
+        else
+            
+            output << "No Data Found!"
+            
+        end
+        
+        return output
+        
+    end
 
     def site_staff_tab(test_event_site_id = @test_event_site_id)
         
