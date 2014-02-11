@@ -773,7 +773,6 @@ end
                 "destination_table",
                 "WHERE source_table = '#{table_name}'
                 AND active IS TRUE
-                AND destination_table = 'student_previous_school'
                 GROUP BY destination_table",
                 {:value_only=>true}
             )
