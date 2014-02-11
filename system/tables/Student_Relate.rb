@@ -1388,6 +1388,21 @@ end
         
     end
     
+    def pasa_ineligible(arg)
+        sa_db = $tables.attach("student_assessment").data_base
+        
+        join_addon =
+            " LEFT JOIN #{sa_db}.student_assessment ON #{sa_db}.student_assessment.student_id = #{data_base}.student.student_id "
+        if @search_options[:join_addon].nil? || (!@search_options[:join_addon].nil? && !@search_options[:join_addon].include?(join_addon))
+            @search_options[:join_addon] = @search_options[:join_addon].nil? ? join_addon : @search_options[:join_addon] + join_addon
+        end
+        
+        where_addon =
+            " AND ( student_assessment.pasa_eligible IS FALSE OR student_assessment.pasa_eligible IS NULL ) "
+        @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
+        
+    end
+    
     #def pssa_eligible(arg)
     #    if arg == true
     #        join_addon = " LEFT JOIN pssa_student_exceptions ON pssa_student_exceptions.student_id = student.student_id "

@@ -80,9 +80,9 @@ end
             structure_hash["fields"]["fall_req_contact"         ] = {"data_type"=>"bool",               "file_field"=>"fall_req_contact"                } if field_order.push("fall_req_contact"                )
             structure_hash["fields"]["fall_req_address"         ] = {"data_type"=>"bool",               "file_field"=>"fall_req_address"                } if field_order.push("fall_req_address"                )
             structure_hash["fields"]["fall_req_amount"          ] = {"data_type"=>"bool",               "file_field"=>"fall_req_amount"                 } if field_order.push("fall_req_amount"                 )
-            structure_hash["fields"]["fall_req_billed_monthly"  ] = {"data_type"=>"numeric(15,2)",      "file_field"=>"fall_req_billed_monthly"         } if field_order.push("fall_req_billed_monthly"         )
+            structure_hash["fields"]["fall_req_billed_monthly"  ] = {"data_type"=>"decimal(15,2)",      "file_field"=>"fall_req_billed_monthly"         } if field_order.push("fall_req_billed_monthly"         )
             structure_hash["fields"]["fall_req_timeperiod"      ] = {"data_type"=>"bool",               "file_field"=>"fall_req_timeperiod"             } if field_order.push("fall_req_timeperiod"             )
-            structure_hash["fields"]["fall_check_amount"        ] = {"data_type"=>"numeric(15,2)",      "file_field"=>"fall_check_amount"               } if field_order.push("fall_check_amount"               )
+            structure_hash["fields"]["fall_check_amount"        ] = {"data_type"=>"decimal(15,2)",      "file_field"=>"fall_check_amount"               } if field_order.push("fall_check_amount"               )
             structure_hash["fields"]["fall_run"                 ] = {"data_type"=>"datetime",           "file_field"=>"fall_run"                        } if field_order.push("fall_run"                        )
             structure_hash["fields"]["spring_approval_status"   ] = {"data_type"=>"text",               "file_field"=>"spring_approval_status"          } if field_order.push("spring_approval_status"          )
             structure_hash["fields"]["spring_request_method"    ] = {"data_type"=>"text",               "file_field"=>"spring_request_method"           } if field_order.push("spring_request_method"           )
@@ -90,9 +90,9 @@ end
             structure_hash["fields"]["spring_req_contact"       ] = {"data_type"=>"bool",               "file_field"=>"spring_req_contact"              } if field_order.push("spring_req_contact"              )
             structure_hash["fields"]["spring_req_address"       ] = {"data_type"=>"bool",               "file_field"=>"spring_req_address"              } if field_order.push("spring_req_address"              )
             structure_hash["fields"]["spring_req_amount"        ] = {"data_type"=>"bool",               "file_field"=>"spring_req_amount"               } if field_order.push("spring_req_amount"               )
-            structure_hash["fields"]["spring_req_billed_monthly"] = {"data_type"=>"numeric(15,2)",      "file_field"=>"spring_req_billed_monthly"       } if field_order.push("spring_req_billed_monthly"       )
+            structure_hash["fields"]["spring_req_billed_monthly"] = {"data_type"=>"decimal(15,2)",      "file_field"=>"spring_req_billed_monthly"       } if field_order.push("spring_req_billed_monthly"       )
             structure_hash["fields"]["spring_req_timeperiod"    ] = {"data_type"=>"bool",               "file_field"=>"spring_req_timeperiod"           } if field_order.push("spring_req_timeperiod"           )
-            structure_hash["fields"]["spring_check_amount"      ] = {"data_type"=>"numeric(15,2)",      "file_field"=>"spring_check_amount"             } if field_order.push("spring_check_amount"             )
+            structure_hash["fields"]["spring_check_amount"      ] = {"data_type"=>"decimal(15,2)",      "file_field"=>"spring_check_amount"             } if field_order.push("spring_check_amount"             )
             structure_hash["fields"]["spring_run"               ] = {"data_type"=>"datetime",           "file_field"=>"spring_run"                      } if field_order.push("spring_run"                      )
             
         structure_hash["field_order"] = field_order
