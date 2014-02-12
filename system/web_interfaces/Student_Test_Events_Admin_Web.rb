@@ -112,10 +112,11 @@ end
             #HEADERS
             [
                 
-                "Subject"           , 
-                "Test Type"         , 
-                "Eligible Grades"   ,
-                "PASA Included?"    ,
+                "Subject"                        ,
+                "Test Type"                      ,
+                "Eligible Grades"                ,
+                "Only PASA Eligible Students"    ,
+                "Exclude PASA Eligible Students" ,
                 "Eligible Classes"
               
             ]
@@ -163,7 +164,8 @@ end
                 )
             )
             
-            row.push(record.fields["pasa_included"    ].web.default())
+            row.push(record.fields["only_pasa"    ].web.default())
+            row.push(record.fields["exclude_pasa" ].web.default())
             
             related_classes = Array.new
             class_pids = $tables.attach("TEST_SUBJECT_CLASSES").primary_ids("WHERE test_subject_id = '#{pid}'")
@@ -622,12 +624,13 @@ end
         
         this_name               = record.fields["name"          ].web.select(:label_option=>"Name:", :dd_choices=>subjects_dd)
         this_test_id            = record.fields["test_id"       ].web.select(:label_option=>"Test Type:", :dd_choices=>test_type_dd)
-        this_pasa_included      = record.fields["pasa_included" ].web.default(:label_option=>"PASA Included?")
+        this_only_pasa          = record.fields["only_pasa"     ].web.default(:label_option=>"Only PASA Eligible Students")
+        this_pasa_excluded      = record.fields["exclude_pasa"  ].web.default(:label_option=>"Exclude PASA Eligible Students")
         
         tables_array.push(
             
             [
-                "#{this_name}#{this_test_id}#{this_pasa_included}",
+                "#{this_name}#{this_test_id}#{this_only_pasa}#{this_pasa_excluded}",
                 include_fields_table
             ]
             
@@ -984,6 +987,8 @@ end
             
             div.TEST_EVENT_SITE_STAFF__staff_id         label{display: inline-block;}
             div.TEST_EVENT_SITE_STAFF__role             label{display: inline-block;}
+            
+            table.dataTable td {padding:3px 6px !important;}
             
         "
         

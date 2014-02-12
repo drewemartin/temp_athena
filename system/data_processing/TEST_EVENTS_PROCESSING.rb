@@ -32,7 +32,8 @@ class TEST_EVENTS_PROCESSING #< Base
                     if test_subject_record.fields[field_name].is_true?
                         
                         options[:grade          ] ? options[:grade]<<"|#{field_name.split("_")[1]}" : options[:grade]=field_name.split("_")[1] if field_name.match("grade")
-                        options[:pasa_eligible  ] = true  if field_name.match("pasa_included")
+                        options[:pasa_eligible  ] = true  if field_name.match("only_pasa")
+                        options[:pasa_ineligible] = true  if field_name.match("exclude_pasa")
                         
                     end
                     

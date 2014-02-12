@@ -718,18 +718,18 @@ end
             "Teacher/Guidance",
             
             "Family Coach/Comm Cord",
-            #"Scantron entrance math",
-            #"Scantron exit math",
-            #"Scantron entrance reading",
-            #"Scantron exit reading",
+            "Scantron entrance math",
+            "Scantron exit math",
+            "Scantron entrance reading",
+            "Scantron exit reading",
             
             "LEAP Level",
             
             #"Program Support",
             
-            #"Family Coach Support",
+            "Family Coach Support",
             "Truancy Prevention",
-            #"Advisor",
+            "Advisor",
             
             "Enroll Date",
             "Withdraw Date",
@@ -821,27 +821,29 @@ end
                     LIMIT 0, 1
                 )
             ),
-            #student_scantron_performance_level.stron_ent_perf_m,
-            #student_scantron_performance_level.stron_ext_perf_m,
-            #student_scantron_performance_level.stron_ent_perf_r,
-            #student_scantron_performance_level.stron_ext_perf_r,
+            student_scantron_performance_level.stron_ent_perf_m,
+            student_scantron_performance_level.stron_ext_perf_m,
+            student_scantron_performance_level.stron_ent_perf_r,
+            student_scantron_performance_level.stron_ext_perf_r,
             IFNULL(student_leap.leap_level,'0'),
             
             #FAMILY TEACHER COACH SUPPORT
-            #(
-            #    SELECT
-            #        GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-            #    FROM #{t_db}.team
-            #    WHERE team.primary_id = (
-            #        SELECT
-            #            supervisor_team_id
-            #        FROM #{relate_db}.student_relate
-            #        WHERE studentid = student.student_id
-            #        AND role = 'Family Teacher Coach'
-            #        AND active IS TRUE
-            #        LIMIT 0, 1
-            #    )
-            #),
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        supervisor_team_id
+                    FROM #{relate_db}.student_relate
+                    LEFT JOIN #{t_db}.team
+                    ON team.primary_id = student_relate.team_id
+                    WHERE studentid = student.student_id
+                    AND role = 'Family Teacher Coach'
+                    AND student_relate.active IS TRUE
+                    LIMIT 0, 1
+                )
+            ),
             
             #TRUANCY PREVENTION COORDINATOR
             (
@@ -859,19 +861,19 @@ end
                 )
             ),
             
-            #(
-            #    SELECT
-            #        GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
-            #    FROM #{t_db}.team
-            #    WHERE department_id = (
-            #        SELECT
-            #            primary_id
-            #        FROM #{$tables.attach("DEPARTMENT").data_base}.department
-            #        WHERE name = 'Advisors'
-            #        LIMIT 0, 1
-            #    )
-            #    AND region = student.region
-            #),
+            (
+                SELECT
+                    GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
+                FROM #{t_db}.team
+                WHERE department_id = (
+                    SELECT
+                        primary_id
+                    FROM #{$tables.attach("DEPARTMENT").data_base}.department
+                    WHERE name = 'Advisors'
+                    LIMIT 0, 1
+                )
+                AND region = student.region
+            ),
             
             student.schoolenrolldate,
             student.schoolwithdrawdate,
@@ -927,7 +929,7 @@ end
         
         sql_str << " FROM #{sam_db}.student_attendance_master
             LEFT JOIN #{s_db}.student                                ON student.student_id                              = student_attendance_master.student_id                       
-            #LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
+            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
             LEFT JOIN #{samo_db}.student_attendance_mode             ON student_attendance_mode.student_id              = student_attendance_master.student_id
             LEFT JOIN #{leap_db}.student_leap                        ON student_leap.student_id                         = student_attendance_master.student_id"
         
@@ -2089,6 +2091,8 @@ end
         std_db  = $tables.attach("student_test_dates").data_base
         tes_db  = $tables.attach("test_event_sites").data_base
         s_db    = $tables.attach("student").data_base
+        tess_db = $tables.attach("test_event_site_staff").data_base
+        t_db    = $tables.attach("team").data_base
         
         sql_str =
         "SELECT
@@ -2097,10 +2101,25 @@ end
             studentfirstname,
             site_name,
             date,
-            attendance_code
+            attendance_code,
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        test_event_site_staff.team_id
+                    FROM #{tess_db}.test_event_site_staff
+                    WHERE test_event_site_staff.test_event_site_id = test_event_sites.primary_id
+                    AND role = 'Site Coordinator'
+                    AND not_attending IS NOT TRUE
+                    LIMIT 0, 1
+                )
+            )
         FROM #{std_db}.student_test_dates
         LEFT JOIN #{tes_db}.test_event_sites ON #{std_db}.student_test_dates.test_event_site_id = #{tes_db}.test_event_sites.primary_id
-        LEFT JOIN #{s_db}.student ON #{s_db}.student.student_id = #{std_db}.student_test_dates.student_id"
+        LEFT JOIN #{s_db}.student ON #{s_db}.student.student_id = #{std_db}.student_test_dates.student_id
+        LEFT JOIN #{tess_db}.test_event_site_staff ON #{tess_db}.test_event_site_staff.test_event_site_id = #{tes_db}.test_event_sites.primary_id"
         
         headers =
         [
@@ -2110,7 +2129,8 @@ end
            "studentfirstname",
            "site_name",
            "date",
-           "attendance_code"
+           "attendance_code",
+           "Site Coordinator"
             
         ]
         

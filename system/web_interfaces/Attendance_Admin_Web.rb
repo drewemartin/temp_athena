@@ -440,6 +440,28 @@ end
         output << $tools.csv_upload(self.class.name, id, "120")
         output << "<input class='submit_button' type='button' name='action' value='Start Process' onclick='redirect_submit(\"#{id}\")'/>"
         output << "</form>"
+        hint = String.new
+        case upload_type
+        when "change_overall_mode"
+            sample = [
+                ["student_id","attendance_mode"],
+                ["{insert sid}","{insert overall mode}"]
+            ]
+            hint = $tools.table(:table_array=>sample,:unique_name=>"hint",:caption=>"CSV Hint")
+        when "change_daily_mode"
+            sample = [
+                ["student_id","yyyy-mm-dd"],
+                ["{insert sid}","{insert daily mode}"]
+            ]
+            hint = $tools.table(:table_array=>sample,:unique_name=>"hint",:caption=>"CSV Hint")
+        when "change_daily_code"
+            sample = [
+                ["student_id","code_yyyy-mm-dd"],
+                ["{insert sid}","{insert code}"]
+            ]
+            hint = $tools.table(:table_array=>sample,:unique_name=>"hint",:caption=>"CSV Hint")
+        end
+        output << hint
         output << $tools.newlabel("bottom")
         
         return output
@@ -1000,6 +1022,9 @@ end
                 
         iframe{                                 float:right; display:none;}
         #search_dialog_button{                  display:none;}
+        
+        .hint_container{float:left;clear:left;}
+        #hint tr td{border:2px solid #2779AA;}
         "
         output << "</style>"
         return output
