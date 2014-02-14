@@ -9,7 +9,7 @@ class Process_Log_Execute < Base
 
     def execute_processes
         
-        remote = ENV["COMPUTERNAME"].match(/SADDLER/) ? "1":"0"
+        remote = ENV["COMPUTERNAME"].match(/PERSEUS/) ? "1":"0"
         
         rows = $tables.attach("Process_Log").by_status("NULL", remote)
         rows.shift(1).each do |row|
