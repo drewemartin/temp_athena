@@ -63,7 +63,7 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"text", "file_field"=>"STUDENT_ID"                    } if field_order.push("student_id"                      )
+            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"int",  "file_field"=>"STUDENT_ID"                    } if field_order.push("student_id"                      )
             structure_hash["fields"]["school_year"                      ] = {"data_type"=>"int",  "file_field"=>"SCHOOL_YEAR"                   } if field_order.push("school_year"                     )
             structure_hash["fields"]["school_id"                        ] = {"data_type"=>"text", "file_field"=>"SCHOOL_ID"                     } if field_order.push("school_id"                       )
             structure_hash["fields"]["course_id"                        ] = {"data_type"=>"text", "file_field"=>"COURSE_ID"                     } if field_order.push("course_id"                       )
