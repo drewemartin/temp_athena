@@ -31,7 +31,8 @@ end
             headers = [
                 "Student ID",
                 "Previous School",
-                "Previous District"
+                "Previous District",
+                "Previous School State"
             ]
             
         )
@@ -40,7 +41,8 @@ end
             "SELECT
                 k12_enrollment_info_tab_v2.student_id,
                 student_previous_school.previous_school,
-                student_previous_school.previous_district
+                student_previous_school.previous_district,
+                student_previous_school.previous_school_state
             FROM        #{$tables.attach("K12_ENROLLMENT_INFO_TAB_V2").data_base}.k12_enrollment_info_tab_v2
             LEFT JOIN   #{data_base}.student_previous_school ON student_previous_school.student_id = k12_enrollment_info_tab_v2.student_id
             WHERE student_previous_school.verified IS FALSE"
@@ -81,6 +83,12 @@ end
         
     end
     
+    def after_change_field_previous_school_state(field_object)
+        
+        verify_school_exists(field_object)
+        
+    end
+    
     def verify_school_exists(obj)
         
         this_record = by_primary_id(obj.primary_id)
@@ -89,8 +97,9 @@ end
             
             "school_name",
             
-            "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"   ].value || String.new)}'
-            AND     district    = '#{Mysql.quote(this_record.fields["previous_district" ].value || String.new)}'"
+            "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"       ].value || '')}'
+            AND     district    = '#{Mysql.quote(this_record.fields["previous_district"     ].value || '')}'
+            AND     state       = '#{Mysql.quote(this_record.fields["previous_school_state" ].value || '')}'"
             
         )
             
@@ -136,10 +145,11 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"student_id"        } if field_order.push("student_id"          )
-            structure_hash["fields"]["previous_school"  ] = {"data_type"=>"text", "file_field"=>"previous_school"   } if field_order.push("previous_school"     )
-            structure_hash["fields"]["previous_district"] = {"data_type"=>"text", "file_field"=>"previous_district" } if field_order.push("previous_district"   )
-            structure_hash["fields"]["verified"         ] = {"data_type"=>"bool", "file_field"=>"verified"          } if field_order.push("verified"            )
+            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",  "file_field"=>"student_id"            } if field_order.push("student_id"              )
+            structure_hash["fields"]["previous_school"          ] = {"data_type"=>"text", "file_field"=>"previous_school"       } if field_order.push("previous_school"         )
+            structure_hash["fields"]["previous_district"        ] = {"data_type"=>"text", "file_field"=>"previous_district"     } if field_order.push("previous_district"       )
+            structure_hash["fields"]["previous_school_state"    ] = {"data_type"=>"text", "file_field"=>"previous_school_state" } if field_order.push("previous_school_state"   )
+            structure_hash["fields"]["verified"                 ] = {"data_type"=>"bool", "file_field"=>"verified"              } if field_order.push("verified"                )
             
         structure_hash["field_order"] = field_order
         return structure_hash
