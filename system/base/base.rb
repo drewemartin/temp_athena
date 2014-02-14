@@ -1032,8 +1032,8 @@ end
     
   end
   
-  def queue_process(class_name, function_name = nil, args = nil)
-    $tables.attach("Process_Log").queue_process(class_name, function_name, args)
+  def queue_process(class_name, function_name = nil, args = nil, remote='0')
+    $tables.attach("Process_Log").queue_process(class_name, function_name, args, remote)
   end
   
   def today

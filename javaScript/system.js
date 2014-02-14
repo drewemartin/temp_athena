@@ -717,6 +717,24 @@ $(function () {
 		}
 		
 	});
+	
+	$(".refresh_button").button({
+		icons: {primary: "ui-icon-refresh"},
+		disabled: false
+	}).bind("click", function() {
+		var cooldown = 10
+		var refresh_button = $(this)
+		var id_arr = $(this).attr("id").split("__")
+		var refresh_id = id_arr[id_arr.length - 1]
+		$("#"+ refresh_id).html(spinner());
+		send(refresh_id+"__submit")
+		//cooldown
+		button_cooldown(refresh_button,cooldown,"ui-icon-refresh",false)
+	}).css({
+		"height"       : "22px",
+	        "width"        : "32px",
+		"border-width" : "2px"
+	})
 
 });
 
@@ -1496,6 +1514,37 @@ function x___________________JQUERY_UI_DIALOGS(){}
 function x___________________UNSORTED(){}
 //------------------------------------------------------------------------------
 	
+	function button_cooldown(obj, time, orig_icon, orig_label){
+		
+		if (time > 0){
+			
+			obj.button( "option", "disabled", true );
+			obj.button( "option", "icons", {primary: null} );
+			obj.button( "option", "label", String(time) );
+			
+			time -= 1;
+			setTimeout(function(){button_cooldown(obj,time,orig_icon,orig_label)},1000)
+			
+		}else{
+			
+			obj.button( "option", "disabled", false );
+			
+			if (orig_icon == false){
+				obj.button( "option", "icons", {primary: null} );
+			}else{
+				obj.button( "option", "icons", {primary: orig_icon} );
+			}
+			
+			if (orig_label == false){
+				obj.button( "option", "label", null );
+			}else{
+				obj.button( "option", "label", orig_label );
+			}
+			
+		}
+		
+	}
+	
 	function sleep(milliseconds) {
 		setTimeout(function(){
 			var start = new Date().getTime();
@@ -1566,6 +1615,18 @@ function x___________________UNSORTED(){}
 					return "You may lose some unsaved changes...";
 				};
 			};
+			
+			$(".request_file_link").button({
+			}).unbind("click").bind("click", function(e) {
+				var id_arr = $(this).attr("id").split("__")
+				var pid = id_arr[id_arr.length - 1]
+				var ex_date = $("#ex_date__"+pid).val()
+				if (($.now() - Date.parse(ex_date)) >= 0){
+					e.preventDefault();
+					$(this).button( "option", "disabled", true );
+					alert("This Link Is Expired")
+				}
+			})
 			
 			$(".get_link:not(.ui-button)").button({
 				label:"Request File",
@@ -2088,6 +2149,33 @@ function x___________________UNSORTED(){}
 		$('#get_row_dialog_'+table_name).dialog("open");
 		send(params);
 	};
+	
+	function get_new_request(params, table_name, dialog_title) {
+		
+		$('#get_new_request_dialog').dialog({
+			position	: ["center",dialog_Ypos()],
+			title		: dialog_title,
+			autoOpen	: true,
+			draggable	: false,
+			resizable	: false,
+			closeOnEscape	: false,
+			modal		: true,
+			height		: "auto",
+			width		: "auto",
+			open		: function(event, ui) {
+				$(this).html(spinner);
+			},
+			buttons		: {
+				"OK": function() {
+					$(this).html(spinner())
+					$(this).dialog( "close" );
+				}
+			}
+		});
+		
+		send(params);
+	};
+	
 	function get_new_download(params) {
 		var data 	= postString(params)
 		var height	= 100

@@ -194,9 +194,6 @@ class ATHENA_CGI < Base
                 elsif params[:accordion_doctype]
                     load_accordion_links
                     
-                elsif params[:refresh_requested]
-                    refresh
-                    
                 elsif params[:new_breakaway]
                     add_new_breakaway
                   
@@ -288,6 +285,9 @@ class ATHENA_CGI < Base
                   
                 elsif params[:get_row]
                     get_row
+                    
+                elsif params[:new_request]
+                    request_report(params[:new_request])
                     
                 elsif params[:sid] && params[:sid] != ""
                     
@@ -1188,6 +1188,50 @@ end
             end
             
         end
+        
+    end
+    
+    def request_report(report_name)
+        
+        t = $team.find(:email_address=>$kit.user)
+        tid = t.primary_id.value
+        
+        message = String.new
+        
+        existing = $tables.attach("TEAM_REQUESTED_REPORTS").primary_ids("
+            WHERE team_id = '#{tid}'
+            AND report_name = '#{report_name}'
+            AND (status = 'Requested' OR status = 'Generating')
+            AND expiration_date >= NOW()
+        ")
+        
+        if existing
+            
+            message = "A previously requested report with the same name must finish generating before you may request it again."
+            
+        else
+            
+            message = "Request received. Please wait for the download link to become available in the \"Requested Files\" tab."
+            
+            new_row = $tables.attach("TEAM_REQUESTED_REPORTS").new_row
+            fields = new_row.fields
+            
+            fields["team_id"        ].value = tid
+            fields["report_name"    ].value = report_name
+            fields["status"         ].value = "Requested"
+            fields["expiration_date"].value = (DateTime.now+(2.0/24)).strftime("%Y-%m-%d %H:%M:%S")
+            
+            requested_pid = new_row.save
+            
+            $base.queue_process("Requested_Reports", report_name, requested_pid, "1")
+            
+        end
+        
+        output = $tables.attach("TEAM_REQUESTED_REPORTS").requested_datatable(tid)
+        
+        $kit.modify_tag_content("requested_table", output, "update")
+        
+        $kit.modify_tag_content("get_new_request_dialog", message, "update")
         
     end
     
