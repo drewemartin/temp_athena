@@ -77,7 +77,7 @@ end
             "This report includes all Requirements for Athena Projects."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_athena_project.is_true?
         
-        #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
+        #ATTENDANCE BY CODE
         tables_array.push([
             $tools.button_new_csv("attendance_by_code", additional_params_str = nil),
             "Attendance By Code",
@@ -138,7 +138,7 @@ end
             "This report includes all contact records that you created."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_my_student_contacts.is_true?
         
-        #ILP SURVEY COMPLETION
+        #STUDENT_ILP
         tables_array.push([
             $tools.button_new_csv("student_ilp", additional_params_str = nil),
             "Student ILP",
@@ -150,7 +150,7 @@ end
             $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
             "Student ILP Survey Completion",
             "This report includes an ILP Survey count (completed/total) for all active students."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
         
         #RTII BEHAVIOR REPORT
         tables_array.push([
@@ -186,6 +186,13 @@ end
             "Student Scantron Participation",
             "This report includes all currently enrolled students who are Scantron eligible."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_scantron_participation.is_true?
+        
+        #STUDENT TEP AGREEMENTS
+        tables_array.push([
+            $tools.button_new_csv("student_tep_agreements", additional_params_str = nil),
+            "Student TEP Agreements",
+            "This report includes all TEP agreements."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_tep_agreements.is_true?
         
         #SITE TEST STUDENTS ATTENDANCE
         tables_array.push([
@@ -1545,6 +1552,65 @@ end
             "stron_ext_score_r",
             "last student update",
             "last scantron update"
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_student_tep_agreements(options = nil)
+        
+        s_db         = $tables.attach("STUDENT"                      ).data_base
+        ta_db        = $tables.attach("STUDENT_TEP_AGREEMENT"        ).data_base
+        team_db      = $tables.attach("TEAM"                         ).data_base
+        t_sams_db    = $tables.attach("TEAM_SAMS_IDS"                ).data_base
+        
+        sql_str =
+        "SELECT
+            
+            student_tep_agreement.student_id,
+            student.studentfirstname,
+            student.studentlastname,
+            student_tep_agreement.special_needs,
+            student_tep_agreement.goal,
+            team.legal_first_name,
+            team.legal_last_name,
+            student_tep_agreement.conducted_by,
+            team.primary_id,
+            student_tep_agreement.face_to_face,
+            student_tep_agreement.date_conducted,
+            student_tep_agreement.created_date,
+            student_tep_agreement.created_by
+            
+        FROM #{ta_db}.student_tep_agreement
+        LEFT JOIN #{t_sams_db    }.team_sams_ids ON team_sams_ids.sams_id  = student_tep_agreement.conducted_by
+        LEFT JOIN #{team_db      }.team          ON team.primary_id        = team_sams_ids.team_id
+        LEFT JOIN #{s_db         }.student       ON student.student_id     = student_tep_agreement.student_id"
+        
+        headers =
+        [
+           
+            "Student ID",
+            "Student First Name",
+            "Student Last Name",
+            "Special Needs",
+            "Goal",
+            "Conducted By First Name",
+            "Conducted By Last Name",
+            "Conducted By Sams ID",
+            "Conducted By Team ID",
+            "Face To Face",
+            "Date Conducted",
+            "Created Date",
+            "Created By"
+            
         ]
         
         results = $db.get_data(sql_str)
