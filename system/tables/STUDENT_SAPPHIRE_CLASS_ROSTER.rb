@@ -146,6 +146,33 @@ end
             
         end
         
+        #CATCH ANY CLASSES THAT WERE PREVIOUSLY MARKED AS COMPLETED, BUT WERE THEN READDED.
+        source_tables.keys.each{|school|
+        #["EL"].each{|school|
+            
+            if pids = $tables.attach("STUDENT_SAPPHIRE_CLASS_ROSTER").primary_ids(
+                "LEFT JOIN #{$tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").data_base}.sapphire_class_roster_#{school}
+                    ON sapphire_class_roster_#{school}.student_id  = student_sapphire_class_roster.student_id  AND
+                    sapphire_class_roster_#{school}.course_id      = student_sapphire_class_roster.course_id   AND
+                    sapphire_class_roster_#{school}.section_id     = student_sapphire_class_roster.section_id 
+                WHERE sapphire_class_roster_#{school}.student_id IS NOT NULL
+                AND student_sapphire_class_roster.active IS NOT TRUE"
+            )
+                
+                pids.each{|pid|
+                    
+                    record = by_primary_id(pid)
+                    
+                    record.fields["active"].set(true).save
+                    
+                    manage_ilp(record)
+                    
+                }
+                
+            end  
+            
+        }
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
