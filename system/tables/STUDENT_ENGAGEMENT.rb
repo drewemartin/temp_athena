@@ -52,8 +52,8 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int", "file_field"=>"student_id"         } if field_order.push("student_id"      )
-            structure_hash["fields"]["engagement_level" ] = {"data_type"=>"int", "file_field"=>"engagement_level"   } if field_order.push("engagement_level")
+            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"student_id"         } if field_order.push("student_id"      )
+            structure_hash["fields"]["engagement_level" ] = {"data_type"=>"text", "file_field"=>"engagement_level"   } if field_order.push("engagement_level")
             
         structure_hash["field_order"] = field_order
         return structure_hash
