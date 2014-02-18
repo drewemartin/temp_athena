@@ -2239,10 +2239,12 @@ end
     
     def add_new_csv_team_member_testing_events_attendance(options = nil)
         
-        att_db   = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
-        team_db  = $tables.attach("TEAM"                            ).data_base
-        event_db = $tables.attach("TEST_EVENT_SITES"                ).data_base
-        sites_db = $tables.attach("TEST_SITES"                      ).data_base
+        att_db        = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
+        team_db       = $tables.attach("TEAM"                            ).data_base
+        event_db      = $tables.attach("TEST_EVENT_SITES"                ).data_base
+        sites_db      = $tables.attach("TEST_SITES"                      ).data_base
+        events_db     = $tables.attach("TEST_EVENTS"                     ).data_base
+        site_staff_db = $tables.attach("TEST_EVENT_SITE_STAFF"           ).data_base
         
         sql_str =
         "SELECT
@@ -2254,12 +2256,22 @@ end
             test_sites.facility_name, 
             test_event_sites.site_name,
             team_test_event_site_attendance.date,
-            team_test_event_site_attendance.status
+            team_test_event_site_attendance.status,
+            test_events.name,
+            (
+                SELECT
+                    role
+                FROM dev_20132014.test_event_site_staff
+                WHERE test_event_site_staff.team_id = team.primary_id
+                AND test_event_site_staff.test_event_site_id = test_event_sites.primary_id
+            )
             
         FROM #{att_db}.team_test_event_site_attendance
-        LEFT JOIN #{team_db }.team                  ON team.primary_id = team_test_event_site_attendance.team_id
-        LEFT JOIN #{event_db}.test_event_sites      ON test_event_sites.primary_id = team_test_event_site_attendance.test_event_site_id
-        LEFT JOIN #{sites_db}.test_sites            ON test_sites.primary_id = test_event_sites.test_site_id"
+        LEFT JOIN #{team_db      }.team                  ON team.primary_id               = team_test_event_site_attendance.team_id
+        LEFT JOIN #{event_db     }.test_event_sites      ON test_event_sites.primary_id   = team_test_event_site_attendance.test_event_site_id
+        LEFT JOIN #{sites_db     }.test_sites            ON test_sites.primary_id         = test_event_sites.test_site_id
+        LEFT JOIN #{events_db    }.test_events           ON test_events.primary_id        = test_event_sites.test_event_id
+        LEFT JOIN #{site_staff_db}.test_event_site_staff ON test_event_site_staff.team_id = team_test_event_site_attendance.team_id"
         
         headers =
         [
@@ -2271,7 +2283,9 @@ end
            "Facility Name",
            "Test Event Site Name",
            "Date",
-           "Status"
+           "Status",
+           "Test Event",
+           "Staff Role"
             
         ]
         
