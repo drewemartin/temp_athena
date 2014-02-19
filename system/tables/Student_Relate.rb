@@ -1271,7 +1271,7 @@ end
     end
     
     def studentfirstname(arg)
-        operator_string = @search_options[:fuzzy] ? "REGEXP" : "="
+        operator_string = (@search_options[:fuzzy] && !(arg.nil? || arg.empty?)) ? "REGEXP" : "="
         where_addon = " AND student.studentfirstname #{operator_string} '#{arg}' "
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
     end
@@ -1286,7 +1286,7 @@ end
     end
     
     def studentlastname(arg)
-        operator_string = @search_options[:fuzzy] ? "REGEXP" : "="
+        operator_string = (@search_options[:fuzzy] && !(arg.nil? || arg.empty?)) ? "REGEXP" : "="
         where_addon = " AND student.studentlastname #{operator_string} '#{Mysql.quote("#{arg}")}' "
         @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
     end
