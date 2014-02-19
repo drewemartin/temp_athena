@@ -15,6 +15,7 @@ class TEST_EVENT_SITE_WEB
             "jhalverson@agora.org",
             "dfeldhaus@agora.org"
         ]
+        
     end
     #---------------------------------------------------------------------------
     
@@ -34,34 +35,105 @@ end
     def load(test_event_site_id = $kit.params[:test_event_site_id])
         
         @test_event_site_id = test_event_site_id
-        tabs = [
-            ["Attendance",      test_event_site_attendance_tab    ],
-            ["Student Tests",   test_event_site_student_tests_tab ]
+        
+        user_roles = $tables.attach("TEST_EVENT_SITE_STAFF").field_values(
+            "role",
+            "WHERE test_event_site_id = '#{@test_event_site_id}'
+            AND team_id = '#{$team_member.primary_id.value}'"
+        ) || []
+        
+        tabs = Array.new
+        
+        #ROLES AVAILABLE
+        #"Site Administrator"
+        #"Site Coordinator"    
+        #"Assistant"           
+        #"General Education"   
+        #"Special Education"   
+        #"Test Administrator"  
+        #"Spec. Ed. Acc. Org." 
+        #"Primary Coder"       
+        #"Attendance"          
+        #"Support Staff"
+        
+        @all_access_tabs = [
+            :load_tab_1, #ATTENDANCE
+            :load_tab_2  #STUDENT TESTS
         ]
         
-        sams_ids = $team_member.sams_ids.existing_records
-        test_event_site_staff = false
-        sams_ids.each{|samsid_record|
+        @tab_rights = {
             
-            samsid = samsid_record.fields["sams_id"].value
-            test_event_site_staff = true if $tables.attach("Test_Event_Site_Staff").is_site_coordinator?(samsid, @test_event_site_id)
+            #ATTENDANCE
+            :load_tab_1 => [
+                #NO SPECIAL RIGHTS NEEDED TO SEE THIS TAB IF THE USER IS ASSIGNED TO THE SITE.
+            ],
+            
+            #STUDENT TESTS
+            :load_tab_2 => [
+                #NO SPECIAL RIGHTS NEEDED TO SEE THIS TAB IF THE USER IS ASSIGNED TO THE SITE.
+            ],
+            
+            #SE ACCOMMODATIONS
+            :load_tab_3 => [
+                "Site Coordinator",
+                "Assistant",
+                "Spec. Ed. Acc. Org."
+            ],
+            
+            #REMINDERS
+            :load_tab_4 => [
+                "Site Coordinator",
+            ],
+            
+            #SITE STAFF
+            :load_tab_5 => [
+                "Site Coordinator",
+                "Assistant"
+            ]
             
         }
         
-        if @administrators.include?($team_member.preferred_email.value) || $team_member.preferred_email.value == "jrogers@agora.org" ||
-            $tables.attach("TEST_EVENT_SITE_STAFF").primary_ids(
-                "WHERE test_event_site_id = '#{@test_event_site_id}'
-                AND team_id = #{$team_member.primary_id.value}
-                AND role REGEXP 'Site Coordinatior|Spec. Ed. Acc. Org.'"
-            )
-            #NEEDS site cooredinator and special education accommodation organizer.
-            tabs << ["SE Accommodations",   se_accommodations_tab   ]
-        end
+        @tab_rights.keys.sort_by(&:to_s).each{|tab|
+            
+            tab_allowed = user_roles.select{|right|
+                
+                @tab_rights[tab].include?(right)
+                
+            }
+            
+            tabs.push( send(tab.to_s) ) if (@all_access_tabs.include?(tab) || !tab_allowed.empty?)
+            
+        }
         
-        if @administrators.include?($team_member.preferred_email.value) || test_event_site_staff
-            tabs << ["Reminders",           admin_kmail_queue       ]
-            tabs << ["Site Staff",          site_staff_tab          ]
-        end
+        
+        #tabs = [
+        #    ["Attendance",      test_event_site_attendance_tab    ],
+        #    ["Student Tests",   test_event_site_student_tests_tab ]
+        #]
+        #
+        #sams_ids = $team_member.sams_ids.existing_records
+        #test_event_site_staff = false
+        #sams_ids.each{|samsid_record|
+        #    
+        #    samsid = samsid_record.fields["sams_id"].value
+        #    test_event_site_staff = true if $tables.attach("Test_Event_Site_Staff").is_site_coordinator?(samsid, @test_event_site_id)
+        #    
+        #}
+        #
+        #if @administrators.include?($team_member.preferred_email.value) || $team_member.preferred_email.value == "jrogers@agora.org" ||
+        #    $tables.attach("TEST_EVENT_SITE_STAFF").primary_ids(
+        #        "WHERE test_event_site_id = '#{@test_event_site_id}'
+        #        AND team_id = #{$team_member.primary_id.value}
+        #        AND role REGEXP 'Site Coordinatior|Spec. Ed. Acc. Org.'"
+        #    )
+        #    #NEEDS site cooredinator and special education accommodation organizer.
+        #    tabs << ["SE Accommodations",   se_accommodations_tab   ]
+        #end
+        #
+        #if @administrators.include?($team_member.preferred_email.value) || test_event_site_staff
+        #    tabs << ["Reminders",           admin_kmail_queue       ]
+        #    tabs << ["Site Staff",          site_staff_tab          ]
+        #end
         
         $kit.tools.tabs(tabs)
         
@@ -87,7 +159,7 @@ end
             if this_row.fields.keys.include?("not_attending")
                 
                 event_site_id = $tables.attach("TEST_EVENT_SITE_STAFF").field_value("test_event_site_id", "WHERE primary_id = '#{this_row.primary_id}'")
-                $kit.modify_tag_content("tabs-4", site_staff_tab(event_site_id), "update")
+                $kit.modify_tag_content("tabs-4", load_tab_5(event_site_id)[1], "update")
                 
             end
             
@@ -102,7 +174,7 @@ def x______________INITIAL_TABS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
-    def se_accommodations_tab()
+    def load_tab_3()
         
         output = String.new
         
@@ -113,7 +185,7 @@ end
             "Last Name"                 ,
             "First Name"                ,
             "School ID"                 ,
-            "Gradde Level"              ,
+            "Grade Level"              ,
             "Current IEP #"             ,
             "IEP Date"                  ,
             "IEP Implementation Date" 
@@ -208,11 +280,11 @@ end
             
         end
         
-        return output
+        return "SE Accommodations", output
         
     end
 
-    def site_staff_tab(test_event_site_id = @test_event_site_id)
+    def load_tab_5(test_event_site_id = @test_event_site_id)
         
         output = String.new
         
@@ -280,11 +352,11 @@ end
         
         output << $kit.tools.data_table(tables_array.insert(0, headers), "staff")
         
-        return output
+        return "Site Staff", output
         
     end
 
-    def test_event_site_attendance_tab
+    def load_tab_1
         
         tables_array = [
             
@@ -343,11 +415,11 @@ end
             
         } if sids
         
-        return $kit.tools.data_table(tables_array, "attendance")
+        return "Attendance", $kit.tools.data_table(tables_array, "attendance")
         
     end
     
-    def test_event_site_student_tests_tab
+    def load_tab_2
         
         tables_array = [
             
@@ -478,7 +550,7 @@ end
             
         } if tests_pids
         
-        return $kit.tools.data_table(tables_array, "site_students")
+        return "Student Tests", $kit.tools.data_table(tables_array, "site_students")
         
     end
     
@@ -540,7 +612,7 @@ end
         
     end 
     
-    def admin_kmail_queue
+    def load_tab_4
         output = String.new
         test_event_site_date = $tables.attach("Test_Event_Sites").by_primary_id(@test_event_site_id).fields["start_date"].value
         output << "<div id='confirmation_dialog'></div>"
@@ -554,7 +626,7 @@ end
         output << $tools.div_open("history_div", "history_div")
         output << queue_history
         output << $tools.div_close()
-        return output
+        return "Reminders", output
     end
     
     def queue_history
