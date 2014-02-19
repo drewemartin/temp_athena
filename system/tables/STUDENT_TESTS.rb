@@ -60,6 +60,38 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field_completed(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        if !(obj.value.empty? || obj.value.nil?)
+            
+            if serial_number = record.fields["serial_number"].value
+                
+                test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
+                test_record.fields["status"].value = "Completed"
+                test_record.save
+                
+            end
+            
+        end
+        
+    end
+    
+    def after_change_field_serial_number(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        if serial_number = record.fields["serial_number"].value
+            
+            test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
+            test_record.fields["student_id"].value = record.fields["student_id"].value
+            test_record.save
+            
+        end
+        
+    end
+
     def after_change_field_test_event_site_id(field)
         
         update_attendance_record(field)

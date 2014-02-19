@@ -21,6 +21,39 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(obj)
+        
+        if test_event_site_id = $tables.attach("TEST_EVENT_SITES").field_value(
+            "test_event_site_id",
+            "WHERE site_name = 'Testing Warehouse'
+            AND test_event_id = '#{obj.fields["test_event_id"].value}'"
+        )
+            
+            record = $tables.attach("TEST_PACKET_CHECKIN").new_row
+            record.fields["test_packet_id"      ].value = obj.primary_id
+            record.fields["test_event_site_id"  ].value = test_event_site_id
+            record.save
+            
+        end
+        
+    end
+    
+    def after_change_field(obj)
+     
+        record = by_primary_id(obj.primary_id)
+        record.fields["verified"].value = false
+        record.save
+        
+    end
+    
+    def after_change_field_student_id(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        record.fields["status"].value = "In Progress"
+        record.save
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
@@ -35,6 +68,9 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :load_type          => :append,
+                :keys               => ["serial_number","test_event_id"],
+                :update             => false,
                 "name"              => "test_packets",
                 "file_name"         => "test_packets.csv",
                 "file_location"     => "test_packets",
