@@ -55,6 +55,8 @@ end
             structure_hash["fields"]["test_event_site_id"   ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"} if field_order.push("test_event_site_id"  )
             structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",  "file_field"=>"team_id"           } if field_order.push("team_id"             )
             structure_hash["fields"]["checkin_status"       ] = {"data_type"=>"text", "file_field"=>"checkin_status"    } if field_order.push("checkin_status"      )
+            structure_hash["fields"]["checkin_date"         ] = {"data_type"=>"date", "file_field"=>"checkin_date"      } if field_order.push("checkin_date"        )
+            structure_hash["fields"]["checkout_date"        ] = {"data_type"=>"date", "file_field"=>"checkout_date"     } if field_order.push("checkout_date"       )
             
         structure_hash["field_order"] = field_order
         return structure_hash
