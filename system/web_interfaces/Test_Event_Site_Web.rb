@@ -61,6 +61,8 @@ end
             :load_tab_2  #STUDENT TESTS
         ]
         
+        @all_access_user = @administrators.include?($team_member.preferred_email.value)
+        
         @tab_rights = {
             
             #ATTENDANCE
@@ -89,8 +91,12 @@ end
             :load_tab_5 => [
                 "Site Coordinator",
                 "Assistant"
-            ]
+            ],
             
+            #TEST PACKETS
+            :load_tab_6 => [
+                #NO SPECIAL RIGHTS NEEDED TO SEE THIS TAB IF THE USER IS ASSIGNED TO THE SITE.
+            ]
         }
         
         @tab_rights.keys.sort_by(&:to_s).each{|tab|
@@ -101,7 +107,7 @@ end
                 
             }
             
-            tabs.push( send(tab.to_s) ) if (@all_access_tabs.include?(tab) || !tab_allowed.empty?)
+            tabs.push( send(tab.to_s) ) if (@all_access_user || @all_access_tabs.include?(tab) || !tab_allowed.empty?)
             
         }
         
@@ -356,6 +362,55 @@ end
         
     end
 
+    def load_tab_6
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "serial_number"         ,
+                "grade_level"           ,
+                "subject"               ,
+                "large_print"           ,
+                "status"                ,
+                "verified"                
+            ]
+            
+        ]
+        
+        pids = $tables.attach("TEST_PACKETS").primary_ids(" WHERE test_event_site_id = #{@test_event_site_id} ")
+        pids.each{|pid|
+            
+            record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
+            row     = Array.new
+            
+            row.push(record.fields["serial_number"         ].web.label)
+            row.push(record.fields["grade_level"           ].web.label)
+            row.push(record.fields["subject"               ].web.label)
+            row.push(record.fields["large_print"           ].web.default(:disabled=>true))
+            row.push(
+                record.fields["status"                ].web.select(
+                    :dd_choices=>$dd.from_array(
+                        [
+                            "Completed",
+                            "Unused",
+                            "Do Not Score",
+                            "Destroyed",
+                            "In Progress"
+                        ]
+                    )
+                )
+            )
+            row.push(record.fields["verified"              ].web.default(:disabled=>true))
+            
+            tables_array.push(row)
+            
+        } if pids
+        
+        return "Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")    
+       
+    end
+    
     def load_tab_1
         
         tables_array = [

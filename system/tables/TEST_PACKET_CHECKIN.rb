@@ -21,6 +21,34 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(obj)
+     
+        record = by_primary_id(obj.primary_id)
+        record.field["checkin_date"].value = $idate
+        record.save
+        
+        test_packet_record = $tables.attach("TEST_PACKETS").by_primary_id(obj.fields["test_packet_id"].value)
+        test_packet_record.fields["test_event_site_id"].value = obj.test_event_site_id.value
+        test_packet_record.save
+        
+        if pids = primary_ids(
+            "WHERE test_packet_id = '#{obj.fields["test_packet_id"].value}'
+            AND primary_id != '#{obj.primary_id}'
+            AND checkout_date IS NULL"
+        )
+            
+            pids.each{|pid|
+                
+                record = by_primary_id(pid)
+                record.field["checkout_date"].value = $idate
+                record.save    
+                
+            }
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
