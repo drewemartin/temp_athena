@@ -24,7 +24,7 @@ end
     def after_insert(obj)
      
         record = by_primary_id(obj.primary_id)
-        record.field["checkin_date"].value = $idate
+        record.field["checkin_date"].value = $idatetime
         record.save
         
         test_packet_record = $tables.attach("TEST_PACKETS").by_primary_id(obj.fields["test_packet_id"].value)
@@ -40,7 +40,7 @@ end
             pids.each{|pid|
                 
                 record = by_primary_id(pid)
-                record.field["checkout_date"].value = $idate
+                record.field["checkout_date"].value = $idatetime
                 record.save    
                 
             }
@@ -79,12 +79,12 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["test_packet_id"       ] = {"data_type"=>"int",  "file_field"=>"test_packet_id"    } if field_order.push("test_packet_id"      )
-            structure_hash["fields"]["test_event_site_id"   ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"} if field_order.push("test_event_site_id"  )
-            structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",  "file_field"=>"team_id"           } if field_order.push("team_id"             )
-            structure_hash["fields"]["checkin_status"       ] = {"data_type"=>"text", "file_field"=>"checkin_status"    } if field_order.push("checkin_status"      )
-            structure_hash["fields"]["checkin_date"         ] = {"data_type"=>"date", "file_field"=>"checkin_date"      } if field_order.push("checkin_date"        )
-            structure_hash["fields"]["checkout_date"        ] = {"data_type"=>"date", "file_field"=>"checkout_date"     } if field_order.push("checkout_date"       )
+            structure_hash["fields"]["test_packet_id"       ] = {"data_type"=>"int",        "file_field"=>"test_packet_id"    } if field_order.push("test_packet_id"      )
+            structure_hash["fields"]["test_event_site_id"   ] = {"data_type"=>"int",        "file_field"=>"test_event_site_id"} if field_order.push("test_event_site_id"  )
+            structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",        "file_field"=>"team_id"           } if field_order.push("team_id"             )
+            structure_hash["fields"]["checkin_status"       ] = {"data_type"=>"text",       "file_field"=>"checkin_status"    } if field_order.push("checkin_status"      )
+            structure_hash["fields"]["checkin_date"         ] = {"data_type"=>"datetime",   "file_field"=>"checkin_date"      } if field_order.push("checkin_date"        )
+            structure_hash["fields"]["checkout_date"        ] = {"data_type"=>"datetime",   "file_field"=>"checkout_date"     } if field_order.push("checkout_date"       )
             
         structure_hash["field_order"] = field_order
         return structure_hash
