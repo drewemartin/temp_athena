@@ -95,7 +95,7 @@ end
             
             #TEST PACKETS
             :load_tab_6 => [
-                #NO SPECIAL RIGHTS NEEDED TO SEE THIS TAB IF THE USER IS ASSIGNED TO THE SITE.
+                "Site Coordinator"
             ]
         }
         
