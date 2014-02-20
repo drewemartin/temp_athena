@@ -593,6 +593,7 @@ $(function () {
 		open		: function(event, ui) {
 			
 			$("div[ariaLabelledBy='ui-dialog-title-student_search_dialog']", ui.dialog).show();
+			$(".ui-dialog-titlebar-close", ui.dialog).show();
 			
 		}
 	});
@@ -662,6 +663,7 @@ $(function () {
 		open		: function(event, ui) {
 			
 			$("div[ariaLabelledBy='ui-dialog-title-student_search_dialog']", ui.dialog).show();
+			$(".ui-dialog-titlebar-close", ui.dialog).show();
 			
 		}
 		
@@ -700,6 +702,7 @@ $(function () {
 		open		: function(event, ui) {
 			
 			$("div[ariaLabelledBy='ui-dialog-title-student_search_dialog']", ui.dialog).show();
+			$(".ui-dialog-titlebar-close", ui.dialog).show();
 			
 		},
 		buttons		: {
@@ -751,6 +754,7 @@ $(function () {
 		open		: function(event, ui) {
 			
 			$("div[ariaLabelledBy='ui-dialog-title-test_packets_search_dialog']", ui.dialog).show();
+			$(".ui-dialog-titlebar-close", ui.dialog).show();
 			
 		},
 		buttons		: {
