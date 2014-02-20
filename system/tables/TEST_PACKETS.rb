@@ -41,7 +41,7 @@ end
     def after_change_field(obj)
      
         record = by_primary_id(obj.primary_id)
-        record.fields["verified"].value = false
+        record.fields["verified"].value = false if obj.field_name != "verified"
         record.save
         
     end
