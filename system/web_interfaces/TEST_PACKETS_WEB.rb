@@ -345,8 +345,6 @@ end
     
     def test_event_sites_dd(test_event_id=nil)
         
-        where_clause = nil
-        
         where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
         
         $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", where_clause)
