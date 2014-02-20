@@ -31,6 +31,12 @@ end
         output << "<button class='new_breakaway_button' id='test_packets_search_dialog_button'>Test Packet Search</button>"
         
         output << $tools.div_open("test_packets_record_container", "test_packets_record_container")
+        output << $tools.legend_open("information", "Information")
+        output << $tools.newlabel("no_info", "Please search for a test packet.")
+        output << $tools.legend_close()
+        output << $tools.legend_open("checkin", "Check-In History")
+        output << $tools.newlabel("no_info", "")
+        output << $tools.legend_close()
         output << $tools.div_close()
         
         return output
@@ -79,8 +85,8 @@ end
             row.push("<button class='new_breakaway_button' id='load_test_packets_record_button_#{pid}' onclick='send\(\"load_test_packets_record_#{pid}\"\)\;setPreSpinner\(\"test_packets_record_container\"\);$\(\"#test_packets_search_dialog\"\).dialog\(\"close\"\)'>Edit</button><input id='load_test_packets_record_#{pid}' type='hidden' value='#{pid}' name='load_test_packets_record'")
             row.push(record.fields["student_id"            ].value)
             row.push(record.fields["serial_number"         ].value)
-            row.push(record.fields["status"                ].value)
-            row.push(record.fields["verified"              ].web.checkbox({:disabled=>true}))
+            row.push(record.fields["status"                ].web.select(:dd_choices=>status_dd))
+            row.push(record.fields["verified"              ].web.checkbox())
             row.push($tables.attach("TEST_EVENTS"     ).find_field("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'").value)
             row.push($tables.attach("TEST_EVENT_SITES").find_field("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'").value)
             row.push($tables.attach("TESTS"           ).find_field("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'").value)
@@ -145,8 +151,7 @@ end
      
             #HEADERS
             tables_array.push([
-                "Test Packet ID",
-                "Test Event Site ID",
+                "Test Event Site",
                 "Team Member",
                 "Check-in Status",
                 "Check-in Date",
@@ -160,12 +165,11 @@ end
                 
                 row = Array.new
                 
-                row.push(tpc_record.fields["test_packet_id"     ].value)
                 row.push($tables.attach("TEST_EVENT_SITES").find_field("site_name", "WHERE primary_id = '#{tpc_record.fields["test_event_site_id" ].value}'").value)
                 row.push("#{$team.get(tpc_record.fields['team_id'].value).legal_first_name.value} #{$team.get(tpc_record.fields['team_id'].value).legal_last_name.value}")
                 row.push(tpc_record.fields["checkin_status"     ].value)
-                row.push(tpc_record.fields["checkin_date"       ].value)
-                row.push(tpc_record.fields["checkout_date"      ].value)
+                row.push(tpc_record.fields["checkin_date"       ].to_user)
+                row.push(tpc_record.fields["checkout_date"      ].to_user)
                 
                 tables_array.push(row)
                 
@@ -212,7 +216,7 @@ end
                 
             end
             
-            $kit.modify_tag_content("test_packets_search_results", results, "update")
+            $kit.modify_tag_content("test_packets_search_results", results, "update") if search_hash.length >= 1
             
         end
         
@@ -292,15 +296,10 @@ end
             
             fields = row.fields
             
-            fields["team_id"            ].value  #= ""
-            fields["checkin_status"     ].value  #= ""
-            fields["checkin_date"       ].value  #= ""
-            fields["checkout_date"      ].value  #= ""
-            
             output << fields["test_packet_id"     ].set(test_packet_pid).web.hidden
-            output << fields["test_event_site_id" ].set(tp_fields["test_event_site_id"].value).web.hidden
+            output << fields["test_event_site_id" ].web.select(:label_option=>"Location:", :dd_choices=>test_event_sites_dd(tp_fields["test_event_id"].value), :validate=>true)
             output << fields["team_id"            ].set($team.find(:email_address=>$kit.user).primary_id.value).web.hidden
-            output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
+            #output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
             
         output << $tools.legend_close()
         
@@ -344,9 +343,13 @@ end
         
     end
     
-    def test_event_sites_dd
+    def test_event_sites_dd(test_event_id=nil)
         
-        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id")
+        where_clause = nil
+        
+        where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
+        
+        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", where_clause)
         
     end
     
@@ -386,6 +389,7 @@ end
             #search_dialog_button                           {display: none;}
             table.dataTable td.column_0                     {text-align: center;}
             #student_container fieldset                     {width:97%}
+            .no_info                                        {height:100px;}
             
             #test_packets_search_fields                     {width:400px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}
