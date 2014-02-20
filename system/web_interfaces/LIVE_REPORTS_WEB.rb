@@ -23,8 +23,29 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
     def load
+        output = String.new
+        output << "<div id='get_new_request_dialog' class='get_new_request_dialog'></div>"
+        output << $kit.tools.tabs([
+            ["Live Reports",        live_reports],
+            ["Requested Files",     $tools.button_refresh("requested_table") + $tools.div_open("requested_table","requested_table") + $tables.attach("TEAM_REQUESTED_REPORTS").requested_datatable($team.find(:email_address=>$kit.user).primary_id.value) + $tools.div_close() ]
+        ])
         
-        output = "<div id='student_container'>"
+    end
+    
+    def response
+        if $kit.params[:refresh]
+            $kit.modify_tag_content($kit.params[:refresh], $tables.attach("TEAM_REQUESTED_REPORTS").requested_datatable($team.find(:email_address=>$kit.user).primary_id.value), type="update")
+        end
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________TAB_LOADERS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def live_reports
+        
+        output = String.new
         
         tables_array = Array.new
      
@@ -56,7 +77,7 @@ end
             "This report includes all Requirements for Athena Projects."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_athena_project.is_true?
         
-        #ATTENDANCE CONSECUTIVE UNEXCUSED ABSENCES
+        #ATTENDANCE BY CODE
         tables_array.push([
             $tools.button_new_csv("attendance_by_code", additional_params_str = nil),
             "Attendance By Code",
@@ -84,7 +105,7 @@ end
         
         #ATTENDANCE MASTER
         tables_array.push([
-            $tools.button_new_csv("attendance_master", additional_params_str = nil),
+            $tools.button_request("attendance_master"),
             "Attendance Master",
             "This report includes all students who have had any attendance records created this school year."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_master.is_true?
@@ -105,7 +126,7 @@ end
         
         #ALL CONTACTS REPORT
         tables_array.push([
-            $tools.button_new_csv("student_contacts", additional_params_str = "complete"),
+            $tools.button_request("student_contacts_complete"),
             "Student Contacts - Complete",
             "This report includes all contact records that exist. Only students with contacts will be included."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_contacts.is_true?
@@ -117,7 +138,7 @@ end
             "This report includes all contact records that you created."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_my_student_contacts.is_true?
         
-        #ILP SURVEY COMPLETION
+        #STUDENT_ILP
         tables_array.push([
             $tools.button_new_csv("student_ilp", additional_params_str = nil),
             "Student ILP",
@@ -129,7 +150,7 @@ end
             $tools.button_new_csv("student_ilp_survey_completion", additional_params_str = nil),
             "Student ILP Survey Completion",
             "This report includes an ILP Survey count (completed/total) for all active students."
-        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp.is_true?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
         
         #RTII BEHAVIOR REPORT
         tables_array.push([
@@ -165,6 +186,13 @@ end
             "Student Scantron Participation",
             "This report includes all currently enrolled students who are Scantron eligible."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_scantron_participation.is_true?
+        
+        #STUDENT TEP AGREEMENTS
+        tables_array.push([
+            $tools.button_new_csv("student_tep_agreements", additional_params_str = nil),
+            "Student TEP Agreements",
+            "This report includes all TEP agreements."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_tep_agreements.is_true?
         
         #SITE TEST STUDENTS ATTENDANCE
         tables_array.push([
@@ -216,18 +244,8 @@ end
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_code_stats.is_true?
         
         output << $kit.tools.data_table(tables_array, "leadership_reports")
-        output << "</div>"
         
     end
-    
-    def response
-        
-    end
-    
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-def x______________TAB_LOADERS
-end
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_CSV
@@ -701,249 +719,6 @@ end
         
     end
     
-    def add_new_csv_attendance_master(options = nil)
-        
-        headers =
-        [
-            
-            "Student ID",
-            "Last Name",
-            "First Name",
-            "Grade Level",
-            "Family ID",
-            "Birthday",
-            "Age",
-            
-            "Learning Center Classroom Coach",
-            "Teacher/Guidance",
-            
-            "Family Coach/Comm Cord",
-            "Scantron entrance math",
-            "Scantron exit math",
-            "Scantron entrance reading",
-            "Scantron exit reading",
-            
-            "LEAP Level",
-            
-            #"Program Support",
-            
-            "Family Coach Support",
-            "Truancy Prevention",
-            "Advisor",
-            
-            "Enroll Date",
-            "Withdraw Date",
-            "Special Ed Teacher",
-            "Attendance Mode",
-            "District of Residence",
-            
-            "Enrolled",
-            "Present",
-            "Excused",
-            "Unexcused",
-            
-            "att_master_id",
-            "student_id"
-            
-        ]
-        
-        date_headers = $tables.attach("STUDENT_ATTENDANCE_MASTER").field_order
-        date_headers.delete("primary_id")
-        date_headers.delete("student_id")
-        date_headers.delete("created_date")
-        date_headers.delete("created_by")
-        
-        headers.concat(date_headers)
-        
-        t_db        = $tables.attach("team"             ).data_base
-        tsids_db    = $tables.attach("team_sams_ids"    ).data_base
-        relate_db   = $tables.attach("STUDENT_RELATE"   ).data_base
-        
-        sql_str = String.new
-        sql_str << "
-        SELECT 
-            
-            student.student_id,
-            student.studentlastname,
-            student.studentfirstname,
-            student.grade,
-            student.familyid,
-            student.birthday,
-            
-            #STUDENT AGE
-            (YEAR(CURDATE())-YEAR(student.birthday)) - (RIGHT(CURDATE(),5)<RIGHT(student.birthday,5)),
-            
-            #LEARNING CENTER CLASSROOM COACH
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        team_id
-                    FROM #{relate_db}.student_relate
-                    WHERE studentid = student.student_id
-                    AND role = 'Learning Center Classroom Coach'
-                    AND active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
-            
-            #PRIMARY TEACHER
-            student.primaryteacher,
-            #(
-            #    SELECT
-            #        GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-            #    FROM #{t_db}.team
-            #    WHERE team.primary_id = (
-            #        SELECT
-            #            team_id
-            #        FROM #{relate_db}.student_relate
-            #        WHERE studentid = student.student_id
-            #        AND role = 'Primary Teacher'
-            #        AND active IS TRUE
-            #        LIMIT 0, 1
-            #    )
-            #),
-            
-            #FAMILY TEACHER COACH
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        team_id
-                    FROM #{relate_db}.student_relate
-                    WHERE studentid = student.student_id
-                    AND role = 'Family Teacher Coach'
-                    AND active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
-            student_scantron_performance_level.stron_ent_perf_m,
-            student_scantron_performance_level.stron_ext_perf_m,
-            student_scantron_performance_level.stron_ent_perf_r,
-            student_scantron_performance_level.stron_ext_perf_r,
-            IFNULL(student_leap.leap_level,'0'),
-            
-            #FAMILY TEACHER COACH SUPPORT
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        supervisor_team_id
-                    FROM #{relate_db}.student_relate
-                    LEFT JOIN #{t_db}.team
-                    ON team.primary_id = student_relate.team_id
-                    WHERE studentid = student.student_id
-                    AND role = 'Family Teacher Coach'
-                    AND student_relate.active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
-            
-            #TRUANCY PREVENTION COORDINATOR
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        team_id
-                    FROM #{relate_db}.student_relate
-                    WHERE studentid = student.student_id
-                    AND role = 'Truancy Prevention Coordinator'
-                    AND active IS TRUE
-                    LIMIT 0, 1
-                )
-            ),
-            
-            (
-                SELECT
-                    GROUP_CONCAT(CONCAT(team.legal_first_name,' ',team.legal_last_name))
-                FROM #{t_db}.team
-                WHERE department_id = (
-                    SELECT
-                        primary_id
-                    FROM #{$tables.attach("DEPARTMENT").data_base}.department
-                    WHERE name = 'Advisors'
-                    LIMIT 0, 1
-                )
-                AND region = student.region
-            ),
-            
-            student.schoolenrolldate,
-            student.schoolwithdrawdate,
-            student.specialedteacher,
-            student_attendance_mode.attendance_mode,
-            student.districtofresidence,"
-        
-        sa_db = $tables.attach("student_attendance").data_base
-        
-        sql_str << "#ENROLLED DAYS
-            (
-                SELECT
-                    COUNT(student_id)
-                FROM #{sa_db}.student_attendance
-                WHERE student_id = student_attendance_master.student_id
-                AND official_code IS NOT NULL
-            ),"
-        
-        sql_str << "#PRESENT DAYS
-            (
-                SELECT
-                    COUNT(student_id)
-                FROM #{sa_db}.student_attendance
-                WHERE student_id = student_attendance_master.student_id
-                AND (#{official_code_sql("present")})
-            ),"
-        
-        sql_str << "#EXCUSED DAYS
-            (
-                SELECT
-                    COUNT(student_id)
-                FROM #{sa_db}.student_attendance
-                WHERE student_id = student_attendance_master.student_id
-                AND (#{official_code_sql("excused")})
-            ),"
-        
-        sql_str << "#UNEXCUSED DAYS
-            (
-                SELECT
-                    COUNT(student_id)
-                FROM #{sa_db}.student_attendance
-                WHERE student_id = student_attendance_master.student_id
-                AND (#{official_code_sql("unexcused")})
-            ),"
-        
-        sql_str << "student_attendance_master.*"
-        
-        sam_db      = $tables.attach("STUDENT_ATTENDANCE_MASTER"            ).data_base
-        s_db        = $tables.attach("STUDENT"                              ).data_base
-        sspl_db     = $tables.attach("STUDENT_SCANTRON_PERFORMANCE_LEVEL"   ).data_base
-        samo_db     = $tables.attach("STUDENT_ATTENDANCE_MODE"              ).data_base
-        leap_db     = $tables.attach("STUDENT_LEAP"                         ).data_base
-        
-        sql_str << " FROM #{sam_db}.student_attendance_master
-            LEFT JOIN #{s_db}.student                                ON student.student_id                              = student_attendance_master.student_id                       
-            LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
-            LEFT JOIN #{samo_db}.student_attendance_mode             ON student_attendance_mode.student_id              = student_attendance_master.student_id
-            LEFT JOIN #{leap_db}.student_leap                        ON student_leap.student_id                         = student_attendance_master.student_id"
-        
-        results = $db.get_data(sql_str)
-        if results
-            return results.insert(0, headers)
-            
-        else
-            return false
-            
-        end
-        
-    end
-
     def add_new_csv_ink_orders(options = nil)
         
         io_db = $tables.attach("ink_orders").data_base
@@ -1039,147 +814,6 @@ end
             
         else
             
-            return false
-            
-        end
-        
-    end
-
-    def add_new_csv_student_contacts(options = nil)
-        
-        sc_db = $tables.attach("student_contacts").data_base
-        s_db  = $tables.attach("student").data_base
-        t_db  = $tables.attach("team_temp").data_base
-        
-        sql_str =
-        "SELECT
-            student_contacts.student_id,
-            student.studentlastname,
-            student.studentfirstname,
-            student_contacts.datetime,
-            student_contacts.successful,
-            student_contacts.notes,
-            student_contacts.contact_type,
-            student_contacts.tep_initial,
-            student_contacts.tep_followup,
-            student_contacts.attendance,
-            student_contacts.rtii_behavior_id,
-            student_contacts.test_site_selection,
-            student_contacts.scantron_performance,
-            student_contacts.study_island_assessments,
-            student_contacts.course_progress,
-            student_contacts.work_submission,
-            student_contacts.grades,
-            student_contacts.communications,
-            student_contacts.retention_risk,
-            student_contacts.escalation,
-            student_contacts.welcome_call,
-            student_contacts.initial_home_visit,
-            student_contacts.tech_issue,
-            student_contacts.low_engagement,
-            student_contacts.ilp_conference,
-            student_contacts.truancy_court_outcome,
-            student_contacts.court_preparation,
-            student_contacts.residency,
-            student_contacts.ses,
-            student_contacts.sap_invitation,
-            student_contacts.sap_followup,
-            student_contacts.evaluation_request_psych,
-            student_contacts.ell,
-            student_contacts.phlote_identification,
-            student_contacts.cys,
-            student_contacts.homeless,
-            student_contacts.aircard,
-            student_contacts.court_district_go,
-            student_contacts.counselor_one_on_one,
-            student_contacts.counselor_face_to_face,
-            student_contacts.counselor_graduation_meeting,
-            student_contacts.counselor_intervention,
-            student_contacts.504_conference,
-            student_contacts.progress_monitoring,
-            student_contacts.target_time,
-            student_contacts.win,
-            student_contacts.other,
-            student_contacts.other_description,
-            team_temp.legal_last_name,
-            team_temp.legal_first_name,
-            student_contacts.created_by,
-            team_temp.department,
-            team_temp.title,
-            student_contacts.created_date
-            #TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
-        FROM #{sc_db}.student_contacts
-        LEFT JOIN #{s_db}.student
-        ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
-        LEFT JOIN #{t_db}.team_email
-        ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
-        LEFT JOIN #{t_db}.team_temp
-        ON #{t_db}.team_temp.primary_id = #{t_db}.team_email.team_id"
-        
-        headers =
-        [
-            "Student ID",
-            "Student Last Name",
-            "Student First Name",
-            "Contact Datetime",
-            "successful",
-            "notes",
-            "contact_type",
-            "tep_initial",
-            "tep_followup",
-            "attendance",
-            "rtii_behavior_id",
-            "test_site_selection",
-            "scantron_performance",
-            "study_island_assessments",
-            "course_progress",
-            "work_submission",
-            "grades",
-            "communications",
-            "retention_risk",
-            "escalation",
-            "welcome_call",
-            "initial_home_visit",
-            "tech_issue",
-            "low_engagement",
-            "ilp_conference",
-            "truancy_court_outcome",
-            "court_preparation",
-            "residency",
-            "ses",
-            "sap_invitation",
-            "sap_followup",
-            "evaluation_request_psych",
-            "ell",
-            "phlote_identification",
-            "cys",
-            "homeless",
-            "aircard",
-            "court_district_go",
-            "counselor_one_on_one",
-            "counselor_face_to_face",
-            "counselor_graduation_meeting",
-            "counselor_intervention",
-            "504_conference",
-            "progress_monitoring",
-            "Target Time",
-            "WIN",
-            "other",
-            "other_description",
-            "Created By Last Name",
-            "Created By First Name",
-            "Created By Email",
-            "Created By Department",
-            "Created By Title",
-            "Created Date"
-            #"Days Between Contact And Entry"
-        ]
-        
-        results = $db.get_data(sql_str)
-        if results
-            return results.insert(0, headers)
-            
-        else
             return false
             
         end
@@ -1930,6 +1564,65 @@ end
         end
         
     end
+    
+    def add_new_csv_student_tep_agreements(options = nil)
+        
+        s_db         = $tables.attach("STUDENT"                      ).data_base
+        ta_db        = $tables.attach("STUDENT_TEP_AGREEMENT"        ).data_base
+        team_db      = $tables.attach("TEAM"                         ).data_base
+        t_sams_db    = $tables.attach("TEAM_SAMS_IDS"                ).data_base
+        
+        sql_str =
+        "SELECT
+            
+            student_tep_agreement.student_id,
+            student.studentfirstname,
+            student.studentlastname,
+            student_tep_agreement.special_needs,
+            student_tep_agreement.goal,
+            team.legal_first_name,
+            team.legal_last_name,
+            student_tep_agreement.conducted_by,
+            team.primary_id,
+            student_tep_agreement.face_to_face,
+            student_tep_agreement.date_conducted,
+            student_tep_agreement.created_date,
+            student_tep_agreement.created_by
+            
+        FROM #{ta_db}.student_tep_agreement
+        LEFT JOIN #{t_sams_db    }.team_sams_ids ON team_sams_ids.sams_id  = student_tep_agreement.conducted_by
+        LEFT JOIN #{team_db      }.team          ON team.primary_id        = team_sams_ids.team_id
+        LEFT JOIN #{s_db         }.student       ON student.student_id     = student_tep_agreement.student_id"
+        
+        headers =
+        [
+           
+            "Student ID",
+            "Student First Name",
+            "Student Last Name",
+            "Special Needs",
+            "Goal",
+            "Conducted By First Name",
+            "Conducted By Last Name",
+            "Conducted By Sams ID",
+            "Conducted By Team ID",
+            "Face To Face",
+            "Date Conducted",
+            "Created Date",
+            "Created By"
+            
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
 
     def add_new_csv_student_testing_events_tests(options = nil)
         
@@ -1990,7 +1683,8 @@ end
             "AIMS-MNM Errors",
             "AIMS-M-COMP", #Still M-CAP field
             "AIMS-Math Instructional Recommendation (K - 2)",
-            "AIMS-Notes"
+            "AIMS-Notes",
+            "Athena Student Tests PID"
         ]
         
         s_db     = $tables.attach("student").data_base
@@ -2061,7 +1755,8 @@ end
             student_aims_tests.mnm_errors,                               
             student_aims_tests.mcap,                                     
             student_aims_tests.math_instructional_recommendation,        
-            student_aims_tests.notes
+            student_aims_tests.notes,
+            student_tests.primary_id
             
         FROM #{st_db}.student_tests
         LEFT JOIN #{s_db}.student              ON #{st_db}.student_tests.student_id         = #{s_db}.student.student_id
@@ -2610,10 +2305,12 @@ end
     
     def add_new_csv_team_member_testing_events_attendance(options = nil)
         
-        att_db   = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
-        team_db  = $tables.attach("TEAM"                            ).data_base
-        event_db = $tables.attach("TEST_EVENT_SITES"                ).data_base
-        sites_db = $tables.attach("TEST_SITES"                      ).data_base
+        att_db        = $tables.attach("TEAM_TEST_EVENT_SITE_ATTENDANCE" ).data_base
+        team_db       = $tables.attach("TEAM"                            ).data_base
+        event_db      = $tables.attach("TEST_EVENT_SITES"                ).data_base
+        sites_db      = $tables.attach("TEST_SITES"                      ).data_base
+        events_db     = $tables.attach("TEST_EVENTS"                     ).data_base
+        site_staff_db = $tables.attach("TEST_EVENT_SITE_STAFF"           ).data_base
         
         sql_str =
         "SELECT
@@ -2625,12 +2322,22 @@ end
             test_sites.facility_name, 
             test_event_sites.site_name,
             team_test_event_site_attendance.date,
-            team_test_event_site_attendance.status
+            team_test_event_site_attendance.status,
+            test_events.name,
+            (
+                SELECT
+                    role
+                FROM dev_20132014.test_event_site_staff
+                WHERE test_event_site_staff.team_id = team.primary_id
+                AND test_event_site_staff.test_event_site_id = test_event_sites.primary_id
+            )
             
         FROM #{att_db}.team_test_event_site_attendance
-        LEFT JOIN #{team_db }.team                  ON team.primary_id = team_test_event_site_attendance.team_id
-        LEFT JOIN #{event_db}.test_event_sites      ON test_event_sites.primary_id = team_test_event_site_attendance.test_event_site_id
-        LEFT JOIN #{sites_db}.test_sites            ON test_sites.primary_id = test_event_sites.test_site_id"
+        LEFT JOIN #{team_db      }.team                  ON team.primary_id               = team_test_event_site_attendance.team_id
+        LEFT JOIN #{event_db     }.test_event_sites      ON test_event_sites.primary_id   = team_test_event_site_attendance.test_event_site_id
+        LEFT JOIN #{sites_db     }.test_sites            ON test_sites.primary_id         = test_event_sites.test_site_id
+        LEFT JOIN #{events_db    }.test_events           ON test_events.primary_id        = test_event_sites.test_event_id
+        LEFT JOIN #{site_staff_db}.test_event_site_staff ON test_event_site_staff.team_id = team_test_event_site_attendance.team_id"
         
         headers =
         [
@@ -2642,7 +2349,9 @@ end
            "Facility Name",
            "Test Event Site Name",
            "Date",
-           "Status"
+           "Status",
+           "Test Event",
+           "Staff Role"
             
         ]
         
@@ -2861,8 +2570,16 @@ end
         
         output = String.new
         output << "<style>"
-        output << "#search_dialog_button{display: none;}"
-        output << "table.dataTable td.column_0{text-align: center;}"
+        output << "
+            
+            #search_dialog_button{display: none;}
+            table.dataTable td.column_0{text-align: center;}
+            
+            #date_attendance_activity {font-size:10px !important;}
+            #consecutive_target_date  {font-size:10px !important;}
+            #consecutive_days         {font-size:10px !important;}
+            
+        "
         output << "</style>"
         return output
         

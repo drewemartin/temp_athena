@@ -28,19 +28,21 @@ end
         records(where_clause)
     end
     
-    def by_status(arg)
+    def by_status(arg,remote)
         operator = arg.upcase == "NULL" ? "IS" : "="
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("status",          operator,      arg    ) )
+        params.push( Struct::WHERE_PARAMS.new("remote",          "=",           remote ) )
         where_clause = $db.where_clause(params)
         records(where_clause)
     end
     
-    def queue_process(class_name, function_name, args = nil)
+    def queue_process(class_name, function_name, args = nil, remote='0')
         record = new_row
         record.fields["class_name"      ].value = class_name
         record.fields["function_name"   ].value = function_name
         record.fields["args"            ].value = args if args
+        record.fields["remote"          ].value = remote
         record.save
         
     end
@@ -83,6 +85,7 @@ end
             structure_hash["fields"]["status"]              = {"data_type"=>"text",     "file_field"=>"status"}             if field_order.push("status")
             structure_hash["fields"]["start_datetime"]      = {"data_type"=>"datetime", "file_field"=>"start_datetime"}     if field_order.push("start_datetime")
             structure_hash["fields"]["completed_datetime"]  = {"data_type"=>"datetime", "file_field"=>"completed_datetime"} if field_order.push("completed_datetime")
+            structure_hash["fields"]["remote"]              = {"data_type"=>"bool",     "file_field"=>"remote"}             if field_order.push("remote")
         structure_hash["field_order"] = field_order
         return structure_hash
     end

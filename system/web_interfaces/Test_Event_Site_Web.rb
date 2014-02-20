@@ -853,7 +853,8 @@ end
         
         return [
             
-            {:name=>"Site Coordinator"      , :value=>"Site Coordinator"   },          
+            {:name=>"Site Coordinator"      , :value=>"Site Coordinator"   },
+            {:name=>"Site Administrator"    , :value=>"Site Administrator" },
             {:name=>"Assistant"             , :value=>"Assistant"          },
             {:name=>"General Education"     , :value=>"General Education"  },
             {:name=>"Special Education"     , :value=>"Special Education"  },

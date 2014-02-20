@@ -24,11 +24,11 @@ end
     def after_insert(obj)
      
         record = by_primary_id(obj.primary_id)
-        record.field["checkin_date"].value = $idatetime
+        record.fields["checkin_date"].value = $idatetime
         record.save
         
         test_packet_record = $tables.attach("TEST_PACKETS").by_primary_id(obj.fields["test_packet_id"].value)
-        test_packet_record.fields["test_event_site_id"].value = obj.test_event_site_id.value
+        test_packet_record.fields["test_event_site_id"].value = obj.fields["test_event_site_id"].value
         test_packet_record.save
         
         if pids = primary_ids(
@@ -40,7 +40,7 @@ end
             pids.each{|pid|
                 
                 record = by_primary_id(pid)
-                record.field["checkout_date"].value = $idatetime
+                record.fields["checkout_date"].value = $idatetime
                 record.save    
                 
             }

@@ -17,7 +17,11 @@ end
     def csv(location, filename, rows, filestamp = true)
         
         if location
-            path = $config.init_path("#{$paths.reports_path}#{location}")
+            if location == "temp"
+                path = $paths.temp_path
+            else
+                path = $config.init_path("#{$paths.reports_path}#{location}")
+            end
         else
             path = $paths.documents_path
         end

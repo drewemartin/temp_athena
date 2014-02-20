@@ -186,9 +186,29 @@ end
     
     def temp_path
         if !structure.has_key?(:temp_path)
-            structure[:temp_path] = $config.init_path("#{htdocs_path}temp")
+            
+            if ENV["COMPUTERNAME"] == "PERSEUS-PC"
+                
+                if !File.directory?( "M:/" )
+                    require 'win32ole'
+                    net = WIN32OLE.new('WScript.Network')
+                    user_name = "Athena"
+                    password  = "YEree77d3ysPQhYE"
+                    net.MapNetworkDrive( 'M:', "\\\\10.1.10.254\\temp", nil,  user_name, password )
+                end
+                
+                structure[:temp_path] = $config.init_path("M:/")
+                
+            else
+                
+                structure[:temp_path] = $config.init_path("#{htdocs_path}temp")
+                
+            end
+            
         end
+        
         return structure[:temp_path]
+        
     end
     
     def templates_path

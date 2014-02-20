@@ -843,6 +843,30 @@ end
         return button_html
     end
     
+    def button_refresh(refresh_id)
+        
+        return "<button class='refresh_button' id='refresh__#{refresh_id}'></button>
+                <input id='#{refresh_id}__submit' name='refresh' value='#{refresh_id}' type='hidden'>"
+        
+    end
+    
+    def button_request(request_name, additional_params_str = nil, send_field_names = nil, title = "Request File")
+        
+        params_str      = additional_params_str ? "ARGV#{additional_params_str}" : ""
+        button_html     = String.new
+        
+        this_id         = "request_#{request_name}_I_#{@csv_iterator}"
+        send_id         = "#{this_id}"
+        send_id        << ",#{send_field_names}" if send_field_names
+        @csv_iterator   +=1
+        
+        button_html << "<input id='#{this_id}' name='new_request' value='#{request_name+params_str}' type='hidden'>"
+        button_html << "<button name='new_request_button' class='new_request_button' id='new_request_button' onclick=\"get_new_request('#{send_id}');\">#{title}</button>"
+        
+        return button_html
+        
+    end
+    
     def button_view_pdf(pdf_name, doc_path, additional_params_str = nil, additional_field_ids_array = nil)
         params_str  = additional_params_str ? "ARGV#{additional_params_str}" : ""
         fields_str  = additional_field_ids_array  ? "," + additional_field_ids_array.join(",") : ""
