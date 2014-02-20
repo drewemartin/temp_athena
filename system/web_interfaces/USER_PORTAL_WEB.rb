@@ -200,6 +200,15 @@ end
             
         ) if $team_member.super_user? || $team_member.rights.schools_access.is_true?
         
+        $kit.output << $tools.breakaway_button(
+            
+            :button_text        => "Test Packets",
+            :page_name          => "TEST_PACKETS_WEB",
+            :additional_params  => nil,
+            :class              => "module_bar"
+            
+        ) if $team_member.super_user?# || $team_member.rights.schools_access.is_true?
+        
         $kit.output << "</div>"
         
         tabs_arr = Array.new

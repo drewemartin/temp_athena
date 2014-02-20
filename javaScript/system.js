@@ -718,6 +718,57 @@ $(function () {
 		
 	});
 	
+	$("#test_packets_search_dialog_button").button({
+		
+		icons: {secondary: "ui-icon-search"}
+		
+	}).bind("click", function() {
+		
+		$("#test_packets_search_dialog").dialog("open");
+		
+	});
+	
+	$(":input[id^='search__TEST_PACKETS']").bind("keyup", function(e){
+		
+		if (e.which == 13){
+			
+			$("#test_packets_search_submit").click();
+			
+		}
+	});
+	
+	$("#test_packets_search_dialog").dialog({
+		
+		autoOpen	: false,
+		draggable	: false,
+		resizable	: false,
+		closeOnEscape	: false,
+		modal		: true,
+		width		: 1100,
+		height		: 850,
+		position	: "top",
+		title		: "Search",
+		open		: function(event, ui) {
+			
+			$("div[ariaLabelledBy='ui-dialog-title-test_packets_search_dialog']", ui.dialog).show();
+			
+		},
+		buttons		: {
+			
+			"Close": function() {
+				
+				$(this).dialog("close");
+				
+			}
+		},
+		create		:function () {
+			$(this).closest(".ui-dialog")
+			.find(".ui-button:first")
+			.attr("id","test_packets_search_submit");
+		}
+		
+	});
+	
 	$(".refresh_button").button({
 		icons: {primary: "ui-icon-refresh"},
 		disabled: false
