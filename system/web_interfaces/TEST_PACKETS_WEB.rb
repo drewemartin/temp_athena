@@ -155,8 +155,7 @@ end
                 "Test Event Site",
                 "Team Member",
                 "Check-in Status",
-                "Check-in Date",
-                "Check-out Date"
+                "Check-in Date"
             ])
             
             tpc_pids = $tables.attach("TEST_PACKET_LOCATION").primary_ids("WHERE test_packet_id = '#{pid}' ORDER BY primary_id DESC")
@@ -170,7 +169,6 @@ end
                 row.push("#{tpc_record.fields['team_id'].to_name(:full_name)}")
                 row.push(tpc_record.fields["checkin_status"     ].value)
                 row.push(tpc_record.fields["checkin_date"       ].to_user)
-                row.push(tpc_record.fields["checkout_date"      ].to_user)
                 
                 tables_array.push(row)
                 
@@ -298,8 +296,8 @@ end
             fields = row.fields
             
             output << fields["test_packet_id"     ].set(test_packet_pid).web.hidden
-            output << fields["test_event_site_id" ].web.select(:label_option=>"Location:", :dd_choices=>test_event_sites_dd(tp_fields["test_event_id"].value), :validate=>true)
-            output << fields["team_id"            ].set($team.find(:email_address=>$kit.user).primary_id.value).web.hidden
+            output << fields["test_event_site_id" ].web.select(:label_option=>"Location:",  :dd_choices=>test_event_sites_dd(   tp_fields[  "test_event_id"         ].value), :validate=>true)
+            output << fields["team_id"            ].web.select(:label_option=>"Team Member",:dd_choices=>staff_dd(              fields[     "test_event_site_id"    ].value))
             #output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
             
         output << $tools.legend_close()
