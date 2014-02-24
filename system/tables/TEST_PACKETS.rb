@@ -29,7 +29,7 @@ end
             AND test_event_id = '#{obj.fields["test_event_id"].value}'"
         )
             
-            record = $tables.attach("TEST_PACKET_CHECKIN").new_row
+            record = $tables.attach("TEST_PACKET_LOCATION").new_row
             record.fields["test_packet_id"      ].value = obj.primary_id
             record.fields["test_event_site_id"  ].value = test_event_site_id
             record.save
