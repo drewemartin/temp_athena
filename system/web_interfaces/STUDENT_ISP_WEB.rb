@@ -42,7 +42,7 @@ end
     def student_record
         
         tabs = Array.new
-        tabs.push(["Reimbursment",            reimbursement_status   ])
+        tabs.push(["Reimbursement",            reimbursement_status   ])
        
         $kit.tools.tabs(
             tabs,

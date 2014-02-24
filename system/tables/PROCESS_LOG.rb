@@ -28,7 +28,7 @@ end
         records(where_clause)
     end
     
-    def by_status(arg,remote)
+    def by_status(arg,remote=nil)
         operator = arg.upcase == "NULL" ? "IS" : "="
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("status",          operator,      arg    ) )
