@@ -670,11 +670,13 @@ end
         else
             
             self.output = web_error.invalid_user
-            $base.system_notification(
-                subject = "Team Member Not Found!",
-                content = "ATTENTION - #{user} NOT FOUND!!! LOG: #{user_log_record.primary_id}",
-                caller[0]
-            )
+            if !user.nil? && !user.empty?
+                $base.system_notification(
+                    subject = "Team Member Not Found!",
+                    content = "ATTENTION - #{user} NOT FOUND!!! LOG: #{user_log_record.primary_id}",
+                    caller[0]
+                )
+            end
             
             return false  
             
@@ -688,7 +690,7 @@ end
         answer = false
         
         $team_member = $team.by_team_email(user)
-        if !$team_member
+        if !$team_member && !user.nil? && !user.empty?
             $base.system_notification(
                 subject = "Team Member Not Found!",
                 content = "ATTENTION - #{user} NOT FOUND!!! LOG: #{user_log_record.primary_id}",
