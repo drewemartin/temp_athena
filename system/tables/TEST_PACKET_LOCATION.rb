@@ -31,22 +31,6 @@ end
         test_packet_record.fields["test_event_site_id"].value = obj.fields["test_event_site_id"].value
         test_packet_record.save
         
-        if pids = primary_ids(
-            "WHERE test_packet_id = '#{obj.fields["test_packet_id"].value}'
-            AND primary_id != '#{obj.primary_id}'
-            AND checkout_date IS NULL"
-        )
-            
-            pids.each{|pid|
-                
-                record = by_primary_id(pid)
-                record.fields["checkout_date"].value = $idatetime
-                record.save    
-                
-            }
-            
-        end
-        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -84,7 +68,6 @@ end
             structure_hash["fields"]["team_id"              ] = {"data_type"=>"int",        "file_field"=>"team_id"           } if field_order.push("team_id"             )
             structure_hash["fields"]["checkin_status"       ] = {"data_type"=>"text",       "file_field"=>"checkin_status"    } if field_order.push("checkin_status"      )
             structure_hash["fields"]["checkin_date"         ] = {"data_type"=>"datetime",   "file_field"=>"checkin_date"      } if field_order.push("checkin_date"        )
-            structure_hash["fields"]["checkout_date"        ] = {"data_type"=>"datetime",   "file_field"=>"checkout_date"     } if field_order.push("checkout_date"       )
             
         structure_hash["field_order"] = field_order
         return structure_hash
