@@ -34,7 +34,7 @@ end
         output << $tools.legend_open("information", "Information")
         output << $tools.newlabel("no_info", "Please search for a test packet.")
         output << $tools.legend_close()
-        output << $tools.legend_open("checkin", "Check-In History")
+        output << $tools.legend_open("checkin", "Location Assignment History")
         output << $tools.newlabel("no_info", "")
         output << $tools.legend_close()
         output << $tools.div_close()
@@ -66,6 +66,7 @@ end
             "Serial Number",
             "Status",
             "Verified",
+            "Returned to Warehouse",
             "Test Event",
             "Test Event Site",
             "Test Type",
@@ -87,13 +88,14 @@ end
             row.push(record.fields["serial_number"         ].value)
             row.push(record.fields["status"                ].web.select(:dd_choices=>status_dd))
             row.push(record.fields["verified"              ].web.checkbox())
+            row.push(record.fields["returned_to_warehouse" ].web.checkbox())
             row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
             row.push($tables.attach("TEST_EVENT_SITES").field_value("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'"))
             row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'"))
             row.push(record.fields["subject"                ].value)
-            row.push(record.fields["administrator_team_id" ].value)
+            row.push(record.fields["administrator_team_id" ].to_name(:full_name))
             row.push(record.fields["grade_level"           ].value)
-            row.push(record.fields["large_print"           ].web.checkbox({:disabled=>true}))
+            row.push(record.fields["large_print"           ].to_user)
             
             tables_array.push(row)
             
@@ -136,17 +138,18 @@ end
             output << fields["subject"               ].web.label(   { :label_option=>"Subject:"          })
             output << fields["test_event_id"         ].web.label(   { :label_option=>"Test Event:"       })
             output << fields["test_type_id"          ].web.label(   { :label_option=>"Test Type:"        })
-            output << fields["test_event_site_id"    ].web.label(   { :label_option=>"Test Event Site:", })
-            output << fields["administrator_team_id" ].web.select(  { :label_option=>"Admin Team ID:",   :dd_choices=>staff_dd(fields["test_event_site_id"    ].value)})
+            output << fields["test_event_site_id"    ].web.label(   { :label_option=>"Test Event Site:"  })
+            output << fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).web.label(:label_option=>"Administrator:")
             output << fields["status"                ].web.select(  { :label_option=>"Status:",          :dd_choices=>status_dd })
-            output << fields["verified"              ].web.checkbox({ :label_option=>"Verified:"         })
-            output << fields["large_print"           ].web.checkbox({ :label_option=>"Large Print:",     :disabled=>true })
+            output << fields["verified"              ].web.checkbox({ :label_option=>"Verified:"                        })
+            output << fields["returned_to_warehouse" ].web.checkbox({ :label_option=>"Returned to Warehouse:"           })
+            output << fields["large_print"           ].to_user!.web.label(:label_option=>"Large Print:")
             
             output << $tools.legend_close()
             
-            output << $tools.legend_open("checkin", "Check-In History")
+            output << $tools.legend_open("checkin", "Location Assignment History")
             
-            output << $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Check-In")
+            output << $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign")
             
             tables_array = Array.new
      
@@ -154,8 +157,8 @@ end
             tables_array.push([
                 "Test Event Site",
                 "Team Member",
-                "Check-in Status",
-                "Check-in Date"
+                "Status",
+                "Date Assigned"
             ])
             
             tpc_pids = $tables.attach("TEST_PACKET_LOCATION").primary_ids("WHERE test_packet_id = '#{pid}' ORDER BY primary_id DESC")
@@ -193,6 +196,7 @@ end
             search_hash[:administrator_team_id ] = $kit.params[:administrator_team_id ] if $kit.params[:administrator_team_id ] && $kit.params[:administrator_team_id ] != ""
             search_hash[:status                ] = $kit.params[:status                ] if $kit.params[:status                ] && $kit.params[:status                ] != ""
             search_hash[:verified              ] = $kit.params[:verified              ] if $kit.params[:verified              ] && $kit.params[:verified              ] != ""
+            search_hash[:returned_to_warehouse ] = $kit.params[:returned_to_warehouse ] if $kit.params[:returned_to_warehouse ] && $kit.params[:returned_to_warehouse ] != ""
             
             if search_hash.length >= 1
                 
@@ -236,6 +240,7 @@ end
             #"search__TEST_PACKETS__administrator_team_id",
             #"search__TEST_PACKETS__status",
             #"search__TEST_PACKETS__verified"
+            #"search__TEST_PACKETS__returned_to_warehouse"
         ]
         
         search_params = search_params_arr.join(",")
@@ -249,9 +254,10 @@ end
         #output << $tools.blank_input("search__TEST_PACKETS__test_event_id",             "test_event_id",                "Test Event ID:")
         output << $tools.blank_input("search__TEST_PACKETS__student_id",                "student_id",                   "Student ID:")
         #output << $tools.blank_input("search__TEST_PACKETS__test_event_site_id",        "test_event_site_id",           "Test Event Site ID:")
-        #output << $tools.blank_input("search__TEST_PACKETS__administrator_team_id",     "administrator_team_id",        "Admin Team ID:")
+        #output << $tools.blank_input("search__TEST_PACKETS__administrator_team_id",     "administrator_team_id",        "Administrator:")
         #output << $tools.blank_input("search__TEST_PACKETS__status",                    "status",                       "Status:")
         #output << $tools.blank_input("search__TEST_PACKETS__verified",                  "verified",                     "Verified:")
+        #output << $tools.blank_input("search__TEST_PACKETS__returned_to_warehouse",     "returned_to_warehouse",        "Returned to Warehouse:")
         
         output << "<button id='student_search_button' type='button' onclick=\"send('#{search_params}');setPreSpinner('test_packets_search_results');\"></button>"
         output << "</div>"
@@ -291,7 +297,7 @@ end
         row = $tables.attach("TEST_PACKET_LOCATION").new_row
         fields = row.fields
         
-        output << $tools.legend_open("sub", "Check-In")
+        output << $tools.legend_open("sub", "Location Assignment")
             
             fields = row.fields
             
