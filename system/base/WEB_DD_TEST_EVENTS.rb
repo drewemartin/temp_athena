@@ -29,6 +29,18 @@ end
         
     end
    
+    def test_packet_serial_numbers(test_event_site_id)
+        
+        test_event_id = $tables.attach("TEST_EVENT_SITES").field_value("test_event_id", "WHERE primary_id = '#{test_event_site_id}'")
+        
+        $tables.attach("TEST_PACKETS").dd_choices(
+            "serial_number",
+            "serial_number",
+            "WHERE test_event_id = '#{test_event_id}'"
+        )
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________STRUCTURE
 end
