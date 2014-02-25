@@ -374,7 +374,8 @@ end
                 "subject"               ,
                 "large_print"           ,
                 "status"                ,
-                "verified"                
+                "verified"              ,
+                "Returned to Warehouse"
             ]
             
         ]
@@ -386,12 +387,12 @@ end
             row     = Array.new
             
             row.push($tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign"))
-            row.push(record.fields["serial_number"         ].web.label)
-            row.push(record.fields["grade_level"           ].web.label)
-            row.push(record.fields["subject"               ].web.label)
-            row.push(record.fields["large_print"           ].web.default(:disabled=>true))
+            row.push(record.fields["serial_number"          ].web.label)
+            row.push(record.fields["grade_level"            ].web.label)
+            row.push(record.fields["subject"                ].web.label)
+            row.push(record.fields["large_print"            ].to_user)
             row.push(
-                record.fields["status"                ].web.select(
+                record.fields["status"                      ].web.select(
                     :dd_choices=>$dd.from_array(
                         [
                             "Completed",
@@ -403,7 +404,8 @@ end
                     )
                 )
             )
-            row.push(record.fields["verified"              ].web.default(:disabled=>true))
+            row.push(record.fields["verified"               ].to_user)
+            row.push(record.fields["returned_to_warehouse"  ].to_user)
             
             tables_array.push(row)
             
@@ -752,7 +754,7 @@ end
             
             output << fields["test_packet_id"     ].set(test_packet_pid).web.hidden
             output << fields["test_event_site_id" ].web.select(:label_option=>"Location:", :dd_choices=>test_event_sites_dd(tp_fields["test_event_id"].value), :validate=>true)
-            output << fields["team_id"            ].set($team.find(:email_address=>$kit.user).primary_id.value).web.hidden
+            output << fields["team_id"            ].web.select(:label_option=>"Team Member",:dd_choices=>staff_dd(              fields[     "test_event_site_id"    ].value))
             #output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
             
         output << $tools.legend_close()
