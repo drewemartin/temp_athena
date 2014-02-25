@@ -368,12 +368,14 @@ end
             
             #HEADERS
             [
+                "Location Assignment"   ,
                 "serial_number"         ,
                 "grade_level"           ,
                 "subject"               ,
                 "large_print"           ,
                 "status"                ,
-                "verified"                
+                "verified"              ,
+                "Returned to Warehouse"
             ]
             
         ]
@@ -384,12 +386,13 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push(record.fields["serial_number"         ].web.label)
-            row.push(record.fields["grade_level"           ].web.label)
-            row.push(record.fields["subject"               ].web.label)
-            row.push(record.fields["large_print"           ].web.default(:disabled=>true))
+            row.push($tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign"))
+            row.push(record.fields["serial_number"          ].web.label)
+            row.push(record.fields["grade_level"            ].web.label)
+            row.push(record.fields["subject"                ].web.label)
+            row.push(record.fields["large_print"            ].to_user)
             row.push(
-                record.fields["status"                ].web.select(
+                record.fields["status"                      ].web.select(
                     :dd_choices=>$dd.from_array(
                         [
                             "Completed",
@@ -401,13 +404,14 @@ end
                     )
                 )
             )
-            row.push(record.fields["verified"              ].web.default(:disabled=>true))
+            row.push(record.fields["verified"               ].to_user)
+            row.push(record.fields["returned_to_warehouse"  ].to_user)
             
             tables_array.push(row)
             
         } if pids
         
-        return "Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")    
+        return "Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")     
        
     end
     
@@ -730,6 +734,37 @@ end
         
     end
 
+    def add_new_record_test_packet_location()
+        
+        output = String.new
+        
+        output << $tools.div_open("new_checkin_container", "new_checkin_container")
+        
+        test_packet_pid = ($kit.params.keys.find{|x|x.to_s.match(/test_packet_id/)}).to_s.split("_")[-1]
+        
+        tp_row    = $tables.attach("TEST_PACKETS").by_primary_id(test_packet_pid)
+        tp_fields = tp_row.fields
+        
+        row = $tables.attach("TEST_PACKET_LOCATION").new_row
+        fields = row.fields
+        
+        output << $tools.legend_open("sub", "Check-In")
+            
+            fields = row.fields
+            
+            output << fields["test_packet_id"     ].set(test_packet_pid).web.hidden
+            output << fields["test_event_site_id" ].web.select(:label_option=>"Location:", :dd_choices=>test_event_sites_dd(tp_fields["test_event_id"].value), :validate=>true)
+            output << fields["team_id"            ].web.select(:label_option=>"Team Member",:dd_choices=>staff_dd(              fields[     "test_event_site_id"    ].value))
+            #output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
+            
+        output << $tools.legend_close()
+        
+        output << $tools.div_close()
+        
+        return output
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
@@ -892,6 +927,14 @@ end
         
     end
     
+    def test_event_sites_dd(test_event_id=nil)
+        
+        where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
+        
+        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", where_clause)
+        
+    end
+
     def test_subjects_dd(test_id)
         
         $tables.attach("TEST_SUBJECTS").dd_choices("name", "primary_id", "WHERE test_id = '#{test_id}'")

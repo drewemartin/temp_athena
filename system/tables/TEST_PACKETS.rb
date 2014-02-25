@@ -29,7 +29,7 @@ end
             AND test_event_id = '#{obj.fields["test_event_id"].value}'"
         )
             
-            record = $tables.attach("TEST_PACKET_CHECKIN").new_row
+            record = $tables.attach("TEST_PACKET_LOCATION").new_row
             record.fields["test_packet_id"      ].value = obj.primary_id
             record.fields["test_event_site_id"  ].value = test_event_site_id
             record.save
@@ -98,6 +98,7 @@ end
             structure_hash["fields"]["administrator_team_id"    ] = {"data_type"=>"int",  "file_field"=>"administrator_team_id" } if field_order.push("administrator_team_id"   )
             structure_hash["fields"]["status"                   ] = {"data_type"=>"text", "file_field"=>"status"                } if field_order.push("status"                  )
             structure_hash["fields"]["verified"                 ] = {"data_type"=>"bool", "file_field"=>"verified"              } if field_order.push("verified"                )
+            structure_hash["fields"]["returned_to_warehouse"    ] = {"data_type"=>"bool", "file_field"=>"returned_to_warehouse" } if field_order.push("returned_to_warehouse"   )
             
         structure_hash["field_order"] = field_order
         return structure_hash
