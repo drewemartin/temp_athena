@@ -142,7 +142,7 @@ end
         tables_array.push([
             $tools.button_new_csv("student_ilp", additional_params_str = nil),
             "Student ILP",
-            "This report includes an ILP Entries for all active students."
+            "This report includes all ILP Entries for all active students."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp.is_true?
         
         #ILP SURVEY COMPLETION
@@ -151,6 +151,13 @@ end
             "Student ILP Survey Completion",
             "This report includes an ILP Survey count (completed/total) for all active students."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_ilp_survey_completion.is_true?
+        
+        #STUDENT_ISP
+        tables_array.push([
+            $tools.button_new_csv("student_isp", additional_params_str = nil),
+            "Student ISP Reimbursement",
+            "This report includes all ISP reimbursement records."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_student_isp.is_true?
         
         #RTII BEHAVIOR REPORT
         tables_array.push([
@@ -1437,6 +1444,77 @@ end
         end
         
     end
+    
+    def add_new_csv_student_isp(options = nil)
+        
+        s_db        = $tables.attach("STUDENT"                          ).data_base
+        sisp_db     = $tables.attach("STUDENT_ISP_REIMBURSEMENT_STATUS" ).data_base
+        
+        sql_str =
+        "SELECT
+            student.student_id,
+            student.familyid,
+            fall_approval_status,
+            fall_request_method,
+            fall_req_contact,
+            fall_req_address,
+            fall_req_amount,
+            fall_req_timeperiod,
+            fall_req_billed_monthly,
+            fall_check_amount,
+            fall_run,
+            fall_notes,
+            spring_approval_status,
+            spring_request_method,
+            spring_req_contact,
+            spring_req_address,
+            spring_req_timeperiod,
+            spring_req_amount,
+            spring_req_billed_monthly,
+            spring_check_amount,
+            spring_run,
+            spring_notes
+        FROM #{sisp_db}.student_isp_reimbursement_status
+        LEFT JOIN #{s_db}.student
+        ON student.student_id = student_isp_reimbursement_status.student_id"
+        
+        headers =
+        [
+            
+            "Student ID",
+            "Family ID",
+            "Fall Approval Status",
+            "Fall Request Method",
+            "Fall Contact Approved?",
+            "Fall Address Approved?",
+            "Fall Time Period Approved?",
+            "Fall Ammount Approved?",
+            "Fall Amount Approved($)",
+            "Fall Reimbursement Amount",
+            "Fall Reimbursement Datetime",
+            "Fall Notes",
+            "Spring Approval Status",
+            "Spring Request Method",
+            "Spring Contact Approved?",
+            "Spring Address Approved?",
+            "Spring Time Period Approved?",
+            "Spring Ammount Approved?",
+            "Spring Amount Approved($)",
+            "Spring Reimbursement Amount",
+            "Spring Reimbursement Datetime",
+            "Spring Notes",
+        ]
+        
+        results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
 
     def add_new_csv_student_rtii_behavior(options = nil)
         
@@ -1630,6 +1708,10 @@ end
             "Student ID",
             "First Name",
             "Last Name",
+            "Grade",
+            "Title 1 Teacher (omni)",
+            "Primary Teacher (omni)",
+            "Special Ed Teacher (omni)",
             "Test Type",
             "Event",
             "Subject",
@@ -1687,21 +1769,26 @@ end
             "Athena Student Tests PID"
         ]
         
-        s_db     = $tables.attach("student").data_base
-        st_db    = $tables.attach("student_tests").data_base
-        tst_db   = $tables.attach("tests").data_base
-        te_db    = $tables.attach("test_events").data_base
-        ts_db    = $tables.attach("test_subjects").data_base
-        tes_db   = $tables.attach("test_event_sites").data_base
-        tsids_db = $tables.attach("team_sams_ids").data_base
-        t_db     = $tables.attach("team").data_base
-        sat_db   = $tables.attach("student_aims_tests").data_base
+        s_db      = $tables.attach("student").data_base
+        relate_db = $tables.attach("student_relate").data_base
+        st_db     = $tables.attach("student_tests").data_base
+        tst_db    = $tables.attach("tests").data_base
+        te_db     = $tables.attach("test_events").data_base
+        ts_db     = $tables.attach("test_subjects").data_base
+        tes_db    = $tables.attach("test_event_sites").data_base
+        tsids_db  = $tables.attach("team_sams_ids").data_base
+        t_db      = $tables.attach("team").data_base
+        sat_db    = $tables.attach("student_aims_tests").data_base
         
         sql_str =
         "SELECT
             student_tests.student_id,
             studentfirstname,
             studentlastname,
+            student.grade,
+            title1teacher,
+            primaryteacher,
+            specialedteacher,
             tests.name,
             test_events.name,
             test_subjects.name,

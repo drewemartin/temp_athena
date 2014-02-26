@@ -13,7 +13,7 @@ class Delete_Expired_Requested_Files < Base
                 
                 if entry != "." && entry != ".."
                     
-                    timestamp     = File.ctime("#{path}/#{entry}")
+                    timestamp     = File.mtime("#{path}/#{entry}")
                     timestamp_str = timestamp.strftime("%Y-%m-%d")
                     
                     if Date.strptime(timestamp_str) < (Date.today-2)

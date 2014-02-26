@@ -24,7 +24,7 @@ end
     def after_insert(obj)
         
         if test_event_site_id = $tables.attach("TEST_EVENT_SITES").field_value(
-            "test_event_site_id",
+            "primary_id",
             "WHERE site_name = 'Testing Warehouse'
             AND test_event_id = '#{obj.fields["test_event_id"].value}'"
         )

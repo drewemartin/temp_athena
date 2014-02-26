@@ -165,7 +165,7 @@ end
             if this_row.fields.keys.include?("not_attending")
                 
                 event_site_id = $tables.attach("TEST_EVENT_SITE_STAFF").field_value("test_event_site_id", "WHERE primary_id = '#{this_row.primary_id}'")
-                $kit.modify_tag_content("tabs-4", load_tab_5(event_site_id)[1], "update")
+                $kit.modify_tag_content("site_staff_tab", load_tab_5(event_site_id)[1], "update")
                 
             end
             
@@ -294,6 +294,8 @@ end
         
         output = String.new
         
+        output << $tools.div_open("site_staff_tab", "site_staff_tab")
+        
         output << $tools.button_new_row(table_name = "TEST_EVENT_SITE_STAFF", "test_event_site_id")
         
         tables_array = Array.new
@@ -357,6 +359,8 @@ end
         } if records
         
         output << $kit.tools.data_table(tables_array.insert(0, headers), "staff")
+        
+        output << $tools.div_close
         
         return "Site Staff", output
         
