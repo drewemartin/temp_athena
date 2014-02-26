@@ -57,6 +57,10 @@ end
         table.table_name
     end
     
+    def updated
+        structure[:updated]
+    end
+    
     def valid
         structure["valid"]
     end
@@ -148,6 +152,10 @@ end
     
     def primary_id=(arg)
         structure["primary_id"] = arg
+    end
+    
+    def updated=(arg)
+        structure[:updated] = arg
     end
     
     def valid=(arg)

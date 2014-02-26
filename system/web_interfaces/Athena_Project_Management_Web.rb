@@ -425,7 +425,7 @@ end
         output << $tools.legend_open("sub", "Project Details")
         
             output << fields["project_name"].web.text(:label_option=>"Project Name:")
-            output << fields["brief_description"].web.textarea(:label_option=>"Description:")
+            output << fields["brief_description"].web.textarea(:label_option=>"Description:", :resizable=>true)
             output << fields["requested_priority_level"].web.select(:label_option=>"Requested Priority:", :dd_choices=>priority_level_dd)
             output << fields["requested_completion_date"].web.default(:label_option=>"Requested ETA:")
             
@@ -740,7 +740,7 @@ end
             div.ATHENA_PROJECT__requested_completion_date   label{display: inline-block; width: 130px;}
             
             div.ATHENA_PROJECT__project_name                input{width: 350px;}
-            div.ATHENA_PROJECT__brief_description        textarea{width: 350px; resize: none; overflow-y: scroll;}
+            div.ATHENA_PROJECT__brief_description        textarea{width: 350px; overflow-y: scroll;}
             
             div.ATHENA_PROJECT__feature_requested                               { min-width:160px; }
             div.ATHENA_PROJECT__requester_team_id                               { min-width:150px; }

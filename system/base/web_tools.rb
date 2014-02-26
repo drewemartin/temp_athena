@@ -880,6 +880,17 @@ end
         
     end
     
+    def button_select_all(a={})
+        #:element_name_prefix
+        
+        button_string = String.new
+        
+        button_string << "<span class='ui-icon ui-icon-check' onclick='select_all(#{a[:element_name_prefix]})'></span>"
+        
+        return button_string
+        
+    end
+
     def button_view_pdf(pdf_name, doc_path, additional_params_str = nil, additional_field_ids_array = nil)
         params_str  = additional_params_str ? "ARGV#{additional_params_str}" : ""
         fields_str  = additional_field_ids_array  ? "," + additional_field_ids_array.join(",") : ""
@@ -1058,7 +1069,7 @@ end
         class_row = "even"
         tables_array[1 ...tables_array.length].each{|trs|
             
-            if (tr_id = trs.find{|x|(!x.nil? && x.match(/row_id/))}
+            if (tr_id = trs.find{|x|(x && x.match(/row_id/))}
             )
                 trs.delete(tr_id)
             end

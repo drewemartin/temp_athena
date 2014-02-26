@@ -36,6 +36,15 @@ end
     
     def response
         
+        if field = $kit.rows.first[1].fields["serial_number"]
+            if !field.updated
+                student_id = $tables.attach("TEST_PACKETS").field_value("student_id", "WHERE serial_number = '#{field.value}'")
+                $kit.web_error.duplicate_assignment_error(
+                    additional_message="This test packet is already assigned to the student with ID# #{student_id}. You must unassign this packet first."
+                )
+            end
+        end
+        
         if $kit.add_new?
             
             $kit.student_record.content
@@ -168,7 +177,7 @@ end
             row.push(test.fields["test_subject"         ].web.label() )         
             row.push(test.fields["test_type"            ].web.label() )
             row.push(test.fields["checked_in"           ].web.default() )
-            row.push(test.fields["serial_number"        ].web.text() )        
+            row.push(test.fields["serial_number"        ].web.select(:dd_choices=>$dd.test_events_test_packet_serial_numbers(event_site_id)) )        
             row.push(test.fields["completed"            ].web.default() )            
             row.push(test.fields["test_administrator"   ].web.select({:dd_choices=>test_admin_dd}) )   if test_admin_dd #ELSE NO STAFF ASSIGNED
             row.push(test.fields["test_results"         ].web.default() ) 
@@ -269,7 +278,7 @@ end
             row.push(test.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd, :disabled=>true) )  
             row.push(test.fields["test_subject_id"      ].web.select(:dd_choices=>test_subjects_dd(test.fields["test_id"].value)) ) if !section_name.match(/aims/)    
             row.push(test.fields["checked_in"           ].web.default() )                                                           if !section_name.match(/aims/)
-            row.push(test.fields["serial_number"        ].web.text() )                                                              if !section_name.match(/aims/)
+            row.push(test.fields["serial_number"        ].web.select(:dd_choices=>$dd.test_events.test_packet_serial_numbers(test.fields["test_event_site_id"   ].value)) )                                                              if !section_name.match(/aims/)
             row.push(test.fields["completed"            ].web.default() )            
             row.push(test.fields["test_administrator"   ].web.select({:dd_choices=>test_admin_dd}) )   if test_admin_dd #ELSE NO STAFF ASSIGNED
             row.push(test.fields["test_event_site_id"   ].web.select({:dd_choices=>$dd.test_events.event_sites(test.fields["test_event_id"].value)}, true) )  

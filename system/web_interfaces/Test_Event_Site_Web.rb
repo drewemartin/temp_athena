@@ -146,6 +146,16 @@ end
     end
     
     def response
+        
+        if field = $kit.rows.first[1].fields["serial_number"]
+            if field.updated == false
+                student_id = $tables.attach("TEST_PACKETS").field_value("student_id", "WHERE serial_number = '#{field.value}'")
+                $kit.web_error.duplicate_assignment_error(
+                    additional_message="This test packet is already assigned to the student with ID# #{student_id}. You must unassign this packet first.<BR>"
+                )
+            end
+        end
+        
         if $kit.params[:student_id] && $kit.params[:student_id] != ""
             sid = $kit.params[:student_id]
             output = student_record(sid)
@@ -589,7 +599,7 @@ end
             row.push(test_record.fields["test_subject_id"    ].web.select(:disabled=>true, :dd_choices=>test_subjects_dd(test_id) )  )
             row.push(test_record.fields["test_id"            ].web.select(:disabled=>true, :dd_choices=>test_types_dd    )  )
             row.push(test_record.fields["checked_in"         ].web.default())
-            row.push(test_record.fields["serial_number"      ].web.text()   )
+            row.push(test_record.fields["serial_number"      ].web.select(:dd_choices => $dd.test_events.test_packet_serial_numbers(@test_event_site_id))   )
             row.push(test_record.fields["completed"          ].web.default())
             row.push(test_record.fields["test_administrator" ].web.select(:dd_choices=>test_admin_dd(test_record.fields["test_administrator" ].value))  )
             
@@ -938,7 +948,7 @@ end
         $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", where_clause)
         
     end
-
+    
     def test_subjects_dd(test_id)
         
         $tables.attach("TEST_SUBJECTS").dd_choices("name", "primary_id", "WHERE test_id = '#{test_id}'")

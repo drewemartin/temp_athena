@@ -242,33 +242,55 @@ end
     end
     
     def update(create_audit_trail)
-        pre_update_record = table.by_primary_id(primary_id)
-        fields.each_pair do |field_name, field|
-            unless field_name == "primary_id" || field_name == "created_by" || field_name == "created_date"
-                current_value = pre_update_record.fields[field_name].value
-                current_value = current_value && current_value.length > 0 ? current_value : "NULL"
-                if $base.to_db(field.datatype, current_value).to_s != field.to_db.to_s
+        
+        if table.find_and_trigger_event(event_type = :before_change,  args = self)
+            
+            pre_update_record = table.by_primary_id(primary_id)
+            
+            fields.each_pair do |field_name, field|
+                
+                unless field_name == "primary_id" || field_name == "created_by" || field_name == "created_date"
                     
-                    table.find_and_trigger_event(event_type = :before_change_field,  args = field)
+                    current_value = pre_update_record.fields[field_name].value
+                    current_value = current_value && current_value.length > 0 ? current_value : "NULL"
                     
-                    new_value = field.to_db == "NULL" ? field.to_db : "'#{field.to_db}'"
-                    if table.audit
-                        audit_trail(field_name, new_value)
+                    if $base.to_db(field.datatype, current_value).to_s != field.to_db.to_s
+                        
+                        if table.find_and_trigger_event(event_type = :before_change_field,  args = field)
+                            
+                            new_value = field.to_db == "NULL" ? field.to_db : "'#{field.to_db}'"
+                            if table.audit
+                                audit_trail(field_name, new_value)
+                            end
+                            update_sql = 
+                                "UPDATE `#{table.name}`
+                                SET `#{field_name}` = #{new_value}
+                                WHERE `primary_id` = '#{fields["primary_id"].value}'"
+                            $db.query(update_sql, table.data_base)
+                            
+                            table.find_and_trigger_event(event_type = :after_change_field,  args = field)
+                            table.find_and_trigger_event(event_type = :after_change,        args = self)
+                            
+                            field.updated = true
+                            
+                        else
+                            
+                            field.updated = false
+                            
+                        end
+                        
                     end
-                    update_sql = 
-                        "UPDATE `#{table.name}`
-                        SET `#{field_name}` = #{new_value}
-                        WHERE `primary_id` = '#{fields["primary_id"].value}'"
-                    $db.query(update_sql, table.data_base)
                     
-                    table.find_and_trigger_event(event_type = :after_change_field,  args = field)
-                    table.find_and_trigger_event(event_type = :after_change,        args = self)
-                    
-                end 
+                end
+                
             end
+            
+            validate
+            
         end
-        validate
+        
         return primary_id
+        
     end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

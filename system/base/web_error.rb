@@ -84,6 +84,19 @@ end
           )
      end
      
+     def duplicate_assignment_error(additional_message)
+          
+          error_message  = "Duplicate Assignment Detected! <BR> #{additional_message}"
+          email_subject  = "Athena Support Request - Duplicate Assignment"
+          email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
+          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          
+          $kit.error_message(
+               "#{error_message} If you continue to receive this message, and you believe it is in error, contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."
+          )
+          
+     end
+
      def unexpected_error
           
           error_message  = "An unexpected error has occurred."
