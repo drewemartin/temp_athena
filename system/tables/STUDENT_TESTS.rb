@@ -78,23 +78,81 @@ end
         
     end
     
-    def after_change_field_serial_number(obj)
+    def before_change_field_serial_number(obj)
         
-        record = by_primary_id(obj.primary_id)
-        
-        if serial_number = record.fields["serial_number"].value
+        if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
+            
+            old_record = by_primary_id(obj.primary_id)
+            
+            if serial_number_removed_from_record = obj.is_null?
+                
+                serial_number = old_record.fields["serial_number"].value
+                
+            else
+                
+                serial_number = obj.value
+                
+            end
             
             test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
-            test_record.fields["student_id"].value = record.fields["student_id"].value
+            
+            if serial_number_removed_from_record
+                
+                test_record.fields["student_id"         ].value = nil
+                
+            else
+                
+                test_record.fields["student_id"].value = $focus_student.student_id.value
+                if !(record.fields["test_event_site_id"].value.nil? || record.fields["test_event_site_id"].value.empty?)
+                    
+                    test_record.fields["test_event_site_id"].value = record.fields["test_event_site_id"].value
+                    
+                end
+                
+            end
+            
             test_record.save
             
         end
         
     end
-
+    
     def after_change_field_test_event_site_id(field)
         
         update_attendance_record(field)
+        
+    end
+    
+    def before_change_field_serial_number(field)
+        
+        #THIS ONLY APPLIES TO CHANGES MADE ON THE FRONT END BY USERS. 
+        if $focus_student && !field.is_null? 
+            
+            if test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{field.value}'")
+                
+                if test_record.fields["student_id"].value.nil?
+                    
+                    return true
+                    
+                elsif $focus_student.student_id.value == test_record.fields["student_id"].value
+                    
+                    return true
+                    
+                else
+                    
+                    return false
+                    
+                end
+                
+            else
+                
+            end
+            
+        else
+            
+            return true
+            
+        end
         
     end
     
