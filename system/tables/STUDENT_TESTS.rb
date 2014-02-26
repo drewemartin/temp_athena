@@ -78,7 +78,7 @@ end
         
     end
     
-    def before_change_field_serial_number(obj)
+    def disabled_before_change_field_serial_number(obj)
         
         if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
             
@@ -132,15 +132,15 @@ end
                 
                 if test_record.fields["student_id"].value.nil?
                     
-                    return true
+                    update_approved = true
                     
                 elsif $focus_student.student_id.value == test_record.fields["student_id"].value
                     
-                    return true
+                    update_approved = true
                     
                 else
                     
-                    return false
+                    update_approved = false
                     
                 end
                 
@@ -150,9 +150,50 @@ end
             
         else
             
-            return true
+            update_approved = true
             
         end
+        
+        if update_approved
+            
+            if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
+                
+                old_record = by_primary_id(field.primary_id)
+                
+                if serial_number_removed_from_record = field.is_null?
+                    
+                    serial_number = old_record.fields["serial_number"].value
+                    
+                else
+                    
+                    serial_number = field.value
+                    
+                end
+                
+                test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
+                
+                if serial_number_removed_from_record
+                    
+                    test_record.fields["student_id"         ].value = nil
+                    
+                else
+                    
+                    test_record.fields["student_id"].value = $focus_student.student_id.value
+                    if !(record.fields["test_event_site_id"].value.nil? || record.fields["test_event_site_id"].value.empty?)
+                        
+                        test_record.fields["test_event_site_id"].value = record.fields["test_event_site_id"].value
+                        
+                    end
+                    
+                end
+                
+                test_record.save
+                
+            end
+            
+        end
+        
+        return update_approved
         
     end
     
