@@ -79,7 +79,10 @@ end
                 "source_address"    => nil,
                 "source_type"       => nil,
                 "audit"             => true,
-                :relationship       => :one_to_one
+                :relationship       => :one_to_one,
+                :load_type          => :append,
+                :keys               => ["student_id"],
+                :update             => true,
             }
             @table_structure = set_fields(structure_hash)
         end
