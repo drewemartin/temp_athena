@@ -1520,6 +1520,113 @@ function x___________________JQUERY_UI_DIALOGS(){}
 		
 	}
 	
+	function upload_table(table_name, params) {
+		
+		var buttons = Array
+		
+		$('#upload_new_table_'+table_name).dialog({
+			
+			title		:"Upload Table",
+			position	: ["center",dialog_Ypos()],
+			autoOpen	: false,
+			draggable	: false,
+			resizable	: false,
+			closeOnEscape	: false,
+			modal		: true,
+			height		: "auto",
+			width		: "auto",
+			open		: function(event, ui) {
+				
+				$(this).dialog("option", "position", ["center",dialog_Ypos()]);
+				$(".ui-dialog-titlebar-close", ui.dialog).hide();
+				$(this).html(spinner);
+				buttons = $(this).dialog( "option", "buttons" );
+				
+			},
+			buttons		: {
+				
+				"Save": function() {
+					
+					var field_ids = "upload_new_table_"+table_name
+					var break_save = false
+					
+					$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden],[type=file]").each(function(){
+						
+						if ($(this).hasClass("validate") && $(this).attr("value") == ""){
+							
+							alert("Please Complete Out All Fields")
+							field_ids = ""
+							break_save = true
+							
+						}
+						if (!break_save){
+							
+							var field_id = $(this).attr("id")
+							
+							if(field_id != ""){
+								
+								if(field_ids == ""){
+									
+									field_ids = field_id
+									
+								}else{
+									
+									field_ids = field_ids + "," + field_id
+									
+								}
+								
+							}
+							
+							if ($(this).parent().is("div")){
+								
+								$(this).parent().hide()
+								
+							}
+							
+						}
+						
+					});
+					
+					if (!break_save){
+						
+						if (field_ids){
+							redirect_submit(table_name.toLowerCase()+"_upload")
+							$("#"+table_name.toLowerCase()+"_upload").append(spinner())
+						}
+						
+						$('#upload_new_table_'+table_name).dialog( "option", "buttons", {
+							
+							OK: function() {
+								
+								$(this).dialog( "option", "buttons", buttons)
+								$(this).dialog( "close" );
+								
+							}
+							
+						});
+						
+						$(".ui-dialog-buttonset").hide();
+						$(".table_upload_file").hide();
+						
+					}
+					
+				},
+				Cancel: function() {
+					
+					$(this).html(spinner())
+					$(this).dialog( "close" );
+					
+				}
+				
+			}
+			
+		});
+		
+		$('#upload_new_table_'+table_name).dialog("open");
+		send(params);
+		
+	}
+	
 	function warning_dialog(message, textStatus, errorThrown, errorCode) {
 		
 		$('#warning_dialog').dialog({

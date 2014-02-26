@@ -204,6 +204,19 @@ end
         
     end
     
+    def table_upload(table_name, web_script, unique_id, size='50')
+        return "
+            <form id='#{unique_id}' name='form' action='D20130906.rb' method='POST' enctype='multipart/form-data' >
+            <input type='hidden' name='page' value='#{web_script}'>
+            <input type='hidden' id= 'user_id' name= 'user_id' value='#{$user.class == String ? $user : $user.email_address_k12.value}'>
+            <input id='table_upload_name' name='table_upload_name' value='#{table_name}' style='display:none;'>
+            <input type='file' id='#{unique_id}_input' class ='table_upload_file validate' name='table_upload_file' size='#{size}' onchange='ext_check(this, \"csv\");'>
+            <iframe id='upload_iframe_#{unique_id}' name='upload_iframe_#{unique_id}' src='' position:absolute;' onload='handle_upload(this, \"#{unique_id}\")'>
+            </iframe>
+            </form>
+        "
+    end
+    
     #def ordered_list(list_array, class_name="", id="")
     #    output = "<ol class='#{class_name}' id='#{id}'>"
     #    list_array.each_with_index do |item, i|
@@ -894,6 +907,30 @@ end
             :field_id   => "upload_doc_button",
             :no_div     => true,
             :onclick    => "upload_doc('#{doc_name}','upload_doc_#{doc_name},#{params_str}');"
+        )
+        
+        return button_html
+        
+    end
+    
+    def button_upload_table(table_name, additional_params_str = nil, text="UPLOAD")
+        
+        params_str  = additional_params_str ? ","+additional_params_str : ""
+        button_html = String.new
+        
+        button_html << "<input id='upload_table_#{table_name}' name='table_upload' value='#{table_name}' type='hidden'>"
+        button_html << "<div id='upload_new_table_#{table_name}' class='add_new_dialog' style='display:none;'></div>\n"
+        
+        button_html << $field.new(
+            {
+                "type"      => "text",
+                "field"     => "upload_table_button",
+                "value"     => text
+            }
+        ).web.button(
+            :field_id   => "upload_table_button",
+            :no_div     => true,
+            :onclick    => "upload_table('#{table_name}','upload_table_#{table_name}#{params_str}');"
         )
         
         return button_html
