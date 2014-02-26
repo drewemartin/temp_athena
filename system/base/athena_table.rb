@@ -1220,19 +1220,43 @@ end
     def find_and_trigger_event(event_type, args = nil)
         
         case event_type
+        when :before_change
+            
+            if respond_to?(:before_change)
+                
+                results = send(:before_change, args)
+                return false if results == false
+                
+            end
+            
         when :after_change
-            send(:after_change, args) if respond_to?(:after_change)
+            
+            if respond_to?(:after_change)
+                
+                resaults = send(:after_change, args)
+                return false if results == false
+                
+            end
             
         when :before_change_field
-            #looks in own class for :before_change_field for the field passed, requires the parameter of a Field object to be passed
             
             #CALL FOR A SPECIFIC FIELD THAT HAS CHANGED
             trigger_function_name = "#{:before_change_field}_#{args.field_name}"
-            send(trigger_function_name, args) if respond_to?(trigger_function_name)
+            if respond_to?(trigger_function_name)
+                
+                results = send(trigger_function_name, args) 
+                return false if results == false
+                
+            end
             
             #CALL FOR ANY FIELD THAT CHANGES
-            trigger_function_name = "#{:before_change_field}" 
-            send(trigger_function_name, args) if respond_to?(trigger_function_name)
+            trigger_function_name = "#{:before_change_field}"
+            if respond_to?(trigger_function_name)
+                
+                results = send(trigger_function_name, args) 
+                return false if results == false
+                
+            end
             
         when :after_change_field
             #looks in own class for :after_change_field for the field passed, requires the parameter of a Field object to be passed
@@ -1267,11 +1291,21 @@ end
             
             #CALL FOR A SPECIFIC FIELD THAT HAS CHANGED
             trigger_function_name = "#{:after_change_field}_#{args.field_name}"
-            send(trigger_function_name, args) if respond_to?(trigger_function_name)
+            if respond_to?(trigger_function_name)
+                
+                results = send(trigger_function_name, args) 
+                return false if results == false
+                
+            end
             
             #CALL FOR ANY FIELD THAT CHANGES
             trigger_function_name = "#{:after_change_field}"
-            send(trigger_function_name, args) if respond_to?(trigger_function_name)
+            if respond_to?(trigger_function_name)
+                
+                results = send(trigger_function_name, args)
+                return false if results == false
+                
+            end
          
         when :before_load #any table can have this event for self table
             
@@ -1288,7 +1322,12 @@ end
                     continue_with_load = this_table.send(this_trigger_event)
                     
                 rescue=> e
-                    raise e
+                    #raise e #THIS SHOULD HAVE BEEN A SYSTEM NOTIFICATION - ADDING NOW BUT LEACING THIS NOTE HERE TO HELP IDENTIFY ANY ISSUES THAT MAY COME TO LIGHT WHICH WERE CONCEALED BY THIS BEFORE...
+                    $base.system_notification(
+                        subject = "BEFORE LOAD FAILED - #{file}",
+                        content = "Don't just stand there and shout it; do something about it... Here's the error:
+                        #{e.message}"
+                    )
                     
                 end
                 
@@ -1359,6 +1398,9 @@ end
             end
             
         end
+        
+        return true
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
