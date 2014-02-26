@@ -19,6 +19,8 @@ end
         if location
             if location == "temp"
                 path = $paths.temp_path
+            elsif location == "import"
+                path = $paths.imports_path
             else
                 path = $config.init_path("#{$paths.reports_path}#{location}")
             end

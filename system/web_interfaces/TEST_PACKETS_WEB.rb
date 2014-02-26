@@ -29,6 +29,7 @@ end
         output << test_search
         
         output << "<button class='new_breakaway_button' id='test_packets_search_dialog_button'>Test Packet Search</button>"
+        output << $tools.button_upload_table("TEST_PACKETS", nil, "Upload Test Packets")
         
         output << $tools.div_open("test_packets_record_container", "test_packets_record_container")
         output << $tools.legend_open("information", "Information")
@@ -127,23 +128,94 @@ end
             
             fields = school_record.fields
             
-            fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).find_field("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'").value 
-            fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).find_field("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'").value 
-            fields["test_type_id"           ].value = $tables.attach("TESTS"            ).find_field("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'").value
-            fields["subject"                ].value = $tables.attach("TEST_SUBJECTS"    ).find_field("name",        "WHERE primary_id = '#{fields["subject"            ].value}'").value
+            fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
+            fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
+            fields["test_type_id"           ].value = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
+            fields["subject"                ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject"            ].value}'")
             
-            output << fields["student_id"            ].web.label(   { :label_option=>"Student ID:"       })
-            output << fields["serial_number"         ].web.label(   { :label_option=>"Serial Number:"    })
-            output << fields["grade_level"           ].web.label(   { :label_option=>"Grade:"            })
-            output << fields["subject"               ].web.label(   { :label_option=>"Subject:"          })
-            output << fields["test_event_id"         ].web.label(   { :label_option=>"Test Event:"       })
-            output << fields["test_type_id"          ].web.label(   { :label_option=>"Test Type:"        })
-            output << fields["test_event_site_id"    ].web.label(   { :label_option=>"Test Event Site:"  })
-            output << fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).web.label(:label_option=>"Administrator:")
-            output << fields["status"                ].web.select(  { :label_option=>"Status:",          :dd_choices=>status_dd })
-            output << fields["verified"              ].web.checkbox({ :label_option=>"Verified:"                        })
-            output << fields["returned_to_warehouse" ].web.checkbox({ :label_option=>"Returned to Warehouse:"           })
-            output << fields["large_print"           ].to_user!.web.label(:label_option=>"Large Print:")
+            output << $tools.table(
+                :table_array=>[
+                    [
+                        "Student ID",
+                        "First Name",
+                        "Last Name",
+                        "Grade",
+                        "Administrator",
+                        ""
+                    ],
+                    [
+                        fields["student_id"].value,
+                        $tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{fields["student_id"].value}'"),
+                        $tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{fields["student_id"].value}'"),
+                        fields["grade_level"].value,
+                        fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).value,
+                        ""
+                    ],
+                ],
+                :embedded_style => {
+                    :table  => "width:100%;",
+                    :th     => "text-align:center;",
+                    :tr     => nil,
+                    :tr_alt => nil,
+                    :td     => "text-align:center;width:16%;"
+                },:head_section   => true
+            )
+            
+            output << $tools.table(
+                :table_array=>[
+                    [
+                        "Serial Number",
+                        "Subject",
+                        "Test Event",
+                        "Test Type",
+                        "Test Event Site",
+                        "Large Print"
+                    ],
+                    [
+                        fields["serial_number"].value,
+                        fields["subject"].value,
+                        fields["test_event_id"].value,
+                        fields["test_type_id"].value,
+                        fields["test_event_site_id"].value,
+                        fields["large_print" ].web.checkbox(:disabled=>true)
+                    ],
+                ],
+                :embedded_style => {
+                    :table  => "width:100%;",
+                    :th     => "text-align:center;",
+                    :tr     => nil,
+                    :tr_alt => nil,
+                    :td     => "text-align:center;width:16%;"
+                },:head_section   => true
+            )
+            
+            output << $tools.table(
+                :table_array=>[
+                    [
+                        "Status",
+                        "Verified",
+                        "Returned to Warehouse",
+                        "",
+                        "",
+                        ""
+                    ],
+                    [
+                       fields["status"].web.select(:dd_choices=>status_dd),
+                       fields["verified"].web.checkbox,
+                       fields["returned_to_warehouse" ].web.checkbox,
+                       "",
+                       "",
+                       ""
+                    ]
+                ],
+                :embedded_style => {
+                    :table  => "width:100%;",
+                    :th     => "text-align:center;",
+                    :tr     => nil,
+                    :tr_alt => nil,
+                    :td     => "text-align:center;width:16%;"
+                },:head_section   => true
+            )
             
             output << $tools.legend_close()
             
@@ -152,7 +224,7 @@ end
             output << $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign")
             
             tables_array = Array.new
-     
+            
             #HEADERS
             tables_array.push([
                 "Test Event Site",
@@ -182,6 +254,36 @@ end
             output << $tools.legend_close()
             
             $kit.modify_tag_content("test_packets_record_container", output, "update")
+            
+        elsif $kit.params[:table_upload]
+            
+            output = $tools.table_upload($kit.params[:table_upload], self.class.name, "test_packets_upload", size='50')
+            $kit.modify_tag_content("upload_new_table_TEST_PACKETS", output, "update")
+            
+        elsif $kit.params[:table_upload_file]
+            
+            return_message = "File Upload is queued for processing."
+            
+            existing = $tables.attach("PROCESS_LOG").primary_ids("
+                WHERE class_name = 'Load_Table_From_Csv'
+                AND function_name = 'load_table'
+                AND args = '#{$kit.params[:table_upload_name]}'
+                AND (status IS NULL OR status = 'Processing')
+            ")
+            
+            if !existing
+                
+                file_path = $reports.csv("import", $kit.params[:table_upload_name].downcase(), $kit.params[:table_upload_file], false)
+                
+                $base.queue_process("Load_Table_From_Csv", "load_table", $kit.params[:table_upload_name])
+                
+            else
+                
+                return_message = "You can not upload a file for this table until the previous upload is completed."
+                
+            end
+            
+            $kit.output=return_message
             
         else
             
@@ -303,7 +405,7 @@ end
             
             output << fields["test_packet_id"     ].set(test_packet_pid).web.hidden
             output << fields["test_event_site_id" ].web.select(:label_option=>"Location:",  :dd_choices=>test_event_sites_dd(   tp_fields[  "test_event_id"         ].value), :validate=>true)
-            output << fields["team_id"            ].web.select(:label_option=>"Team Member",:dd_choices=>staff_dd(              fields[     "test_event_site_id"    ].value))
+            output << fields["team_id"            ].web.select(:label_option=>"Team Member:",:dd_choices=>staff_dd(              fields[     "test_event_site_id"    ].value))
             #output << fields["checkin_status"     ].web.text(:label_option=>"Status"    )
             
         output << $tools.legend_close()
@@ -393,6 +495,7 @@ end
             table.dataTable td.column_0                     {text-align: center;}
             #student_container fieldset                     {width:97%}
             .no_info                                        {height:100px;}
+            #upload_iframe_test_packets_upload              {display:none;}
             
             #test_packets_search_fields                     {width:400px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}
