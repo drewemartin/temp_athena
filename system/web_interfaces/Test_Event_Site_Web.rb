@@ -389,7 +389,7 @@ end
                 "large_print"           ,
                 "status"                ,
                 "verified"              ,
-                "Returned to Warehouse"
+                "Returned to Warehouse (to be shipped)"
             ]
             
         ]
@@ -400,7 +400,7 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push($tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign"))
+            row.push($tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign")) if !fields["returned_to_warehouse" ].is_true?
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
             row.push(record.fields["subject"                ].web.label)
