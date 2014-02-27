@@ -67,7 +67,7 @@ end
             "Serial Number",
             "Status",
             "Verified",
-            "Returned to Warehouse",
+            "Returned to Warehouse (to be shipped)",
             "Test Event",
             "Test Event Site",
             "Test Type",
@@ -114,146 +114,15 @@ end
     
     def response
         
+        if !$kit.rows.first.nil? && field = $kit.rows.first[1].fields["returned_to_warehouse"]
+            
+            test_packet_record(pid = field.primary_id)
+            
+        end
+        
         if $kit.params[:load_test_packets_record] || $kit.params[:add_new_TEST_PACKET_LOCATION]
             
-            output = String.new
-            
-            output << $tools.legend_open("information", "Information")
-            
-            pid = $kit.params[:load_test_packets_record] || $kit.params[:field_id____TEST_PACKET_LOCATION__test_packet_id]
-            
-            output << "<input id='test_packet_id_#{pid}' type='hidden' value='#{pid}' name='test_packet_id'>"
-            
-            school_record = $tables.attach("TEST_PACKETS").by_primary_id(pid)
-            
-            fields = school_record.fields
-            
-            fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
-            fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
-            fields["test_type_id"           ].value = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
-            fields["subject"                ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject"            ].value}'")
-            
-            output << $tools.table(
-                :table_array=>[
-                    [
-                        "Student ID",
-                        "First Name",
-                        "Last Name",
-                        "Grade",
-                        "Administrator",
-                        ""
-                    ],
-                    [
-                        fields["student_id"].value,
-                        $tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{fields["student_id"].value}'"),
-                        $tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{fields["student_id"].value}'"),
-                        fields["grade_level"].value,
-                        fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).value,
-                        ""
-                    ],
-                ],
-                :embedded_style => {
-                    :table  => "width:100%;",
-                    :th     => "text-align:center;",
-                    :tr     => nil,
-                    :tr_alt => nil,
-                    :td     => "text-align:center;width:16%;"
-                },:head_section   => true
-            )
-            
-            output << $tools.table(
-                :table_array=>[
-                    [
-                        "Serial Number",
-                        "Subject",
-                        "Test Event",
-                        "Test Type",
-                        "Test Event Site",
-                        "Large Print"
-                    ],
-                    [
-                        fields["serial_number"].value,
-                        fields["subject"].value,
-                        fields["test_event_id"].value,
-                        fields["test_type_id"].value,
-                        fields["test_event_site_id"].value,
-                        fields["large_print" ].web.checkbox(:disabled=>true)
-                    ],
-                ],
-                :embedded_style => {
-                    :table  => "width:100%;",
-                    :th     => "text-align:center;",
-                    :tr     => nil,
-                    :tr_alt => nil,
-                    :td     => "text-align:center;width:16%;"
-                },:head_section   => true
-            )
-            
-            output << $tools.table(
-                :table_array=>[
-                    [
-                        "Status",
-                        "Verified",
-                        "Returned to Warehouse",
-                        "",
-                        "",
-                        ""
-                    ],
-                    [
-                       fields["status"].web.select(:dd_choices=>status_dd),
-                       fields["verified"].web.checkbox,
-                       fields["returned_to_warehouse" ].web.checkbox,
-                       "",
-                       "",
-                       ""
-                    ]
-                ],
-                :embedded_style => {
-                    :table  => "width:100%;",
-                    :th     => "text-align:center;",
-                    :tr     => nil,
-                    :tr_alt => nil,
-                    :td     => "text-align:center;width:16%;"
-                },:head_section   => true
-            )
-            
-            output << $tools.legend_close()
-            
-            output << $tools.legend_open("checkin", "Location Assignment History")
-            
-            output << $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign")
-            
-            tables_array = Array.new
-            
-            #HEADERS
-            tables_array.push([
-                "Test Event Site",
-                "Team Member",
-                "Status",
-                "Date Assigned"
-            ])
-            
-            tpc_pids = $tables.attach("TEST_PACKET_LOCATION").primary_ids("WHERE test_packet_id = '#{pid}' ORDER BY primary_id DESC")
-            tpc_pids.each{|tpc_pid|
-                
-                tpc_record = $tables.attach("TEST_PACKET_LOCATION").by_primary_id(tpc_pid)
-                
-                row = Array.new
-                
-                row.push($tables.attach("TEST_EVENT_SITES").find_field("site_name", "WHERE primary_id = '#{tpc_record.fields["test_event_site_id" ].value}'").value)
-                row.push("#{tpc_record.fields['team_id'].to_name(:full_name)}")
-                row.push(tpc_record.fields["checkin_status"     ].value)
-                row.push(tpc_record.fields["checkin_date"       ].to_user)
-                
-                tables_array.push(row)
-                
-            } if tpc_pids
-            
-            output << $kit.tools.data_table(tables_array, "test_packet_check_in", table_type = "default", titles = false, custom_titles = nil, sort_col_header="Date Assigned", sort_dir='desc')
-            
-            output << $tools.legend_close()
-            
-            $kit.modify_tag_content("test_packets_record_container", output, "update")
+            test_packet_record(pid = $kit.params[:load_test_packets_record] || $kit.params[:field_id____TEST_PACKET_LOCATION__test_packet_id])
             
         elsif $kit.params[:table_upload]
             
@@ -359,7 +228,7 @@ end
         #output << $tools.blank_input("search__TEST_PACKETS__administrator_team_id",     "administrator_team_id",        "Administrator:")
         #output << $tools.blank_input("search__TEST_PACKETS__status",                    "status",                       "Status:")
         #output << $tools.blank_input("search__TEST_PACKETS__verified",                  "verified",                     "Verified:")
-        #output << $tools.blank_input("search__TEST_PACKETS__returned_to_warehouse",     "returned_to_warehouse",        "Returned to Warehouse:")
+        #output << $tools.blank_input("search__TEST_PACKETS__returned_to_warehouse",     "returned_to_warehouse",        "Returned to Warehouse (to be shipped):")
         
         output << "<button id='student_search_button' type='button' onclick=\"send('#{search_params}');setPreSpinner('test_packets_search_results');\"></button>"
         output << "</div>"
@@ -481,6 +350,146 @@ def x______________SUPPORT_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
+    def test_packet_record(pid)
+        
+        output = String.new
+        
+        output << $tools.legend_open("information", "Information")
+        
+        output << "<input id='test_packet_id_#{pid}' type='hidden' value='#{pid}' name='test_packet_id'>"
+        
+        school_record = $tables.attach("TEST_PACKETS").by_primary_id(pid)
+        
+        fields = school_record.fields
+        
+        fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
+        fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
+        fields["test_type_id"           ].value = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
+        fields["subject"                ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject"            ].value}'")
+        
+        output << $tools.table(
+            :table_array=>[
+                [
+                    "Student ID",
+                    "First Name",
+                    "Last Name",
+                    "Grade",
+                    "Administrator",
+                    ""
+                ],
+                [
+                    fields["student_id"].value,
+                    $tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{fields["student_id"].value}'"),
+                    $tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{fields["student_id"].value}'"),
+                    fields["grade_level"].value,
+                    fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).value,
+                    ""
+                ],
+            ],
+            :embedded_style => {
+                :table  => "width:100%;",
+                :th     => "text-align:center;",
+                :tr     => nil,
+                :tr_alt => nil,
+                :td     => "text-align:center;width:16%;"
+            },:head_section   => true
+        )
+        
+        output << $tools.table(
+            :table_array=>[
+                [
+                    "Serial Number",
+                    "Subject",
+                    "Test Event",
+                    "Test Type",
+                    "Test Event Site",
+                    "Large Print"
+                ],
+                [
+                    fields["serial_number"].value,
+                    fields["subject"].value,
+                    fields["test_event_id"].value,
+                    fields["test_type_id"].value,
+                    fields["test_event_site_id"].value,
+                    fields["large_print" ].web.checkbox(:disabled=>true)
+                ],
+            ],
+            :embedded_style => {
+                :table  => "width:100%;",
+                :th     => "text-align:center;",
+                :tr     => nil,
+                :tr_alt => nil,
+                :td     => "text-align:center;width:16%;"
+            },:head_section   => true
+        )
+        
+        output << $tools.table(
+            :table_array=>[
+                [
+                    "Status",
+                    "Verified",
+                    "Returned to Warehouse (to be shipped)",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                   fields["status"].web.select(:dd_choices=>status_dd),
+                   fields["verified"].web.checkbox,
+                   fields["returned_to_warehouse" ].web.checkbox,
+                   "",
+                   "",
+                   ""
+                ]
+            ],
+            :embedded_style => {
+                :table  => "width:100%;",
+                :th     => "text-align:center;",
+                :tr     => nil,
+                :tr_alt => nil,
+                :td     => "text-align:center;width:16%;"
+            },:head_section   => true
+        )
+        
+        output << $tools.legend_close()
+        
+        output << $tools.legend_open("checkin", "Location Assignment History")
+        
+        output << $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign") if !fields["returned_to_warehouse" ].is_true?
+        
+        tables_array = Array.new
+        
+        #HEADERS
+        tables_array.push([
+            "Test Event Site",
+            "Team Member",
+            "Status",
+            "Date Assigned"
+        ])
+        
+        tpc_pids = $tables.attach("TEST_PACKET_LOCATION").primary_ids("WHERE test_packet_id = '#{pid}' ORDER BY primary_id DESC")
+        tpc_pids.each{|tpc_pid|
+            
+            tpc_record = $tables.attach("TEST_PACKET_LOCATION").by_primary_id(tpc_pid)
+            
+            row = Array.new
+            
+            row.push($tables.attach("TEST_EVENT_SITES").find_field("site_name", "WHERE primary_id = '#{tpc_record.fields["test_event_site_id" ].value}'").value)
+            row.push("#{tpc_record.fields['team_id'].to_name(:full_name)}")
+            row.push(tpc_record.fields["checkin_status"     ].value)
+            row.push(tpc_record.fields["checkin_date"       ].to_user)
+            
+            tables_array.push(row)
+            
+        } if tpc_pids
+        
+        output << $kit.tools.data_table(tables_array, "test_packet_check_in", table_type = "default", titles = false, custom_titles = nil, sort_col_header="Date Assigned", sort_dir='desc')
+        
+        output << $tools.legend_close()
+        
+        $kit.modify_tag_content("test_packets_record_container", output, "update")
+        
+    end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
