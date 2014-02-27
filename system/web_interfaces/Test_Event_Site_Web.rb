@@ -529,7 +529,8 @@ end
             
             test_id = test_record.fields["test_id"].value
             
-            status = $students.get(sid).active.value == "1" ? "Active":"Withdrawn"
+            status = $tables.attach("STUDENT").by_student_id(sid).fields["active"].value == "1" ? "Active":"Withdrawn" #FASTER
+            #status = $students.get(sid).active.value == "1" ? "Active":"Withdrawn"  #SLOWER
             
             family_coach = String.new
             
@@ -540,7 +541,9 @@ end
                 fc_relate.each_with_index do |record,i|
                     
                     family_coach << ", " if i != 0
-                    family_coach << $team.get(record.fields["team_id"].value).full_name
+                    team_row     = $tables.attach("team").by_primary_id(record.fields["team_id"].value)
+                    family_coach << "#{team_row.fields['legal_first_name'].value} #{team_row.fields['legal_last_name'].value}" #FASTER
+                    #family_coach << $team.get(record.fields["team_id"].value).full_name #SLOWER
                     
                 end
                 
@@ -559,7 +562,9 @@ end
                 pt_relate.each_with_index do |record,i|
                     
                     primary_teacher << ", " if i != 0
-                    primary_teacher << $team.get(record.fields["team_id"].value).full_name
+                    team_row     = $tables.attach("team").by_primary_id(record.fields["team_id"].value)
+                    primary_teacher << "#{team_row.fields['legal_first_name'].value} #{team_row.fields['legal_last_name'].value}" #FASTER
+                    #primary_teacher << $team.get(record.fields["team_id"].value).full_name #SLOWER
                     
                 end
                 
@@ -578,7 +583,9 @@ end
                 sed_relate.each_with_index do |record,i|
                     
                     sed_teacher << ", " if i != 0
-                    sed_teacher << $team.get(record.fields["team_id"].value).full_name
+                    team_row     = $tables.attach("team").by_primary_id(record.fields["team_id"].value)
+                    sed_teacher << "#{team_row.fields['legal_first_name'].value} #{team_row.fields['legal_last_name'].value}" #FASTER
+                    #sed_teacher << $team.get(record.fields["team_id"].value).full_name #SLOWER
                     
                 end
                 
@@ -589,9 +596,9 @@ end
             end
             
             row.push(test_record.fields["student_id"         ].web.label()  )
-            row.push($students.get(sid      ).studentfirstname.web.label()  )
-            row.push($students.get(sid       ).studentlastname.web.label()  )
-            row.push($students.get(sid                 ).grade.web.label()  )
+            row.push($tables.attach("STUDENT").by_student_id(sid).fields["studentfirstname"].web.label()  )
+            row.push($tables.attach("STUDENT").by_student_id(sid).fields["studentlastname"].web.label()  )
+            row.push($tables.attach("STUDENT").by_student_id(sid).fields["grade"].web.label()  )
             row.push(status)
             row.push(family_coach)
             row.push(primary_teacher)
