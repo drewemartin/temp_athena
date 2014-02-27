@@ -502,20 +502,18 @@ end
                 "First Name",
                 "Last Name",
                 "Grade",
+                "Test Subject",
+                "Serial Number",      
+                "Test Completed Date",          
+                "Test Administrator",
+                "Test Notes",
+                "Assigned",           
+                "Drop Off",           
+                "Pick Up",
                 "Active/Withdrawn",
                 "Family Coach",
                 "General Ed Teacher",
                 "Special Ed Teacher",
-                "Test Subject",      
-                "Test Type",
-                "Check In Date",
-                "Serial Number",      
-                "Test Completed Date",          
-                "Test Administrator",
-                "Test Results",
-                "Assigned",           
-                "Drop Off",           
-                "Pick Up"              
             ]
             
         ]
@@ -599,13 +597,7 @@ end
             row.push($tables.attach("STUDENT").by_student_id(sid).fields["studentfirstname"].web.label()  )
             row.push($tables.attach("STUDENT").by_student_id(sid).fields["studentlastname"].web.label()  )
             row.push($tables.attach("STUDENT").by_student_id(sid).fields["grade"].web.label()  )
-            row.push(status)
-            row.push(family_coach)
-            row.push(primary_teacher)
-            row.push(sed_teacher)
             row.push(test_record.fields["test_subject_id"    ].web.select(:disabled=>true, :dd_choices=>test_subjects_dd(test_id) )  )
-            row.push(test_record.fields["test_id"            ].web.select(:disabled=>true, :dd_choices=>test_types_dd    )  )
-            row.push(test_record.fields["checked_in"         ].web.default())
             row.push(test_record.fields["serial_number"      ].web.select(:dd_choices => $dd.test_events.test_packet_serial_numbers(:test_event_site_id=>@test_event_site_id))   )
             row.push(test_record.fields["completed"          ].web.default())
             row.push(test_record.fields["test_administrator" ].web.select(:dd_choices=>test_admin_dd(test_record.fields["test_administrator" ].value))  )
@@ -625,6 +617,11 @@ end
             row.push(test_record.fields["assigned"           ].web.default()  )
             row.push(test_record.fields["drop_off"           ].web.text()  )
             row.push(test_record.fields["pick_up"            ].web.text()  ) 
+            
+            row.push(status)
+            row.push(family_coach)
+            row.push(primary_teacher)
+            row.push(sed_teacher)
             
             tables_array.push(row)
             
