@@ -483,7 +483,7 @@ end
             
         } if tpc_pids
         
-        output << $kit.tools.data_table(tables_array, "test_packet_check_in", table_type = "default", titles = false, custom_titles = nil, sort_col_header="Date Assigned", sort_dir='desc')
+        output << $kit.tools.data_table(tables_array, "test_packet_check_in")
         
         output << $tools.legend_close()
         
