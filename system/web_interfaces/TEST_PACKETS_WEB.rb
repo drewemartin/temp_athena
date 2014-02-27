@@ -463,7 +463,7 @@ end
         tables_array.push([
             "Test Event Site",
             "Team Member",
-            "Status",
+            "Location Status",
             "Date Assigned"
         ])
         
