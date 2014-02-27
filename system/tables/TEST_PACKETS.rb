@@ -40,7 +40,7 @@ end
     
     def after_change_field_returned_to_warehouse(obj)
         
-        if obj
+        if obj.is_true?
             
             row_obj = by_primary_id(obj.primary_id)
             assign_packet_to_warehouse(row_obj)
@@ -71,10 +71,16 @@ end
             AND test_event_id = '#{obj.fields["test_event_id"].value}'"
         )
             
-            record = $tables.attach("TEST_PACKET_LOCATION").new_row
-            record.fields["test_packet_id"      ].value = obj.primary_id
-            record.fields["test_event_site_id"  ].value = test_event_site_id
-            record.save
+            previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value("test_event_site_id", "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY created_date DESC")
+            
+            if test_event_site_id != test_event_site_id
+                
+                record = $tables.attach("TEST_PACKET_LOCATION").new_row
+                record.fields["test_packet_id"      ].value = obj.primary_id
+                record.fields["test_event_site_id"  ].value = test_event_site_id
+                record.save
+                
+            end
             
         end
         
