@@ -1018,17 +1018,25 @@ end
 #        
 #    end
     
-    def data_table(tables_array, unique_name, table_type = "default", titles = false, custom_titles = nil)#make sure the header row is included as the first element
+    def data_table(tables_array, unique_name, table_type = "default", titles = false, custom_titles = nil, sort_col_header=nil, sort_dir='asc')#make sure the header row is included as the first element
         
         table_name = "dataTableDefault"   if table_type == "default"
         table_name = "dataTableNewRecord" if table_type == "NewRecord"
+        
+        sort_index = 0
+        if sort_col_header
+            
+            index = tables_array.first.index(sort_col_header)
+            sort_index = index if index
+            
+        end
         
         output  = "\n\n"
         output << "<div style='padding-top:5px;padding-bottom:5px;'>"
         
         #BUILD TABLE
         output << "<div>"
-        output << "<table id='#{table_name+unique_name}' class='#{table_name}'>\n"
+        output << "<table id='#{table_name+unique_name}' class='#{table_name}' sort='#{sort_index}' sort_dir='#{sort_dir}'>\n"
         
         headers     = tables_array[0]
         

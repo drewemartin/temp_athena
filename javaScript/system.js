@@ -2069,10 +2069,13 @@ function x___________________UNSORTED(){}
 			});
 			
 			$('table.dataTableDefault:not(.dataTable)').each( function(){
+				var sort     = parseInt($(this).attr("sort"))
+				var sort_dir = $(this).attr("sort_dir")
 				$(this).dataTable( $.extend( true, {}, defaults,
 					{
 						'sDom'			: 'T<\"clear\">lrtip',
-						"aoColumns"		: set_aoColumn_sort(this)
+						"aoColumns"		: set_aoColumn_sort(this),
+						"aaSorting"		: [[sort,sort_dir]]
 					}
 				));
 				$("#" + $(this).attr("id") + "_filter input").addClass("no_save")
