@@ -23,18 +23,10 @@ end
 
     def after_insert(obj)
         
-        if test_event_site_id = $tables.attach("TEST_EVENT_SITES").field_value(
-            "primary_id",
-            "WHERE site_name = 'Testing Warehouse'
-            AND test_event_id = '#{obj.fields["test_event_id"].value}'"
-        )
-            
-            record = $tables.attach("TEST_PACKET_LOCATION").new_row
-            record.fields["test_packet_id"      ].value = obj.primary_id
-            record.fields["test_event_site_id"  ].value = test_event_site_id
-            record.save
-            
-        end
+        assign_packet_to_warehouse(obj)
+        
+        #ADD DEFAULT STATUS
+        by_primary_id(obj.primary_id).fields["status"].set("Unused").save
         
     end
     
@@ -46,6 +38,17 @@ end
         
     end
     
+    def after_change_field_returned_to_warehouse(obj)
+        
+        if obj
+            
+            row_obj = by_primary_id(obj.primary_id)
+            assign_packet_to_warehouse(row_obj)
+            
+        end
+        
+    end
+    
     def after_change_field_student_id(obj)
         
         record = by_primary_id(obj.primary_id)
@@ -54,6 +57,29 @@ end
         
     end
     
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________TRIGGER_EVENT_SUPPORT
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def assign_packet_to_warehouse(obj)
+        
+        if test_event_site_id = $tables.attach("TEST_EVENT_SITES").field_value(
+            "primary_id",
+            "WHERE site_name = 'Warehouse'
+            AND test_event_id = '#{obj.fields["test_event_id"].value}'"
+        )
+            
+            record = $tables.attach("TEST_PACKET_LOCATION").new_row
+            record.fields["test_packet_id"      ].value = obj.primary_id
+            record.fields["test_event_site_id"  ].value = test_event_site_id
+            record.save
+            
+        end
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
