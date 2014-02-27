@@ -42,42 +42,43 @@ class ATTENDANCE_ADMIN_WEB
     #---------------------------------------------------------------------------
     def response
         
-        @upload_type = $kit.params[:upload_type      ] != "" ? $kit.params[:upload_type      ] : false
-        @reason      = $kit.params[:reason           ] != "" ? $kit.params[:reason           ] : false
-        @authorizor  = $kit.params[:authorizor       ] != "" ? $kit.params[:authorizor       ] : false
-        @csv         = $kit.params[:csv_upload       ] != "" ? $kit.params[:csv_upload       ] : false
-        
-        #if $kit.params[:start_date]!="" && $kit.params[:end_date]!="" && !$kit.params[:start_date].nil? && !$kit.params[:end_date].nil?
-        #    
-        #    start_date = $kit.date_to_db($kit.params[:start_date])
-        #    end_date   = $kit.date_to_db($kit.params[:end_date])
-        #    close_records_tab(init=false, start_date, end_date)
-        #    
-        #elsif @reason && @authorizor && @csv
-        if @reason && @authorizor && @csv
+        if $kit.params[:refresh]
             
-            case @upload_type
-            when "change_overall_mode"
-                bulk_overall_mode_queue_process
+            $kit.modify_tag_content($kit.params[:refresh], process_queue_tab, type="update")
+            
+        else
+            
+            @upload_type = $kit.params[:upload_type      ] != "" ? $kit.params[:upload_type      ] : false
+            @reason      = $kit.params[:reason           ] != "" ? $kit.params[:reason           ] : false
+            @authorizor  = $kit.params[:authorizor       ] != "" ? $kit.params[:authorizor       ] : false
+            @csv         = $kit.params[:csv_upload       ] != "" ? $kit.params[:csv_upload       ] : false
+            
+            if @reason && @authorizor && @csv
                 
-            when "change_daily_mode"
-                bulk_daily_mode_queue_process
-                
-            when "change_daily_code"
-                bulk_daily_code_queue_process
+                case @upload_type
+                when "change_overall_mode"
+                    bulk_overall_mode_queue_process
+                    
+                when "change_daily_mode"
+                    bulk_daily_mode_queue_process
+                    
+                when "change_daily_code"
+                    bulk_daily_code_queue_process
+                    
+                else
+                    validation_check
+                    
+                end
                 
             else
+                
                 validation_check
                 
             end
             
-        else
-            
-            validation_check
+            return ""
             
         end
-        
-        return ""
         
     end
     #---------------------------------------------------------------------------
@@ -349,84 +350,51 @@ end
         
         output = String.new
         
-        output << $tools.div_open("pending_process_div", "pending_process_div") if init
-        output << $tools.newlabel("pending_text", "Pending Processes")
-        output << $tools.div_open("pending_headers")
-        output << $tools.newlabel("class_header",        "Group")
-        output << $tools.newlabel("function_header",     "Process")
-        output << $tools.newlabel("args_header",         "Modified Table")
-        output << $tools.newlabel("created_date_header", "Created Date")
-        output << $tools.div_close
+        output << $tools.button_refresh("process_queue_div") if init
         
-        output << $tools.div_open("process_container")
-        output << $tools.div_open("overlay2") << $tools.div_close
-        output << $tools.div_open("bgdiv")
+        output << $tools.div_open("process_queue_div", "process_queue_div") if init
         
-        pending_processes = $tables.attach("process_log").by_status("NULL")
+        tables_array = Array.new
         
-        if pending_processes
+        #HEADERS
+        tables_array.push([
+            "Type",
+            "Process",
+            "Status",
+            "Created Date",
+            "Start Datetime",
+            "Completed Datetime",
+            "Created By"
             
-            pending_processes.each do |process|
-                
-                fields = process.fields
-                fields["args"].value = fields["args"].value.split('<,>').first if !fields["args"].value.nil?
-                output << $tools.div_open("list_item")
-                output << fields["class_name"].web.label
-                output << fields["function_name"].web.label
-                output << fields["args"].web.label
-                output << fields["created_date"].to_user!.web.label
-                output << $tools.div_close
-                
-            end
+        ])
+        
+        pids = $tables.attach("PROCESS_LOG").primary_ids
+        
+        pids.each do |pid|
             
-        end
-        
-        output << $kit.tools.newlabel("bottom")
-        output << $tools.div_close
-        output << $tools.div_close
-        
-        output << $tools.newlabel("completed_text", "Completed Processes")
-        output << $tools.div_open("pending_headers")
-        output << $tools.newlabel("class_header",        "Group")
-        output << $tools.newlabel("function_header",     "Process")
-        output << $tools.newlabel("args_header",         "Modified Table")
-        output << $tools.newlabel("created_date_header", "Created Date")
-        output << $tools.div_close
-        
-        output << $tools.div_open("process_container")
-        output << $tools.div_open("overlay2") << $tools.div_close
-        output << $tools.div_open("bgdiv")
-        
-        completed_processes = $tables.attach("process_log").by_status("Completed")
-        
-        if completed_processes
+            row = Array.new
             
-            completed_processes.each do |process|
-                
-                fields = process.fields
-                fields["args"].value = fields["args"].value.split('<,>').first if fields["args"].value
-                output << $tools.div_open("list_item")
-                output << fields["class_name"].web.label
-                output << fields["function_name"].web.label
-                output << fields["args"].web.label
-                output << fields["created_date"].to_user!.web.label
-                output << $tools.div_close
-                
-            end
+            record = $tables.attach("PROCESS_LOG").by_primary_id(pid)
             
-        end
+            fields = record.fields
+            
+            row.push(fields["class_name"].value)
+            row.push(fields["function_name"].value)
+            row.push(fields["status"].value)
+            row.push(fields["created_date"].value)
+            row.push(fields["start_datetime"].value)
+            row.push(fields["completed_datetime"].value)
+            row.push(fields["created_by"].value)
+            
+            tables_array.push(row)
+            
+        end if pids
         
-        output << $kit.tools.newlabel("bottom")
-        output << $tools.div_close
-        output << $tools.div_close
-        output << $kit.tools.newlabel("bottom")
+        output << $kit.tools.data_table(tables_array, "process_log", table_type = "default", titles = false, custom_titles = nil, sort_col_header="Created Date", sort_dir='desc')
+        
         output << $tools.div_close if init
-
-        if init
-            return output
-        else
-            $kit.modify_tag_content("pending_process_div", output, "update")
-        end
+        
+        return output
         
     end
     
