@@ -170,7 +170,7 @@ end
                         if code.nil?
                             activity_code   = "pb"
                         else
-                            activity_code   = code.downcase=="p" ? "p" : (code.downcase=="a" ? "u" : code.downcase)
+                            activity_code   = code.downcase.match(/p|pnp/) ? "p" : (code.downcase=="a" ? "u" : code.downcase)
                         end
                         
                         student         = $students.get(sid)
