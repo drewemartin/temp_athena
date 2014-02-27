@@ -70,7 +70,7 @@ end
             structure_hash = {
                 :load_type          => :append,
                 :keys               => ["serial_number","test_event_id"],
-                :update             => false,
+                :update             => true,
                 "name"              => "test_packets",
                 "file_name"         => "test_packets.csv",
                 "file_location"     => "test_packets",
