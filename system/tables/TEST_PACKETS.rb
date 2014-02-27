@@ -71,9 +71,12 @@ end
             AND test_event_id = '#{obj.fields["test_event_id"].value}'"
         )
             
-            previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value("test_event_site_id", "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY created_date DESC")
+            previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
+                "test_event_site_id",
+                "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY created_date DESC"
+            )
             
-            if test_event_site_id != test_event_site_id
+            if previous_test_event_site_id != test_event_site_id
                 
                 record = $tables.attach("TEST_PACKET_LOCATION").new_row
                 record.fields["test_packet_id"      ].value = obj.primary_id
