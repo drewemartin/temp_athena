@@ -159,35 +159,23 @@ end
             if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
                 
                 old_record = by_primary_id(field.primary_id)
-                
-                if serial_number_removed_from_record = field.is_null?
+                if !old_record.fields["serial_number"].is_null?
                     
-                    serial_number = old_record.fields["serial_number"].value
-                    
-                else
-                    
-                    serial_number = field.value
+                    old_serial_number   = old_record.fields["serial_number"].value
+                    old_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{old_serial_number}'")
+                    old_test_record.fields["student_id"].value = nil
+                    old_test_record.save
                     
                 end
                 
-                test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
-                
-                if serial_number_removed_from_record
+                if !field.is_null?
                     
-                    test_record.fields["student_id"         ].value = nil
-                    
-                else
-                    
-                    test_record.fields["student_id"].value = $focus_student.student_id.value
-                    if !(record.fields["test_event_site_id"].value.nil? || record.fields["test_event_site_id"].value.empty?)
-                        
-                        test_record.fields["test_event_site_id"].value = record.fields["test_event_site_id"].value
-                        
-                    end
+                    new_serial_number   = field.value
+                    new_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{new_serial_number}'")
+                    new_test_record.fields["student_id"].value = $focus_student.student_id.value
+                    new_test_record.save
                     
                 end
-                
-                test_record.save
                 
             end
             
