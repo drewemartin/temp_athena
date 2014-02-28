@@ -592,19 +592,19 @@ end
             ],
             [
                 (
-                    this_field = $focus_team_member.rights.login_reminders_reports_access
+                    this_field = $focus_team_member.rights.k12_reports_access
                     this_field.web.checkbox(
-                        :label_option   => "Login Reminders Reports",
-                        :disabled       => disabled("login_reminders_reports_access")
+                        :label_option   => "K12 Reports",
+                        :disabled       => disabled("k12_reports_access")
                     )
                 )
             ],
             [
                 (
-                    this_field = $focus_team_member.rights.k12_reports_access
+                    this_field = $focus_team_member.rights.login_reminders_reports_access
                     this_field.web.checkbox(
-                        :label_option   => "K12 Reports",
-                        :disabled       => disabled("k12_reports_access")
+                        :label_option   => "Login Reminders Reports",
+                        :disabled       => disabled("login_reminders_reports_access")
                     )
                 )
             ],
@@ -659,6 +659,15 @@ end
                     this_field.web.checkbox(
                         :label_option   => "Test Event Site Admin",
                         :disabled       => disabled("test_event_admin_access")
+                    )
+                )
+            ],
+            [
+                (
+                    this_field = $focus_team_member.rights.test_packets_access
+                    this_field.web.checkbox(
+                        :label_option   => "Test Packets",
+                        :disabled       => disabled("test_packets_access")
                     )
                 )
             ],
