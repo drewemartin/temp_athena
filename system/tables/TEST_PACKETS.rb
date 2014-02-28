@@ -57,6 +57,23 @@ end
         
     end
     
+    def after_change_test_event_site_id(field_obj)
+        
+        previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
+            "test_event_site_id",
+            "WHERE test_packet_id = '#{field_obj.primary_id}' ORDER BY created_date DESC"
+        )
+        
+        if previous_test_event_site_id != field_obj.value
+            
+            record = $tables.attach("TEST_PACKET_LOCATION").new_row
+            record.fields["test_packet_id"      ].value = field_obj.primary_id
+            record.fields["test_event_site_id"  ].value = field_obj.value
+            record.save
+            
+        end
+        
+    end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENT_SUPPORT
