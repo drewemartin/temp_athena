@@ -25,6 +25,10 @@ end
         
         assign_packet_to_warehouse(obj)
         
+        if site_id_field = obj.fields["test_event_site_id"]
+            after_change_test_event_site_id(site_id_field) if site_id_field.value
+        end
+        
         #ADD DEFAULT STATUS
         by_primary_id(obj.primary_id).fields["status"].set("Unused").save
         
