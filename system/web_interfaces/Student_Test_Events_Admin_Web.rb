@@ -268,6 +268,7 @@ end
             #HEADERS
             [
                 "Ready?",
+                "Event ID",
                 "Load Event Sites",
                 "Students Report",
                 "Name",
@@ -303,6 +304,7 @@ end
             end
             
             row.push("<img src='/athena/images/#{color}.png' title='#{title}' width='32' height='32'/>"                 )
+            row.push(record.primary_id)
             row.push(event_sites_button                                                                                 )  
             row.push(event_students_button                                                                              )          
             row.push(record.fields["name"                   ].web.text()                                                )
@@ -819,7 +821,7 @@ end
     def test_type_dd
         
         return $tables.attach("TESTS").dd_choices(
-            "name",
+            "CONCAT(name,' (',primary_id,')')",
             "primary_id",
             " ORDER BY name ASC "
         )
