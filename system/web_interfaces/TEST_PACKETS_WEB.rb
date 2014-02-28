@@ -64,6 +64,8 @@ end
         tables_array.push([
             "Edit",
             "Student ID",
+            "First Name",
+            "Last Name",
             "Serial Number",
             "Status",
             "Verified",
@@ -86,13 +88,15 @@ end
             
             row.push("<button class='new_breakaway_button' id='load_test_packets_record_button_#{pid}' onclick='send\(\"load_test_packets_record_#{pid}\"\)\;setPreSpinner\(\"test_packets_record_container\"\);$\(\"#test_packets_search_dialog\"\).dialog\(\"close\"\)'>Edit</button><input id='load_test_packets_record_#{pid}' type='hidden' value='#{pid}' name='load_test_packets_record'")
             row.push(record.fields["student_id"            ].value)
+            row.push($tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
+            row.push($tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
             row.push(record.fields["serial_number"         ].value)
             row.push(record.fields["status"                ].web.select(:dd_choices=>status_dd))
             row.push(record.fields["verified"              ].web.checkbox())
             row.push(record.fields["returned_to_warehouse" ].web.checkbox())
             row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
             row.push($tables.attach("TEST_EVENT_SITES").field_value("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'"))
-            row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'"))
+            row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'")||"Not Selected")
             row.push(record.fields["subject"                ].value)
             row.push(record.fields["administrator_team_id" ].to_name(:full_name))
             row.push(record.fields["grade_level"           ].value)
@@ -154,7 +158,7 @@ end
             
             $kit.output=return_message
             
-        else
+        elsif $kit.params[:packet_search]
             
             search_hash = Hash.new            
             search_hash[:serial_number         ] = $kit.params[:serial_number         ] if $kit.params[:serial_number         ] && $kit.params[:serial_number         ] != ""
@@ -190,7 +194,7 @@ end
                 
             end
             
-            $kit.modify_tag_content("test_packets_search_results", results, "update") if search_hash.length >= 1
+            $kit.modify_tag_content("test_packets_search_results", results, "update")
             
         end
         
@@ -201,13 +205,14 @@ end
         output      = String.new
         search_params_arr =
         [
+            "packet_search",
             "search__TEST_PACKETS__serial_number",
             #"search__TEST_PACKETS__grade_level",
             #"search__TEST_PACKETS__subject",
             #"search__TEST_PACKETS__large_print",
             #"search__TEST_PACKETS__test_event_id",
-            "search__TEST_PACKETS__student_id"#,
-            #"search__TEST_PACKETS__test_event_site_id",
+            "search__TEST_PACKETS__student_id",
+            "search__TEST_PACKETS__test_event_site_id"#,
             #"search__TEST_PACKETS__administrator_team_id",
             #"search__TEST_PACKETS__status",
             #"search__TEST_PACKETS__verified"
@@ -218,13 +223,15 @@ end
         
         output << "<div id='test_packets_search_fields'>"
         
+        output << "<input id='packet_search' type='hidden' value='' name='packet_search'>"
+        
         output << $tools.blank_input("search__TEST_PACKETS__serial_number",             "serial_number",                "Serial Number:")
         #output << $tools.blank_input("search__TEST_PACKETS__grade_level",               "grade_level",                  "Grade:")
         #output << $tools.blank_input("search__TEST_PACKETS__subject",                   "subject",                      "Subject:")
         #output << $tools.blank_input("search__TEST_PACKETS__large_print",               "large_print",                  "Large Print:")
         #output << $tools.blank_input("search__TEST_PACKETS__test_event_id",             "test_event_id",                "Test Event ID:")
         output << $tools.blank_input("search__TEST_PACKETS__student_id",                "student_id",                   "Student ID:")
-        #output << $tools.blank_input("search__TEST_PACKETS__test_event_site_id",        "test_event_site_id",           "Test Event Site ID:")
+        output << $tools.newselect2("search__TEST_PACKETS__test_event_site_id",      "test_event_site_id",           test_event_sites_dd,           "Test Event Site:")
         #output << $tools.blank_input("search__TEST_PACKETS__administrator_team_id",     "administrator_team_id",        "Administrator:")
         #output << $tools.blank_input("search__TEST_PACKETS__status",                    "status",                       "Status:")
         #output << $tools.blank_input("search__TEST_PACKETS__verified",                  "verified",                     "Verified:")

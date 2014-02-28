@@ -31,25 +31,40 @@ end
    
     def test_packet_serial_numbers(a={})
         
+        where_clause = "WHERE "
+        
+        where_array  = Array.new
+        
+        where_array.push("grade_level = '#{a[:grade]}' ") if a[:grade]
+        
+        where_array.push("subject = '#{a[:subject]}' ")   if a[:subject]
+        
         if a[:test_event_id]
             
-            return $tables.attach("TEST_PACKETS").dd_choices(
-                "serial_number",
-                "serial_number",
-                "WHERE test_event_id = '#{a[:test_event_id]}'"
-            )
+            where_array.push("test_event_id = '#{a[:test_event_id]}' ")
             
         elsif a[:test_event_site_id]
             
             test_event_id = $tables.attach("TEST_EVENT_SITES").field_value("test_event_id", "WHERE primary_id = '#{a[:test_event_site_id]}'")
             
-            return $tables.attach("TEST_PACKETS").dd_choices(
-                "serial_number",
-                "serial_number",
-                "WHERE test_event_id = '#{test_event_id}'"
-            )
+            where_array.push("test_event_id = '#{test_event_id}' ")
             
         end
+        
+        where_array.each_with_index do |where,i|
+            
+            where_clause << "AND " if i!=0
+            where_clause << where
+            
+        end
+        
+        where_clause << "ORDER BY serial_number ASC"
+        
+        return $tables.attach("TEST_PACKETS").dd_choices(
+            "serial_number",
+            "serial_number",
+            where_clause
+        )
         
     end
     

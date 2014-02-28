@@ -58,6 +58,11 @@ end
         return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save #{add_class}"})
     end
     
+    def newselect2(id_name, class_name, choices, label_option="")
+        temp = $field.new({"type" => "text", "field" => class_name})
+        return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save", :field_id=>id_name})
+    end
+    
     def newtextarea(class_name, label_option="", value="")
         temp = $field.new({"type" => "text", "field" => class_name, "value" => value})
         return temp.web.textarea({:label_option=>label_option, :add_class=>"no_save"})

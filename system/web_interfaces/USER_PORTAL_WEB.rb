@@ -207,7 +207,7 @@ end
             :additional_params  => nil,
             :class              => "module_bar"
             
-        ) if $team_member.super_user?# || $team_member.rights.schools_access.is_true?
+        ) if $team_member.super_user? || $team_member.rights.test_packets_access.is_true?
         
         $kit.output << "</div>"
         
