@@ -93,7 +93,7 @@ end
             row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
             row.push($tables.attach("TEST_EVENT_SITES").field_value("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'"))
             row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'"))
-            row.push(record.fields["subject"                ].value)
+            row.push(record.fields["subject_id"            ].web.select(:dd_choices=>$dd.test_events.test_subjects_dd(test_id=record.fields["test_type_id"].value)))
             row.push(record.fields["administrator_team_id" ].to_name(:full_name))
             row.push(record.fields["grade_level"           ].value)
             row.push(record.fields["large_print"           ].to_user)
@@ -157,17 +157,17 @@ end
         else
             
             search_hash = Hash.new            
-            search_hash[:serial_number         ] = $kit.params[:serial_number         ] if $kit.params[:serial_number         ] && $kit.params[:serial_number         ] != ""
-            search_hash[:grade_level           ] = $kit.params[:grade_level           ] if $kit.params[:grade_level           ] && $kit.params[:grade_level           ] != ""
-            search_hash[:subject               ] = $kit.params[:subject               ] if $kit.params[:subject               ] && $kit.params[:subject               ] != ""
-            search_hash[:large_print           ] = $kit.params[:large_print           ] if $kit.params[:large_print           ] && $kit.params[:large_print           ] != ""
-            search_hash[:test_event_id         ] = $kit.params[:test_event_id         ] if $kit.params[:test_event_id         ] && $kit.params[:test_event_id         ] != ""
-            search_hash[:student_id            ] = $kit.params[:student_id            ] if $kit.params[:student_id            ] && $kit.params[:student_id            ] != ""
-            search_hash[:test_event_site_id    ] = $kit.params[:test_event_site_id    ] if $kit.params[:test_event_site_id    ] && $kit.params[:test_event_site_id    ] != ""
-            search_hash[:administrator_team_id ] = $kit.params[:administrator_team_id ] if $kit.params[:administrator_team_id ] && $kit.params[:administrator_team_id ] != ""
-            search_hash[:status                ] = $kit.params[:status                ] if $kit.params[:status                ] && $kit.params[:status                ] != ""
-            search_hash[:verified              ] = $kit.params[:verified              ] if $kit.params[:verified              ] && $kit.params[:verified              ] != ""
-            search_hash[:returned_to_warehouse ] = $kit.params[:returned_to_warehouse ] if $kit.params[:returned_to_warehouse ] && $kit.params[:returned_to_warehouse ] != ""
+            search_hash[:serial_number          ] = $kit.params[:serial_number          ] if $kit.params[:serial_number         ] && $kit.params[:serial_number         ] != ""
+            search_hash[:grade_level            ] = $kit.params[:grade_level            ] if $kit.params[:grade_level           ] && $kit.params[:grade_level           ] != ""
+            search_hash[:subject_id             ] = $kit.params[:subject_id             ] if $kit.params[:subject_id            ] && $kit.params[:subject_id            ] != ""
+            search_hash[:large_print            ] = $kit.params[:large_print            ] if $kit.params[:large_print           ] && $kit.params[:large_print           ] != ""
+            search_hash[:test_event_id          ] = $kit.params[:test_event_id          ] if $kit.params[:test_event_id         ] && $kit.params[:test_event_id         ] != ""
+            search_hash[:student_id             ] = $kit.params[:student_id             ] if $kit.params[:student_id            ] && $kit.params[:student_id            ] != ""
+            search_hash[:test_event_site_id     ] = $kit.params[:test_event_site_id     ] if $kit.params[:test_event_site_id    ] && $kit.params[:test_event_site_id    ] != ""
+            search_hash[:administrator_team_id  ] = $kit.params[:administrator_team_id  ] if $kit.params[:administrator_team_id ] && $kit.params[:administrator_team_id ] != ""
+            search_hash[:status                 ] = $kit.params[:status                 ] if $kit.params[:status                ] && $kit.params[:status                ] != ""
+            search_hash[:verified               ] = $kit.params[:verified               ] if $kit.params[:verified              ] && $kit.params[:verified              ] != ""
+            search_hash[:returned_to_warehouse  ] = $kit.params[:returned_to_warehouse  ] if $kit.params[:returned_to_warehouse ] && $kit.params[:returned_to_warehouse ] != ""
             
             if search_hash.length >= 1
                 
@@ -203,7 +203,7 @@ end
         [
             "search__TEST_PACKETS__serial_number",
             #"search__TEST_PACKETS__grade_level",
-            #"search__TEST_PACKETS__subject",
+            #"search__TEST_PACKETS__subject_id",
             #"search__TEST_PACKETS__large_print",
             #"search__TEST_PACKETS__test_event_id",
             "search__TEST_PACKETS__student_id"#,
@@ -220,7 +220,7 @@ end
         
         output << $tools.blank_input("search__TEST_PACKETS__serial_number",             "serial_number",                "Serial Number:")
         #output << $tools.blank_input("search__TEST_PACKETS__grade_level",               "grade_level",                  "Grade:")
-        #output << $tools.blank_input("search__TEST_PACKETS__subject",                   "subject",                      "Subject:")
+        #output << $tools.blank_input("search__TEST_PACKETS__subject_id",                   "subject_id",                      "Subject:")
         #output << $tools.blank_input("search__TEST_PACKETS__large_print",               "large_print",                  "Large Print:")
         #output << $tools.blank_input("search__TEST_PACKETS__test_event_id",             "test_event_id",                "Test Event ID:")
         output << $tools.blank_input("search__TEST_PACKETS__student_id",                "student_id",                   "Student ID:")
@@ -307,12 +307,6 @@ end
         
     end
     
-    def test_subjects_dd(test_id)
-        
-        $tables.attach("TEST_SUBJECTS").dd_choices("name", "primary_id", "WHERE test_id = '#{test_id}'")
-        
-    end
-    
     def test_types_dd
         
         $tables.attach("TESTS").dd_choices("name", "primary_id")
@@ -365,7 +359,7 @@ end
         fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
         fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
         fields["test_type_id"           ].value = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
-        fields["subject"                ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject"            ].value}'")
+        fields["subject_id"             ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject_id"         ].value}'")
         
         output << $tools.table(
             :table_array=>[
@@ -406,12 +400,12 @@ end
                     "Large Print"
                 ],
                 [
-                    fields["serial_number"].value,
-                    fields["subject"].value,
-                    fields["test_event_id"].value,
-                    fields["test_type_id"].value,
-                    fields["test_event_site_id"].value,
-                    fields["large_print" ].web.checkbox(:disabled=>true)
+                    fields["serial_number"      ].value,
+                    fields["subject_id"         ].web.select(:dd_choices=>$dd.test_events.test_subjects_dd(test_id=fields["test_type_id"].value)),
+                    fields["test_event_id"      ].value,
+                    fields["test_type_id"       ].value,
+                    fields["test_event_site_id" ].value,
+                    fields["large_print"        ].web.checkbox(:disabled=>true)
                 ],
             ],
             :embedded_style => {
