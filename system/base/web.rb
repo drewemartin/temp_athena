@@ -151,7 +151,7 @@ end
     end
     
     def options
-        "#{disabled} #{readonly} #{tab_order_option} #{js_option} #{style_option}"
+        "#{disabled} #{readonly} #{tab_order_option} #{js_option} #{style_option} autocomplete='off'"
     end
     
     def readonly
