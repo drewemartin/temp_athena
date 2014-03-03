@@ -606,7 +606,8 @@ end
             row.push($tables.attach("STUDENT").by_student_id(sid).fields["studentlastname"].web.label()  )
             row.push($tables.attach("STUDENT").by_student_id(sid).fields["grade"].web.label()  )
             row.push(test_record.fields["test_subject_id"    ].web.select(:disabled=>true, :dd_choices=>test_subjects_dd(test_id) )  )
-            row.push(test_record.fields["serial_number"      ].web.select(:dd_choices => $dd.test_events.test_packet_serial_numbers(:test_event_site_id=>@test_event_site_id))   )
+            row.push(test_record.fields["serial_number"      ].web.select(:dd_choices=>$dd.test_events.test_packet_serial_numbers(:test_event_site_id=>@test_event_site_id,:grade=>$tables.attach("STUDENT").by_student_id(sid).fields["grade"].value,:subject=>test_record.fields["test_subject_id"].value)) )
+
             row.push(test_record.fields["completed"          ].web.default())
             row.push(test_record.fields["test_administrator" ].web.select(:dd_choices=>test_admin_dd(test_record.fields["test_administrator" ].value))  )
             
