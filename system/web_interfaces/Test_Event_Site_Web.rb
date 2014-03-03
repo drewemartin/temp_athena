@@ -403,7 +403,15 @@ end
             row.push(!record.fields["returned_to_warehouse" ].is_true? ? $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign") : "")
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
-            row.push(record.fields["subject"                ].web.label)
+            row.push(
+                (
+                    $tables.attach("TEST_SUBJECTS").field_value(
+                       "name",
+                       "WHERE primary_id = '#{record.fields["subject_id"].value}'"
+                   ) ||
+                   "Not Found"
+                )
+            )
             row.push(record.fields["large_print"            ].to_user)
             row.push(
                 record.fields["status"                      ].web.select(
