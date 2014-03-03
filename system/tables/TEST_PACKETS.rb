@@ -26,7 +26,7 @@ end
         assign_packet_to_warehouse(obj)
         
         if site_id_field = obj.fields["test_event_site_id"]
-            after_change_test_event_site_id(site_id_field) if site_id_field.is_null?
+            after_change_test_event_site_id(site_id_field) if !site_id_field.is_null?
         end
         
         #ADD DEFAULT STATUS
