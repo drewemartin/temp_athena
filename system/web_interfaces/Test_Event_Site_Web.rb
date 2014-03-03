@@ -147,7 +147,7 @@ end
     
     def response
         
-        if field = $kit.rows.first[1].fields["serial_number"]
+        if !$kit.rows.empty? && field = $kit.rows.first[1].fields["serial_number"]
             if field.updated == false
                 student_id = $tables.attach("TEST_PACKETS").field_value("student_id", "WHERE serial_number = '#{field.value}'")
                 $kit.web_error.duplicate_assignment_error(
