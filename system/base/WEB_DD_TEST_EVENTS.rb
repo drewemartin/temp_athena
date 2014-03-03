@@ -35,9 +35,9 @@ end
         
         where_array  = Array.new
         
-        where_array.push("grade_level = '#{a[:grade]}' ") if a[:grade]
+        where_array.push(" grade_level = '#{a[:grade]}' ") if a[:grade]
         
-        where_array.push("subject = '#{a[:subject]}' ")   if a[:subject]
+        where_array.push(" subject = '#{a[:subject]}' ")   if a[:subject]
         
         if a[:test_event_id]
             
