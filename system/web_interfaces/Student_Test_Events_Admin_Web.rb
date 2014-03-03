@@ -112,6 +112,7 @@ end
             #HEADERS
             [
                 
+                "Subject ID"                     ,
                 "Subject"                        ,
                 "Test Type"                      ,
                 "Eligible Grades"                ,
@@ -130,6 +131,7 @@ end
             
             row = Array.new
             
+            row.push(record.primary_id)
             row.push(record.fields["name"        ].web.select(:dd_choices=>subjects_dd,  :disabled=>true) )
             row.push(record.fields["test_id"     ].web.select(:dd_choices=>test_type_dd, :disabled=>true) )
             
@@ -272,6 +274,7 @@ end
                 "Load Event Sites",
                 "Students Report",
                 "Name",
+                "Test Type ID",
                 "Test Type",
                 "Start Date",
                 "End Date",
@@ -308,6 +311,7 @@ end
             row.push(event_sites_button                                                                                 )  
             row.push(event_students_button                                                                              )          
             row.push(record.fields["name"                   ].web.text()                                                )
+            row.push(record.fields["test_id"                ].value                                                     )
             row.push(record.fields["test_id"                ].web.select(:disabled=>true,:dd_choices=>test_type_dd)     )
             row.push(record.fields["start_date"             ].web.date(:defaultDate_throw=>"1")                         )
             row.push(record.fields["end_date"               ].web.date(:defaultDate_catch=>"1")                         )
@@ -821,7 +825,7 @@ end
     def test_type_dd
         
         return $tables.attach("TESTS").dd_choices(
-            "CONCAT(name,' (',primary_id,')')",
+            "name",
             "primary_id",
             " ORDER BY name ASC "
         )
