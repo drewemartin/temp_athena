@@ -26,7 +26,7 @@ end
         assign_packet_to_warehouse(obj)
         
         if site_id_field = obj.fields["test_event_site_id"]
-            after_change_test_event_site_id(site_id_field) if site_id_field.value
+            after_change_test_event_site_id(site_id_field) if site_id_field.is_null?
         end
         
         #ADD DEFAULT STATUS
@@ -145,11 +145,12 @@ end
             
             structure_hash["fields"]["serial_number"            ] = {"data_type"=>"int",  "file_field"=>"serial_number"         } if field_order.push("serial_number"           )
             structure_hash["fields"]["grade_level"              ] = {"data_type"=>"text", "file_field"=>"grade_level"           } if field_order.push("grade_level"             )
-            structure_hash["fields"]["subject"                  ] = {"data_type"=>"text", "file_field"=>"subject"               } if field_order.push("subject"                 )
+            structure_hash["fields"]["subject_id"               ] = {"data_type"=>"int",  "file_field"=>"subject_id"            } if field_order.push("subject_id"              )
             structure_hash["fields"]["large_print"              ] = {"data_type"=>"bool", "file_field"=>"large_print"           } if field_order.push("large_print"             )
             structure_hash["fields"]["test_event_id"            ] = {"data_type"=>"int",  "file_field"=>"test_event_id"         } if field_order.push("test_event_id"           )
             structure_hash["fields"]["test_type_id"             ] = {"data_type"=>"int",  "file_field"=>"test_type_id"          } if field_order.push("test_type_id"            )
             structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",  "file_field"=>"student_id"            } if field_order.push("student_id"              )
+            structure_hash["fields"]["student_test_id"          ] = {"data_type"=>"int",  "file_field"=>"student_test_id"       } if field_order.push("student_test_id"         )
             structure_hash["fields"]["test_event_site_id"       ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"    } if field_order.push("test_event_site_id"      )
             structure_hash["fields"]["administrator_team_id"    ] = {"data_type"=>"int",  "file_field"=>"administrator_team_id" } if field_order.push("administrator_team_id"   )
             structure_hash["fields"]["status"                   ] = {"data_type"=>"text", "file_field"=>"status"                } if field_order.push("status"                  )
