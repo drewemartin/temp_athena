@@ -158,11 +158,11 @@ end
                 #SE_SETTING
                 $tools.table(
                     :table_array    => [
-                        [record.fields["sg6_12"           ].web.default(:disabled=>true, :label_option=>"sg6_12"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg6_12'        GROUP BY accommodation_code"))],
+                        [record.fields["sg6_12"           ].web.default(:disabled=>true, :label_option=>"sg6_12"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg6-12'        GROUP BY accommodation_code"))],
                         [record.fields["sg5"              ].web.default(:disabled=>true, :label_option=>"sg5"       , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg5'           GROUP BY accommodation_code"))],
-                        [record.fields["1_1sep"           ].web.default(:disabled=>true, :label_option=>"1_1sep"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1_1sep'        GROUP BY accommodation_code"))],
-                        [record.fields["1_1home"          ].web.default(:disabled=>true, :label_option=>"1_1home"   , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1_1home'       GROUP BY accommodation_code"))],
-                        [record.fields["1_1onsite"        ].web.default(:disabled=>true, :label_option=>"1_1onsite" , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1_1onsite'     GROUP BY accommodation_code"))],
+                        [record.fields["1_1sep"           ].web.default(:disabled=>true, :label_option=>"1_1sep"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1sep'        GROUP BY accommodation_code"))],
+                        [record.fields["1_1home"          ].web.default(:disabled=>true, :label_option=>"1_1home"   , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1home'       GROUP BY accommodation_code"))],
+                        [record.fields["1_1onsite"        ].web.default(:disabled=>true, :label_option=>"1_1onsite" , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1onsite'     GROUP BY accommodation_code"))],
                         [blank],
                         [blank],
                         [blank],
