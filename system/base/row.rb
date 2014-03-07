@@ -18,6 +18,15 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def batch_checkbox(arg = nil)
+        $field.new(
+            {
+                "type"      => "bool",
+                "field"     => "selected__#{self.primary_id}"
+            }
+        ).web.checkbox(:add_class  => "no_save")
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ACCESSORS
 end
