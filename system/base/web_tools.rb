@@ -53,16 +53,6 @@ end
         return temp.web.text({:label_option=>label_option, :add_class=>"no_save kmail_validate_content"})
     end
     
-    def newselect(class_name, choices, label_option="", add_class="")
-        temp = $field.new({"type" => "text", "field" => class_name})
-        return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save #{add_class}"})
-    end
-    
-    def newselect2(id_name, class_name, choices, label_option="")
-        temp = $field.new({"type" => "text", "field" => class_name})
-        return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save", :field_id=>id_name})
-    end
-    
     def newtextarea(class_name, label_option="", value="")
         temp = $field.new({"type" => "text", "field" => class_name, "value" => value})
         return temp.web.textarea({:label_option=>label_option, :add_class=>"no_save"})
@@ -76,10 +66,18 @@ end
     def kmailtextarea(class_name, label_option="", value="")
         temp = $field.new({"type" => "text", "field" => class_name, "value" => value})
         return temp.web.textarea({:label_option=>label_option, :add_class=>"no_save kmail_validate_content"})
+    end    
+
+    def newselect(class_name, choices, label_option="", add_class="")
+        temp = $field.new({"type" => "text", "field" => class_name})
+        return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save #{add_class}"})
     end
     
+    def newselect2(id_name, class_name, choices, label_option="")
+        temp = $field.new({"type" => "text", "field" => class_name})
+        return temp.web.select({:label_option=>label_option, :dd_choices=>choices, :add_class=>"no_save", :field_id=>id_name})
+    end
     
-
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________QUICK_TOOLS
 end
@@ -732,6 +730,71 @@ end
         
     end
     
+    def button_batch_update(a={})
+        #:batch_action      =>
+        #:additional_params =>
+        #:button_text       =>
+        #:select_values     =>
+        #:select_label      =>
+        
+        output = String.new
+        
+        if a[:select_values]
+            
+            a[:select_values] = $field.new(
+                "type"          => "text",
+                "field"         => "batch_value",
+                "class"         => "batch_value"
+            ).web.select(
+                :dd_choices     => a[:select_values],
+                :add_class      => "no_save",
+                :style          => "display: inline-block; margin-left:2px; margin-bottom:5px; width:210px;",
+                :no_div         => true
+            )
+            
+            if a[:additional_params]
+                
+                a[:additional_params].split(",").push("batch_value").join(",")
+                
+            else
+                
+                a[:additional_params] = "batch_value"
+                
+            end
+            
+        end
+        
+        output << "<input id='batch_action' name='batch_action'     value=''    type='hidden'>"
+        output << "<input id='batch_ids'    name='batch_ids'        value=''    type='hidden'>"
+        
+        the_buttons = "<div>
+            #{$tools.button_select_all}
+            #{$tools.button_deselect_all}
+            <button
+                name    = '#{a[:batch_action]}'
+                class   = 'batch_update #{a[:batch_action]}'
+                style   = 'float:right; font-size:9px !important;'
+                onclick = \"batch_update('#{a[:batch_action]}', '#{a[:additional_params]}');\"
+            >
+                Update Selected
+            </button>
+        </div>"
+     
+        output << "<div
+            class   = 'batch_update ui-state-default ui-corner-all'
+            style   = 'padding:5px; width: 215px; font-size: 8px;'
+        >
+            Batch Update ->
+            #{a[:button_text    ]   }
+            #{a[:select_values  ]   }
+            #{the_buttons           }
+            
+        </div>"
+        
+        return output
+        
+    end
+    
     def button_hide(element_id)
         "<a href='#' id='button' class='ui-state-default ui-corner-all'>Run Effect</a>"
     end
@@ -885,14 +948,23 @@ end
         
     end
     
+    def button_deselect_all(a={})
+        
+        output = String.new
+        
+        output << "<button name='deselect_all' class='deselect_all' onclick=\"deselect_all();\"><span class='ui-icon ui-icon-radio-off'></span></button>"
+        
+        return output
+        
+    end
+    
     def button_select_all(a={})
-        #:element_name_prefix
         
-        button_string = String.new
+        output = String.new
         
-        button_string << "<span class='ui-icon ui-icon-check' onclick='select_all(#{a[:element_name_prefix]})'></span>"
+        output << "<button name='select_all' class='select_all' onclick=\"select_all();\"><span class='ui-icon ui-icon-check'></span></button>"
         
-        return button_string
+        return output
         
     end
 
