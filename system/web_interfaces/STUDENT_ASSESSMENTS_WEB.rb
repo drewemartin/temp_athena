@@ -158,11 +158,11 @@ end
                 #SE_SETTING
                 $tools.table(
                     :table_array    => [
-                        [record.fields["sg6_12"           ].web.default(:disabled=>true, :label_option=>"sg6_12"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg6-12'        GROUP BY accommodation_code"))],
-                        [record.fields["sg5"              ].web.default(:disabled=>true, :label_option=>"sg5"       , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg5'           GROUP BY accommodation_code"))],
-                        [record.fields["1_1sep"           ].web.default(:disabled=>true, :label_option=>"1_1sep"    , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1sep'        GROUP BY accommodation_code"))],
-                        [record.fields["1_1home"          ].web.default(:disabled=>true, :label_option=>"1_1home"   , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1home'       GROUP BY accommodation_code"))],
-                        [record.fields["1_1onsite"        ].web.default(:disabled=>true, :label_option=>"1_1onsite" , :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1onsite'     GROUP BY accommodation_code"))],
+                        [record.fields["sg6_12"           ].web.default(:disabled=>true, :label_option=>"sg6_12     #{subjects_by_code("sg6_12"     )}", :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg6-12'        GROUP BY accommodation_code"))],
+                        [record.fields["sg5"              ].web.default(:disabled=>true, :label_option=>"sg5        #{subjects_by_code("sg5"        )}", :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP 'sg5'           GROUP BY accommodation_code"))],
+                        [record.fields["1_1sep"           ].web.default(:disabled=>true, :label_option=>"1_1sep     #{subjects_by_code("1_1sep"     )}", :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1sep'        GROUP BY accommodation_code"))],
+                        [record.fields["1_1home"          ].web.default(:disabled=>true, :label_option=>"1_1home    #{subjects_by_code("1_1home"    )}", :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1home'       GROUP BY accommodation_code"))],
+                        [record.fields["1_1onsite"        ].web.default(:disabled=>true, :label_option=>"1_1onsite  #{subjects_by_code("1_1onsite"  )}", :title=>se.field_value("accommodation_desc", "WHERE accommodation_code REGEXP '1-1onsite'     GROUP BY accommodation_code"))],
                         [blank],
                         [blank],
                         [blank],
@@ -219,7 +219,7 @@ end
                     :title          => false,
                     :caption        => "SE Setting"
                 ),
-                #se.field_value("accommodation_desc", "WHERE accommodation_code = '#{record.fields["aims"].value.gsub("_","-")}' GROUP BY accommodation_code")
+                
                 #SE_ACCOMMODATIONS
                 $tools.table(
                     :table_array    => [
@@ -281,7 +281,7 @@ end
                     :footers        => false,
                     :head_section   => false,
                     :title          => false,
-                    :caption        => "SE Accommodations"
+                    :caption        => "General"
                     
                 )
                 
@@ -400,6 +400,21 @@ end
 def x______________SUPPORT_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def subjects_by_code(code)
+        
+        results = $db.get_data_single(
+            
+            "SELECT GROUP_CONCAT(DISTINCT LEFT(assessment_type_code,3))
+            FROM agora_sapphire.sapphire_student_se_accommodations
+            WHERE student_id = '#{$focus_student.student_id.value}'
+            AND accommodation_code REGEXP '#{code.gsub("_","-")}'"
+            
+        )
+        
+        return results ? results[0] : ""
+        
+    end
     
     def blank
         "<div style='opacity:0;'>Nothing to Display</div>"
