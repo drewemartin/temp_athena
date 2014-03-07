@@ -1351,6 +1351,88 @@ $(function () {
 	
 })
 
+//Batch Updates Support-------------------------------------------------------------
+function x___________________BATCH_UPDATES_SUPPORT(){}
+//------------------------------------------------------------------------------
+
+	function batch_update(callback_function, add_params){
+		
+		if (add_params != ""){
+			add_params = add_params.split(",");
+		}else{
+			add_params = [];
+		}
+		
+		batch_action_ids = new Array;
+		
+		x = $("[id^=selected__][value='1']")
+		
+		if (x.length > 0){
+			
+			x.each(
+				function(){
+					
+					if (this.value == "1"){
+						batch_action_ids.push(this.name.split("__")[1])
+					}
+					
+				}
+				
+			)
+			
+			add_params.push("batch_ids"	)
+			add_params.push("batch_action"	)
+			$("#batch_ids" 		).val(batch_action_ids.join(",")	)
+			$("#batch_action"	).val(callback_function			)
+			
+			send_covered(add_params.join(","))
+			
+		}else{
+			
+			alert("Nothing was selected!")
+			
+		}
+		
+	}
+	
+	function select_all(){
+		
+		x = $("[id^=selected__]")
+		
+		if (x.length > 0){
+			
+			x.each(
+				function(){
+					
+					this.value 	= "1";
+					this.checked 	= true;
+					
+				}
+				
+			)
+		}
+		
+	}
+	
+	function deselect_all(){
+		
+		x = $("[id^=selected__]")
+		
+		if (x.length > 0){
+			
+			x.each(
+				function(){
+					
+					this.value 	= "0";
+					this.checked 	= false;
+					
+				}
+				
+			)
+		}
+		
+	}
+	
 //Jquery UI Dialogs-------------------------------------------------------------
 function x___________________JQUERY_UI_DIALOGS(){}
 //------------------------------------------------------------------------------
