@@ -314,6 +314,10 @@ class ATHENA_CGI < Base
                     
                     team_member_record.content
                     
+                elsif !params[:batch_action].nil? && !params[:batch_ids].nil?
+                    
+                    web_script.send(params[:batch_action], params[:batch_ids], params[:batch_value])
+                   
                 else
                     web_script.response if web_script.respond_to?("response")
                     
