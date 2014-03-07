@@ -110,7 +110,7 @@ end
             
             row = Array.new
             
-            row.push(record.checkbox_selected  )
+            row.push(record.batch_checkbox  )
             row.push("<button class='new_breakaway_button' id='load_test_packets_record_button_#{pid}' onclick='send\(\"load_test_packets_record_#{pid}\"\)\;setPreSpinner\(\"test_packets_record_container\"\);$\(\"#test_packets_search_dialog\"\).dialog\(\"close\"\)'>Edit</button><input id='load_test_packets_record_#{pid}' type='hidden' value='#{pid}' name='load_test_packets_record'")
             row.push(record.fields["student_id"            ].value||"N/A")
             row.push($tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
