@@ -36,7 +36,8 @@ end
                     
                     unless field_name.match(/student_id|created_by|created_date/)
                         
-                        sapphire_accomodation_status = $tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").primary_ids("WHERE student_id = '#{sid}' AND accommodation_code = '#{field_name.gsub("_","-")}'") ? true : false
+                        sapphire_field_value            = $tables.attach("SAPPHIRE_STUDENT_SE_ACCOMMODATIONS").primary_ids("WHERE student_id = '#{sid}' AND accommodation_code REGEXP '#{field_name.gsub("_","-")}'")
+                        sapphire_accomodation_status    = sapphire_field_value ? true : false
                         student.se_accommodations.send(field_name).set(sapphire_accomodation_status).save
                         
                     end

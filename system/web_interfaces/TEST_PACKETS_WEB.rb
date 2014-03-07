@@ -62,6 +62,7 @@ end
      
         #HEADERS
         tables_array.push([
+            "Select",
             "Edit",
             "Student ID",
             "First Name",
@@ -72,22 +73,46 @@ end
             "Returned to Warehouse (to be shipped)",
             "Test Event",
             "Test Event Site",
-            "Test Type",
             "Subject",
+            "Test Type",
             "Admin Team Member",
             "Grade",
             "Large Print"
         ])
         
         pids = $tables.attach("TEST_PACKETS").primary_ids(where_clause)
+        
+        if pids
+            
+            output << $tools.button_batch_update(
+                
+                :batch_action       => "batch_update_location"              ,
+                :button_text        => "Location Assignment"                ,
+                :select_values      => test_event_sites_dd(test_event_id=1)#remove this parameter after testing
+                
+            )
+            
+        end
+        
+        search_limit = 700
+        
+        if pids && pids.length >= search_limit
+            
+            pids = pids.first(search_limit)
+            
+            output << "<div id='too_many'>More than #{search_limit.to_s} results found. Please refine your search results.</div>"
+            
+        end
+        
         pids.each{|pid|
             
             record = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             
             row = Array.new
             
+            row.push(record.batch_checkbox  )
             row.push("<button class='new_breakaway_button' id='load_test_packets_record_button_#{pid}' onclick='send\(\"load_test_packets_record_#{pid}\"\)\;setPreSpinner\(\"test_packets_record_container\"\);$\(\"#test_packets_search_dialog\"\).dialog\(\"close\"\)'>Edit</button><input id='load_test_packets_record_#{pid}' type='hidden' value='#{pid}' name='load_test_packets_record'")
-            row.push(record.fields["student_id"            ].value)
+            row.push(record.fields["student_id"            ].value||"N/A")
             row.push($tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
             row.push($tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
             row.push(record.fields["serial_number"         ].value)
@@ -96,7 +121,7 @@ end
             row.push(record.fields["returned_to_warehouse" ].web.checkbox())
             row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
             row.push($tables.attach("TEST_EVENT_SITES").field_value("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'"))
-            row.push(record.fields["subject_id"            ].web.select(:dd_choices=>$dd.test_events.test_subjects_dd(test_id=record.fields["test_type_id"].value)))
+            row.push($tables.attach("TEST_SUBJECTS"   ).field_value("name",      "WHERE primary_id = '#{record.fields["subject_id"        ].value}'"))
             row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'")||"Not Selected")
             row.push(record.fields["administrator_team_id" ].to_name(:full_name))
             row.push(record.fields["grade_level"           ].value)
@@ -225,7 +250,7 @@ end
         
         output << "<input id='packet_search' type='hidden' value='' name='packet_search'>"
         
-        output << $tools.blank_input("search__TEST_PACKETS__serial_number",             "serial_number",                "Serial Number:")
+        output << $tools.blank_input("search__TEST_PACKETS__serial_number",             "serial_number",                "Serial Number (omit leading '0's):")
         #output << $tools.blank_input("search__TEST_PACKETS__grade_level",               "grade_level",                  "Grade:")
         #output << $tools.blank_input("search__TEST_PACKETS__subject_id",                   "subject_id",                      "Subject:")
         #output << $tools.blank_input("search__TEST_PACKETS__large_print",               "large_print",                  "Large Print:")
@@ -291,6 +316,24 @@ end
         return output
         
     end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________BATCH_UPDATES
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def batch_update_location(batch_ids, batch_value = nil)
+        
+        batch_ids.each{|id|
+            
+            record = $tables.attach("TEST_PACKETS").by_primary_id(id)
+            record.fields["test_event_site_id"].value = batch_value
+            record.save
+            
+        }
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DROP_DOWN_OPTIONS
 end
@@ -320,11 +363,11 @@ end
         
     end
     
-    def test_event_sites_dd(test_event_id=nil)
+    def test_event_sites_dd(test_event_id=3) #using pssa as default event id for now 
         
         where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
         
-        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", where_clause)
+        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", "#{where_clause} ORDER BY site_name ASC")
         
     end
     
@@ -363,10 +406,9 @@ end
         
         fields = school_record.fields
         
-        fields["test_event_id"          ].value = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
-        fields["test_event_site_id"     ].value = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
-        fields["test_type_id"           ].value = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
-        fields["subject_id"             ].value = $tables.attach("TEST_SUBJECTS"    ).field_value("name",        "WHERE primary_id = '#{fields["subject_id"         ].value}'")
+        test_event      = $tables.attach("TEST_EVENTS"      ).field_value("name",        "WHERE primary_id = '#{fields["test_event_id"      ].value}'")
+        test_event_site = $tables.attach("TEST_EVENT_SITES" ).field_value("site_name",   "WHERE primary_id = '#{fields["test_event_site_id" ].value}'")
+        test_type       = $tables.attach("TESTS"            ).field_value("name",        "WHERE primary_id = '#{fields["test_type_id"       ].value}'")
         
         output << $tools.table(
             :table_array=>[
@@ -379,9 +421,9 @@ end
                     ""
                 ],
                 [
-                    fields["student_id"].value,
-                    $tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{fields["student_id"].value}'"),
-                    $tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{fields["student_id"].value}'"),
+                    fields["student_id"].value||"Not Assigned",
+                    $tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{fields["student_id"].value}'")||"Not Assigned",
+                    $tables.attach("STUDENT").field_value("studentlastname",  "WHERE student_id = '#{fields["student_id"].value}'")||"Not Assigned",
                     fields["grade_level"].value,
                     fields["administrator_team_id" ].set(fields["administrator_team_id" ].to_name(:full_name)).value,
                     ""
@@ -408,11 +450,11 @@ end
                 ],
                 [
                     fields["serial_number"      ].value,
-                    fields["subject_id"         ].web.select(:dd_choices=>$dd.test_events.test_subjects_dd(test_id=fields["test_type_id"].value)),
-                    fields["test_event_id"      ].value,
-                    fields["test_type_id"       ].value,
-                    fields["test_event_site_id" ].value,
-                    fields["large_print"        ].web.checkbox(:disabled=>true)
+                    $tables.attach("TEST_SUBJECTS").field_value("name", "WHERE primary_id = '#{fields["subject_id"].value}'"),
+                    test_event,
+                    test_type,
+                    test_event_site,
+                    fields["large_print"        ].to_user
                 ],
             ],
             :embedded_style => {

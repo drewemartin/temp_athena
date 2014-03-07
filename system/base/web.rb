@@ -353,6 +353,12 @@ end
         div(element)
     end
     
+    def title_option
+        
+        return (structure[:title] ? "title='#{structure[:title]}'" : nil)
+        
+    end
+    
     def link(arg = nil, preload_id = nil, change_tab = nil)
         self.options    = {:label=>false}
         self.options    = arg if arg
@@ -512,7 +518,7 @@ end
 
     def div(element)
         label_element = "<label #{field_class} #{options} for='#{field_id}'>#{label_option}</label>\n" if label?
-        div_element   = "<DIV class='#{field_class} #{add_class}' #{div_id} #{display}>#{label_element}#{element}</DIV>"
+        div_element   = "<DIV #{title_option} class='#{field_class} #{add_class}' #{div_id} #{display}>#{label_element}#{element} </DIV>"
         
         return div_element unless structure[:no_div]
         return "#{label_element}#{element}"
