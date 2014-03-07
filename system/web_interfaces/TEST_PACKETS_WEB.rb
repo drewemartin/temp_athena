@@ -62,6 +62,7 @@ end
      
         #HEADERS
         tables_array.push([
+            "Select",
             "Edit",
             "Student ID",
             "First Name",
@@ -81,6 +82,18 @@ end
         
         pids = $tables.attach("TEST_PACKETS").primary_ids(where_clause)
         
+        if pids
+            
+            output << $tools.button_batch_update(
+                
+                :batch_action       => "batch_update_location"              ,
+                :button_text        => "Location Assignment"                ,
+                :select_values      => test_event_sites_dd(test_event_id=1)#remove this parameter after testing
+                
+            )
+            
+        end
+        
         search_limit = 700
         
         if pids && pids.length >= search_limit
@@ -97,6 +110,7 @@ end
             
             row = Array.new
             
+            row.push(record.checkbox_selected  )
             row.push("<button class='new_breakaway_button' id='load_test_packets_record_button_#{pid}' onclick='send\(\"load_test_packets_record_#{pid}\"\)\;setPreSpinner\(\"test_packets_record_container\"\);$\(\"#test_packets_search_dialog\"\).dialog\(\"close\"\)'>Edit</button><input id='load_test_packets_record_#{pid}' type='hidden' value='#{pid}' name='load_test_packets_record'")
             row.push(record.fields["student_id"            ].value||"N/A")
             row.push($tables.attach("STUDENT").field_value("studentfirstname", "WHERE student_id = '#{record.fields["student_id"].value}'")||"N/A")
@@ -302,6 +316,24 @@ end
         return output
         
     end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________BATCH_UPDATES
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def batch_update_location(batch_ids, batch_value = nil)
+        
+        batch_ids.each{|id|
+            
+            record = $tables.attach("TEST_PACKETS").by_primary_id(id)
+            record.fields["test_event_site_id"].value = batch_value
+            record.save
+            
+        }
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DROP_DOWN_OPTIONS
 end
