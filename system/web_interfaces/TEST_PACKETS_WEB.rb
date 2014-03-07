@@ -505,7 +505,8 @@ end
             table.dataTable td.column_0                     {text-align: center;}
             #student_container fieldset                     {width:97%}
             .no_info                                        {height:100px;}
-            #upload_iframe_test_packets_upload              {display:none;}
+            #upload_iframe_test_packets_upload              {position:fixed; top:0; left:0; z-index:-999999999999;}
+            #upload_new_table_TEST_PACKETS                  {overflow:hidden;}
             
             #test_packets_search_fields                     {width:400px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}

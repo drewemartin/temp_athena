@@ -263,7 +263,15 @@ function handle_upload(iframe, form_id){
 	
 	if (innerHTML != ""){
 		
-		if ($("#upload_status").length > 0){
+		var alert_message = "<img src='/athena/images/dialog_error.png' style='display:block; margin-left:auto; margin-right:auto; padding:10px'/>"
+		
+		if (innerHTML.match(/<h2>.*?500<\/h2>/)){
+			
+			alert_message += "Your request seems to have caused an unexpected error.<br>Please refresh this page, and try again in a few minutes.<br>If this error persists, please notify the system administrators using the button provided below, so the error may be corrected as soon as possible."
+			warning_dialog(alert_message, "error 500", innerHTML, "error")
+			document.getElementById(form_id).innerHTML = "Error"
+			
+		}else if ($("#upload_status").length > 0){
 			
 			document.getElementById("upload_status").innerHTML = innerHTML
 			
@@ -1675,6 +1683,33 @@ function x___________________JQUERY_UI_DIALOGS(){}
 //Unsorted-------------------------------------------------------------------
 function x___________________UNSORTED(){}
 //------------------------------------------------------------------------------
+	
+	function testConnection(){
+		
+		var online = false
+		
+		$.ajax({
+			
+			type:      'POST',
+			url:       '/cgi-bin/'+athena+'.rb',
+			dataType:  'html',
+			async:     false,
+			data:      'page=' + document.getElementById('page').value,
+			success: function(){
+				
+				online = true
+				
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				
+				online = false
+				
+			}
+			
+		});
+		
+		return online
+	}
 	
 	function button_cooldown(obj, time, orig_icon, orig_label){
 		

@@ -216,7 +216,7 @@ end
             <input type='hidden' id= 'user_id' name= 'user_id' value='#{$user.class == String ? $user : $user.email_address_k12.value}'>
             <input id='table_upload_name' name='table_upload_name' value='#{table_name}' style='display:none;'>
             <input type='file' id='#{unique_id}_input' class ='table_upload_file validate' name='table_upload_file' size='#{size}' onchange='ext_check(this, \"csv\");'>
-            <iframe id='upload_iframe_#{unique_id}' name='upload_iframe_#{unique_id}' src='' position:absolute;' onload='handle_upload(this, \"#{unique_id}\")'>
+            <iframe id='upload_iframe_#{unique_id}' name='upload_iframe_#{unique_id}' src='' position:absolute;' onload='handle_upload(this, \"#{unique_id}\")' frameBorder='0'>
             </iframe>
             </form>
         "
