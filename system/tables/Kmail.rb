@@ -47,7 +47,7 @@ end
             if $kit
                 
                 #DELIVER AN ERROR MESSAGE EXPLAINING WHY THESE KMAILS WILL NOT GO
-                $kit.web_error.duplicate_kmail_error(additional_message="") if !@duplicate_kmail_error
+                $kit.web_error.duplicate_kmail_error(additional_message="Duplicates are marked as sent and ignored by the system.") if !@duplicate_kmail_error
                 @duplicate_kmail_error = true
                 
             end
