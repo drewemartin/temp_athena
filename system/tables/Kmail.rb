@@ -39,7 +39,7 @@ end
         matching_criteria << obj.fields["created_by"            ].value
         matching_criteria << $idate
         
-        if primary_ids("WHERE CONCAT(`sender`,`recipient_studentid`,`subject`,`content`,`created_by`,LEFT(`created_date`,10)) = '#{matching_criteria}'")
+        if primary_ids("WHERE CONCAT(`sender`,`recipient_studentid`,`subject`,`content`,`created_by`,LEFT(`created_date`,10)) = '#{Mysql.quote(matching_criteria)}'")
             
             obj.fields["successfull"    ].value = false
             obj.fields["error"          ].value = "DUPLICATE DETECTED"
