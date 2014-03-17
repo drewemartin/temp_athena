@@ -148,9 +148,14 @@ end
     def temporarily_insert_team_id(obj)
         
         record = by_primary_id(obj.primary_id)
-        
-        team_id = $team.find(:sams_id=>record.fields["staff_id"].value).primary_id.value    
-        record.fields["team_id"].set(team_id).save
+        if record.fields["staff_id"].value
+            team_id = $team.find(:sams_id=>record.fields["staff_id"].value).primary_id.value    
+            record.fields["team_id"].set(team_id).save
+        end
+        if record.fields["team_id"].value
+            t = $team.get(record.fields["team_id"].value)    
+            record.fields["staff_id"].set(t.sams_ids.existing_records.first.fields["sams_id"].value).save
+        end
         
     end
     
