@@ -30,17 +30,17 @@ end
         #NOT A DUPLICATE, IF IT IS A DUPLICATE ENTER IT INTO THE SYSTEM AS ERROR AND MARK AS SUCCESSFULL
         #RETURN FALSE AND HANDLE BY DELIVERING AN ERROR TO THE USER THAT THEY MUST CONTACT SUPPORT TO GET THIS DUPLICATE SENT
         #AT THAT POINT SUPPORT CAN SIMPLY MARK SUCCESSFULL = NULL AND CLEAR OUT THE ERROR CODE TO GET THE KMAIL TO RUN
-        
-        matching_criteria = String.new
-        matching_criteria << obj.fields["sender"                ].value
-        matching_criteria << obj.fields["recipient_studentid"   ].value
-        matching_criteria << obj.fields["subject"               ].value
-        matching_criteria << obj.fields["content"               ].value
-        matching_criteria << obj.fields["created_by"            ].value
-        matching_criteria << $idate
-        
-        if primary_ids("WHERE CONCAT(`sender`,`recipient_studentid`,`subject`,`content`,`created_by`,LEFT(`created_date`,10)) = '#{Mysql.quote(matching_criteria)}'")
+      
+        if primary_ids(
             
+            "WHERE sender               = '#{obj.fields["sender"                ].value}'
+            AND recipient_studentid     = '#{obj.fields["recipient_studentid"   ].value}'
+            AND subject                 = '#{obj.fields["subject"               ].to_db}'
+            AND content                 = '#{obj.fields["content"               ].to_db}'
+            AND created_by              = '#{obj.fields["created_by"            ].value}'
+            AND LEFT(created_date,10)   = '#{$idate                                    }'"
+           
+        ) 
             obj.fields["successfull"    ].value = false
             obj.fields["error"          ].value = "DUPLICATE DETECTED"
             
