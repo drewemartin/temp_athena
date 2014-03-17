@@ -214,7 +214,7 @@ end
             <input type='hidden' id= 'user_id' name= 'user_id' value='#{$user.class == String ? $user : $user.email_address_k12.value}'>
             <input id='table_upload_name' name='table_upload_name' value='#{table_name}' style='display:none;'>
             <input type='file' id='#{unique_id}_input' class ='table_upload_file validate' name='table_upload_file' size='#{size}' onchange='ext_check(this, \"csv\");'>
-            <iframe id='upload_iframe_#{unique_id}' name='upload_iframe_#{unique_id}' src='' position:absolute;' onload='handle_upload(this, \"#{unique_id}\")'>
+            <iframe id='upload_iframe_#{unique_id}' name='upload_iframe_#{unique_id}' src='' position:absolute;' onload='handle_upload(this, \"#{unique_id}\")' frameBorder='0'>
             </iframe>
             </form>
         "
@@ -768,8 +768,7 @@ end
         output << "<input id='batch_ids'    name='batch_ids'        value=''    type='hidden'>"
         
         the_buttons = "<div>
-            #{$tools.button_select_all}
-            #{$tools.button_deselect_all}
+            #{$tools.button_select_deselect_all}
             <button
                 name    = '#{a[:batch_action]}'
                 class   = 'batch_update #{a[:batch_action]}'
@@ -778,6 +777,7 @@ end
             >
                 Update Selected
             </button>
+            #{$tools.newlabel("bottom")}
         </div>"
      
         output << "<div
@@ -963,6 +963,25 @@ end
         output = String.new
         
         output << "<button name='select_all' class='select_all' onclick=\"select_all();\"><span class='ui-icon ui-icon-check'></span></button>"
+        
+        return output
+        
+    end
+    
+    def button_select_deselect_all(a={})
+        
+        output = String.new
+        output << "<div class='select_deselect_container' style='float:left;width:50px;'>"
+        output << "<button name='select_deselect_all' class='select_deselect_all'></button>"
+        output << "<button class='select_deselect_menu_dd_button'></button>"
+        
+        output << "
+                <ul id='menu' style='width:100px;'>
+                    <li><a href='#'>All</a></li>
+                    <li><a href='#'>None</a></li>
+                </ul>"
+
+        output << "</div>"
         
         return output
         

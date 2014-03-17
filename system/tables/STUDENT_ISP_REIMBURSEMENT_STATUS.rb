@@ -21,6 +21,29 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(row_obj)
+        
+        student_id      = field_value("student_id", "WHERE primary_id = '#{row_obj.primary_id}'")
+        family_id       = $students.get(student_id).familyid.value
+        
+        related_sids    = $tables.attach("STUDENT").field_values("student_id", "WHERE familyid = '#{family_id}'")
+        related_sids.each{|sid|
+            
+            student = $students.get(sid)
+            if !student.isp_reimbursement_status.existing_record
+                
+                new_row = student.isp_reimbursement_status.new_record
+                row_obj.fields.each_pair do |k,v|
+                    new_row.fields[k] = v if v
+                end
+                new_row.save
+                
+            end
+            
+        } if related_sids
+        
+    end
+
     def after_change_field(field_obj)
         
         unless caller.to_s.match(/student_isp_reimbursement_status(.*?)after_change_field/)
@@ -56,8 +79,11 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :load_type          => :append,
+                :keys               => ["student_id"],
+                :update             => true,
                 "name"              => "student_isp_reimbursement_status",
-                "file_name"         => "student_isp_reimbursement_status",
+                "file_name"         => "student_isp_reimbursement_status.csv",
                 "file_location"     => "student_isp_reimbursement_status",
                 "source_address"    => nil,
                 "source_type"       => nil,

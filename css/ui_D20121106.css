@@ -69,3 +69,57 @@ div.ui-datepicker-buttonpane{
     background-position     :-17px -145px;
     margin-left             :5px;
 }
+
+.ui-button .ui-icon.ui-icon-check-all {
+    background-image: url("../images/custom_ui_icons/check-all.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-hover .ui-icon.ui-icon-check-all {
+    background-image: url("../images/custom_ui_icons/check-all-hover.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-active .ui-icon.ui-icon-check-all {
+    background-image: url("../images/custom_ui_icons/check-all-active.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button .ui-icon.ui-icon-check-none {
+    background-image: url("../images/custom_ui_icons/check-none.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-hover .ui-icon.ui-icon-check-none {
+    background-image: url("../images/custom_ui_icons/check-none-hover.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-active .ui-icon.ui-icon-check-none {
+    background-image: url("../images/custom_ui_icons/check-none-active.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button .ui-icon.ui-icon-check-some {
+    background-image: url("../images/custom_ui_icons/check-some.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-hover .ui-icon.ui-icon-check-some {
+    background-image: url("../images/custom_ui_icons/check-some-hover.png");
+    width:  16px;
+    height: 16px;
+}
+
+.ui-button.ui-state-active .ui-icon.ui-icon-check-some {
+    background-image: url("../images/custom_ui_icons/check-some-active.png");
+    width:  16px;
+    height: 16px;
+}
