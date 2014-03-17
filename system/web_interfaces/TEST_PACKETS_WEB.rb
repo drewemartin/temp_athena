@@ -185,8 +185,12 @@ end
             
         elsif $kit.params[:packet_search]
             
+            @range_included = false
+            
             search_hash = Hash.new            
             search_hash[:serial_number          ] = $kit.params[:serial_number          ] if $kit.params[:serial_number         ] && $kit.params[:serial_number         ] != ""
+            search_hash[:serial_number1         ] = $kit.params[:serial_number1         ] if $kit.params[:serial_number1        ] && $kit.params[:serial_number1        ] != ""
+            search_hash[:serial_number2         ] = $kit.params[:serial_number2         ] if $kit.params[:serial_number2        ] && $kit.params[:serial_number2        ] != ""
             search_hash[:grade_level            ] = $kit.params[:grade_level            ] if $kit.params[:grade_level           ] && $kit.params[:grade_level           ] != ""
             search_hash[:subject_id             ] = $kit.params[:subject_id             ] if $kit.params[:subject_id            ] && $kit.params[:subject_id            ] != ""
             search_hash[:large_print            ] = $kit.params[:large_print            ] if $kit.params[:large_print           ] && $kit.params[:large_print           ] != ""
@@ -204,8 +208,24 @@ end
                 
                 search_hash.each_with_index do |(k,v),i|
                     
-                    where_clause << "AND " if i != 0
-                    where_clause << "#{k.to_s} REGEXP '#{v}' "
+                    if k.to_s.match(/serial_number1|serial_number2/)
+                        
+                        if !@range_included
+                            
+                            where_clause << "AND " if i != 0
+                            
+                            where_clause << "serial_number >= #{search_hash[:serial_number1] || 0} AND serial_number <= #{search_hash[:serial_number2] || 0}"
+                            @range_included = true
+                            
+                        end
+                        
+                    else
+                        
+                        where_clause << "AND " if i != 0
+                        
+                        where_clause << "#{k.to_s} REGEXP '#{v}' "
+                       
+                    end
                     
                 end
                 
@@ -232,6 +252,8 @@ end
         [
             "packet_search",
             "search__TEST_PACKETS__serial_number",
+            "search__TEST_PACKETS__serial_number1",
+            "search__TEST_PACKETS__serial_number2",
             #"search__TEST_PACKETS__grade_level",
             #"search__TEST_PACKETS__subject_id",
             #"search__TEST_PACKETS__large_print",
@@ -251,6 +273,8 @@ end
         output << "<input id='packet_search' type='hidden' value='' name='packet_search'>"
         
         output << $tools.blank_input("search__TEST_PACKETS__serial_number",             "serial_number",                "Serial Number (omit leading '0's):")
+        output << $tools.blank_input("search__TEST_PACKETS__serial_number1",             "serial_number1",                "Serial Number Range Start:"  )
+        output << $tools.blank_input("search__TEST_PACKETS__serial_number2",             "serial_number2",                "Serial Number Range End:"    )
         #output << $tools.blank_input("search__TEST_PACKETS__grade_level",               "grade_level",                  "Grade:")
         #output << $tools.blank_input("search__TEST_PACKETS__subject_id",                   "subject_id",                      "Subject:")
         #output << $tools.blank_input("search__TEST_PACKETS__large_print",               "large_print",                  "Large Print:")
