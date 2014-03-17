@@ -212,7 +212,7 @@ end
                         
                         if !@range_included
                             
-                            where_clause << "AND " if i != 0
+                            where_clause << " AND " if i != 0
                             
                             where_clause << "serial_number >= #{search_hash[:serial_number1] || 0} AND serial_number <= #{search_hash[:serial_number2] || 0}"
                             @range_included = true
@@ -221,7 +221,7 @@ end
                         
                     else
                         
-                        where_clause << "AND " if i != 0
+                        where_clause << " AND " if i != 0
                         
                         where_clause << "#{k.to_s} REGEXP '#{v}' "
                        

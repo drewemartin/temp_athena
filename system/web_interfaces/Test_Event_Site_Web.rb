@@ -260,7 +260,7 @@ end
                         ')'
                     ),
                     ''
-                )"
+                ) AS #{field_name}"
                 
             end
             
@@ -406,7 +406,7 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push(!record.fields["returned_to_warehouse" ].is_true? ? $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}", nil, "Re-Assign") : "")
+            row.push(!record.fields["returned_to_warehouse" ].is_true? ? $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}=#{pid}", nil, "Re-Assign") : "")
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
             row.push(
@@ -439,7 +439,7 @@ end
             
         } if pids
         
-        return "Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")     
+        return "Site Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")     
        
     end
     
