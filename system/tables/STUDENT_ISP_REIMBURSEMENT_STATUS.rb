@@ -33,7 +33,9 @@ end
             if !student.isp_reimbursement_status.existing_record
                 
                 new_row = student.isp_reimbursement_status.new_record
-                new_row.fields = row_obj.fields
+                row_obj.fields.each_pair do |k,v|
+                    new_row.fields[k] = v if v
+                end
                 new_row.save
                 
             end
