@@ -1364,8 +1364,8 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 		}
 		
 		batch_action_ids = new Array;
-		
-		x = $("[id^=selected__][value='1']")
+		var oTable = $("#dataTableDefaulttest_packets").dataTable()
+		x = oTable.$("[id^=selected__][value='1']")
 		
 		if (x.length > 0){
 			
@@ -1380,10 +1380,10 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 				
 			)
 			
-			add_params.push("batch_ids"	)
-			add_params.push("batch_action"	)
-			$("#batch_ids" 		).val(batch_action_ids.join(",")	)
-			$("#batch_action"	).val(callback_function			)
+			add_params.push("batch_ids"  	)
+			add_params.push("batch_action"  )
+			$("#batch_ids"                  ).val(batch_action_ids.join(","))
+			$("#batch_action"           	).val(callback_function         )
 			
 			send_covered(add_params.join(","))
 			
@@ -1397,15 +1397,17 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 	
 	function select_all(){
 		
-		x = $("[id^=selected__]")
+		var oTable = $("#dataTableDefaulttest_packets").dataTable()
+		x = oTable.$("[id^=selected__]")
 		
 		if (x.length > 0){
 			
 			x.each(
+				
 				function(){
 					
-					this.value 	= "1";
-					this.checked 	= true;
+					this.value            = "1";
+					this.checked      = true;
 					
 				}
 				
@@ -1416,15 +1418,17 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 	
 	function deselect_all(){
 		
-		x = $("[id^=selected__]")
+		var oTable = $("#dataTableDefaulttest_packets").dataTable()
+		x = oTable.$("[id^=selected__]")
 		
 		if (x.length > 0){
 			
 			x.each(
+				
 				function(){
 					
-					this.value 	= "0";
-					this.checked 	= false;
+					this.value            = "0";
+					this.checked      = false;
 					
 				}
 				
