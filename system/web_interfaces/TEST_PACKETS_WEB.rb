@@ -348,15 +348,23 @@ end
 
     def batch_update_location(batch_ids, batch_value = nil)
         
-        batch_ids.split(",").each{|id|
+        if !batch_value.empty?
             
-            record = $tables.attach("TEST_PACKETS").by_primary_id(id)
-            record.fields["test_event_site_id"].value = batch_value
-            record.save
+            batch_ids.split(",").each{|id|
+                
+                record = $tables.attach("TEST_PACKETS").by_primary_id(id)
+                record.fields["test_event_site_id"].value = batch_value
+                record.save
+                
+            }
             
-        }
-        
-        $kit.output << "<eval_script>$('#test_packets_search_submit').trigger( 'click' )</eval_script>"
+            $kit.output << "<eval_script>$('#test_packets_search_submit').trigger( 'click' )</eval_script>"
+            
+        else
+            
+            $kit.output << "<eval_script>alert('Please select a location from the dropdown and try again.')</eval_script>"
+            
+        end
         
     end
     
