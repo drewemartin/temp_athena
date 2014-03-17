@@ -768,8 +768,7 @@ end
         output << "<input id='batch_ids'    name='batch_ids'        value=''    type='hidden'>"
         
         the_buttons = "<div>
-            #{$tools.button_select_all}
-            #{$tools.button_deselect_all}
+            #{$tools.button_select_deselect_all}
             <button
                 name    = '#{a[:batch_action]}'
                 class   = 'batch_update #{a[:batch_action]}'
@@ -778,6 +777,7 @@ end
             >
                 Update Selected
             </button>
+            #{$tools.newlabel("bottom")}
         </div>"
      
         output << "<div
@@ -963,6 +963,25 @@ end
         output = String.new
         
         output << "<button name='select_all' class='select_all' onclick=\"select_all();\"><span class='ui-icon ui-icon-check'></span></button>"
+        
+        return output
+        
+    end
+    
+    def button_select_deselect_all(a={})
+        
+        output = String.new
+        output << "<div class='select_deselect_container' style='float:left;width:50px;'>"
+        output << "<button name='select_deselect_all' class='select_deselect_all'></button>"
+        output << "<button class='select_deselect_menu_dd_button'></button>"
+        
+        output << "
+                <ul id='menu' style='width:100px;'>
+                    <li><a href='#'>All</a></li>
+                    <li><a href='#'>None</a></li>
+                </ul>"
+
+        output << "</div>"
         
         return output
         

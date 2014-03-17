@@ -1388,10 +1388,10 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 				
 			)
 			
-			add_params.push("batch_ids"  	)
-			add_params.push("batch_action"  )
-			$("#batch_ids"                  ).val(batch_action_ids.join(","))
-			$("#batch_action"           	).val(callback_function         )
+			add_params.push("batch_ids"	)
+			add_params.push("batch_action"	)
+			$("#batch_ids" 			).val(batch_action_ids.join(","))
+			$("#batch_action"		).val(callback_function		)
 			
 			send_covered(add_params.join(","))
 			
@@ -1411,11 +1411,10 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 		if (x.length > 0){
 			
 			x.each(
-				
 				function(){
 					
-					this.value            = "1";
-					this.checked      = true;
+					this.value 	= "1";
+					this.checked 	= true;
 					
 				}
 				
@@ -1432,11 +1431,10 @@ function x___________________BATCH_UPDATES_SUPPORT(){}
 		if (x.length > 0){
 			
 			x.each(
-				
 				function(){
 					
-					this.value            = "0";
-					this.checked      = false;
+					this.value 	= "0";
+					this.checked 	= false;
 					
 				}
 				
@@ -1898,6 +1896,63 @@ function x___________________UNSORTED(){}
 					return "You may lose some unsaved changes...";
 				};
 			};
+			
+			$(".select_deselect_all").button({
+				icons: {primary: "ui-icon-check-all"}
+			}).css({
+				"height":"22px","width":"23px"
+			}).unbind("click").bind("click", function(e) {
+				switch($(this).button( "option", "icons")["primary"]){
+					case "ui-icon-check-all":
+						$(this).button( "option", "icons", {primary: "ui-icon-check-none"});
+						select_all();
+						break;
+					case "ui-icon-check-none":
+						$(this).button( "option", "icons", {primary: "ui-icon-check-all"});
+						deselect_all();
+						break;
+					case "ui-icon-check-some":
+						$(this).button( "option", "icons", {primary: "ui-icon-check-all"});
+						deselect_all();
+						break;
+				}
+				
+			})
+			
+			$(".batch_checkbox").unbind("click").bind("click", function(e) {
+				$(".select_deselect_all").button( "option", "icons", {primary: "ui-icon-check-some"});
+			})
+			
+			$(".select_deselect_menu_dd_button").button({
+				icons: {primary: "ui-icon-triangle-1-s"}
+			}).css({
+				"height":"22px","width":"23px","border":"none"
+			}).unbind("click").bind("click", function(e) {
+				$("#menu").menu().show()
+			})
+			
+			$("#menu").menu({
+				selected:function(event,ui){
+					switch(ui.item.text()){
+						case "All":
+							select_all();
+							$(".select_deselect_all").button( "option", "icons", {primary: "ui-icon-check-none"});
+							break;
+						case "None":
+							deselect_all();
+							$(".select_deselect_all").button( "option", "icons", {primary: "ui-icon-check-all"});
+							break;
+					}
+					$(this).hide()
+				}
+			}).css({
+				"position":"absolute","z-index":"9999999999"
+			}).hide().mouseleave(function(){
+				//alert($(this).parent().attr("class"))
+				if ($(this).parent().hasClass("ui-effects-wrapper") == false) {
+					$(this).hide("blind",300)
+				}
+			})
 			
 			$(".request_file_link").button({
 			}).unbind("click").bind("click", function(e) {
