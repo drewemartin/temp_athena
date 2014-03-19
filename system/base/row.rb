@@ -24,7 +24,7 @@ end
                 "type"      => "bool",
                 "field"     => "selected__#{self.primary_id}"
             }
-        ).web.checkbox(:add_class  => "no_save batch_checkbox")
+        ).web.checkbox(:add_class  => "no_save")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

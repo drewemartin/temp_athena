@@ -581,29 +581,26 @@ end
             table.dataTable td.column_0                     {text-align: center;}
             #student_container fieldset                     {width:97%}
             .no_info                                        {height:100px;}
-            #upload_iframe_test_packets_upload              {position:fixed; top:0; left:0; z-index:-999999999999;}
-            #upload_new_table_TEST_PACKETS                  {overflow:hidden;}
+            #upload_iframe_test_packets_upload              {display:none;}
             
-            #test_packets_search_fields                     {width:450px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
+            #test_packets_search_fields                     {width:400px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}
             #test_packets_search_submit                     {margin-top:5px;}
             #test_packets_search_results                    {min-height:450px; width:1000px; padding:10px; border:1px solid #3baae3; border-radius:5px;margin-left:auto; margin-right:auto; box-shadow:inset 0px 0px 10px #869bac; background-color:#EDF0F2;}
             
             input                                           {font-size:10px;}
             
-            .serial_number                            label {width:190px; display:inline-block;}
-            .grade_level                              label {width:190px; display:inline-block;}
-            .subject                                  label {width:190px; display:inline-block;}
-            .large_print                              label {width:190px; display:inline-block;}
-            .test_event_id                            label {width:190px; display:inline-block;}
-            .test_type_id                             label {width:190px; display:inline-block;}
-            .student_id                               label {width:190px; display:inline-block;}
-            .test_event_site_id                       label {width:190px; display:inline-block;}
-            .administrator_team_id                    label {width:190px; display:inline-block;}
-            .status                                   label {width:190px; display:inline-block;}
-            .verified                                 label {width:190px; display:inline-block;}
-            .serial_number1                           label {width:190px; display:inline-block;}
-            .serial_number2                           label {width:190px; display:inline-block;}
+            .serial_number                            label {width:130px; display:inline-block;}
+            .grade_level                              label {width:130px; display:inline-block;}
+            .subject                                  label {width:130px; display:inline-block;}
+            .large_print                              label {width:130px; display:inline-block;}
+            .test_event_id                            label {width:130px; display:inline-block;}
+            .test_type_id                             label {width:130px; display:inline-block;}
+            .student_id                               label {width:130px; display:inline-block;}
+            .test_event_site_id                       label {width:130px; display:inline-block;}
+            .administrator_team_id                    label {width:130px; display:inline-block;}
+            .status                                   label {width:130px; display:inline-block;}
+            .verified                                 label {width:130px; display:inline-block;}
             
             .serial_number                            input {width:250px;}
             .grade_level                              input {width:250px;}
@@ -616,8 +613,6 @@ end
             .administrator_team_id                    input {width:250px;}
             .status                                   input {width:250px;}
             .verified                                 input {width:250px;}
-            .serial_number1                           input {width:250px;}
-            .serial_number2                           input {width:250px;}
             
             .TEST_PACKETS__serial_number              input {width:800px;}
             .TEST_PACKETS__grade_level                input {width:800px;}
