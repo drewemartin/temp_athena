@@ -299,7 +299,7 @@ end
                         
                         if last_comma_index && csv_text.slice(last_comma_index..-1).match(/generated/i) && long_enough
                             
-                            if true #csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
+                            if csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
                                 
                                 file_1 = File.open( "#{import_path}#{file_name}", 'w' )
                                 file_1.puts csv_text
@@ -380,7 +380,7 @@ end
             
         rescue => e
             
-            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED! QUICK! FIX IT!", e)
+            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.DOWNLOAD! QUICK! FIX IT!", e)
             
         end
         
@@ -537,195 +537,203 @@ end
     
     def load(a={}) #:after_load=>table_name
         
-        continue_with_load = find_and_trigger_event(event_type = :before_load, args = nil)
-        
-        if continue_with_load
-          
-            db_config_record(
-                field_name = "load_started_datetime",
-                new_value = DateTime.now
-            )
+        begin
             
-            db_config_record(
-                field_name  = "last_import_status",
-                new_value   = "LOAD STARTED"
-            )
+            continue_with_load = find_and_trigger_event(event_type = :before_load, args = nil)
             
-            db_config_record(
-                field_name  = "phase_completed",
-                new_value   = nil
-            )
+            if continue_with_load
             
-            if import_file_exists?
+                db_config_record(
+                    field_name = "load_started_datetime",
+                    new_value = DateTime.now
+                )
                 
-                add_import_document_type
-                $reports.save_document({:category_name=>"Table Imports", :type_name=>name, :file_path=>file_path})
+                db_config_record(
+                    field_name  = "last_import_status",
+                    new_value   = "LOAD STARTED"
+                )
                 
-                processed_filename = file_name.gsub(".csv","_#{$ifilestamp}.csv")
-                FileUtils.cp(file_path, "#{report_path}#{processed_filename}")
+                db_config_record(
+                    field_name  = "phase_completed",
+                    new_value   = nil
+                )
                 
-                if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && !caller.find{|x| x.include?("load_k12_history")}
-                    #$reports.move_to_athena_reports("#{report_path}#{processed_filename}")
-                end
-                
-                ################################################################
-                #WE WILL NOT TRUNCATE THE TABLE IF THERE IS AN AUDIT TRAIL.
-                #IF YOU NEED TO START WITH A BLANK TABLE YOU WILL NEED TO
-                #TRUNCATE MANUALLY.
-                unless (table["audit"] || load_type == :append)
-                    truncate
-                end 
-                ################################################################
-                
-                csv_field_names         = nil
-                
-                sid_row                 = nil
-                samsid_row              = nil
-                @current_row            = new_row 
-                skip                    = true
-                
-                last_row_first_column = nil
-                
-                begin
+                if import_file_exists?
                     
-                    total_rows = 0
-                    CSV.foreach( file_path ) do |row|
+                    add_import_document_type
+                    $reports.save_document({:category_name=>"Table Imports", :type_name=>name, :file_path=>file_path})
+                    
+                    processed_filename = file_name.gsub(".csv","_#{$ifilestamp}.csv")
+                    FileUtils.cp(file_path, "#{report_path}#{processed_filename}")
+                    
+                    if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/) && !caller.find{|x| x.include?("load_k12_history")}
+                        #$reports.move_to_athena_reports("#{report_path}#{processed_filename}")
+                    end
+                    
+                    ################################################################
+                    #WE WILL NOT TRUNCATE THE TABLE IF THERE IS AN AUDIT TRAIL.
+                    #IF YOU NEED TO START WITH A BLANK TABLE YOU WILL NEED TO
+                    #TRUNCATE MANUALLY.
+                    unless (table["audit"] || load_type == :append)
+                        truncate
+                    end 
+                    ################################################################
+                    
+                    csv_field_names         = nil
+                    
+                    sid_row                 = nil
+                    samsid_row              = nil
+                    @current_row            = new_row 
+                    skip                    = true
+                    
+                    last_row_first_column = nil
+                    
+                    begin
                         
-                        last_row_first_column = row[0]
-                        if skip
-                            csv_field_names = Array.new
-                            row.each{|field|
-                                csv_field_names.push(field_from_file(field))
-                            }
-                            sid_row     = csv_field_names.index("student_id")
+                        total_rows = 0
+                        CSV.foreach( file_path ) do |row|
                             
-                        elsif source_type == "k12_report" && last_row_first_column.match(/generated/i)
-                            #SKIPPING THIS @CURRENT_ROW BECAUSE IT'S NOT VALID, JUST K12'S DATETIME GENERATION STAMP.
-                        else 
-                            
-                            skip_this_row = false
-                            
-                            if table[:keys]
+                            last_row_first_column = row[0]
+                            if skip
+                                csv_field_names = Array.new
+                                row.each{|field|
+                                    csv_field_names.push(field_from_file(field))
+                                }
+                                sid_row     = csv_field_names.index("student_id")
                                 
-                                key_field_values = String.new
-                                key_field_select = Array.new
-                                table[:keys].each{|key_name|
+                            elsif source_type == "k12_report" && last_row_first_column.match(/generated/i)
+                                #SKIPPING THIS @CURRENT_ROW BECAUSE IT'S NOT VALID, JUST K12'S DATETIME GENERATION STAMP.
+                            else 
+                                
+                                skip_this_row = false
+                                
+                                if table[:keys]
                                     
-                                    if this_fields_value = row[csv_field_names.index(key_name)]
-                                        key_field_values << @current_row.fields[key_name].set(this_fields_value.to_s).to_db.to_s   
+                                    key_field_values = String.new
+                                    key_field_select = Array.new
+                                    table[:keys].each{|key_name|
+                                        
+                                        if this_fields_value = row[csv_field_names.index(key_name)]
+                                            key_field_values << @current_row.fields[key_name].set(this_fields_value.to_s).to_db.to_s   
+                                        end
+                                        
+                                        key_field_select.push("IFNULL(`#{key_name}`, '')")
+                                        
+                                    }
+                                    
+                                    existing_record = record("WHERE CONCAT(#{key_field_select.join(",")}) = '#{key_field_values}'")
+                                    if existing_record
+                                        skip_this_row   = true if !table[:update]
+                                        @current_row    = existing_record
+                                    else
+                                        @current_row.clear
                                     end
                                     
-                                    key_field_select.push("IFNULL(`#{key_name}`, '')")
-                                    
-                                }
-                                
-                                existing_record = record("WHERE CONCAT(#{key_field_select.join(",")}) = '#{key_field_values}'")
-                                if existing_record
-                                    skip_this_row   = true if !table[:update]
-                                    @current_row    = existing_record
                                 else
                                     @current_row.clear
                                 end
                                 
-                            else
-                                @current_row.clear
+                                unless skip_this_row
+                                    
+                                    index = 0  
+                                    while index < row.length
+                                        
+                                        csv_field = csv_field_names[index]
+                                        csv_value = row[index]
+                                        @current_row.fields[csv_field].value = csv_value if csv_field
+                                        index += 1
+                                        
+                                    end
+                                    
+                                    @current_row.fields["created_date"].value = $base.created_date if $base.created_date
+                                    
+                                    begin
+                                        @current_row.save
+                                    rescue=>e
+                                        e.backtrace
+                                        $base.system_notification(
+                                            subject = "LOAD WARNING - #{table_name}",
+                                            content = "Save record failed in load.
+                                            ROW DETAILS:
+                                            #{row.to_s}
+                                            ERROR MESSAGE:
+                                            #{e.message}",
+                                            caller[0],
+                                            e
+                                        )
+                                        #So the load failed can be caught in case here was a problm with saving this record.
+                                        #Otherwise an error is raised inside the save function and is not reported to syslog or sysnotification
+                                    end
+                                    
+                                    total_rows += 1
+                                    
+                                end
+                                
                             end
                             
-                            unless skip_this_row
-                                
-                                index = 0  
-                                while index < row.length
-                                    
-                                    csv_field = csv_field_names[index]
-                                    csv_value = row[index]
-                                    @current_row.fields[csv_field].value = csv_value if csv_field
-                                    index += 1
-                                    
-                                end
-                                
-                                @current_row.fields["created_date"].value = $base.created_date if $base.created_date
-                                
-                                begin
-                                    @current_row.save
-                                rescue=>e
-                                    e.backtrace
-                                    $base.system_notification(
-                                        subject = "LOAD WARNING - #{table_name}",
-                                        content = "Save record failed in load.
-                                        ROW DETAILS:
-                                        #{row.to_s}
-                                        ERROR MESSAGE:
-                                        #{e.message}",
-                                        caller[0],
-                                        e
-                                    )
-                                    #So the load failed can be caught in case here was a problm with saving this record.
-                                    #Otherwise an error is raised inside the save function and is not reported to syslog or sysnotification
-                                end
-                                
-                                total_rows += 1
-                                
-                            end
+                            skip = false
                             
                         end
                         
-                        skip = false
+                        if total_rows < 5
+                            $base.system_notification(
+                                subject = "LOAD WARNING - #{table_name}",
+                                content = "Total Rows Imported: #{total_rows}. Please verify."
+                            )
+                        end
+                        
+                    rescue => e
+                        load_failed(message = e.message, e)
+                        raise e
                         
                     end
                     
-                    if total_rows < 5
-                        $base.system_notification(
-                            subject = "LOAD WARNING - #{table_name}",
-                            content = "Total Rows Imported: #{total_rows}. Please verify."
-                        )
+                    db_config_record(
+                        field_name  = "load_complete_datetime",
+                        new_value   = DateTime.now
+                    )
+                    db_config_record(
+                        field_name  = "last_import_status",
+                        new_value   = "LOAD SUCCEEDED - #{last_row_first_column}"
+                    )
+                    
+                    if a[:k12_history_directory]
+                        
+                        history_file_name   = file_path.split("/")[-1]
+                        new_history_path    = file_path.gsub(history_file_name,"").gsub(a[:k12_history_directory],"#{a[:k12_history_directory]}_loaded")
+                        history_loaded_path = $config.init_path(new_history_path)
+                        FileUtils.cp(file_path, "#{history_loaded_path}#{history_file_name}")
+                        FileUtils.rm(file_path)
+                        
+                    else
+                        
+                        FileUtils.cp(file_path, "#{imported_path}#{processed_filename}")
+                        FileUtils.rm(file_path)
+                        
                     end
                     
-                rescue => e
-                    load_failed(message = e.message, e)
-                    raise e
+                    find_and_trigger_event(event_type = :after_load, args = a[:after_load])
                     
-                end
-                
-                db_config_record(
-                    field_name  = "load_complete_datetime",
-                    new_value   = DateTime.now
-                )
-                db_config_record(
-                    field_name  = "last_import_status",
-                    new_value   = "LOAD SUCCEEDED - #{last_row_first_column}"
-                )
-                
-                if a[:k12_history_directory]
+                    db_config_record(
+                        field_name  = "import_complete_datetime",
+                        new_value   = DateTime.now
+                    )
                     
-                    history_file_name   = file_path.split("/")[-1]
-                    new_history_path    = file_path.gsub(history_file_name,"").gsub(a[:k12_history_directory],"#{a[:k12_history_directory]}_loaded")
-                    history_loaded_path = $config.init_path(new_history_path)
-                    FileUtils.cp(file_path, "#{history_loaded_path}#{history_file_name}")
-                    FileUtils.rm(file_path)
+                    return true
                     
                 else
-                    
-                    FileUtils.cp(file_path, "#{imported_path}#{processed_filename}")
-                    FileUtils.rm(file_path)
+                    return load_failed(message = "Import file not found.")
                     
                 end
                 
-                find_and_trigger_event(event_type = :after_load, args = a[:after_load])
-                
-                db_config_record(
-                    field_name  = "import_complete_datetime",
-                    new_value   = DateTime.now
-                )
-                
-                return true
-                
             else
-                return load_failed(message = "Import file not found.")
-                
+                return true
             end
             
-        else
-            return true
+        rescue => e
+            
+            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.LOAD! QUICK! FIX IT!", e)
+            
         end
         
     end
