@@ -299,7 +299,7 @@ end
                         
                         if last_comma_index && csv_text.slice(last_comma_index..-1).match(/generated/i) && long_enough
                             
-                            if true #csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
+                            if csv_text.slice(last_comma_index..-1).match(/\d{4}-\d{2}-\d{2}/).to_s == $idate
                                 
                                 file_1 = File.open( "#{import_path}#{file_name}", 'w' )
                                 file_1.puts csv_text
