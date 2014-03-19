@@ -2410,7 +2410,7 @@ end
             test_event_sites.site_name,
             team_test_event_site_attendance.date,
             team_test_event_site_attendance.status,
-            test_events.name
+            test_events.name,
             (
                 SELECT
                     role
