@@ -4,12 +4,13 @@ class Web_Tools
 
     #---------------------------------------------------------------------------
     def initialize()
-        @structure          = structure
-        @date_iterator      = 0
-        @breakaway_iterator = 1
-        @csv_iterator       = 1
-        @expand_iterator    = 1
-        @tabs_iterator      = 0
+        @structure                      = structure
+        @date_iterator                  = 0
+        @breakaway_iterator             = 1
+        @csv_iterator                   = 1
+        @expand_iterator                = 1
+        @tabs_iterator                  = 0
+        @new_row_table_itterator        = Hash.new
     end
     #---------------------------------------------------------------------------
     
@@ -895,17 +896,20 @@ end
                 "value"     => button_text
             }
         ).web.button(
-            :field_id   => "new_row_button_#{table_name}",
+            :field_id   => "new_row_button_#{table_name}#{@new_row_table_itterator[table_name]||''}",
             :no_div     => true,
             :onclick    => "get_new_row(#{pstr});",
             :add_class  => "new_row"
         )
         
         #button_html << "<button name='new_row_button' class='new_row' id='new_row_button_#{table_name}' onclick=\"get_new_row(#{pstr});\">#{button_text}</button>"
-        button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n" if !i_will_manually_add_the_div
+        button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n" if !i_will_manually_add_the_div && !@new_row_table_itterator[table_name]
         button_html << "<input id='add_new_#{table_name}' name='add_new_#{table_name}' value='#{table_name}' type='hidden'>"
         
+        @new_row_table_itterator[table_name] = (!@new_row_table_itterator[table_name] ? 1 : @new_row_table_itterator[table_name]+=1)
+        
         return button_html
+    
     end
     
     def button_new_csv(csv_name, additional_params_str = nil, send_field_names = nil, csv_title = "Download")
