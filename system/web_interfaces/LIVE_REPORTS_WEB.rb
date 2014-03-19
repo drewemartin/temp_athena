@@ -2414,17 +2414,17 @@ end
             (
                 SELECT
                     role
-                FROM dev_20132014.test_event_site_staff
+                FROM #{site_staff_db}.test_event_site_staff
                 WHERE test_event_site_staff.team_id = team.primary_id
                 AND test_event_site_staff.test_event_site_id = test_event_sites.primary_id
+                LIMIT 0,1
             )
             
         FROM #{att_db}.team_test_event_site_attendance
         LEFT JOIN #{team_db      }.team                  ON team.primary_id               = team_test_event_site_attendance.team_id
         LEFT JOIN #{event_db     }.test_event_sites      ON test_event_sites.primary_id   = team_test_event_site_attendance.test_event_site_id
         LEFT JOIN #{sites_db     }.test_sites            ON test_sites.primary_id         = test_event_sites.test_site_id
-        LEFT JOIN #{events_db    }.test_events           ON test_events.primary_id        = test_event_sites.test_event_id
-        LEFT JOIN #{site_staff_db}.test_event_site_staff ON test_event_site_staff.team_id = team_test_event_site_attendance.team_id"
+        LEFT JOIN #{events_db    }.test_events           ON test_events.primary_id        = test_event_sites.test_event_id"
         
         headers =
         [
