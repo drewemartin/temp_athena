@@ -905,7 +905,7 @@ end
         button_html << $field.new(
             {
                 "type"      => "text",
-                "field"     => "new_row_button_#{table_name}",
+                :field_id   => "new_row_button_#{table_name}#{@new_row_table_itterator[table_name]||''}",
                 "value"     => button_text
             }
         ).web.button(
