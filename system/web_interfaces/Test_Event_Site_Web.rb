@@ -410,7 +410,7 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push(!record.fields["returned_to_warehouse" ].is_true? ? $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}=#{pid}", nil, "Re-Assign") : "")
+            row.push(!record.fields["returned_to_warehouse" ].is_true? ?  reassign_button(pid) : "")
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
             row.push(
@@ -443,7 +443,9 @@ end
             
         } if pids
         
-        return "Site Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")     
+        output = "#{$kit.tools.data_table(tables_array, "site_test_packets")}#{$tools.add_new_dialog}"
+        
+        return "Site Test Packets", output 
        
     end
     
@@ -1276,6 +1278,20 @@ end
         message.gsub!("%%Special Notes%%",           special_notes) if special_notes
         
         return message
+        
+    end
+    
+    def reassign_button(pid)
+        
+        $tools.button_new_row(
+           
+            table_name                  = "TEST_PACKET_LOCATION",
+            additional_params_str       = "test_packet_id_#{pid}=#{pid}",
+            save_params                 = nil,
+            button_text                 = "Re-Assign",
+            i_will_manually_add_the_div = true
+            
+        )
         
     end
     
