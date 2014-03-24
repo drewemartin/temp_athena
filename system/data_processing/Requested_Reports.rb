@@ -5,8 +5,6 @@ class Requested_Reports < Base
 
     def initialize()
         
-        super()
-        
     end
     
     def attendance_master(request_pid)

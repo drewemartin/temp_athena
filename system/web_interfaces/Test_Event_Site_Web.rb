@@ -7,7 +7,7 @@ class TEST_EVENT_SITE_WEB
     def initialize()
         @kmail_hash         = Hash.new
         @test_event_site_id = nil
-        @default_subject    = "Winter Keystone Testing Reminder"
+        @default_subject    = "Testing Reminder"
         @kmail_log          = $tables.attach("Kmail_Log").new_row
         @subject            = nil
         @administrators     = [
@@ -153,6 +153,8 @@ end
     
     def response
         
+        @test_event_site_id = $kit.params[:test_event_site_id]
+        
         if !$kit.rows.empty? && field = $kit.rows.first[1].fields["serial_number"]
             if field.updated == false
                 student_id = $tables.attach("TEST_PACKETS").field_value("student_id", "WHERE serial_number = '#{field.value}'")
@@ -168,10 +170,12 @@ end
             $kit.modify_tag_content("tabs-2", output, "update")
         elsif $kit.params[:test_event_site_id] && $kit.params[:kmail_body] && $kit.params[:kmail_subject]
             kmail_body          = $kit.params[:kmail_body]
-            @test_event_site_id = $kit.params[:test_event_site_id]
-            @subject            = $kit.params[:kmail_subject]
+            test_event_site_id  = $kit.params[:test_event_site_id]
+            subject             = $kit.params[:kmail_subject]
             sample              = $kit.params[:sample] ? true : false
-            send_kmails_by_date(kmail_body, sample)
+            queue_kmail_process(test_event_site_id, subject, kmail_body, sample)
+        elsif $kit.params[:refresh]
+            $kit.modify_tag_content($kit.params[:refresh], queue_history, type="update")
         end
         
         if $kit.rows && !$kit.rows.empty?
@@ -713,7 +717,7 @@ end
         output << $tools.kmailtextarea("kmail_body", "Default Body:", File.read("#{$paths.templates_path}kmail/keystone_test_content.txt"))
         output << "<input class='submit_button' type='button' name='action' value='Send Reminder Kmails' onclick='confirmation_dialog_open();send(\"test_event_site_id,kmail_body,kmail_subject,sample\")'/>"
         output << $tools.newlabel("bottom")
-        
+        output << $tools.button_refresh("history_div", "test_event_site_id")
         output << $tools.div_open("history_div", "history_div")
         output << queue_history
         output << $tools.div_close()
@@ -721,15 +725,54 @@ end
     end
     
     def queue_history
+        
         output = String.new
-        rows = $tables.attach("Kmail_Log").by_identifier("keystone_reminders__#{@test_event_site_id}")
-        rows.each do |row|
-            fields = row.fields
-            output << fields["created_date" ].to_user!.web.label(:label_option=>"Queued Date:")
-            output << fields["created_by"   ].web.label(:label_option=>"Created By:")
-        end if rows
-        output << $tools.newlabel("bottom")
-        return output
+        
+        kmail_log_records = $tables.attach("Kmail_Log").by_identifier("test_reminders__test_event_site_id__#{@test_event_site_id}")
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Queue Date",
+                "Subject",
+                "Body",
+                "Other Info"
+            ]
+            
+        ]
+        
+        kmail_log_records.each do |record|
+            
+            row = Array.new
+            
+            fields = record.fields
+            
+            row.push(fields["created_date" ].to_user)
+            row.push(fields["subject"      ].value)
+            row.push(fields["message"      ].web.textarea(:readonly=>true, :disabled=>true, :add_class=>"no_save"))
+            
+            total_kmails = fields["kmail_ids"].value.split(",")
+            kmail_ids_sql_str = total_kmails.map{|x| "'#{x}'"}.join(",")
+            
+            duplicate_kmails = $db.get_data("SELECT primary_id FROM `kmail` WHERE primary_id IN(#{kmail_ids_sql_str}) AND error = 'DUPLICATE DETECTED'") || []
+            
+            if !duplicate_kmails.empty?
+                
+                row.push("#{duplicate_kmails.length} duplicate k-mail#{duplicate_kmails.length == 1 ? "":"s"} detected and was not sent.")
+                
+            else
+                
+                row.push("")
+                
+            end
+            
+            tables_array.push(row)
+            
+        end if kmail_log_records
+        
+        return $kit.tools.data_table(tables_array, "queue_history", "default", false, nil, nil, "desc")
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1151,89 +1194,89 @@ end
         
     end
     
-    def send_kmails_by_date(body, sample = true)
+    def queue_kmail_process(test_event_site_id, subject, message, sample = true)
+        
         output = String.new
-        generate_kmails(body)
-        if sample
-            sample_body = @kmail_hash.values.first
-            output << $tools.div_open("sample_div")
-            output << $tools.newlabel("message", "Does this look ok...? (Below is a random sample.)")
-            output << $tools.newlabel("percent_alert", "Unsubstituted value detected") if sample_body.match(/%%/)
-            output << $tools.newdisabledtextarea("kmail_body_sample", "", @kmail_hash.values.first)
+        
+        sids = $tables.attach("STUDENT_TESTS").field_values("student_id", "WHERE test_event_site_id = '#{test_event_site_id}' GROUP BY student_id")
+        
+        if sids
+            
+            if sample
+                
+                sample_message = generate_sample(sids.first, message, test_event_site_id)
+                output << $tools.div_open("sample_div")
+                output << $tools.newlabel("message", "K-mail Preview: Does this look ok...?")
+                output << $tools.newlabel("percent_alert", "Unsubstituted value detected") if sample_message.match(/%%/)
+                output << $tools.newdisabledtextarea("kmail_body_sample", "", sample_message)
+                
+            else
+                
+                csv_path = $reports.save_document({:category_name=>"Athena",:type_name=>"Mass Kmail Students List",:csv_rows=>sids})
+                
+                $base.queue_process("Queue_Kmails", "testing_reminder", "#{test_event_site_id}<,>#{subject}<,>#{message}<,>#{csv_path}")
+                
+                output   = "#{sids.length.to_s} kmails successfully queued.<br>It can take up to 10 minutes for the log to display your k-mail.<br>Actual kmail delivery time to student's inbox varies depending on current queue volume."
+                
+                $kit.modify_tag_content("history_div", queue_history, "update")
+                
+            end
+            
         else
-            queue_kmails
-            output = "#{@kmail_hash.length.to_s} kmails successfully queued."
-            $kit.modify_tag_content("history_div", queue_history, "update")
+            
+            output   = "No students are assigned to this site."
+            
         end
+        
         $kit.modify_tag_content("confirmation_dialog", output, "update")
+        
     end
     
-    def generate_kmails(body)
-            
-        @kmail_log.fields["subject"   ].value = @subject
-        @kmail_log.fields["message"   ].value = body
-        @kmail_log.fields["credential"].value = "office_admin"
-        @kmail_log.fields["identifier"].value = "keystone_reminders__#{$kit.params[:test_event_site_id]}"
+    def generate_sample(sid, message, test_event_site_id)
         
+        subjects = String.new
         
-        $tables.attach("STUDENT_TESTS").primary_ids(" WHERE test_event_site_id = '#{$kit.params[:test_event_site_id]}' ").each do |pid|
+        test_subject_ids = $tables.attach("STUDENT_TESTS").field_values("test_subject_id", "WHERE student_id = '#{sid}' AND test_event_site_id = '#{test_event_site_id}' AND test_subject_id IS NOT NULL").each_with_index do |test_subject_id,i|
             
-            letter = "#{body}"
+            subjects << " & " if i != 0
+            subjects << $tables.attach("TEST_SUBJECTS").by_primary_id(test_subject_id).fields["name"].value
             
-            student_test_row    = $tables.attach("Student_Tests").by_primary_id(pid)
-            
-            sid                 = student_test_row.fields["student_id"          ].value
-            subject_id          = student_test_row.fields["test_subject_id"     ].value
-            subject             = (subject_id ? $tables.attach("TEST_SUBJECTS").by_primary_id(subject_id).fields["name"].value : "")
-            test_event_site_id  = student_test_row.fields["test_event_site_id"  ].value
-            
-            test_event_site_row = $tables.attach("Test_Event_Sites").by_primary_id(test_event_site_id)
-            
-            start_date          = test_event_site_row.fields["start_date"   ].to_user
-            start_time          = test_event_site_row.fields["start_time"   ].value
-            end_time            = test_event_site_row.fields["end_time"     ].value
-            if test_event_site_row.fields["special_notes"].value
-                special_notes   = test_event_site_row.fields["special_notes"].value
-            else
-                special_notes   = "N/A"
-            end
-            site_id             = test_event_site_row.fields["test_site_id" ].value
-            
-            site_row            = $tables.attach("Test_Sites").by_primary_id(site_id)
-            
-            site                = site_row.fields["region"   ].value
-            facility            = site_row.fields["facility_name"   ].value
-            address             = site_row.fields["address"         ].value
-            city                = site_row.fields["city"            ].value
-            state               = site_row.fields["state"           ].value
-            zip                 = site_row.fields["zip_code"        ].value
-            
-            site_address        = "#{address}
+        end if test_subject_ids
+        
+        test_event_site_row = $tables.attach("Test_Event_Sites").by_primary_id(test_event_site_id)
+        
+        start_date          = test_event_site_row.fields["start_date"    ].to_user
+        start_time          = test_event_site_row.fields["start_time"    ].value
+        end_time            = test_event_site_row.fields["end_time"      ].value
+        special_notes       = test_event_site_row.fields["special_notes" ].value || "N/A"
+        site_id             = test_event_site_row.fields["test_site_id"  ].value
+        
+        site_row            = $tables.attach("Test_Sites").by_primary_id(site_id)
+        
+        site                = site_row.fields["region"                   ].value || ""
+        facility            = site_row.fields["facility_name"            ].value || ""
+        address             = site_row.fields["address"                  ].value || ""
+        city                = site_row.fields["city"                     ].value || ""
+        state               = site_row.fields["state"                    ].value || ""
+        zip                 = site_row.fields["zip_code"                 ].value || ""
+        site_address        = "#{address}
 #{city}, #{state} #{zip}"
-            
-            if site_row.fields["site_url"        ].value
-                site_url        = site_row.fields["site_url"        ].value
-            else
-                site_url        = ""
-            end
-            if site_row.fields["directions"      ].value
-                directions      = site_row.fields["directions"      ].value
-            else
-                directions      = "N/A"
-            end
-            
-            letter.gsub!("%%site%%",            site         ) if site         
-            letter.gsub!("%%subject%%",         subject      ) if subject      
-            letter.gsub!("%%site_date%%",       start_date   ) if start_date   
-            letter.gsub!("%%start_time%%",      start_time   ) if start_time   
-            letter.gsub!("%%est_end_time%%",    end_time     ) if end_time
-            letter.gsub!("%%name_of_facility%%",        facility     ) if facility
-            letter.gsub!("%%site_address%%",    site_address ) if site_address 
-            letter.gsub!("%%site_url%%",        site_url     ) if site_url     
-            letter.gsub!("%%Directions%%",      directions   ) if directions   
-            letter.gsub!("%%Special Notes%%",   special_notes) if special_notes
-            @kmail_hash[sid] = letter
-        end
+        site_url            = site_row.fields["site_url"                 ].value || ""
+        directions          = site_row.fields["directions"               ].value || "N/A"
+        
+        message.gsub!("%%site%%",                    site         ) if site
+        message.gsub!("%%subject%%",                 subjects     ) if subjects
+        message.gsub!("%%site_date%%",               start_date   ) if start_date
+        message.gsub!("%%start_time%%",              start_time   ) if start_time
+        message.gsub!("%%est_end_time%%",            end_time     ) if end_time
+        message.gsub!("%%name_of_facility%%",        facility     ) if facility
+        message.gsub!("%%site_address%%",            site_address ) if site_address
+        message.gsub!("%%site_url%%",                site_url     ) if site_url
+        message.gsub!("%%Directions%%",              directions   ) if directions
+        message.gsub!("%%Special Notes%%",           special_notes) if special_notes
+        
+        return message
+        
     end
     
     def queue_kmails
@@ -1268,6 +1311,7 @@ end
             div.kmail_body{                     float:left; clear:left; margin-bottom:5px;}
             div.kmail_body label{               display:inline-block; width:120px; vertical-align:top;}
             div.kmail_body textarea{            width:900px; height:300px; resize:none; overflow-y:scroll;}
+            div.KMAIL_LOG__message textarea{    width:450px; height:70px; resize:none; overflow-y:scroll;}
             
             input.submit_button{                float:left; clear:left; margin-bottom:10px;}
             
