@@ -23,6 +23,19 @@ end
         return @date_iterator += 1
     end
     
+    def add_new_dialog
+        structure[:add_new_dialog]
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________MODIFIERS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def add_new_dialog=(arg)
+        structure[:add_new_dialog] = arg
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
@@ -903,13 +916,24 @@ end
         )
         
         #button_html << "<button name='new_row_button' class='new_row' id='new_row_button_#{table_name}' onclick=\"get_new_row(#{pstr});\">#{button_text}</button>"
-        button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n" if !i_will_manually_add_the_div && !@new_row_table_itterator[table_name]
+        #button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n" if !i_will_manually_add_the_div && !@new_row_table_itterator[table_name]
+        if i_will_manually_add_the_div
+            
+            self.add_new_dialog = "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n"
+            
+        elsif !@new_row_table_itterator[table_name]
+            
+            button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n"
+            
+        end
+        
+        
         button_html << "<input id='add_new_#{table_name}' name='add_new_#{table_name}' value='#{table_name}' type='hidden'>"
         
         @new_row_table_itterator[table_name] = (!@new_row_table_itterator[table_name] ? 1 : @new_row_table_itterator[table_name]+=1)
         
         return button_html
-    
+        
     end
     
     def button_new_csv(csv_name, additional_params_str = nil, send_field_names = nil, csv_title = "Download")
