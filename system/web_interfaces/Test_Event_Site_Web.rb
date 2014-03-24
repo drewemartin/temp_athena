@@ -34,6 +34,8 @@ end
 
     def load(test_event_site_id = $kit.params[:test_event_site_id])
         
+        output = String.new
+        
         @test_event_site_id = test_event_site_id
         
         user_roles = $tables.attach("TEST_EVENT_SITE_STAFF").field_values(
@@ -141,7 +143,11 @@ end
         #    tabs << ["Site Staff",          site_staff_tab          ]
         #end
         
-        $kit.tools.tabs(tabs)
+        output << "<input id='test_event_site_id' hidden='true' name='test_event_site_id' value='#{@test_event_site_id}'>"
+        
+        output << $kit.tools.tabs(tabs)
+        
+        return output
         
     end
     
@@ -326,7 +332,7 @@ end
             row = Array.new
             
             row.push(record.fields["not_attending"].web.checkbox                                )
-            row.push($team.by_sams_id(record.fields["staff_id"].value).full_name                )
+            row.push($team.get(record.fields["team_id"].value).full_name                        )
             row.push(record.fields["staff_id"].value                                            )
             row.push(record.fields["role"               ].web.select(:dd_choices=>role_dd  )    )
             
@@ -400,7 +406,7 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push(!record.fields["returned_to_warehouse" ].is_true? ? $tools.button_new_row("TEST_PACKET_LOCATION", "test_packet_id_#{pid}=#{pid}", nil, "Re-Assign") : "")
+            row.push(!record.fields["returned_to_warehouse" ].is_true? ?  reassign_button(pid) : "")
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
             row.push(
@@ -433,7 +439,9 @@ end
             
         } if pids
         
-        return "Site Test Packets", $kit.tools.data_table(tables_array, "site_test_packets")     
+        output = "#{$kit.tools.data_table(tables_array, "site_test_packets")}#{$tools.add_new_dialog}"
+        
+        return "Site Test Packets", output 
        
     end
     
@@ -702,7 +710,6 @@ end
         output = String.new
         test_event_site_date = $tables.attach("Test_Event_Sites").by_primary_id(@test_event_site_id).fields["start_date"].value
         output << "<div id='confirmation_dialog'></div>"
-        output << "<input id='test_event_site_id' hidden='true' name='test_event_site_id' value='#{@test_event_site_id}'>"
         output << "<input id='sample' hidden='true' name='sample' value=''>"
         output << $tools.kmailinput("kmail_subject", "Default Subject:", @default_subject)
         output << $tools.kmailtextarea("kmail_body", "Default Body:", File.read("#{$paths.templates_path}kmail/keystone_test_content.txt"))
@@ -748,7 +755,7 @@ end
         
         output << $tools.legend_open("sub", "Staff Details")
             
-            output << fields["staff_id"].web.select(:label_option=>"Staff:", :dd_choices=>staff_dd($kit.params[:test_event_site_id]))
+            output << fields["team_id"].web.select(:label_option=>"Staff:", :dd_choices=>staff_dd($kit.params[:test_event_site_id]))
             output << fields["role"].web.select(:label_option=>"Role:", :dd_choices=>role_dd)
             fields["test_event_site_id"].value = $kit.params[:test_event_site_id]
             output << fields["test_event_site_id" ].web.hidden()
@@ -934,16 +941,16 @@ end
         
         tess_db = $tables.attach("TEST_EVENT_SITE_STAFF").data_base
         
-        return $tables.attach("K12_STAFF").dd_choices(
-            "CONCAT(firstname,' ',lastname)",
-            "samspersonid",
-            "WHERE samspersonid NOT IN(
-                SELECT staff_id
+        return $tables.attach("TEAM").dd_choices(
+            "CONCAT(legal_first_name,' ',legal_last_name)",
+            "primary_id",
+            "WHERE primary_id NOT IN(
+                SELECT team_id
                 FROM #{tess_db}.test_event_site_staff
                 WHERE test_event_site_id = '#{test_event_site_id}'
             )
-            GROUP BY CONCAT(firstname,' ',lastname)
-            ORDER BY CONCAT(firstname,' ',lastname) ASC "
+            GROUP BY CONCAT(legal_first_name,' ',legal_last_name)
+            ORDER BY CONCAT(legal_first_name,' ',legal_last_name) ASC "
         )
         
     end
@@ -1229,6 +1236,20 @@ end
             letter.gsub!("%%Special Notes%%",   special_notes) if special_notes
             @kmail_hash[sid] = letter
         end
+    end
+    
+    def reassign_button(pid)
+        
+        $tools.button_new_row(
+           
+            table_name                  = "TEST_PACKET_LOCATION",
+            additional_params_str       = "test_packet_id_#{pid}=#{pid}",
+            save_params                 = nil,
+            button_text                 = "Re-Assign",
+            i_will_manually_add_the_div = true
+            
+        )
+        
     end
     
     def queue_kmails
