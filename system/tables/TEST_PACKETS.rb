@@ -62,7 +62,7 @@ end
     #    
     #end
     
-    def after_change_field_test_event_site_id(field_obj)
+    def after_change_field_test_event_site_id(field_obj, checkin_date = nil)
         
         previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
             "test_event_site_id",
@@ -74,6 +74,7 @@ end
             record = $tables.attach("TEST_PACKET_LOCATION").new_row
             record.fields["test_packet_id"      ].value = field_obj.primary_id
             record.fields["test_event_site_id"  ].value = field_obj.value
+            record.fields["checkin_date"        ].value = checkin_date if checkin_date
             record.save
             
         end
