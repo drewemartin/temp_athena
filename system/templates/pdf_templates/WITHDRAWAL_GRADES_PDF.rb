@@ -151,7 +151,8 @@ www.agora.org"
           ]
         ]
         
-        records = $students.get(sid).academic_progress.existing_records
+        wd_term = $tables.attach("PROGRESS_REPORT_SCHEDULE").field_value("term", "WHERE '#{wd_record.fields["effective_date"].value}' BETWEEN opened_datetime AND closed_datetime") || ""
+        records = $students.get(sid).academic_progress.existing_records("WHERE term='#{wd_term}'")
         records.each{|record|
           
           row = Array.new
