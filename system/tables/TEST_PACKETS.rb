@@ -34,13 +34,14 @@ end
         
     end
     
-    def after_change_field(obj)
-     
-        record = by_primary_id(obj.primary_id)
-        record.fields["verified"].value = false if obj.field_name != "verified"
-        record.save
-        
-    end
+    #
+    #def after_change_field(obj)
+    # 
+    #    record = by_primary_id(obj.primary_id)
+    #    record.fields["verified"].value = false if obj.field_name != "verified"
+    #    record.save
+    #    
+    #end
     
     def after_change_field_returned_to_warehouse(obj)
         
@@ -101,10 +102,9 @@ end
             
             if previous_test_event_site_id != test_event_site_id
                 
-                record = $tables.attach("TEST_PACKET_LOCATION").new_row
-                record.fields["test_packet_id"      ].value = obj.primary_id
-                record.fields["test_event_site_id"  ].value = test_event_site_id
-                record.save
+                test_packet_record = by_primary_id(obj.primary_id)
+                test_packet_record.fields["test_event_site_id"].value = test_event_site_id
+                test_packet_record.save
                 
             end
             
