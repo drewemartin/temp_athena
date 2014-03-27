@@ -24,8 +24,10 @@ end
     def after_insert(obj)
      
         record = by_primary_id(obj.primary_id)
-        record.fields["checkin_date"].value = $idatetime
-        record.save
+        if record.fields["checkin_date"].is_null?
+            record.fields["checkin_date"].value = $idatetime
+            record.save
+        end
         
         test_packet_record = $tables.attach("TEST_PACKETS").by_primary_id(obj.fields["test_packet_id"].value)
         test_packet_record.fields["test_event_site_id"].value = obj.fields["test_event_site_id"].value
