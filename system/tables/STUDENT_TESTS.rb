@@ -64,15 +64,21 @@ end
         
         record = by_primary_id(obj.primary_id)
         
-        if !(obj.value.empty? || obj.value.nil?)
+        if serial_number = record.fields["serial_number"].value
             
-            if serial_number = record.fields["serial_number"].value
+            if !(obj.value.empty? || obj.value.nil?)
                 
-                test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
-                test_record.fields["status"].value = "Completed"
-                test_record.save
+                status = "Completed"
+                
+            else
+                
+                status = "In Progress"
                 
             end
+            
+            test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
+            test_record.fields["status"].value = status
+            test_record.save
             
         end
         
@@ -157,14 +163,18 @@ end
                     new_serial_number   = field.value
                     new_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{new_serial_number}'")
                     
-                    test_completed      = !old_record.fields["completed"].is_null?
-                    
-                    new_test_record.fields["student_id"             ].value = old_record.fields["student_id"        ].value
-                    new_test_record.fields["student_test_id"        ].value = field.primary_id
-                    new_test_record.fields["administrator_team_id"  ].value = old_record.fields["test_administrator"].value
-                    new_test_record.fields["status"                 ].value = (test_completed ? "Completed" : "In Progress")
-                    
-                    new_test_record.save
+                    if new_test_record
+                        
+                        test_completed      = !old_record.fields["completed"].is_null?
+                        
+                        new_test_record.fields["student_id"             ].value = old_record.fields["student_id"        ].value
+                        new_test_record.fields["student_test_id"        ].value = field.primary_id
+                        new_test_record.fields["administrator_team_id"  ].value = old_record.fields["test_administrator"].value
+                        new_test_record.fields["status"                 ].value = (test_completed ? "Completed" : "In Progress")
+                        
+                        new_test_record.save
+                        
+                    end
                     
                 end
                 
