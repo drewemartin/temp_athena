@@ -96,7 +96,7 @@ end
             
             previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
                 "test_event_site_id",
-                "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY created_date DESC"
+                "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY checkin_date DESC"
             )
             
             if previous_test_event_site_id != test_event_site_id
