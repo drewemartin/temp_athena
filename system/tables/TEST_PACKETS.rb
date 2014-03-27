@@ -53,15 +53,16 @@ end
         
     end
     
-    def after_change_field_student_id(obj)
-        
-        record = by_primary_id(obj.primary_id)
-        record.fields["status"].value = "In Progress"
-        record.save
-        
-    end
+    #MOVED PROCESS TO STUDENT_TESTS - STUDENT_TESTS SHOULD BE THE ONLY PLACE WHERE A STUDENT ID CAN BE ASSIGNED TO THIS FIELD.
+    #def after_change_field_student_id(obj)
+    #    
+    #    record = by_primary_id(obj.primary_id)
+    #    record.fields["status"].value = "In Progress"
+    #    record.save
+    #    
+    #end
     
-    def after_change_test_event_site_id(field_obj)
+    def after_change_field_test_event_site_id(field_obj)
         
         previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
             "test_event_site_id",
