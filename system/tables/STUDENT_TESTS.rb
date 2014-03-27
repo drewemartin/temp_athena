@@ -157,10 +157,12 @@ end
                     new_serial_number   = field.value
                     new_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{new_serial_number}'")
                     
+                    test_completed      = !old_record.fields["completed"].is_null?
+                    
                     new_test_record.fields["student_id"             ].value = old_record.fields["student_id"        ].value
                     new_test_record.fields["student_test_id"        ].value = field.primary_id
                     new_test_record.fields["administrator_team_id"  ].value = old_record.fields["test_administrator"].value
-                    new_test_record.fields["status"                 ].value = "In Progress"
+                    new_test_record.fields["status"                 ].value = (test_completed ? "Completed" : "In Progress")
                     
                     new_test_record.save
                     
