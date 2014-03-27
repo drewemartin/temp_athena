@@ -93,7 +93,7 @@ end
             if serial_number = record.fields["serial_number"].value
                 
                 test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
-                test_record.fields["test_administrator"].value = obj.value
+                test_record.fields["administrator_team_id"].value = obj.value
                 test_record.save
                 
             end
