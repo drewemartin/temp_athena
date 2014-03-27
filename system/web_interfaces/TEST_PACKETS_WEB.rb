@@ -88,7 +88,7 @@ end
                 
                 :batch_action       => "batch_update_location"              ,
                 :button_text        => "Location Assignment"                ,
-                :select_values      => test_event_sites_dd(test_event_id=1)#remove this parameter after testing
+                :select_values      => test_event_sites_dd()
                 
             )
             
@@ -239,6 +239,7 @@ end
                 
             end
             
+            $kit.modify_tag_content("test_packets_record_container", '', "update")
             $kit.modify_tag_content("test_packets_search_results", results, "update")
             
         end
@@ -376,7 +377,7 @@ end
     def status_dd
         
         return [
-            {:name=>"Complete",         :value=>"Complete"     },
+            {:name=>"Completed",        :value=>"Completed"     },
             {:name=>"Unused",           :value=>"Unused"       },
             {:name=>"Do Not Score",     :value=>"Do Not Score" },
             {:name=>"Destroyed",        :value=>"Destroyed"    },
