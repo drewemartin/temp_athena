@@ -203,7 +203,7 @@ end
         
         #SITE TEST STUDENTS ATTENDANCE
         tables_array.push([
-            $tools.button_new_csv("student_testing_events_attendance", additional_params_str = nil),
+            $tools.button_request("student_testing_events_attendance"),
             "Student Testing Events - Attendance",
             "This report includes all test site attendance records."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_student_testing_events_attendance.is_true?
@@ -1865,65 +1865,6 @@ end
         else
             
             return [headers]
-            
-        end
-        
-    end
-    
-    def add_new_csv_student_testing_events_attendance(options = nil)
-        
-        std_db  = $tables.attach("student_test_dates").data_base
-        tes_db  = $tables.attach("test_event_sites").data_base
-        s_db    = $tables.attach("student").data_base
-        tess_db = $tables.attach("test_event_site_staff").data_base
-        t_db    = $tables.attach("team").data_base
-        
-        sql_str =
-        "SELECT
-            student_test_dates.student_id,
-            studentlastname,
-            studentfirstname,
-            site_name,
-            date,
-            attendance_code,
-            (
-                SELECT
-                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
-                FROM #{t_db}.team
-                WHERE team.primary_id = (
-                    SELECT
-                        test_event_site_staff.team_id
-                    FROM #{tess_db}.test_event_site_staff
-                    WHERE test_event_site_staff.test_event_site_id = test_event_sites.primary_id
-                    AND role = 'Site Coordinator'
-                    AND not_attending IS NOT TRUE
-                    LIMIT 0, 1
-                )
-            )
-        FROM #{std_db}.student_test_dates
-        LEFT JOIN #{tes_db}.test_event_sites ON #{std_db}.student_test_dates.test_event_site_id = #{tes_db}.test_event_sites.primary_id
-        LEFT JOIN #{s_db}.student ON #{s_db}.student.student_id = #{std_db}.student_test_dates.student_id
-        LEFT JOIN #{tess_db}.test_event_site_staff ON #{tess_db}.test_event_site_staff.test_event_site_id = #{tes_db}.test_event_sites.primary_id"
-        
-        headers =
-        [
-           
-           "student_id",
-           "studentlastname",
-           "studentfirstname",
-           "site_name",
-           "date",
-           "attendance_code",
-           "Site Coordinator"
-            
-        ]
-        
-        results = $db.get_data(sql_str)
-        if results
-            return results.insert(0, headers)
-            
-        else
-            return false
             
         end
         

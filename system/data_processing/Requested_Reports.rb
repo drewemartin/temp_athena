@@ -435,6 +435,88 @@ class Requested_Reports < Base
         
     end
     
+    def student_testing_events_attendance(request_pid)
+        
+        record = $tables.attach("TEAM_REQUESTED_REPORTS").by_primary_id(request_pid)
+        
+        record.fields["status"].value = "Generating"
+        
+        record.save
+        
+        std_db  = $tables.attach("student_test_dates").data_base
+        tes_db  = $tables.attach("test_event_sites").data_base
+        s_db    = $tables.attach("student").data_base
+        tess_db = $tables.attach("test_event_site_staff").data_base
+        t_db    = $tables.attach("team").data_base
+        
+        sql_str =
+        "SELECT
+            student_test_dates.student_id,
+            studentlastname,
+            studentfirstname,
+            site_name,
+            date,
+            attendance_code,
+            (
+                SELECT
+                    GROUP_CONCAT(legal_first_name,' ',legal_last_name)
+                FROM #{t_db}.team
+                WHERE team.primary_id = (
+                    SELECT
+                        test_event_site_staff.team_id
+                    FROM #{tess_db}.test_event_site_staff
+                    WHERE test_event_site_staff.test_event_site_id = test_event_sites.primary_id
+                    AND role = 'Site Coordinator'
+                    AND not_attending IS NOT TRUE
+                    LIMIT 0, 1
+                )
+            )
+        FROM #{std_db}.student_test_dates
+        LEFT JOIN #{tes_db}.test_event_sites ON #{std_db}.student_test_dates.test_event_site_id = #{tes_db}.test_event_sites.primary_id
+        LEFT JOIN #{s_db}.student ON #{s_db}.student.student_id = #{std_db}.student_test_dates.student_id
+        LEFT JOIN #{tess_db}.test_event_site_staff ON #{tess_db}.test_event_site_staff.test_event_site_id = #{tes_db}.test_event_sites.primary_id"
+        
+        headers =
+        [
+           
+           "student_id",
+           "studentlastname",
+           "studentfirstname",
+           "site_name",
+           "date",
+           "attendance_code",
+           "Site Coordinator"
+            
+        ]
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            file_name = "#{request_pid}__requested_reports__student_testing_events_attendance"
+            file_path = $reports.csv("temp", file_name, results.insert(0, headers))
+            
+            transfer_to_athena_temp(file_path, file_name) 
+            
+            record.fields["status"].value    = "Ready"
+            record.fields["file_name"].value = file_path.split("/").last
+            
+            record.save
+            
+            return true
+            
+        else
+            
+            record.fields["status"].value    = "Failed"
+            
+            record.save
+            
+            return false
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
