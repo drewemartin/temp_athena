@@ -239,6 +239,7 @@ end
                 
             end
             
+            $kit.modify_tag_content("test_packets_record_container", '', "update")
             $kit.modify_tag_content("test_packets_search_results", results, "update")
             
         end

@@ -24,7 +24,7 @@ end
                 "type"      => "bool",
                 "field"     => "selected__#{self.primary_id}"
             }
-        ).web.checkbox(:add_class  => "no_save")
+        ).web.checkbox(:add_class  => "no_save batch_checkbox")
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -81,14 +81,16 @@ end
     
     def insert
         
+        user                        = $user.class == Team_Member    ? $user.email_address_k12.value : $user
+        fields["created_by"].value  = $base.created_by              ? $base.created_by              : user
+        
         proceed_with_insert = table.find_and_trigger_event(event_type = :before_insert, args = self)
         
         if proceed_with_insert
             
             field_str   = nil
             values_str  = nil
-            user = $user.class == Team_Member ? $user.email_address_k12.value : $user
-            fields["created_by"].value = $base.created_by ? $base.created_by : user
+            
             fields.each_pair do |field_name, field_obj|
                 unless field_name == "created_date" || field_name == "primary_id"
                     field = "`#{field_name}`"

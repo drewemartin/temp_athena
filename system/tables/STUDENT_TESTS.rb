@@ -64,12 +64,36 @@ end
         
         record = by_primary_id(obj.primary_id)
         
+        if serial_number = record.fields["serial_number"].value
+            
+            if !(obj.value.empty? || obj.value.nil?)
+                
+                status = "Completed"
+                
+            else
+                
+                status = "In Progress"
+                
+            end
+            
+            test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
+            test_record.fields["status"].value = status
+            test_record.save
+            
+        end
+        
+    end
+    
+    def after_change_field_test_administrator(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
         if !(obj.value.empty? || obj.value.nil?)
             
             if serial_number = record.fields["serial_number"].value
                 
                 test_record = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{serial_number}'")
-                test_record.fields["status"].value = "Completed"
+                test_record.fields["administrator_team_id"].value = obj.value
                 test_record.save
                 
             end
@@ -77,7 +101,7 @@ end
         end
         
     end
-    
+
     def after_change_field_test_event_site_id(field)
         
         update_attendance_record(field)
@@ -117,15 +141,19 @@ end
         
         if update_approved
             
-            if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
+            #REMOVED THE CHECK FOR INTERFACE SINCE THIS NO LONGER RETURNS A WEB ERROR AND NEEDS TO RUN ON THE BACK END
+            #if $focus_student #THIS IS HERE TO MAKE SURE WE'RE ONLY APPLYING THIS WHEN THE CHANGE IS MADE FROM THE INTERFACE.
                 
                 old_record = by_primary_id(field.primary_id)
-                if !old_record.fields["serial_number"].is_null?
+                if !old_record.fields["serial_number"].is_null? && !(old_record.fields["serial_number"].value == field.value)
                     
                     old_serial_number   = old_record.fields["serial_number"].value
                     old_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{old_serial_number}'")
-                    old_test_record.fields["student_id"     ].value = nil
-                    old_test_record.fields["student_test_id"].value = nil
+                    old_test_record.fields["student_id"             ].value = nil
+                    old_test_record.fields["student_test_id"        ].value = nil
+                    old_test_record.fields["administrator_team_id"  ].value = nil
+                    old_test_record.fields["status"                 ].value = "Unused"
+                    
                     old_test_record.save
                     
                 end
@@ -134,13 +162,23 @@ end
                     
                     new_serial_number   = field.value
                     new_test_record     = $tables.attach("TEST_PACKETS").record("WHERE serial_number = '#{new_serial_number}'")
-                    new_test_record.fields["student_id"     ].value = $focus_student.student_id.value
-                    new_test_record.fields["student_test_id"].value = field.primary_id
-                    new_test_record.save
+                    
+                    if new_test_record
+                        
+                        test_completed      = !old_record.fields["completed"].is_null?
+                        
+                        new_test_record.fields["student_id"             ].value = old_record.fields["student_id"        ].value
+                        new_test_record.fields["student_test_id"        ].value = field.primary_id
+                        new_test_record.fields["administrator_team_id"  ].value = old_record.fields["test_administrator"].value
+                        new_test_record.fields["status"                 ].value = (test_completed ? "Completed" : "In Progress")
+                        
+                        new_test_record.save
+                        
+                    end
                     
                 end
                 
-            end
+            #end
             
         end
         

@@ -34,13 +34,14 @@ end
         
     end
     
-    def after_change_field(obj)
-     
-        record = by_primary_id(obj.primary_id)
-        record.fields["verified"].value = false if obj.field_name != "verified"
-        record.save
-        
-    end
+    #
+    #def after_change_field(obj)
+    # 
+    #    record = by_primary_id(obj.primary_id)
+    #    record.fields["verified"].value = false if obj.field_name != "verified"
+    #    record.save
+    #    
+    #end
     
     def after_change_field_returned_to_warehouse(obj)
         
@@ -53,15 +54,16 @@ end
         
     end
     
-    def after_change_field_student_id(obj)
-        
-        record = by_primary_id(obj.primary_id)
-        record.fields["status"].value = "In Progress"
-        record.save
-        
-    end
+    #MOVED PROCESS TO STUDENT_TESTS - STUDENT_TESTS SHOULD BE THE ONLY PLACE WHERE A STUDENT ID CAN BE ASSIGNED TO THIS FIELD.
+    #def after_change_field_student_id(obj)
+    #    
+    #    record = by_primary_id(obj.primary_id)
+    #    record.fields["status"].value = "In Progress"
+    #    record.save
+    #    
+    #end
     
-    def after_change_test_event_site_id(field_obj)
+    def after_change_field_test_event_site_id(field_obj, checkin_date = nil)
         
         previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
             "test_event_site_id",
@@ -73,6 +75,7 @@ end
             record = $tables.attach("TEST_PACKET_LOCATION").new_row
             record.fields["test_packet_id"      ].value = field_obj.primary_id
             record.fields["test_event_site_id"  ].value = field_obj.value
+            record.fields["checkin_date"        ].value = checkin_date if checkin_date
             record.save
             
         end
@@ -94,15 +97,14 @@ end
             
             previous_test_event_site_id = $tables.attach("TEST_PACKET_LOCATION").field_value(
                 "test_event_site_id",
-                "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY created_date DESC"
+                "WHERE test_packet_id = '#{obj.primary_id}' ORDER BY checkin_date DESC"
             )
             
             if previous_test_event_site_id != test_event_site_id
                 
-                record = $tables.attach("TEST_PACKET_LOCATION").new_row
-                record.fields["test_packet_id"      ].value = obj.primary_id
-                record.fields["test_event_site_id"  ].value = test_event_site_id
-                record.save
+                test_packet_record = by_primary_id(obj.primary_id)
+                test_packet_record.fields["test_event_site_id"].value = test_event_site_id
+                test_packet_record.save
                 
             end
             
