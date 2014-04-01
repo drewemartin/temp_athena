@@ -1,5 +1,5 @@
 def date = new Date().format("yyyy-MM-dd")
-q = 2
+q = 3
 /* CLASS ROSTER */
 for ( school in ["MS"] ) {
     
@@ -32,16 +32,16 @@ for ( school in ["MS"] ) {
             
             switch(q){
                 case 1:
-                    mp = ["1"]
+                    mp = "1"
                     break
                 case 2:
-                    mp = ["2"]
+                    mp = "2"
                     break
                 case 3:
-                    mp = ["3"]
+                    mp = "3"
                     break
                 case 4:
-                    mp = ["4"]
+                    mp = "4"
                     break
             }
             
@@ -78,7 +78,7 @@ for ( school in ["MS"] ) {
         def params = [
         "DISTRICT_ID"           : "PAAGC",
         "REFERENCE_DATE"        : date,
-        "MP_Code"               : "",
+        "MP_Code"               : mp,
         "Grade_Level"           : grade,
         "Home_Room"             : "",
         "Team"                  : "",
