@@ -156,7 +156,8 @@ end
                 "Completed Date",            
                 "Test Administrator",
                 "Test Results",
-                "Assigned",             
+                "Assigned",
+                "Code on Site",
                 "Test Event Site",   
                 "Drop Off Info",             
                 "Pick Up Info"                
@@ -181,7 +182,8 @@ end
             row.push(test.fields["completed"            ].web.default() )            
             row.push(test.fields["test_administrator"   ].web.select({:dd_choices=>test_admin_dd}) )   if test_admin_dd #ELSE NO STAFF ASSIGNED
             row.push(test.fields["test_results"         ].web.default() ) 
-            row.push(test.fields["assigned"             ].web.default() )            
+            row.push(test.fields["assigned"             ].web.default() )
+            row.push(test.fields["code_on_site"         ].web.default() )
             row.push(test.fields["test_event_site_id"   ].web.select({:dd_choices=>event_sites_dd}, true) )  
             row.push(test.fields["drop_off"             ].web.default() )             
             row.push(test.fields["pick_up"              ].web.default() )
@@ -264,6 +266,7 @@ end
         headers.push("Test Administrator") if test_admin_dd
         headers.push("Test Event Site")
         headers.push("Test Results")
+        headers.push("Code On Site")   if !section_name.match(/aims/)
         headers.push("Assigned")       if !section_name.match(/aims/)
         headers.push("Drop Off Info")  if !section_name.match(/aims/)
         headers.push("Pick Up Info")   if !section_name.match(/aims/)
@@ -296,7 +299,7 @@ end
             else
                 row.push(test.fields["test_results"     ].web.default() )
             end
-            
+            row.push(test.fields["code_on_site"         ].web.default() ) if !section_name.match(/aims/)
             row.push(test.fields["assigned"             ].web.default() ) if !section_name.match(/aims/)
             row.push(test.fields["drop_off"             ].web.default() ) if !section_name.match(/aims/)          
             row.push(test.fields["pick_up"              ].web.default() ) if !section_name.match(/aims/)

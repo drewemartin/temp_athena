@@ -527,7 +527,8 @@ end
                 "Test Completed Date",          
                 "Test Administrator",
                 "Test Notes",
-                "Assigned",           
+                "Assigned",
+                "Code on Site",
                 "Drop Off",           
                 "Pick Up",
                 "Active/Withdrawn",
@@ -636,6 +637,8 @@ end
             end
             
             row.push(test_record.fields["assigned"           ].web.default()  )
+            test_record.fields["code_on_site"].value = 0 if test_record.fields["code_on_site"].value == nil
+            row.push(test_record.fields["code_on_site"       ].to_user)
             row.push(test_record.fields["drop_off"           ].web.text()  )
             row.push(test_record.fields["pick_up"            ].web.text()  ) 
             
