@@ -410,7 +410,7 @@ end
             record  = $tables.attach("TEST_PACKETS").by_primary_id(pid)
             row     = Array.new
             
-            row.push(!record.fields["returned_to_warehouse" ].is_true? ?  reassign_button(pid) : "")
+            row.push(!record.fields["returned_to_warehouse" ].is_true? ?  reassign_button(pid) : "<input type='hidden'>")
             row.push(record.fields["serial_number"          ].web.label)
             row.push(record.fields["grade_level"            ].web.label)
             row.push(
