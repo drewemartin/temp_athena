@@ -27,7 +27,7 @@ public class SchoolInfo {
    
    public get(args_string){
       
-      def q             = "ruby C:/Users/Parnassus/athena-sis/htdocs/athena/Athena_JSON.rb ${args_string.replaceAll("'", '"""') }".execute()
+      def q             = "ruby ${path()}Athena_JSON.rb ${args_string.replaceAll("'", '"""') }".execute()
       q.waitForOrKill(2000)
       def response      = q.getText()
       
