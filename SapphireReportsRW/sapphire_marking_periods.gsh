@@ -12,7 +12,7 @@ runReportAndSave(
 	"${import_path}/sapphire_marking_periods.csv"
 )
 
-def x = """ruby ${commands_path}load.rb sapphire_marking_periods""".execute().waitFor()  
+"""ruby ${commands_path}load.rb sapphire_marking_periods""".execute().waitFor()  
 
 import groovy.json.*
 
