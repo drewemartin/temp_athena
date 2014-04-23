@@ -20,40 +20,8 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    def after_load_k12_omnibus_disabled
-        
-        sids = $students.list(
-            :currently_enrolled =>true,
-            :join_addon         =>"LEFT JOIN student_communications ON student_communications.student_id = student.student_id",
-            :where_clause_addon =>"AND k12_omnibus.registrationstatustext = 'Registering'
-            AND (
-                student_communications.registration_thankyou IS NOT TRUE
-                OR student_communications.registration_thankyou IS NULL
-            )"
-        )
-        
-        sids.each{|sid|
-            
-            s = $students.get(sid)
-            s.communications.existing_record || s.communications.new_record.save
-            
-            if !s.communications.registration_thankyou.is_true?
-             
-                subject = ""
-                content = ""
-                sender  = "office_admin"
-                s.queue_kmail(subject, content, sender)
-                
-                s.communications.registration_thankyou.set(true).save
-                
-            end  
-            
-        } if sids
-        
-    end
     
-    def after_load_k12_omnibus_disabled2
+    def after_load_k12_omnibus
         
         pids = $tables.attach("COMMUNICATIONS").primary_ids(
             "WHERE CURDATE() BETWEEN start_date and end_date"
