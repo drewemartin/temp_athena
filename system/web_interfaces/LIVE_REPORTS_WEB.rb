@@ -250,6 +250,13 @@ end
             "The count and percentage of each attendance code for each student."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_code_stats.is_true?
         
+        #Unverified Previous School
+        tables_array.push([
+            $tools.button_request("unverified_previous_school"),
+            "Unverified Previous Schools",
+            "List of students whose previous school entry doesn't match the official database of schools."
+        ]) if $team_member.super_user?
+        
         output << $kit.tools.data_table(tables_array, "leadership_reports")
         
     end

@@ -25,46 +25,52 @@ class RECORD_REQUESTS_PDF
     end
     
     def confirmed_batch(group=true)
+        
         completed_batch_pdf = Prawn::Document.new
-        #sids=["1038176", "767108"]
-        sids = $db.get_data("
-SELECT student_id
-FROM `k12_omnibus`
-WHERE (grade = '7th Grade'
-OR grade = '8th Grade')
-AND schoolenrolldate IS NOT NULL
-AND schoolenrolldate <= CURDATE()
-AND enrollapproveddate IS NOT NULL
-ORDER BY grade, student_id"
-).flatten
-        #sids = $students.list(:currently_enrolled=>true, :grade=>"8th").sort_by(&:to_i)
-        sids.each do |sid|
-            if $tables.attach("Jupiter_Grades").by_studentid_old(sid)
-                if group
-                    generate_pdf(sid, completed_batch_pdf)
-                    completed_batch_pdf.start_new_page
-                else
-                    generate_pdf(sid)
-                end
+        
+        pids = $db.get_data("
+            SELECT primary_id
+            FROM `STUDENT_PREVIOUS_SCHOOL`
+            WHERE verified IS TRUE
+            AND request_sent IS NULL
+            AND request_sent_date IS NULL"
+        ).flatten
+        
+        pids.each do |pid|
+            
+            if group
+                
+                generate_pdf(pid, completed_batch_pdf)
+                completed_batch_pdf.start_new_page
+                
+            else
+                
+                generate_pdf(sid)
+                
             end
+            
         end
-        file_name = "7_8_Q3_Report_Cards_#{$ifilestamp}.pdf"
-        file_path = $config.init_path("#{$paths.reports_path}Report_Cards")
+        
+        file_name = "Outgoing_Record_Requests_#{$ifilestamp}.pdf"
+        file_path = $config.init_path("#{$paths.reports_path}Records_Requests")
         completed_batch_pdf.render_file("#{file_path}#{file_name}") if group
     end
     
-    def generate_pdf(sid, pdf = nil)
+    def generate_pdf(pid, pdf = nil)
+        
+        previous_school_record = $tables.attach("STUDENT_PREVIOUS_SCHOOL").by_primary_id(pid)
+        
+        sid = previous_school_record.fields["student_id"].value
         
         s   = $students.get(sid)
         logo_path = "#{$paths.templates_path}images/agora_logo.jpg"
-        school_comment = "Quarter 3 Progress Report"
         
         render_required = false
         
         if !pdf
             render_required = true
-            file_name = "#{s.studentlastname.to_user}_#{s.studentfirstname.to_user}_#{sid}_Q3_#{$ifilestamp}.pdf"
-            file_path = $config.init_path("#{$paths.reports_path}Report_Cards/Individual")
+            file_name = "#{s.studentlastname.to_user}_#{s.studentfirstname.to_user}_#{sid}_#{$ifilestamp}.pdf"
+            file_path = $config.init_path("#{$paths.reports_path}Records_Requests")
             pdf       = Prawn::Document.new
         end
         
@@ -111,12 +117,12 @@ Date of Birth: #{s.birthday.to_user}, #{s.grade.to_user}</b>"
             end
             
             pdf.grid([9,0], [11,1]).bounding_box do
+                address_record = $tables.attach("SCHOOLS").by_primary_id(previous_school_record.fields["school_pid"].value)
                 #pdf.stroke_bounds
                 address_str =
-"{SCHOOL NAME}
-{SCHOOL ADD 1}
-{SCHOOL ADD 2}
-{SCHOOL CITY} {STATE} {ZIP}"
+"#{address_record.fields["school_name"].value}
+#{address_record.fields["street_address"].value}
+#{address_record.fields["city"].value} #{address_record.fields["state"].value} #{address_record.fields["zip"].value}"
                 pdf.text address_str, :align => :left, :size => 10
             end
             

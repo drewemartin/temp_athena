@@ -85,6 +85,9 @@ end
         pre_reqs.push({:name=>"Converted SID To PID CSV" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         pre_reqs.push({:name=>"Mass Kmail Students List" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         
+        cat_id_verification = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Validation'")
+        pre_reqs.push({:name=>"previous_school_verification" , :category_id => cat_id_verification.value, :file_extension=>"csv"}) if cat_id_verification
+        
         max = pre_reqs.length
         (0...max).each{|i|
             
