@@ -789,8 +789,13 @@ $(function () {
 		var refresh_button = $(this)
 		var id_arr = $(this).attr("id").split("__")
 		var refresh_id = id_arr[id_arr.length - 1]
+		var extra_params = $(this).attr("extra_params")
+		var send_params = refresh_id+"__submit"
+		if (extra_params){
+			send_params = send_params + "," + extra_params
+		}
 		$("#"+ refresh_id).html(spinner());
-		send(refresh_id+"__submit")
+		send(send_params)
 		//cooldown
 		button_cooldown(refresh_button,cooldown,"ui-icon-refresh",false)
 	}).css({
@@ -2099,7 +2104,7 @@ function x___________________UNSORTED(){}
 					$(this).html("<div>Generating Sample...</div>" + spinner())
 					$(this).dialog( "option", "buttons", {
 						YES: function() {
-							$(this).html("<div>OK...</div>" + spinner());
+							$(this).html("<div>Adding K-mails to process queue...</div>" + spinner());
 							send("test_event_site_id,kmail_body,kmail_subject")
 							$("#confirmation_dialog").dialog( "option", "buttons", {
 								OK: function() {

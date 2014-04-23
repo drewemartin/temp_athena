@@ -29,7 +29,7 @@ end
             s = $students.get(sid)
             s.assessment.existing_record || s.assessment.new_record.save
             
-        }
+        } if sids
         
     end
     

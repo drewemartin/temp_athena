@@ -22,6 +22,9 @@ class Process_Log_Execute < Base
             
             class_name      = fields["class_name"       ].value
             function_name   = fields["function_name"    ].value
+            created_by      = fields["created_by"       ].value
+            
+            $base.created_by = created_by
             
             if fields["args"].value.nil?
                 
@@ -34,9 +37,6 @@ class Process_Log_Execute < Base
             end
             
             begin
-                
-                #require $config.data_processing_path+class_name
-                #success = Object.const_get(class_name).new.send(function_name, args)
                 
                 eval("require \"#{File.dirname(__FILE__).gsub("scheduled_tasks","")}#{class_name}\"")
                 

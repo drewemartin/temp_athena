@@ -406,6 +406,7 @@ end
             
             structure_hash["fields"]["athena_generated"         ] = {"data_type"=>"bool", "file_field"=>"athena_generated"          } if field_order.push("athena_generated"    )
             structure_hash["fields"]["matches_criteria"         ] = {"data_type"=>"text", "file_field"=>"matches_criteria"          } if field_order.push("matches_criteria"    )
+            structure_hash["fields"]["code_on_site"             ] = {"data_type"=>"bool", "file_field"=>"code_on_site"              } if field_order.push("code_on_site"        )
             
         structure_hash["field_order"] = field_order
         return structure_hash

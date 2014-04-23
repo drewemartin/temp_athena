@@ -20,19 +20,26 @@ class KMAIL_UPLOAD_WEB
     
     #--------------------------------------------------------------------------- 
     def response
-        @subject = $kit.params[:subject]    != "" ? $kit.params[:subject] : false
-        @account = $kit.params[:account]    != "" ? $kit.params[:account] : false
-        @content = $kit.params[:content]    != "" ? $kit.params[:content] : false
-        @csv     = $kit.params[:csv_upload] != "" ? $kit.params[:csv_upload] : false
         
-        if @subject && @account  && @content && @csv
-            queue_kmail_from_upload
+        subject = $kit.params[:subject]    != "" ? $kit.params[:subject   ] : false
+        account = $kit.params[:account]    != "" ? $kit.params[:account   ] : false
+        content = $kit.params[:content]    != "" ? $kit.params[:content   ] : false
+        csv     = $kit.params[:csv_upload] != "" ? $kit.params[:csv_upload] : false
+        
+        if subject && account  && content && csv
+            
+            queue_kmail_from_upload(subject, content, account, csv)
+            
         else
+            
             validation_check
+            
         end
+        
     end
     #---------------------------------------------------------------------------
     def upload
+        
         output = ""
         output << "<form id='upload_form' name='form' action='D20130906.rb' method='POST' enctype='multipart/form-data' >"
         output << $tools.kmailinput("subject", "Subject Line:")
@@ -45,55 +52,94 @@ class KMAIL_UPLOAD_WEB
         output << $tools.newlabel("bottom")
         output << "</form>"
         return output
+        
     end
     
-    def queue_kmail_from_upload
+    def queue_kmail_from_upload(subject, message, sender, csv_param)
+        
         output = String.new
+        
         begin
-            recipients = Array.new
+            
+            recipients    = Array.new
+            success_count = 0
+            
             file_path  = $config.init_path("#{$paths.imports_path}kmail")
             serverFile = "#{file_path}#{$ifilestamp}.csv"
+            
             i=1
             CSV.open(serverFile, "wb") do |csv|
-                CSV.parse(@csv) do |row|
+                
+                CSV.parse(csv_param) do |row|
+                    
                     if row[0].nil?
+                        
                         output << "Warning: Ignoring blank field at row #{i}<br>"
+                        
                     elsif row[0].match(/^[0-9]+$/)
-                        recipients << row[0]
+                        
+                        student = $students.attach(row[0])
+                        
+                        if student.exists?
+                            
+                            recipients << row[0]
+                            success_count += 1
+                            
+                        else
+                            
+                            output << "Warning: SID ##{row[0]} is not an existing Student ID. No kmail will be sent.<br>"
+                            
+                        end
+                        
+                        $students.detach(row[0])
+                        
                     else
+                        
                         output << "Warning: '#{row[0]}' at line #{i} is not a number. No kmail will be sent.<br>"
+                        
                     end
+                    
                     csv << row
+                    
                     i+=1
+                    
                 end
+                
             end
+            
             $reports.save_document({:category_name=>"Athena", :type_name=>"Mass Kmail Students List", :file_path=>serverFile})
+            
         rescue
+            
             output = "Failed to parse and upload csv to Athena<br>"
+            
         end
+        
         begin
-            success_count = 0
+            
             if recipients.length > 0
-                recipients.each do |sid|
-                    student = $students.attach(sid)
-                    if student.exists?
-                        student.queue_kmail(@subject, @content, @account)
-                        success_count += 1
-                    else
-                        output << "Warning: SID ##{sid} is not an existing Student ID. No kmail will be sent.<br>"
-                    end
-                    $students.detach(sid)
-                end
-                output << "<br>#{success_count} kmails successfully queued."
+                
+                csv_path = $reports.save_document({:category_name=>"Athena",:type_name=>"Mass Kmail Students List",:csv_rows=>recipients})
+                
+                $base.queue_process("Queue_Kmails", "mass_kmail", "#{subject}<,>#{message}<,>#{sender}<,>#{csv_path}")
+                
+                output << "<br>#{success_count} kmails successfully queued.<br>Actual kmail delivery time to student's inbox varies depending on current queue volume."
                 output << "<success>"
+                
             else
+                
                 output << "There were no student id's in your csv. Nothing has been queued."
+                
             end
+            
         rescue
+            
             output = "Upload successful, but there was an error queing the kmails.<br>"
-            output << "<br>Only #{success_count} #{if success_count == 1 then "kmail" else "kmails" end} successfully queued."
+            
         end
+        
         $kit.output = output
+        
     end
     
     def validation_check

@@ -294,7 +294,7 @@ end
                     begin
                         
                         csv_text            = response.body
-                        last_comma_index    = csv_text.rindex(",")
+                        last_comma_index    = csv_text.index("Date generated ")
                         long_enough         = csv_text.length > (field_order.join.length * 2)
                         
                         if last_comma_index && csv_text.slice(last_comma_index..-1).match(/generated/i) && long_enough
