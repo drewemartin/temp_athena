@@ -121,20 +121,35 @@ end
         end
     end
     
-    def after_change_schoolenrolldate_disabled(field)
+    def after_change_schoolenrolldate(field)
+        
         if !field.value.nil?
-            notify_users = $tables.attach("USER_DISTRIBUTION").by_group("after_change_schoolenrolldate")
-            notify_users.each{|user|
-                record = $tables.attach("USER_ACTION_ITEMS").new_row
-                record.fields["sams_id"      ].value = user.fields["sams_id"].value
-                record.fields["table_name"   ].value = field.table_name
-                record.fields["table_fields" ].value = field.field_name
-                record.fields["table_pid"    ].value = field.primary_id
-                record.fields["message"      ].value = "School Enroll Date Changed"
-                record.fields["completed"    ].value = false
-                record.save
-            }
+            
+            this_record = by_primary_id(field.primary_id)
+            sid = this_record.fields["student_id"].value
+            
+            if sps_record = $tables.attach("STUDENT_PREVIOUS_SCHOOL").by_student_id(sid)
+                
+                sps_record.fields["verified"    ].set(false).save
+                sps_record.fields["request_sent"].set(false).save
+                
+            end
+            
         end
+        
+        #if !field.value.nil?
+        #    notify_users = $tables.attach("USER_DISTRIBUTION").by_group("after_change_schoolenrolldate")
+        #    notify_users.each{|user|
+        #        record = $tables.attach("USER_ACTION_ITEMS").new_row
+        #        record.fields["sams_id"      ].value = user.fields["sams_id"].value
+        #        record.fields["table_name"   ].value = field.table_name
+        #        record.fields["table_fields" ].value = field.field_name
+        #        record.fields["table_pid"    ].value = field.primary_id
+        #        record.fields["message"      ].value = "School Enroll Date Changed"
+        #        record.fields["completed"    ].value = false
+        #        record.save
+        #    }
+        #end
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

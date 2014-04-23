@@ -517,6 +517,68 @@ class Requested_Reports < Base
         
     end
     
+    def unverified_previous_school(request_pid)
+        
+        record = $tables.attach("TEAM_REQUESTED_REPORTS").by_primary_id(request_pid)
+        
+        record.fields["status"].value = "Generating"
+        
+        record.save
+        
+        eitr_db  = $tables.attach("K12_ENROLLMENT_INFO_TAB_V2").data_base
+        sps_db  = $tables.attach("STUDENT_PREVIOUS_SCHOOL").data_base
+        
+        sql_str =
+        "SELECT
+            k12_enrollment_info_tab_v2.student_id,
+            student_previous_school.previous_school,
+            student_previous_school.previous_district,
+            student_previous_school.previous_school_state
+        FROM #{eitr_db}.k12_enrollment_info_tab_v2
+        LEFT JOIN #{sps_db}.student_previous_school
+        ON student_previous_school.student_id = k12_enrollment_info_tab_v2.student_id
+        WHERE student_previous_school.verified IS FALSE
+        AND request_sent IS FALSE
+        AND (request_sent_date IS NULL OR request_sent_date <= schoolenrolldate)"
+        
+        headers =
+        [
+           
+            "Student ID",
+            "Previous School",
+            "Previous District",
+            "Previous School State"
+            
+        ]
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            file_name = "#{request_pid}__requested_reports__unverified_previous_school"
+            file_path = $reports.csv("temp", file_name, results.insert(0, headers))
+            
+            transfer_to_athena_temp(file_path, file_name) 
+            
+            record.fields["status"].value    = "Ready"
+            record.fields["file_name"].value = file_path.split("/").last
+            
+            record.save
+            
+            return true
+            
+        else
+            
+            record.fields["status"].value    = "Failed"
+            
+            record.save
+            
+            return false
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end

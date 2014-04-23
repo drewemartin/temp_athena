@@ -24,44 +24,7 @@ end
     #CREATE A DAILY REPORT THAT INCLUDES ALL UNVERIFIED SCHOOLS
     def after_load_k12_enrollment_info_tab_v2
         
-        rows = Array.new
-        
-        rows.push(
-            
-            headers = [
-                "Student ID",
-                "Previous School",
-                "Previous District",
-                "Previous School State"
-            ]
-            
-        )
-        
-        sql_str =
-            "SELECT
-                k12_enrollment_info_tab_v2.student_id,
-                student_previous_school.previous_school,
-                student_previous_school.previous_district,
-                student_previous_school.previous_school_state
-            FROM        #{$tables.attach("K12_ENROLLMENT_INFO_TAB_V2").data_base}.k12_enrollment_info_tab_v2
-            LEFT JOIN   #{data_base}.student_previous_school ON student_previous_school.student_id = k12_enrollment_info_tab_v2.student_id
-            WHERE student_previous_school.verified IS FALSE"
-        
-        results = $db.get_data(sql_str)
-        
-        rows.push(results) if results
-        
-        file_path = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Validation", :type_name=>"previous_school_verification"})
-        
-        $team.find(:email_address => "smcdonnell@agora.org").send_email(
-            
-            :subject                => "Previous School Verification - #{$idate}",
-            :content                => "Previous School Verification - #{$idate}",
-            :attachment_name        => "previous_school_verification_#{$ifilestamp}.csv",
-            :attachment_path        => file_path,
-            :additional_recipients  => nil
-            
-        )
+        request_records
         
     end
     
@@ -89,27 +52,70 @@ end
         
     end
     
+    def after_change_field_previous_school_type(field_object)
+        
+        verify_school_exists(field_object)
+        
+    end
+    
     def verify_school_exists(obj)
         
         this_record = by_primary_id(obj.primary_id)
         
-        if $tables.attach("SCHOOLS").field_value(
+        if this_record.fields["request_sent"].value.nil?
             
-            "school_name",
+            sid = this_record.fields["student_id"].value
             
-            "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"       ].value || '')}'
-            AND     district    = '#{Mysql.quote(this_record.fields["previous_district"     ].value || '')}'
-            AND     state       = '#{Mysql.quote(this_record.fields["previous_school_state" ].value || '')}'"
-            
-        )
-            
-            this_record.fields["verified"].set(true  ).save
-            
-        else
-            
-            this_record.fields["verified"].set(false ).save
+            if s = $students.get(sid)
+                
+                if s.grade.value != "Kindergarten"
+                    
+                    if school_pid = $tables.attach("SCHOOLS").field_value(
+                        
+                        "primary_id",
+                        
+                        "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"       ].value || '')}'
+                        AND     district    = '#{Mysql.quote(this_record.fields["previous_district"     ].value || '')}'
+                        AND     state       = '#{Mysql.quote(this_record.fields["previous_school_state" ].value || '')}'"
+                        
+                    )
+                        
+                        this_record.fields["school_pid"].set(school_pid).save
+                        this_record.fields["verified"  ].set(true      ).save
+                        
+                    else
+                        
+                        this_record.fields["verified"].set(false ).save
+                        
+                    end
+                    
+                else
+                    
+                    this_record.fields["request_sent"].set(false).save
+                    
+                end
+                
+            end
             
         end
+        
+    end
+    
+    def request_records
+        
+        pids = primary_ids("WHERE verified IS TRUE AND request_sent IS NULL AND request_sent_date IS NULL")
+        
+        pids.each do |pid|
+            
+            record = by_primary_id(pid)
+            
+            require "#{$paths.templates_path}pdf_templates/RECORD_REQUESTS_PDF.rb"
+            RECORD_REQUESTS_PDF.new.generate_pdf(pid)
+            
+            record.fields["request_sent_date"].set($idatetime).save
+            record.fields["request_sent"].set(true).save
+            
+        end if pids
         
     end
     
@@ -145,11 +151,15 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",  "file_field"=>"student_id"            } if field_order.push("student_id"              )
-            structure_hash["fields"]["previous_school"          ] = {"data_type"=>"text", "file_field"=>"previous_school"       } if field_order.push("previous_school"         )
-            structure_hash["fields"]["previous_district"        ] = {"data_type"=>"text", "file_field"=>"previous_district"     } if field_order.push("previous_district"       )
-            structure_hash["fields"]["previous_school_state"    ] = {"data_type"=>"text", "file_field"=>"previous_school_state" } if field_order.push("previous_school_state"   )
-            structure_hash["fields"]["verified"                 ] = {"data_type"=>"bool", "file_field"=>"verified"              } if field_order.push("verified"                )
+            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",      "file_field"=>"student_id"            } if field_order.push("student_id"              )
+            structure_hash["fields"]["previous_school"          ] = {"data_type"=>"text",     "file_field"=>"previous_school"       } if field_order.push("previous_school"         )
+            structure_hash["fields"]["previous_district"        ] = {"data_type"=>"text",     "file_field"=>"previous_district"     } if field_order.push("previous_district"       )
+            structure_hash["fields"]["previous_school_state"    ] = {"data_type"=>"text",     "file_field"=>"previous_school_state" } if field_order.push("previous_school_state"   )
+            structure_hash["fields"]["previous_school_type"     ] = {"data_type"=>"text",     "file_field"=>"previous_school_type"  } if field_order.push("previous_school_type"    )
+            structure_hash["fields"]["verified"                 ] = {"data_type"=>"bool",     "file_field"=>"verified"              } if field_order.push("verified"                )
+            structure_hash["fields"]["school_pid"               ] = {"data_type"=>"int",      "file_field"=>"school_pid"            } if field_order.push("school_pid"              )
+            structure_hash["fields"]["request_sent"             ] = {"data_type"=>"bool",     "file_field"=>"request_sent"          } if field_order.push("request_sent"            )
+            structure_hash["fields"]["request_sent_date"        ] = {"data_type"=>"datetime", "file_field"=>"request_sent_date"     } if field_order.push("request_sent_date"       )
             
         structure_hash["field_order"] = field_order
         return structure_hash
