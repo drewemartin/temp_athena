@@ -28,7 +28,7 @@ end
         )
         pids.each{|pid|
             
-            options     = Hash.new
+            options     = {:currently_enrolled=>true}
             param_pids  = $tables.attach("COMMUNICATIONS_PARAMETERS").primary_ids(
                 "WHERE communications_id = #{pid}"
             )
