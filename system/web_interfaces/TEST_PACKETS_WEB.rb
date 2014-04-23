@@ -143,12 +143,6 @@ end
     
     def response
         
-        if !$kit.rows.first.nil? && field = $kit.rows.first[1].fields["returned_to_warehouse"]
-            
-            test_packet_record(pid = field.primary_id)
-            
-        end
-        
         if $kit.params[:load_test_packets_record] || $kit.params[:add_new_TEST_PACKET_LOCATION]
             
             test_packet_record(pid = $kit.params[:load_test_packets_record] || $kit.params[:field_id____TEST_PACKET_LOCATION__test_packet_id])
@@ -512,9 +506,9 @@ end
                     ""
                 ],
                 [
-                   fields["status"].web.select(:dd_choices=>status_dd),
-                   fields["verified"].web.checkbox,
-                   fields["returned_to_warehouse" ].web.checkbox,
+                   fields["status"].web.label,
+                   fields["verified"].to_user,
+                   fields["returned_to_warehouse" ].to_user,
                    "",
                    "",
                    ""
@@ -585,7 +579,7 @@ end
             #upload_iframe_test_packets_upload              {position:fixed; top:0; left:0; z-index:-999999999999;}
             #upload_new_table_TEST_PACKETS                  {overflow:hidden;}
             
-            #test_packets_search_fields                     {width:450px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
+            #test_packets_search_fields                     {width:460px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}
             #test_packets_search_submit                     {margin-top:5px;}
             #test_packets_search_results                    {min-height:450px; width:1000px; padding:10px; border:1px solid #3baae3; border-radius:5px;margin-left:auto; margin-right:auto; box-shadow:inset 0px 0px 10px #869bac; background-color:#EDF0F2;}

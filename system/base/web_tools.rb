@@ -952,9 +952,11 @@ end
         return button_html
     end
     
-    def button_refresh(refresh_id)
+    def button_refresh(refresh_id, extra_params=nil) #extra params are comma separated string
         
-        return "<button class='refresh_button' id='refresh__#{refresh_id}'></button>
+        extra_params = "extra_params='#{extra_params}'" if extra_params
+        
+        return "<button class='refresh_button' id='refresh__#{refresh_id}' #{extra_params}></button>
                 <input id='#{refresh_id}__submit' name='refresh' value='#{refresh_id}' type='hidden'>"
         
     end
