@@ -394,9 +394,23 @@ end
     
     def test_event_sites_dd(test_event_id=3) #using pssa as default event id for now 
         
-        where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
+        #where_clause = test_event_id ? "WHERE test_event_id = '#{test_event_id}'":nil
         
-        $tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", "#{where_clause} ORDER BY site_name ASC")
+        #THIS IS SUPER TACKY AND WILL DEFINETELY NEED TO BE CHANGED!
+        results = $db.get_data("
+            SELECT CONCAT(test_events.name, ' - ', test_event_sites.site_name), test_event_sites.primary_id
+            FROM test_event_sites
+            LEFT JOIN test_events
+            ON test_event_sites.test_event_id  = test_events.primary_id
+            WHERE test_event_id = '3'
+            OR test_event_id = '4'
+        ")
+        
+        dd_choices = Array.new
+        results.each{|result| dd_choices.push(    {:name=>result[0],:value=>result[1]}    )}
+        return dd_choices
+        
+        #$tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", "#{where_clause} ORDER BY site_name ASC")
         
     end
     
@@ -579,7 +593,7 @@ end
             #upload_iframe_test_packets_upload              {position:fixed; top:0; left:0; z-index:-999999999999;}
             #upload_new_table_TEST_PACKETS                  {overflow:hidden;}
             
-            #test_packets_search_fields                     {width:460px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
+            #test_packets_search_fields                     {width:650px; padding:10px; margin-bottom:10px; margin-left:auto; margin-right:auto;}
             #test_packets_search_dialog_button              {margin-bottom:10px;}
             #test_packets_search_submit                     {margin-top:5px;}
             #test_packets_search_results                    {min-height:450px; width:1000px; padding:10px; border:1px solid #3baae3; border-radius:5px;margin-left:auto; margin-right:auto; box-shadow:inset 0px 0px 10px #869bac; background-color:#EDF0F2;}
