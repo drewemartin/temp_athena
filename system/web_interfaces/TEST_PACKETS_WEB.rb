@@ -71,11 +71,12 @@ end
             "Status",
             "Verified",
             "Returned to Warehouse (to be shipped)",
-            "Test Event",
             "Test Event Site",
             "Subject",
-            "Test Type",
+            "Date Completed",
             "Admin Team Member",
+            "Test Event",
+            "Test Type",
             "Grade",
             "Large Print"
         ])
@@ -119,11 +120,12 @@ end
             row.push(record.fields["status"                ].web.select(:dd_choices=>status_dd))
             row.push(record.fields["verified"              ].web.checkbox())
             row.push(record.fields["returned_to_warehouse" ].web.checkbox())
-            row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
             row.push($tables.attach("TEST_EVENT_SITES").field_value("site_name", "WHERE primary_id = '#{record.fields["test_event_site_id"].value}'"))
             row.push($tables.attach("TEST_SUBJECTS"   ).field_value("name",      "WHERE primary_id = '#{record.fields["subject_id"        ].value}'"))
-            row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'")||"Not Selected")
+            row.push($tables.attach("STUDENT_TESTS"   ).field_value("completed", "WHERE student_id = '#{record.fields["student_id"].value}' AND test_event_site_id = '#{record.fields["test_event_site_id"].value}' AND test_subject_id = '#{record.fields["subject_id"].value}' AND test_id = '#{record.fields["test_type_id"].value}'")||"N/A")
             row.push(record.fields["administrator_team_id" ].to_name(:full_name))
+            row.push($tables.attach("TEST_EVENTS"     ).field_value("name",      "WHERE primary_id = '#{record.fields["test_event_id"     ].value}'"))
+            row.push($tables.attach("TESTS"           ).field_value("name",      "WHERE primary_id = '#{record.fields["test_type_id"      ].value}'")||"Not Selected")
             row.push(record.fields["grade_level"           ].value)
             row.push(record.fields["large_print"           ].to_user)
             
