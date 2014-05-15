@@ -35,7 +35,7 @@ end
         
         output << "<div id='file_viewer'>"
         
-        k12_type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}' AND name REGEXP 'k12_'")
+        k12_type_ids = $tables.attach("document_type").primary_ids("WHERE category_id='#{category_id}' AND name REGEXP 'k12_' AND name != 'k12_staff'")
         
         k12_type_ids.each do |type_id|
             
