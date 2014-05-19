@@ -24,7 +24,7 @@ end
     #CREATE A DAILY REPORT THAT INCLUDES ALL UNVERIFIED SCHOOLS
     def after_load_k12_enrollment_info_tab_v2
         
-        request_records
+        #request_records
         
     end
     
@@ -83,6 +83,8 @@ end
                         this_record.fields["school_pid"].set(school_pid).save
                         this_record.fields["verified"  ].set(true      ).save
                         
+                        create_outgoing_request_record(this_record)
+                        
                     else
                         
                         this_record.fields["verified"].set(false ).save
@@ -96,6 +98,29 @@ end
                 end
                 
             end
+            
+        end
+        
+    end
+    
+    def create_outgoing_request_record(previous_school_record)
+        
+        sid = previous_school_record.fields["student_id"].value
+        
+        s = $students.get(sid)
+        
+        enroll_date = s.schoolenrolldate.value
+        
+        if !$tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").records("WHERE student_id = '#{sid}' AND created_date >= '#{enroll_date}'")
+            
+            new_row = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").new_row
+            
+            fields = new_row.fields
+            
+            fields["student_id"].value = sid
+            fields["student_id"].value = sid
+            
+            new_row.save
             
         end
         

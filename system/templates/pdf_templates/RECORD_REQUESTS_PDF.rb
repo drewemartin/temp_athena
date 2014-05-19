@@ -56,11 +56,9 @@ class RECORD_REQUESTS_PDF
         completed_batch_pdf.render_file("#{file_path}#{file_name}") if group
     end
     
-    def generate_pdf(pid, pdf = nil)
+    def generate_pdf(sid, pdf = nil)
         
-        previous_school_record = $tables.attach("STUDENT_PREVIOUS_SCHOOL").by_primary_id(pid)
-        
-        sid = previous_school_record.fields["student_id"].value
+        previous_school_record = $tables.attach("STUDENT_PREVIOUS_SCHOOL").by_student_id(sid)
         
         s   = $students.get(sid)
         logo_path = "#{$paths.templates_path}images/agora_logo.jpg"
@@ -231,7 +229,7 @@ cc: Student File"
                         :size => 10
                 end
             end
-            pdf.render_file "#{file_path}#{file_name}" if render_required
         end
+        pdf.render_file "#{file_path}#{file_name}" if render_required
     end
 end
