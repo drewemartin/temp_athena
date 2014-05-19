@@ -2574,6 +2574,8 @@ function x___________________UNSORTED(){}
 		s = s.replace(/(\u02DC|\u00A0)/g, " ");
 		// bullets
 		s = s.replace(/\u2022/g, "*");
+		// verical tab
+		s = s.replace(/\u000B/g, "");
 		return s;
 	}
 	function validate(container){

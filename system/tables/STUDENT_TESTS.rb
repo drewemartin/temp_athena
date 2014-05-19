@@ -233,7 +233,7 @@ end
             #THERE ARE NO OTHER TESTS FOR THIS STUDENT ASSIGNED TO THIS SITE
             if !by_studentid_except_site(sid, test_event_site_id = field.value, except_this_record_id = field.primary_id)  
                 
-                if previous_site_attendance_records = $tables.attach("STUDENT_TEST_DATES").by_studentid_old(
+                if previous_field_value && previous_site_attendance_records = $tables.attach("STUDENT_TEST_DATES").by_studentid_old(
                     
                     sid,
                     date                    = nil,
