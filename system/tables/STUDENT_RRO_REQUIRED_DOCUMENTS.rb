@@ -7,7 +7,7 @@ class STUDENT_RRO_REQUIRED_DOCUMENTS < Athena_Table
     def initialize()
         super()
         @table_structure = nil
-    ends
+    end
     #---------------------------------------------------------------------------
    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
