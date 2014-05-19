@@ -225,7 +225,7 @@ end
                 sweek = date.cweek + @fall_winter_weeks
             end
             if date.cweek == Date.today.cweek - 1
-                @this_sweek = sweek
+                @this_sweek = sweek - 1 #This -1 was added, because spring break throws off the calcuation. A week is missing from the weeks. Needs to be re-mathificated
             end
             has_record = attendance_dates.include?(school_date) ? true : false
             index = date.wday() - 1

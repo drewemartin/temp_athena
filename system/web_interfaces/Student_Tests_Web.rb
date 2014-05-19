@@ -260,7 +260,7 @@ end
         headers.push("Test Type")
         headers.push("Test Event")
         headers.push("Test Subject")   if !section_name.match(/aims/)
-        headers.push("Check In Date")  if !section_name.match(/aims/)
+        #headers.push("Check In Date")  if !section_name.match(/aims/)
         headers.push("Serial Number")  if !section_name.match(/aims/)
         headers.push("Completed Date")
         headers.push("Test Administrator") if test_admin_dd
@@ -280,7 +280,7 @@ end
             row.push(test.fields["test_id"              ].web.select(:dd_choices=>test_types_dd,  :disabled=>true) )  
             row.push(test.fields["test_event_id"        ].web.select(:dd_choices=>test_events_dd, :disabled=>true) )  
             row.push(test.fields["test_subject_id"      ].web.select(:dd_choices=>test_subjects_dd(test.fields["test_id"].value)) ) if !section_name.match(/aims/)    
-            row.push(test.fields["checked_in"           ].web.default() )                                                           if !section_name.match(/aims/)
+            #row.push(test.fields["checked_in"           ].web.default() )                                                           if !section_name.match(/aims/)
             row.push(
                 test.fields["serial_number"        ].web.select(
                     :dd_choices=>$dd.test_events.test_packet_serial_numbers(
