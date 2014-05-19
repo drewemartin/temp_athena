@@ -23,31 +23,32 @@ end
 
     def initial_record_request_batch
         
-        sids    = $students.list(
-            
-            :currently_enrolled => true,
-            :join_addon         => " LEFT JOIN #{$tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").data_base}.student_record_requests_outgoing ON student_record_requests_outgoing.student_id = student.student_id ",
-            :where_clause_addon => " AND student_record_requests_outgoing.primary_id IS NULL "
-            
-        )
+        #sids    = $students.list(
+        #    
+        #    :currently_enrolled => true,
+        #    :join_addon         => " LEFT JOIN #{$tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").data_base}.student_record_requests_outgoing ON student_record_requests_outgoing.student_id = student.student_id ",
+        #    :where_clause_addon => " AND student_record_requests_outgoing.primary_id IS NULL "
+        #    
+        #)
         
-        if sids
+        pids = primary_ids("WHERE request_sent IS FALSE")
+        
+        if pids
             
-            require "#{$paths.templates_path}pdf_templates/RECORD_REQUESTS_PDF"
-            template = eval("RECORD_REQUESTS_PDF.new")
-            
-            sids.each{|sid|
+            pids.each{|pid|
                 
-                record = new_row
+                record = by_primary_id(pid)
                 
-                record.fields["student_id"    ].set(sid                     )
+                sid = record.fields["student_id"].value
+                
                 record.fields["record_type"   ].set("Initial Request"       )
                 record.fields["date_requested"].set($base.right_now.to_db   )
                 
                 record.save
                 
-                document = $reports.save_document({
-                    :pdf             => template.generate_pdf(sid, pdf = nil),
+                file_path = $reports.save_document({
+                    :pdf_template    => "RECORD_REQUESTS_PDF.rb",
+                    :pdf_id          => sid,
                     :category_name   => "Student Record Requests",
                     :type_name       => "Outgoing",
                     :document_relate => [
@@ -56,11 +57,12 @@ end
                             :key_field       => "primary_id",
                             :key_field_value => record.primary_id
                         }
-                    ],
-                    :hash_return    => true
+                    ]
                 })
                 
-                record.fields["document_id"   ].set(document[:document_id])
+                record.fields["document_id"      ].set(file_path.split("/").last.split(".").first)
+                record.fields["request_sent"     ].set(1)
+                record.fields["request_sent_date"].set($base.right_now.to_db)
                 
                 record.save
              
@@ -102,10 +104,12 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",        "file_field"=>"student_id"      } if field_order.push("student_id"      )
-            structure_hash["fields"]["record_type"      ] = {"data_type"=>"text",       "file_field"=>"record_type"     } if field_order.push("record_type"     )
-            structure_hash["fields"]["date_requested"   ] = {"data_type"=>"datetime",   "file_field"=>"date_requested"  } if field_order.push("date_requested"  )
-            structure_hash["fields"]["document_id"      ] = {"data_type"=>"int",        "file_field"=>"document_id"     } if field_order.push("document_id"     )
+            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",        "file_field"=>"student_id"       } if field_order.push("student_id"       )
+            structure_hash["fields"]["record_type"      ] = {"data_type"=>"text",       "file_field"=>"record_type"      } if field_order.push("record_type"      )
+            structure_hash["fields"]["date_requested"   ] = {"data_type"=>"datetime",   "file_field"=>"date_requested"   } if field_order.push("date_requested"   )
+            structure_hash["fields"]["document_id"      ] = {"data_type"=>"int",        "file_field"=>"document_id"      } if field_order.push("document_id"      )
+            structure_hash["fields"]["request_sent"     ] = {"data_type"=>"int",        "file_field"=>"request_sent"     } if field_order.push("request_sent"     )
+            structure_hash["fields"]["request_sent_date"] = {"data_type"=>"datetime",   "file_field"=>"request_sent_date"} if field_order.push("request_sent_date")
             
         structure_hash["field_order"] = field_order
         return structure_hash

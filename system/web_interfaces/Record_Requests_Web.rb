@@ -37,77 +37,154 @@ class RECORD_REQUESTS_WEB
     end
     
     #---------------------------------------------------------------------------
+    
     def student_record()
+        
         output = String.new
+        
         sid = $focus_student.student_id.value
         student = $students.attach(sid)
+        
+        records_required = student.records_required
+        
+        if !records_required
+            
+            student.new_row("Record_Requests_Required").save
+            records_required = student.records_required
+            
+        end
         
         how_to_button_records_in_compliance = $tools.button_how_to("How To: Records In Compliance")
         
         output << $tools.legend_open("in_compliance", "In Compliance #{how_to_button_records_in_compliance}")
-        records_required = student.records_required
-        if !records_required
-            student.new_row("Record_Requests_Required").save
-            records_required = student.records_required
-        end
+        
         fields = records_required.fields
+        
         output << $tools.div_open("required_container")
-        output << fields["report_card"].web.checkbox({:label_option=>"Report Card:"})
-        output << fields["transcript"].web.checkbox({:label_option=>"Transcript:"})
-        output << fields["pssa"].web.checkbox({:label_option=>"PSSA:"})
-        output << fields["attendance"].web.checkbox({:label_option=>"Attendance:"})
-        output << fields["discipline"].web.checkbox({:label_option=>"Discipline:"})
-        output << fields["status"].web.select({:dd_choices=>status_dd, :label_option=>"Status:"})
+        output << fields["report_card"  ].web.checkbox(:label_option=>"Report Card:"                    )
+        output << fields["transcript"   ].web.checkbox(:label_option=>"Transcript:"                     )
+        output << fields["pssa"         ].web.checkbox(:label_option=>"PSSA:"                           )
+        output << fields["attendance"   ].web.checkbox(:label_option=>"Attendance:"                     )
+        output << fields["discipline"   ].web.checkbox(:label_option=>"Discipline:"                     )
+        output << fields["status"       ].web.select(  :label_option=>"Status:", :dd_choices=>status_dd )
         output << $tools.div_close
         output << $tools.legend_close
         
         how_to_button_records_received = $tools.button_how_to("How To: Records Received")
         
         output << $tools.legend_open("records_received", "Records Received #{how_to_button_records_received}")
-        output << $tools.div_open("received_container")
-        output << $tools.div_open("records_received_header", "records_received_header")
-        output << $tools.newlabel("RECORD_REQUESTS_RECEIVED__type",            "Document Type")
-        output << $tools.newlabel("RECORD_REQUESTS_RECEIVED__school_year",     "School Year")
-        output << $tools.newlabel("RECORD_REQUESTS_RECEIVED__created_date",    "Received Date")
-        output << $tools.div_close
-        output << $tools.div_open("records_received", "records_received")
-        output << $tools.div_open("bgdiv")
-        records_received = student.records_received
-        if records_received
-            records_received.each do |received|
-                fields = received.fields
-                output << $tools.div_open("received_row")
-                output << fields["type"].web.label()
-                output << fields["school_year"].web.label()
-                output << fields["created_date"].to_user!.web.label()
-                output << $tools.div_close
-            end
-        else
-            output << $tools.newlabel("no_record", "No Documents Received For This Student")
-        end
-        output << $kit.tools.newlabel("bottom")
-        output << $tools.div_close
-        output << $tools.div_close
-        output << $tools.div_close
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Document Type",
+                "School Year",
+                "Received Date"
+            ]
+            
+        ]
+        
+        records_received = $tables.attach("RECORD_REQUESTS_RECEIVED").primary_ids("WHERE student_id = '#{sid}'")
+        
+        records_received.each do |pid|
+            
+            record = $tables.attach("RECORD_REQUESTS_RECEIVED").by_primary_id(pid)
+            
+            fields = record.fields
+            
+            row = Array.new
+            
+            row.push(fields["type"        ].to_user())
+            row.push(fields["school_year" ].to_user())
+            row.push(fields["created_date"].to_user())
+            
+            tables_array.push(row)
+            
+        end if records_received
+        
+        output << $tools.data_table(tables_array, "records_received")
+        
         output << $tools.legend_close
+        
         output << $tools.legend_open("notes", "Notes")
-        output << $tools.div_open("notes", "notes")
-        notes = student.record_requests_notes
-        if notes
-            notes.each do |note|
-                fields = note.fields
-                output << fields["note"].web.textarea({:disabled=>true})
-                output << fields["created_date"].to_user!.web.label({:label_option=>"Created On:"})
-                output << fields["created_by"].web.label({:label_option=>"Created By:"})
-            end
-        else
-            output << $tools.newlabel("no_record", "There Are No Notes Entered For This Student")
-        end
-        output << $tools.div_close
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Note",
+                "Created Datetime",
+                "Created By"
+            ]
+            
+        ]
+        
+        notes = $tables.attach("RECORD_REQUESTS_NOTES").primary_ids("WHERE student_id = '#{sid}'")
+        
+        notes.each do |pid|
+            
+            record = $tables.attach("RECORD_REQUESTS_NOTES").by_primary_id(pid)
+            
+            fields = record.fields
+            
+            row = Array.new
+            
+            row.push(fields["note"         ].web.default(:disabled=>true))
+            row.push(fields["created_date" ].to_user())
+            row.push(fields["created_by"   ].to_user())
+            
+            tables_array.push(row)
+            
+        end if notes
+        
+        output << $tools.data_table(tables_array, "notes")
+        
         output << $tools.legend_close
-        output << $tools.newlabel("bottom")
+        
+        
+        output << $tools.legend_open("outgoing_requests", "Record Requests - Outgoing")
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Record Type",
+                "Date Requested",
+                "Request Sent",
+                "Request Sent Date",
+                "Created Date"
+            ]
+            
+        ]
+        
+        outgoing = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").primary_ids("WHERE student_id = '#{sid}'")
+        
+        outgoing.each do |pid|
+            
+            record = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").by_primary_id(pid)
+            
+            fields = record.fields
+            
+            row = Array.new
+            
+            row.push(fields["record_type"      ].to_user())
+            row.push(fields["date_requested"   ].to_user())
+            row.push(fields["request_sent"     ].to_user())
+            row.push(fields["request_sent_date"].to_user())
+            row.push(fields["created_date"     ].to_user())
+            
+            tables_array.push(row)
+            
+        end if outgoing
+        
+        output << $tools.data_table(tables_array, "outgoing")
+        
+        output << $tools.legend_close
+        
         return output
     end
+    
     #---------------------------------------------------------------------------
     def add_new_record_record_requests_received()
         output = String.new

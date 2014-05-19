@@ -87,6 +87,9 @@ end
         
         cat_id_verification = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Validation'")
         pre_reqs.push({:name=>"previous_school_verification" , :category_id => cat_id_verification.value, :file_extension=>"csv"}) if cat_id_verification
+
+        cat_id_record_requests = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Student Record Requests'")
+        pre_reqs.push({:name=>"Outgoing" , :category_id => cat_id_record_requests.value, :file_extension=>"pdf"}) if cat_id_record_requests
         
         max = pre_reqs.length
         (0...max).each{|i|
