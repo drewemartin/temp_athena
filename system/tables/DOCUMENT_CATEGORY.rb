@@ -39,7 +39,8 @@ end
             {:name=> "Athena"                           },
             {:name=> "Scantron"                         },
             {:name=> "Table Imports"                    },
-            {:name=> "Validation"                       }
+            {:name=> "Validation"                       },
+            {:name=> "Student Record Requests"          }
             
         ]
         
