@@ -526,25 +526,33 @@ class Requested_Reports < Base
         record.save
         
         eitr_db  = $tables.attach("K12_ENROLLMENT_INFO_TAB_V2").data_base
-        sps_db  = $tables.attach("STUDENT_PREVIOUS_SCHOOL").data_base
+        sps_db   = $tables.attach("STUDENT_PREVIOUS_SCHOOL").data_base
+        s_db     = $tables.attach("STUDENT").data_base
         
         sql_str =
         "SELECT
             k12_enrollment_info_tab_v2.student_id,
+            student.studentfirstname,
+            student.studentlastname,
+            student.grade,
             student_previous_school.previous_school,
             student_previous_school.previous_district,
             student_previous_school.previous_school_state
         FROM #{eitr_db}.k12_enrollment_info_tab_v2
         LEFT JOIN #{sps_db}.student_previous_school
         ON student_previous_school.student_id = k12_enrollment_info_tab_v2.student_id
+        LEFT JOIN #{s_db}.student
+        ON student.student_id = k12_enrollment_info_tab_v2.student_id
         WHERE student_previous_school.verified IS FALSE
-        AND request_sent IS FALSE
-        AND (request_sent_date IS NULL OR request_sent_date <= schoolenrolldate)"
+        AND student.grade != 'Kindergarten'"
         
         headers =
         [
            
             "Student ID",
+            "First Name",
+            "Last Name",
+            "Grade",
             "Previous School",
             "Previous District",
             "Previous School State"
