@@ -5,6 +5,7 @@ require "#{File.dirname(__FILE__)}/tv_kmail"
 #Description: Agents check for unsent kmail and send them.
 #Created By: Jenifer Halverson
 ################################################################################
+
 class TV_Kmail_Agent < TV_Kmail
     
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -12,15 +13,15 @@ class TV_Kmail_Agent < TV_Kmail
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
     #---------------------------------------------------------------------------
+    
     def initialize(agent_name)
-        #require "C:/Users/Hermes/athena_03/base/athena_base"
-        #Athena_Base.new
-        #@dbname = "agora_20122013"
-        #@base   = Base.new('')
+        
         super(agent_name)
         @db_name = $tables.attach("KMAIL").data_base
         activate
+        
     end
+    
     #---------------------------------------------------------------------------
     
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -34,6 +35,7 @@ class TV_Kmail_Agent < TV_Kmail
     public
 
     #---------------------------------------------------------------------------
+    
     def activate
         
         until !kmail_exists?
@@ -44,45 +46,38 @@ class TV_Kmail_Agent < TV_Kmail
                 puts "SENDING KMAIL ID: #{@kmail.ID }"
                 
                 start_time = Time.now
+                
                 send
-                end_time = Time.now
-            
-                diff = start_time - end_time
+                
+                end_time   = Time.now
+                
+                diff      = start_time - end_time
                 time_diff = diff.to_int
-            
-                if time_diff > 120
-                    recipient_list = ["sbhavanam@agora.org","jhalverson@agora.org","esaddler@agora.org"]
-                    scuttle("Slow Kmail Alert","#{@kmail.ID }",recipient_list)          
+                
+                if time_diff > 180
+                    
+                    $base.system_notification(
+                        "SLOW KMAILS!",
+                        "Kmails are slow. PID #{@kmail.ID}"
+                    )
+                    
                 end
-            
+                
                 puts "                  SUCCESSFUL"
+                
             rescue Exception=>e
+                
                 @browser.close
                 puts "                  FAILED: #{e}."
                 puts "                  RELEASING KMAIL..."
                 puts "                  TOTAL ATTEMPTS: #{release_kmail}.\n"
-            end
-        end
-            
                 
+            end
             
+        end
+        
     end
     
-    def scuttle(subject,content,recipient_list)
-message = <<MESSAGE_END
-From: Athena Alert
-To: #{recipient}
-Subject: #{subject}
-
-#{content}
-MESSAGE_END
-          
-          smtp = Net::SMTP.start('smtp2.k-12.com', 25, 'k-12.com', 'athena-reports@agora.org', 'athena', :plain)
-          smtp.send_message(msgstr = message, from_addr = "athena-reports@agora.org", to_addrs = recipient_list)
-          smtp.finish
-            
-    end
-        
     #---------------------------------------------------------------------------
     
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -90,8 +85,10 @@ MESSAGE_END
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     private
     
-    #---------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    
     def kmail_exists?
+        
         kmail_sql =
             "SELECT
                 sender,
@@ -101,14 +98,16 @@ MESSAGE_END
                 subject,
                 content,
                 primary_id,
-                date_time_entered
+                created_date
             FROM kmail
             WHERE successfull IS NULL
             AND primary_id NOT IN
                 (SELECT primary_id
                 FROM kmail
                 WHERE error REGEXP 'ERROR.*')
-            ORDER BY date_time_entered ASC"
+            ORDER BY created_date ASC
+            LIMIT 0,1"
+            
         results = $db.get_data(kmail_sql, @db_name)
         
         if results
@@ -118,9 +117,13 @@ MESSAGE_END
             @kmail.KMAIL_TYPE   = results[1]
             
             if @kmail.KMAIL_TYPE == 'Student'
+                
                 @kmail.RECIPIENT = results[2]
+                
             elsif @kmail.KMAIL_TYPE == 'Administrator'
+                
                 @kmail.RECIPIENT = results[3]
+                
             end
             
             @kmail.SUBJECT      = results[4]
@@ -130,31 +133,43 @@ MESSAGE_END
             #if a student has a success status of true, but no send time
             #that would be an indication that it got to this point
             #but somehow faild along the way
+            
             kmail_hold_sql =
                 "UPDATE kmail
                 SET
-                    `successfull`       = true
+                    `successfull` = true
                 WHERE primary_id = '#{@kmail.ID}'"
-            results = $db.get_data(kmail_hold_sql, @db_name)
+                
+            $db.get_data(kmail_hold_sql, @db_name)
             
             return true
             
         else
+            
             return false
+            
         end
+        
     end
+    
     #---------------------------------------------------------------------------
     
     def release_kmail
+        
         attempt_num = 1
+        
         select_sql =
             "SELECT error
             FROM kmail
             WHERE primary_id = '#{@kmail.ID}'"
+            
         results = $db.get_data_single(select_sql, @db_name)
+        
         if results
+            
             result = results[0]
             attempt_num = Integer(result)+1
+            
         end
         
         kmail_release_sql =
@@ -163,8 +178,11 @@ MESSAGE_END
                 `successfull` = null,
                 `error` = #{attempt_num}
             WHERE primary_id = '#{@kmail.ID}'"
+            
         results = $db.query(kmail_release_sql, @db_name)
+        
         return attempt_num
+        
     end
     
     def clear_attempts
@@ -180,5 +198,3 @@ MESSAGE_END
     end
   
 end
-
-#test = TV_Kmail_Agent.new("agent_TEST")
