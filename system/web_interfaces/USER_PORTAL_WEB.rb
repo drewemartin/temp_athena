@@ -184,6 +184,15 @@ end
         
         $kit.output << $tools.breakaway_button(
             
+            :button_text        => "Record Requests Admin",
+            :page_name          => "STUDENT_RECORD_REQUESTS_ADMIN_WEB",
+            :additional_params  => nil,
+            :class              => "module_bar"
+            
+        ) if $team_member.super_user? #|| $team_member.rights.student_record_requests_admin_access.is_true?
+        
+        $kit.output << $tools.breakaway_button(
+            
             :button_text        => "Sapphire Data Management",
             :page_name          => "SAPPHIRE_DATA_MANAGEMENT_WEB",
             :additional_params  => nil,
