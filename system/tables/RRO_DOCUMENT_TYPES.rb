@@ -16,6 +16,30 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    def required_documents(sid)
+        
+        #RETURNS AN ARRAY OF RRO_DOCUMENT_TYPES PIDS OR FALSE
+        
+        student = $students.get(sid)
+        
+        where_clause = "WHERE `#{student.grade.to_grade_field}` IS TRUE"
+        
+        if student.previous_school.previous_school_state.value == "PA"    
+            where_clause << " AND in_state      IS TRUE "   
+        else  
+            where_clause << " AND out_of_state  IS TRUE "   
+        end
+        
+        if student.isspecialed.is_true?
+            where_clause << " AND special_education IS TRUE "
+        else
+            where_clause << " AND general_education IS TRUE " 
+        end
+        
+        return primary_ids(where_clause)
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENTS
 end
