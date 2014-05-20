@@ -23,35 +23,60 @@ end
 
     def before_load_student_rro_required_documents
      
-        #IDENTIFIES STUDENTS WITH REQUIRED DOCUMENTS THAT ARE MISSING
-        #CREATES AN ENTRY FOR THOSE REQUIRED DOCUMENTS
+        #IDENTIFIES STUDENTS WITH NO STUDENT_RRO_REQUIRED_DOCUMENTS ENTRIES
+        #CREATES AN ENTRY FOR EACH CURRENTLY REQUIRED DOCUMENTS FOR THOSE STUDENTS
         
-        sids = $students.list(:currently_enrolled=> true)
+        sids = $tables.attach("STUDENTS").student_ids(
+            "LEFT JOIN #{data_base}.#{table_name} ON #{table_name}.student_id = students.student_id
+            WHERE table_name.student_id IS NULL"
+        )
         
         sids.each{|sid|
             
-            s = $students.get(sid)
+            student = $students.get(sid)
             
-            pids = $tables.attach("RECORD_REQUESTS_DOCUMENT_TYPES").primary_ids(
+            if student.previous_school.verified.is_true?
                 
-                "LEFT JOIN #{$tables.attach("student_records_required").data_base}.student_records_required ON record_requests_document_types.primary_id = student_records_required.record_type_id
-                WHERE record_requests_document_types.#{s.grade.to_grade_field} IS TRUE
-                AND record_requests_document_types.active IS TRUE
-                AND student_records_required.primary_id IS NULL"
+                where_clause = "WHERE `#{student.grade.to_grade_field}` IS TRUE"
+                if student.previous_school.previous_school_state.value == "PA"    
+                    where_clause << " AND previous_school_state = 'PA' "   
+                else  
+                    where_clause << " AND previous_school_state != 'PA' "   
+                end
                 
-            )
-            
-            pids.each{|pid|
+                required_documents = $tables.attach("RRO_DOCUMENT_TYPES").primary_ids(where_clause)
                 
-                r = s.records_required.new_record
-                r.fields["record_type_id"].set(pid)
-                r.save
-                
-            } if pids
+            end
             
         } if sids
         
-        return continue_with_load = false
+        
+        #sids = $students.list(:currently_enrolled=> true)
+        #
+        #sids.each{|sid|
+        #    
+        #    s = $students.get(sid)
+        #    
+        #    pids = $tables.attach("RECORD_REQUESTS_DOCUMENT_TYPES").primary_ids(
+        #        
+        #        "LEFT JOIN #{$tables.attach("student_records_required").data_base}.student_records_required ON record_requests_document_types.primary_id = student_records_required.record_type_id
+        #        WHERE record_requests_document_types.#{s.grade.to_grade_field} IS TRUE
+        #        AND record_requests_document_types.active IS TRUE
+        #        AND student_records_required.primary_id IS NULL"
+        #        
+        #    )
+        #    
+        #    pids.each{|pid|
+        #        
+        #        r = s.records_required.new_record
+        #        r.fields["record_type_id"].set(pid)
+        #        r.save
+        #        
+        #    } if pids
+        #    
+        #} if sids
+        #
+        #return continue_with_load = false
         
     end
     

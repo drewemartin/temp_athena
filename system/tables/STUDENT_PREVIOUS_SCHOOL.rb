@@ -20,13 +20,6 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-    #CREATE A DAILY REPORT THAT INCLUDES ALL UNVERIFIED SCHOOLS
-    def after_load_k12_enrollment_info_tab_v2
-        
-        #request_records
-        
-    end
     
     def after_insert(row_object)
         
@@ -61,86 +54,25 @@ end
     def verify_school_exists(obj)
         
         this_record = by_primary_id(obj.primary_id)
-        
-        if this_record.fields["request_sent"].value.nil?
+     
+        if school_pid = $tables.attach("SCHOOLS").field_value(
             
-            sid = this_record.fields["student_id"].value
+            "primary_id",
             
-            if s = $students.get(sid)
-                
-                if s.grade.value != "Kindergarten"
-                    
-                    if school_pid = $tables.attach("SCHOOLS").field_value(
-                        
-                        "primary_id",
-                        
-                        "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"       ].value || '')}'
-                        AND     district    = '#{Mysql.quote(this_record.fields["previous_district"     ].value || '')}'
-                        AND     state       = '#{Mysql.quote(this_record.fields["previous_school_state" ].value || '')}'"
-                        
-                    )
-                        
-                        this_record.fields["school_pid"].set(school_pid).save
-                        this_record.fields["verified"  ].set(true      ).save
-                        
-                        create_outgoing_request_record(this_record)
-                        
-                    else
-                        
-                        this_record.fields["verified"].set(false ).save
-                        
-                    end
-                    
-                else
-                    
-                    this_record.fields["request_sent"].set(false).save
-                    
-                end
-                
-            end
+            "WHERE  school_name = '#{Mysql.quote(this_record.fields["previous_school"       ].value || '')}'
+            AND     district    = '#{Mysql.quote(this_record.fields["previous_district"     ].value || '')}'
+            AND     state       = '#{Mysql.quote(this_record.fields["previous_school_state" ].value || '')}'"
+            
+        )
+            
+            this_record.fields["school_pid"].set(school_pid).save
+            this_record.fields["verified"  ].set(true      ).save
+            
+        else
+            
+            this_record.fields["verified"].set(false ).save
             
         end
-        
-    end
-    
-    def create_outgoing_request_record(previous_school_record)
-        
-        sid = previous_school_record.fields["student_id"].value
-        
-        s = $students.get(sid)
-        
-        enroll_date = s.schoolenrolldate.value
-        
-        if !$tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").records("WHERE student_id = '#{sid}' AND created_date >= '#{enroll_date}'")
-            
-            new_row = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").new_row
-            
-            fields = new_row.fields
-            
-            fields["student_id"].value = sid
-            fields["student_id"].value = sid
-            
-            new_row.save
-            
-        end
-        
-    end
-    
-    def request_records
-        
-        pids = primary_ids("WHERE verified IS TRUE AND request_sent IS NULL AND request_sent_date IS NULL")
-        
-        pids.each do |pid|
-            
-            record = by_primary_id(pid)
-            
-            require "#{$paths.templates_path}pdf_templates/RECORD_REQUESTS_PDF.rb"
-            RECORD_REQUESTS_PDF.new.generate_pdf(pid)
-            
-            record.fields["request_sent_date"].set($idatetime).save
-            record.fields["request_sent"].set(true).save
-            
-        end if pids
         
     end
     

@@ -27,41 +27,37 @@ end
         
         pids = primary_ids("WHERE date_requested IS NULL")
         
-        if pids
+        pids.each{|pid|
             
-            pids.each{|pid|
-                
-                record = by_primary_id(pid)
-                
-                sid = record.fields["student_id"].value
-                
-                record.fields["date_requested"].set($base.right_now.to_db   )
-                
-                record.save
-                
-                file_path = $reports.save_document(
-                    :pdf_template    => "RECORD_REQUESTS_PDF.rb",
-                    :pdf_id          => sid,
-                    :category_name   => "Student Record Requests",
-                    :type_name       => "Outgoing",
-                    :document_relate => [
-                        {
-                            :table_name      => "STUDENT_RECORD_REQUESTS_OUTGOING",
-                            :key_field       => "primary_id",
-                            :key_field_value => record.primary_id
-                        }
-                    ]
-                )
-                
-                record.fields["document_id"      ].set(file_path.split("/").last.split(".").first)
-                record.fields["request_sent"     ].set(1)
-                record.fields["request_sent_date"].set($base.right_now.to_db)
-                
-                record.save
-             
-            }
+            record = by_primary_id(pid)
             
-        end
+            sid = record.fields["student_id"].value
+            
+            record.fields["date_requested"].set($base.right_now.to_db   )
+            
+            record.save
+            
+            file_path = $reports.save_document(
+                :pdf_template    => "RECORD_REQUESTS_PDF.rb",
+                :pdf_id          => sid,
+                :category_name   => "Student Record Requests",
+                :type_name       => "Outgoing",
+                :document_relate => [
+                    {
+                        :table_name      => "STUDENT_RECORD_REQUESTS_OUTGOING",
+                        :key_field       => "primary_id",
+                        :key_field_value => record.primary_id
+                    }
+                ]
+            )
+            
+            record.fields["document_id"      ].set(file_path.split("/").last.split(".").first)
+            record.fields["request_sent"     ].set(1)
+            record.fields["request_sent_date"].set($base.right_now.to_db)
+            
+            record.save
+         
+        } if pids
         
         return continue_with_load = false
         
@@ -108,9 +104,8 @@ end
             
             this_record = new_row
             this_record.fields["student_id"].value = sid
-            
-            
-        }
+          
+        } if sids
         
     end
 
