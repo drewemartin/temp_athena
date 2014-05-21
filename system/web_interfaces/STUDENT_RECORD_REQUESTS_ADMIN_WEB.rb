@@ -33,7 +33,7 @@ end
 
     def response
         
-        if $kit.params[:add_new_RECORD_REQUESTS_DOCUMENT_TYPES]
+        if $kit.params[:add_new_RRO_DOCUMENT_TYPES]
             $kit.modify_tag_content("tabs-1", load_tab_1, "update")
         end
         
@@ -54,7 +54,7 @@ end
         
         output = String.new
         
-        output << $tools.button_new_row(table_name = "RECORD_REQUESTS_OUTGOING_DOCUMENT_TYPES")
+        output << $tools.button_new_row(table_name = "RRO_DOCUMENT_TYPES")
         
         tables_array = [
             
@@ -173,7 +173,7 @@ def x______________ADD_NEW_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
     
-    def add_new_record_record_requests_document_types()
+    def add_new_record_rro_document_types()
         
         output = String.new
         
@@ -278,10 +278,19 @@ end
         output = String.new
         output << "<style>"
         
-        output << ".RECORD_REQUESTS_DOCUMENT_TYPES__document_name  textarea{
-            width:  200px;
+        output << "
+        
+        .RRO_DOCUMENT_TYPES__document_name  textarea{
+            width:  160px;
             height: 50px;
-        }"
+            resize: none;
+        }
+        
+        #eligible_grades td{
+            padding:    3px 5px !important;
+            text-align: center;
+        }
+        "
         output << "</style>"
         return output
         
