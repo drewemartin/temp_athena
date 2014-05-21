@@ -98,7 +98,7 @@ Wayne, PA 19087
 ph 610.254.8218
 fx 610.254.8939
 www.agora.org"
-                pdf.text address_str, :align => :right, :size => 8.5
+                pdf.text address_str, :align => :right, :size => 7.5
             end
             
             pdf.grid([5,0], [6,1]).bounding_box do
@@ -111,7 +111,7 @@ www.agora.org"
                 address_str =
 "<b>Student Name: #{s.studentfirstname.to_user} #{s.studentlastname.to_user}
 Date of Birth: #{s.birthday.to_user}, #{s.grade.to_user}</b>"
-                pdf.text address_str, :align => :center, :size => 10, :inline_format=>true
+                pdf.text address_str, :align => :center, :size => 9, :inline_format=>true
             end
             
             pdf.grid([9,0], [11,1]).bounding_box do
@@ -121,10 +121,10 @@ Date of Birth: #{s.birthday.to_user}, #{s.grade.to_user}</b>"
 "#{address_record.fields["school_name"].value}
 #{address_record.fields["street_address"].value}
 #{address_record.fields["city"].value} #{address_record.fields["state"].value} #{address_record.fields["zip"].value}"
-                pdf.text address_str, :align => :left, :size => 10
+                pdf.text address_str, :align => :left, :size => 9
             end
             
-            pdf.grid([12,0], [26,1]).bounding_box do
+            pdf.grid([12,0], [30,1]).bounding_box do
                 #pdf.stroke_bounds
                 pdf.move_down 5
                 address_str =
@@ -132,45 +132,72 @@ Date of Birth: #{s.birthday.to_user}, #{s.grade.to_user}</b>"
 <b>PREVIOUS SCHOOL: #{s.prevschoolname.to_user}</b> Guidance Office and/or Records Department
 The above referenced student has enrolled with Agora Cyber Charter School on <b>#{s.schoolenrolldate.to_user}</b>.  In accordance with The Family Educational Rights and Privacy Act (FERPA) (20 U.S.C. \xC2\xA7 1232g; 34 CFR Part 99) we are requesting that the records be provided to Agora as a school which the student is transferring.   The student started Agora on #{s.schoolenrolldate.to_user}.
 We are requesting the <b>ENTIRE</b> permanent records file including but not limited to the following records:
-\xE2\x9C\x93 Cumulative Academic Records - Report Cards, Transcripts for (9-12 grades)
-\xE2\x9C\x93 Attendance (including truancy documentation if applicable)
-\xE2\x9C\x93 Pennsylvania System of School Assessment (PSSA/PSSAM/PASA)
-\xE2\x9C\x93 Keystone Scores
-\xE2\x9C\x93 SAT Scores
-\xE2\x9C\x93 English Language Learners Information (ELL/WIDA/ESL)
-\xE2\x9C\x93 PA Secure ID#
-\xE2\x9C\x93 Dental, Health and Immunization Records
-\xE2\x9C\x93 Special Education Documentation <b>(if applicable)</b>"
-                pdf.text address_str, :align => :left, :size => 9.5, :inline_format=>true
-            
-                pdf.indent(25) do
-                    address_str =
-"-Individual Education Plan (IEP)
--Evaluation Reports (ER)
--Gifted Written Reports (GWR)
--Notice of Recommended Educational Placement (NOREP)
--Notice of Recommended Assignments (NORA)"
-                    pdf.text address_str, :align => :left, :size => 9.5, :inline_format=>true
-                end
+    
+"
+                pdf.text address_str, :align => :left, :size => 8.5, :inline_format=>true
+                
+                categories = $tables.attach("RRO_DOCUMENT_TYPES").field_values(
+                    "document_category",
+                    "LEFT JOIN #{$tables.attach("STUDENT_RRO_REQUIRED_DOCUMENTS").data_base}.student_rro_required_documents ON rro_document_types.primary_id = student_rro_required_documents.record_type_id
+                    WHERE student_id = #{sid}
+                    AND document_category IS NOT NULL
+                    GROUP BY document_category
+                    ORDER BY document_category ASC"
+                )
+                categories.each{|cat|
+                    
+                    pdf.text "\xE2\x9C\x93 #{cat}", :align => :left, :size => 8.5, :inline_format=>true
+                    
+                    req_docs = $tables.attach("RRO_DOCUMENT_TYPES").field_values(
+                        "document_name",
+                        "LEFT JOIN #{$tables.attach("STUDENT_RRO_REQUIRED_DOCUMENTS").data_base}.student_rro_required_documents ON rro_document_types.primary_id = student_rro_required_documents.record_type_id
+                        WHERE student_id = #{sid}
+                        AND document_category = '#{cat}'"
+                    )
+                    req_docs.each{|doc|
+                        
+                        pdf.indent(25) do
+                            
+                            pdf.text "-#{doc}", :align => :left, :size => 8.5, :inline_format=>true
+                            
+                        end
+                        
+                    } if req_docs
+                    
+                } if categories
+                
+                no_cat_req_docs = $tables.attach("RRO_DOCUMENT_TYPES").field_values(
+                    "document_name",
+                    "LEFT JOIN #{$tables.attach("STUDENT_RRO_REQUIRED_DOCUMENTS").data_base}.student_rro_required_documents ON rro_document_types.primary_id = student_rro_required_documents.record_type_id
+                    WHERE student_id = #{sid}
+                    AND document_category IS NULL"
+                )
+                no_cat_req_docs.each{|doc|
+                    
+                    pdf.text "\xE2\x9C\x93 #{doc}", :align => :left, :size => 8.5, :inline_format=>true
+                    
+                } if no_cat_req_docs
+                
             end
             
-            pdf.grid([27,0], [31,1]).bounding_box do
-                pdf.move_down 5
+            pdf.grid([30,0], [33,1]).bounding_box do
+                pdf.move_down 3
                 pdf.dash(4,:space=>4, :phase=>0)
                 pdf.stroke_bounds
                 address_str = "Please send the information listed above via mail or fax to:"
                 pdf.indent(5) do
-                    pdf.text address_str, :align => :left, :size => 10, :inline_format=>true
+                    pdf.text address_str, :align => :left, :size => 8, :inline_format=>true
                 end
             end
             
             pdf.move_cursor_to 180
             pdf.indent(250) do
-                pdf.text "<b>~or~</b>", :align => :left, :size => 10, :inline_format=>true
+                pdf.move_down 40
+                pdf.text "<b>~or~</b>", :align => :left, :size => 8, :inline_format=>true
             end
             
-            pdf.grid([29,0], [31,0]).bounding_box do
-                pdf.move_down 5
+            pdf.grid([31,0], [32,0]).bounding_box do
+               
                 pdf.dash(1,:space=>0, :phase=>0)
                 #pdf.stroke_bounds
                 address_str =
@@ -179,22 +206,22 @@ Attention: Records
 995 Old Eagle School Road, Suite 315
 Wayne, PA 19087</b>"
                 pdf.indent(5) do
-                    pdf.text address_str, :align => :left, :size => 10, :inline_format=>true
+                    pdf.text address_str, :align => :left, :size => 8, :inline_format=>true
                 end
             end
             
-            pdf.grid([29,1], [31,1]).bounding_box do
+            pdf.grid([31,1], [32,1]).bounding_box do
                 pdf.move_down 12
                 #pdf.stroke_bounds
                 address_str = "<b>Fax - (610) 254-8939</b>"
                 pdf.indent(70) do
-                    pdf.text address_str, :align => :left, :size => 10, :inline_format=>true
+                    pdf.text address_str, :align => :left, :size => 8, :inline_format=>true
                 end
             end
             
-            pdf.grid([32,0], [40,1]).bounding_box do
+            pdf.grid([34.5,0], [40,1]).bounding_box do
                 #pdf.stroke_bounds
-                pdf.move_down 10
+                
                 address_str =
 "Thank you in advance for your attention to this matter.  <b>If records are not available, please respond in writing to this request on your letterhead detailing why the request cannot be fulfilled.</b>  Should you have questions please feel free to contact Scott McDonnell at (610) 263-8490.
 
@@ -205,7 +232,7 @@ Office of the Registrar
 Agora Cyber Charter School
 
 cc: Student File"
-                pdf.text address_str, :align => :left, :size => 9.5, :inline_format=>true
+                pdf.text address_str, :align => :left, :size => 7.5, :inline_format=>true
             end
             
             #INTACT STUDENT TAGS

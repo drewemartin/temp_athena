@@ -25,15 +25,19 @@ end
         where_clause = "WHERE `#{student.grade.to_grade_field}` IS TRUE"
         
         if student.previous_school.previous_school_state.value == "PA"    
-            where_clause << " AND in_state      IS TRUE "   
+            where_clause << " AND in_state          IS TRUE "   
         else  
-            where_clause << " AND out_of_state  IS TRUE "   
+            where_clause << " AND out_of_state      IS TRUE "   
         end
         
         if student.isspecialed.is_true?
             where_clause << " AND special_education IS TRUE "
         else
             where_clause << " AND general_education IS TRUE " 
+        end
+        
+        if student.previous_school.previous_school_type.value == "Home school"    
+            where_clause << " AND home_school       IS TRUE "     
         end
         
         return primary_ids(where_clause)
@@ -105,6 +109,7 @@ end
             structure_hash["fields"]["out_of_state"             ] = {"data_type"=>"bool", "file_field"=>"out_of_state"          } if field_order.push("out_of_state"            )
             structure_hash["fields"]["general_education"        ] = {"data_type"=>"bool", "file_field"=>"general_education"     } if field_order.push("general_education"       )
             structure_hash["fields"]["special_education"        ] = {"data_type"=>"bool", "file_field"=>"special_education"     } if field_order.push("special_education"       )
+            structure_hash["fields"]["home_school"              ] = {"data_type"=>"bool", "file_field"=>"home_school"           } if field_order.push("home_school"             )
             
             structure_hash["fields"]["active"                   ] = {"data_type"=>"bool", "file_field"=>"active"                } if field_order.push("active"                  )
             

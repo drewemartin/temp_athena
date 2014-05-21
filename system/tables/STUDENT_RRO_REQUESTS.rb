@@ -52,8 +52,6 @@ end
             )
             
             record.fields["document_id"      ].set(file_path.split("/").last.split(".").first)
-            record.fields["request_sent"     ].set(1)
-            record.fields["request_sent_date"].set($base.right_now.to_db)
             
             record.save
          
@@ -74,7 +72,7 @@ end
         #AND THE MOST RECENT PREVIOUS EXISINTG STUDENT_RRO_REQUESTS RECORD FOR THAT STUDENT HAS EXPIRED.  
         
         sids = $tables.attach("STUDENT_RRO_REQUIRED_DOCUMENTS").student_ids(
-            "WHERE status IS NULL
+            "WHERE status IN(#{$tables.attach("RRO_SETTINGS_STATUS").primary_ids("WHERE auto_send IS TRUE")})
             AND (
                 
                 ADDDATE(
@@ -84,7 +82,7 @@ end
                         WHERE student_rro_requests.student_id = student_rro_required_documents.student_id
                         ORDER BY date_requested DESC LIMIT 1
                     ),
-                    INTERVAL #{$tables.attach("RRO_SETTINGS").field_value("expiration_interval_number")} #{$tables.attach("RRO_SETTINGS").field_value("expiration_interval_unit")}
+                    INTERVAL #{$tables.attach("RRO_SETTINGS_DOC_EXPIRATION").field_value("expiration_interval_number", "WHERE primary_id = 1")} #{$tables.attach("RRO_SETTINGS_DOC_EXPIRATION").field_value("expiration_interval_unit", "WHERE primary_id = 1")}
                 ) <= CURRENT_TIMESTAMP()
                 
                 OR
@@ -104,6 +102,7 @@ end
             
             this_record = new_row
             this_record.fields["student_id"].value = sid
+            this_record.save
           
         } if sids
         
