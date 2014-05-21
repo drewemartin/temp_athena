@@ -142,46 +142,6 @@ class RECORD_REQUESTS_WEB
         
         output << $tools.legend_close
         
-        
-        output << $tools.legend_open("outgoing_requests", "Record Requests - Outgoing")
-        
-        tables_array = [
-            
-            #HEADERS
-            [
-                "Record Type",
-                "Date Requested",
-                "Request Sent",
-                "Request Sent Date",
-                "Created Date"
-            ]
-            
-        ]
-        
-        outgoing = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").primary_ids("WHERE student_id = '#{sid}'")
-        
-        outgoing.each do |pid|
-            
-            record = $tables.attach("STUDENT_RECORD_REQUESTS_OUTGOING").by_primary_id(pid)
-            
-            fields = record.fields
-            
-            row = Array.new
-            
-            row.push(fields["record_type"      ].to_user())
-            row.push(fields["date_requested"   ].to_user())
-            row.push(fields["request_sent"     ].to_user())
-            row.push(fields["request_sent_date"].to_user())
-            row.push(fields["created_date"     ].to_user())
-            
-            tables_array.push(row)
-            
-        end if outgoing
-        
-        output << $tools.data_table(tables_array, "outgoing")
-        
-        output << $tools.legend_close
-        
         return output
     end
     

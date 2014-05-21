@@ -87,9 +87,11 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"           ] = {"data_type"=>"int",    "file_field"=>"student_id"      } if field_order.push("student_id"      )
-            structure_hash["fields"]["record_type_id"       ] = {"data_type"=>"text",   "file_field"=>"record_type_id"  } if field_order.push("record_type_id"  )
-            structure_hash["fields"]["status"               ] = {"data_type"=>"text",   "file_field"=>"status"          } if field_order.push("status"          )
+            structure_hash["fields"]["student_id"           ] = {"data_type"=>"int",      "file_field"=>"student_id"      } if field_order.push("student_id"      )
+            structure_hash["fields"]["record_type_id"       ] = {"data_type"=>"int",      "file_field"=>"record_type_id"  } if field_order.push("record_type_id"  )
+            structure_hash["fields"]["status"               ] = {"data_type"=>"int",      "file_field"=>"status"          } if field_order.push("status"          )
+            structure_hash["fields"]["received_date"        ] = {"data_type"=>"datetime", "file_field"=>"received_date"   } if field_order.push("received_date"   )
+            structure_hash["fields"]["notes"                ] = {"data_type"=>"text",     "file_field"=>"notes"           } if field_order.push("notes"           )
             
         structure_hash["field_order"] = field_order
         return structure_hash
