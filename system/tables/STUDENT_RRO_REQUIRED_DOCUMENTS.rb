@@ -26,9 +26,9 @@ end
         #IDENTIFIES STUDENTS WITH NO STUDENT_RRO_REQUIRED_DOCUMENTS ENTRIES
         #CREATES AN ENTRY FOR EACH CURRENTLY REQUIRED DOCUMENTS FOR THOSE STUDENTS
         
-        sids = $tables.attach("STUDENTS").student_ids(
-            "LEFT JOIN #{data_base}.#{table_name} ON #{table_name}.student_id = students.student_id
-            WHERE table_name.student_id IS NULL"
+        sids = $tables.attach("STUDENT").student_ids(
+            "LEFT JOIN #{data_base}.#{table_name} ON #{table_name}.student_id = student.student_id
+            WHERE #{table_name}.student_id IS NULL"
         )
         
         sids.each{|sid|
@@ -37,46 +37,21 @@ end
             
             if student.previous_school.verified.is_true?
                 
-                where_clause = "WHERE `#{student.grade.to_grade_field}` IS TRUE"
-                if student.previous_school.previous_school_state.value == "PA"    
-                    where_clause << " AND previous_school_state = 'PA' "   
-                else  
-                    where_clause << " AND previous_school_state != 'PA' "   
-                end
+                required_documents = $tables.attach("RRO_DOCUMENT_TYPES").required_documents(sid)
                 
-                required_documents = $tables.attach("RRO_DOCUMENT_TYPES").primary_ids(where_clause)
+                required_documents.each{|pid|
+                    
+                    req_doc = new_row()
+                    req_doc.fields["student_id"     ].value = sid
+                    req_doc.fields["record_type_id" ].value = pid
+                    req_doc.fields["status"         ].value = 1
+                    req_doc.save
+                    
+                } if required_documents
                 
             end
             
         } if sids
-        
-        
-        #sids = $students.list(:currently_enrolled=> true)
-        #
-        #sids.each{|sid|
-        #    
-        #    s = $students.get(sid)
-        #    
-        #    pids = $tables.attach("RECORD_REQUESTS_DOCUMENT_TYPES").primary_ids(
-        #        
-        #        "LEFT JOIN #{$tables.attach("student_records_required").data_base}.student_records_required ON record_requests_document_types.primary_id = student_records_required.record_type_id
-        #        WHERE record_requests_document_types.#{s.grade.to_grade_field} IS TRUE
-        #        AND record_requests_document_types.active IS TRUE
-        #        AND student_records_required.primary_id IS NULL"
-        #        
-        #    )
-        #    
-        #    pids.each{|pid|
-        #        
-        #        r = s.records_required.new_record
-        #        r.fields["record_type_id"].set(pid)
-        #        r.save
-        #        
-        #    } if pids
-        #    
-        #} if sids
-        #
-        #return continue_with_load = false
         
     end
     
