@@ -44,7 +44,7 @@ end
                     req_doc = new_row()
                     req_doc.fields["student_id"     ].value = sid
                     req_doc.fields["record_type_id" ].value = pid
-                    req_doc.fields["status"         ].value = 1
+                    req_doc.fields["status"         ].value = "1"
                     req_doc.save
                     
                 } if required_documents
