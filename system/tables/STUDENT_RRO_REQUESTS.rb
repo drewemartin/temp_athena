@@ -82,7 +82,7 @@ end
                         WHERE student_rro_requests.student_id = student_rro_required_documents.student_id
                         ORDER BY date_requested DESC LIMIT 1
                     ),
-                    INTERVAL #{$tables.attach("RRO_SETTINGS").field_value("expiration_interval_number", "WHERE primary_id = 1")} #{$tables.attach("RRO_SETTINGS").field_value("expiration_interval_unit", "WHERE primary_id = 1")}
+                    INTERVAL #{$tables.attach("RRO_SETTINGS_DOC_EXPIRATION").field_value("expiration_interval_number", "WHERE primary_id = 1")} #{$tables.attach("RRO_SETTINGS_DOC_EXPIRATION").field_value("expiration_interval_unit", "WHERE primary_id = 1")}
                 ) <= CURRENT_TIMESTAMP()
                 
                 OR
