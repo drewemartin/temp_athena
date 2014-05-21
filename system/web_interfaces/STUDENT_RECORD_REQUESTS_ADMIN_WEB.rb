@@ -17,8 +17,8 @@ end
     def load
         
         $kit.tools.tabs([
-            ["Document Types",              load_tab_1],
-            ["Batch Request Settings",      load_tab_2]
+            ["Document Types",  load_tab_1],
+            ["Settings",        load_tab_2]
         ],0)
         
     end
@@ -33,8 +33,12 @@ end
 
     def response
         
-        if $kit.params[:add_new_RECORD_REQUESTS_DOCUMENT_TYPES]
+        if $kit.params[:add_new_RRO_DOCUMENT_TYPES]
             $kit.modify_tag_content("tabs-1", load_tab_1, "update")
+        end
+        
+        if $kit.params[:add_new_RRO_SETTINGS_STATUS]
+            $kit.modify_tag_content("tabs-2", load_tab_2, "update")
         end
         
     end
@@ -149,7 +153,7 @@ end
             
         ]
      
-        rro_settings = $tables.attach("RRO_SETTINGS")
+        rro_settings = $tables.attach("RRO_SETTINGS_DOC_EXPIRATION")
         record = rro_settings.by_primary_id(1) || rro_settings.by_primary_id(rro_settings.new_row.save)
         
         row = Array.new
@@ -161,10 +165,48 @@ end
         
         output << $kit.tools.table(
             :table_array => tables_array,
-            :unique_name => "RRO_SETTINGS"
+            :unique_name => "RRO_SETTINGS_DOC_EXPIRATION"
         )
         
+        output << "<div style='padding:10px;clear:both;'><hr></div>"
+        
+        #STATUSES AVAILABLE FOR THE RECEIVING DROPDOWN
+        output << $tools.button_new_row(table_name = "RRO_SETTINGS_STATUS")
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                
+                "Status Name",
+                "Auto Send?"
+            ]
+            
+        ]
+     
+        pids = $tables.attach("RRO_SETTINGS_STATUS").primary_ids
+        pids.each{|pid|
+            
+            record = $tables.attach("RRO_SETTINGS_STATUS").by_primary_id(pid)
+            
+            row = Array.new
+            
+            row.push(record.fields["status_name"].web.text  )
+            row.push(record.fields["auto_send"  ].web.default  )
+            
+            tables_array.push(row)
+            
+        } if pids
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "RRO_SETTINGS_DOC_EXPIRATION",
+            table_type      = "default"
+        )   
+        
         output << $tools.newlabel("bottom")
+        
+        return output
         
     end
 
@@ -253,6 +295,45 @@ end
         
     end
     
+    def add_new_record_rro_settings_status()
+        
+        output = String.new
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                
+                "Status Name",
+                "Auto Send"
+              
+            ]
+            
+        ]
+        
+        record = $tables.attach("RRO_SETTINGS_STATUS").new_row
+        
+        tables_array.push(
+            
+            [
+                record.fields["status_name"     ].web.text,
+                record.fields["auto_send"       ].set(0).web.default
+            ]
+            
+        )
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "add_new_RRO_SETTINGS_STATUS",
+            table_type      = "NewRecord"
+        )
+        
+        output << $tools.newlabel("bottom")
+        
+        return output
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_CSV
 end
