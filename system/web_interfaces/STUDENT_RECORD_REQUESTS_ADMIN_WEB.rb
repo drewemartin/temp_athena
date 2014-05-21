@@ -72,6 +72,7 @@ end
                 "Out of State?"         ,
                 "General Education"     ,
                 "Special Education?"    ,
+                "Home School"           ,
                 "Active?"
             ]
             
@@ -122,6 +123,7 @@ end
             row.push(record.fields["out_of_state"       ].web.default())
             row.push(record.fields["general_education"  ].web.default())
             row.push(record.fields["special_education"  ].web.default())
+            row.push(record.fields["home_school"        ].web.default())
             row.push(record.fields["active"             ].web.default())
             
             tables_array.push(row)
@@ -229,8 +231,9 @@ end
                 "Eligible Grades"       ,
                 "In State?"             ,
                 "Out of State?"         ,
-                "General Education"     ,
-                "Special Education?"    
+                "General Education?"     ,
+                "Special Education?"    ,
+                "Home Schooled?"
               
             ]
             
@@ -278,7 +281,8 @@ end
                 record.fields["in_state"           ].set(true).web.default(),
                 record.fields["out_of_state"       ].set(true).web.default(),
                 record.fields["general_education"  ].set(true).web.default(),
-                record.fields["special_education"  ].set(true).web.default()
+                record.fields["special_education"  ].set(true).web.default(),
+                record.fields["home_school"        ].set(true).web.default()
             ]
             
         )
