@@ -11,11 +11,7 @@ class STUDENT_RECORDS_WEB
     
     def page_title
         
-        new_record_button = ""
-        
-
-        
-        "Student Records#{new_record_button}"
+        "Student Records"
         
     end
     
@@ -56,8 +52,9 @@ end
         
         tabs = Array.new
         
-        tabs.push(["Outgoing", outgoing_records])
-        tabs.push(["Incoming", ""])
+        tabs.push(["Outgoing",  outgoing_records])
+        tabs.push(["Incoming",  ""])
+        tabs.push(["Documents", record_request_files($focus_student.student_id.value)])
         
         return $kit.tools.tabs(
             
@@ -70,10 +67,34 @@ end
         
     end
     
+    def record_request_files(sid)
+        
+        category_id = $tables.attach("document_category").find_field("primary_id",  "WHERE name='Student Record Requests'").value
+        
+        type_id     = $tables.attach("document_type"    ).find_field("primary_id",  "WHERE name='Outgoing' AND category_id='#{category_id}'").value
+        
+        @doc_pids   = $tables.attach("DOCUMENTS").document_pids(type_id, "STUDENT", "student_id", sid)
+        
+        return expand_documents
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_PDF
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def add_new_pdf_record_request(sid)
+        
+        template = "RECORD_REQUESTS_PDF.rb"
+        
+        pdf = Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_temp#{$ifilestamp}.pdf" do |pdf|
+            require "#{$paths.templates_path}pdf_templates/#{template}"
+            template = eval("#{template.gsub(".rb","")}.new")
+            template.generate_pdf(sid, pdf)
+        end
+        
+    end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_RECORDS
@@ -121,14 +142,9 @@ end
     end
     
     def status_dd
-        return [
-            {:name=>"Request",                              :value=>"Request"                               },
-            {:name=>"Received",                             :value=>"Received"                              },
-            {:name=>"Received - Incomplete",                :value=>"Received - Incomplete"                 },
-            {:name=>"Document Not Available",               :value=>"Document Not Available"                },
-            {:name=>"Not Available - Financial Obligation", :value=>"Not Available - Financial Obligation"  },
-            {:name=>"Cancelled",                            :value=>"Cancelled"                             }
-        ]
+        
+        return $tables.attach("RRO_SETTINGS_STATUS").dd_choices("status_name", "primary_id")
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -145,6 +161,25 @@ end
             additional_params_str   = "sid",
             save_params             = "sid"
         )
+        
+        sid = $focus_student.student_id.value
+        
+        previous_school_record = $tables.attach("STUDENT_PREVIOUS_SCHOOL").by_student_id(sid)
+        
+        #if previous_school_record && previous_school_record.fields["verified"].value == "1"
+        #    
+        #    output << $tools.button_view_pdf(
+        #        "record_request",
+        #        "",
+        #        additional_params_str = sid,
+        #        ["sid"]
+        #    )
+        #    
+        #else
+        #    
+        #    output << $tools.newlabel("not_verified", "This student's previous school is not verified, so a pdf can not be made.")
+        #    
+        #end
         
         tables_array = [
             
@@ -194,6 +229,47 @@ end
         return output
         
     end
+    
+    def expand_documents
+        
+        output = "<div style='width:990px;'>"
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Action",
+                "Document Type",
+                "Date Uploaded",
+                "Uploaded By"
+            ]
+        ]
+        
+        @doc_pids.each{|pid|
+            
+            document = $tables.attach("DOCUMENTS").by_primary_id(pid)
+            
+            tables_array.push([
+                
+                $tools.doc_secure_link(pid, "View or Download"),
+                
+                $tables.attach("document_type").field_by_pid("name", document.fields["type_id"].value).value,
+                
+                document.fields["created_date"].to_user,
+                
+                begin $team.by_team_email(document.fields["created_by"].value).full_name rescue "Unknown" end
+                
+            ])
+            
+        } if @doc_pids
+        
+        output << $kit.tools.data_table(tables_array, "record_request_documents")
+        output << "</div>"
+        
+        return output
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
