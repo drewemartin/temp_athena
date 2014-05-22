@@ -148,10 +148,22 @@ end
                 
                 if !File.exists?("#{$paths.documents_path}#{new_document_pid}.pdf")
                     
-                    pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}.pdf" do |pdf|
+                    if !document_hash[:batch_ids]
+                        
+                        pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}.pdf" do |pdf|
                             require "#{$paths.templates_path}pdf_templates/#{document_hash[:pdf_template]}"
                             template = eval("#{document_hash[:pdf_template].gsub(".rb","")}.new")
                             template.generate_pdf(document_hash[:pdf_id], pdf)
+                        end
+                        
+                    else
+                        
+                        pdf = Prawn::Document.generate "#{$paths.documents_path}#{new_document_pid}.pdf" do |pdf|
+                            require "#{$paths.templates_path}pdf_templates/#{document_hash[:pdf_template]}"
+                            template = eval("#{document_hash[:pdf_template].gsub(".rb","")}.new")
+                            pdf = template.batch(document_hash[:batch_ids], pdf)
+                        end
+                        
                     end
                     
                     return pdf.path
