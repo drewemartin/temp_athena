@@ -24,36 +24,24 @@ class RECORD_REQUESTS_PDF
         
     end
     
-    def confirmed_batch(group=true)
+    def batch(pids = [], pdf = nil)
         
-        completed_batch_pdf = Prawn::Document.new
-        
-        pids = $db.get_data("
-            SELECT primary_id
-            FROM `STUDENT_PREVIOUS_SCHOOL`
-            WHERE verified IS TRUE
-            AND request_sent IS NULL
-            AND request_sent_date IS NULL"
-        ).flatten
+        batch_pdf = pdf || Prawn::Document.new
         
         pids.each do |pid|
             
-            if group
-                
-                generate_pdf(pid, completed_batch_pdf)
-                completed_batch_pdf.start_new_page
-                
-            else
-                
-                generate_pdf(sid)
-                
-            end
+            sid = $tables.attach("STUDENT_RRO_REQUESTS").field_value("student_id", "WHERE primary_id = '#{pid}'")
+            
+            generate_pdf(sid, batch_pdf)
+            batch_pdf.start_new_page unless (pids.index(pid) == pids.length-1)
             
         end
         
         file_name = "Outgoing_Record_Requests_#{$ifilestamp}.pdf"
         file_path = $config.init_path("#{$paths.reports_path}Records_Requests")
-        completed_batch_pdf.render_file("#{file_path}#{file_name}") if group
+        
+        batch_pdf.render_file("#{file_path}#{file_name}")
+        
     end
     
     def generate_pdf(sid, pdf = nil)
@@ -131,7 +119,7 @@ Date of Birth: #{s.birthday.to_user}, #{s.grade.to_user}</b>"
 "<b>DISTRICT OF RESIDENCE:</b> #{s.districtofresidence.to_user} (district of responsibility)
 <b>PREVIOUS SCHOOL: #{s.prevschoolname.to_user}</b> Guidance Office and/or Records Department
 The above referenced student has enrolled with Agora Cyber Charter School on <b>#{s.schoolenrolldate.to_user}</b>.  In accordance with The Family Educational Rights and Privacy Act (FERPA) (20 U.S.C. \xC2\xA7 1232g; 34 CFR Part 99) we are requesting that the records be provided to Agora as a school which the student is transferring.   The student started Agora on #{s.schoolenrolldate.to_user}.
-We are requesting the <b>ENTIRE</b> permanent records file including but not limited to the following records:
+We are requesting the following permanent records:
     
 "
                 pdf.text address_str, :align => :left, :size => 8.5, :inline_format=>true
