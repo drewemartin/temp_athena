@@ -26,30 +26,30 @@ end
         #IDENTIFIES STUDENTS WITH NO STUDENT_RRO_REQUIRED_DOCUMENTS ENTRIES
         #CREATES AN ENTRY FOR EACH CURRENTLY REQUIRED DOCUMENTS FOR THOSE STUDENTS
         
-        sids = $tables.attach("STUDENT").student_ids(
-            "LEFT JOIN #{data_base}.#{table_name} ON #{table_name}.student_id = student.student_id
-            WHERE #{table_name}.student_id IS NULL"
+        t_stu       = $tables.attach("STUDENT")
+        t_prev_sch  = $tables.attach("STUDENT_PREVIOUS_SCHOOL")
+        t_s_rro_rec = $tables.attach("STUDENT_RRO_REQUIRED_DOCUMENTS")
+        
+        sids = t_stu.student_ids(
+            "LEFT JOIN #{t_s_rro_rec.data_base}.#{t_s_rro_rec.table_name} ON #{t_s_rro_rec.table_name}.student_id = #{t_stu.table_name}.student_id
+            LEFT JOIN #{t_prev_sch.data_base}.#{t_prev_sch.table_name} ON #{t_prev_sch.table_name}.student_id = #{t_stu.table_name}.student_id
+            WHERE #{t_prev_sch.table_name}.verified IS TRUE
+            AND #{t_s_rro_rec.table_name}.student_id IS NULL"
         )
         
         sids.each{|sid|
             
-            student = $students.get(sid)
+            required_documents = $tables.attach("RRO_DOCUMENT_TYPES").required_documents(sid)
             
-            if student.previous_school.verified.is_true?
+            required_documents.each{|pid|
                 
-                required_documents = $tables.attach("RRO_DOCUMENT_TYPES").required_documents(sid)
+                req_doc = new_row()
+                req_doc.fields["student_id"     ].value = sid
+                req_doc.fields["record_type_id" ].value = pid
+                req_doc.fields["status"         ].value = 1
+                req_doc.save
                 
-                required_documents.each{|pid|
-                    
-                    req_doc = new_row()
-                    req_doc.fields["student_id"     ].value = sid
-                    req_doc.fields["record_type_id" ].value = pid
-                    req_doc.fields["status"         ].value = "1"
-                    req_doc.save
-                    
-                } if required_documents
-                
-            end
+            } if required_documents
             
         } if sids
         
@@ -60,7 +60,7 @@ def x______________VALIDATION
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+s-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 private
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPRIVATE_METHODS
 end
