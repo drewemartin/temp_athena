@@ -1038,11 +1038,15 @@ end
     def test_admin_dd(assigned_staff_id = nil)
         
         k12_db = $tables.attach("k12_staff").data_base
+        t_db = $tables.attach("team").data_base
         
         results =  $tables.attach("TEST_EVENT_SITE_STAFF").dd_choices(
-            "CONCAT(k12_staff.firstname,' ',k12_staff.lastname)",
+            "CONCAT(team.legal_first_name,' ',team.legal_last_name)",
             "staff_id",
-            " LEFT JOIN #{k12_db}.k12_staff ON staff_id = k12_staff.samspersonid WHERE test_event_site_id = '#{@test_event_site_id}' "
+            " LEFT JOIN #{t_db}.team_sams_ids ON staff_id = team_sams_ids.sams_id
+              LEFT JOIN #{t_db}.team ON team_sams_ids.team_id = team.primary_id
+              WHERE test_event_site_id = '#{@test_event_site_id}'
+              ORDER BY team.legal_last_name"
         )
         
         if assigned_staff_id && $tables.attach("K12_STAFF").primary_ids(" WHERE samspersonid = '#{assigned_staff_id}' ")
