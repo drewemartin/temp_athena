@@ -55,7 +55,7 @@ end
                 )"
             )
             
-            sids.shift(10).each{|sid|
+            sids.each{|sid|
                 
                 this_record = new_row
                 this_record.fields["student_id"].value = sid
@@ -121,10 +121,12 @@ end
                 #]
             )
             
+            batch_id = attachment_path.split("/").last.split(".").first
+            
             pids.each{|pid|
                 
                 record = $tables.attach("STUDENT_RRO_REQUESTS").by_primary_id(pid)
-                record.fields["batch_id"].value = attachment_path.split("/").last.split(".").first
+                record.fields["batch_id"].value = batch_id
                 record.save
                 
             } if pids
