@@ -59,6 +59,7 @@ end
                 
                 this_record = new_row
                 this_record.fields["student_id"].value = sid
+                this_record.save
                 
                 file_path = $reports.save_document(
                     :pdf_template    => "RECORD_REQUESTS_PDF.rb",
@@ -67,9 +68,14 @@ end
                     :type_name       => "Outgoing",
                     :document_relate => [
                         {
-                            :table_name      => "STUDENT_RECORD_REQUESTS_OUTGOING",
+                            :table_name      => "STUDENT_RRO_REQUESTS",
                             :key_field       => "primary_id",
                             :key_field_value => this_record.primary_id
+                        },
+                        {
+                            :table_name      => "STUDENT",
+                            :key_field       => "student_id",
+                            :key_field_value => sid
                         }
                     ]
                 )
@@ -89,14 +95,7 @@ end
                     :pdf_template       => "RECORD_REQUESTS_PDF.rb",
                     :batch_ids          => pids,
                     :category_name      => "Student Record Requests",
-                    :type_name          => "Outgoing",
-                    :document_relate    => [
-                        {
-                            :table_name      => "STUDENT_RECORD_REQUESTS_OUTGOING",
-                            :key_field       => "primary_id",
-                            :key_field_value => record.primary_id
-                        }
-                    ]
+                    :type_name          => "Outgoing"
                 )
                 
                 content = "Please find the attached mailing batch for student record requests outgoing."
@@ -112,7 +111,6 @@ end
             $team.find(:email_address=>"SMcDonnell@agora.org").send_email(
                 :subject                => "Student Record Requests - Outgoing",        
                 :content                => content,         
-                :sender                 => "Jellyfish Jellyfish Jellyfish",
                 :additional_recipients  => ["jhalverson@agora.org"],
                 :attachment_name        => attachment_name, 
                 :attachment_path        => attachment_path#,
