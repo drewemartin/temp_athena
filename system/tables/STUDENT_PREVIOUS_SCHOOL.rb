@@ -45,12 +45,6 @@ end
         
     end
     
-    def after_change_field_previous_school_type(field_object)
-        
-        verify_school_exists(field_object)
-        
-    end
-    
     def verify_school_exists(obj)
         
         this_record = by_primary_id(obj.primary_id)
