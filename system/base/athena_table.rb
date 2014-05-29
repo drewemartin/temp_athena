@@ -277,6 +277,13 @@ end
                 http            = Net::HTTP.new('reports.k12.com', 443)
                 http.use_ssl    = true
                 
+                #setting the verify_mode variable for http to OpenSSL::SSL::VERIFY_NONE
+                #to turn off verification. At this time the cert verification is not working
+                #in this class without complicated installs of unrelated and otherwise unneeded gems.
+                #At this time this line of code is needed to run in the Ruby 1.9.3 environment.
+                #If there are troubles try uncommenting the following code:
+                #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+                
                 http.start do |http|
                     
                     begin
