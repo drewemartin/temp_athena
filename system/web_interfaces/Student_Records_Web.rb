@@ -137,7 +137,7 @@ end
         
         pids = $tables.attach("RRO_DOCUMENT_TYPES").required_documents(sid)
         
-        $tables.attach("RRO_DOCUMENT_TYPES").dd_choices("document_name", "primary_id", "WHERE primary_id IN(#{pids.join(",")}) ORDER BY document_name")
+        $tables.attach("RRO_DOCUMENT_TYPES").dd_choices("document_name", "primary_id", "WHERE primary_id IN(#{pids.join(",")}) ORDER BY document_name") if pids
         
     end
     
