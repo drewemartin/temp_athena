@@ -223,13 +223,13 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     def students_group(options)
-        start = Time.new
+        #start = Time.new
         
         @search_options = options
         if @search_options[:student_demographic_set]
             @search_options[:student_demographic_set].each_pair{|k,v|options[k] = v} if @search_options[:student_demographic_set]
         end
-        @search_options.each_pair{|k, v|
+        @search_options.dup.each_pair{|k, v|
             send(k, v) if respond_to?(k, true)
         }
         
