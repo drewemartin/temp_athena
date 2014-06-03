@@ -36,9 +36,9 @@ end
             
             begin
                 
-                if sy = $db.get_data_single("SELECT school_year FROM school_year_detail WHERE current IS TRUE", $tables.attach("School_Year_Detail").data_base)
+                if sy = $tables.attach("School_Year_Detail").field_value("school_year", "WHERE current IS TRUE")
                     
-                    sy = sy[0]
+                    sy = sy
                     
                 else
                  
