@@ -123,47 +123,54 @@ end
                             grade   = performance_record["grade"].value.gsub("Grade ","")
                             grade   = "K" if grade == "0"
                             
-                            range   = $tables.attach("Scantron_Performance_Range").by_subject_grade(subject,grade).fields
-                            #min     = range["target_min"].mathable
-                            #max     = range["target_max"].mathable
-                            #if score < min
-                            #    performance_level = "At Risk"
-                            #elsif score > max
-                            #    performance_level = "Advanced"
-                            #else
-                            #    performance_level = "On Target"
-                            #end
-                            
-                            if score <= range["quartile_1_max"].mathable && score >= range["quartile_1_min"].mathable
-                            #BELOW AVERAGE
+                            if (
                                 
-                                performance_level = "Below Average"
+                                !$tables.attach("Scantron_Performance_Range").empty? &&
                                 
-                            elsif score <= range["quartile_2_max"].mathable && score >= range["quartile_2_min"].mathable
-                            #AVERAGE LOW
+                                range = $tables.attach("Scantron_Performance_Range").record(
+                                    
+                                    "WHERE  subject         = '#{subject}'
+                                    AND     grade           = '#{grade  }'
+                                    AND     '#{test_date}'  BETWEEN range_start AND range_end"
+                                )
                                 
-                                performance_level = "Average Low"
+                            )
                                 
-                            elsif score <= range["quartile_3_max"].mathable && score >= range["quartile_3_min"].mathable
-                            #AVERAGE HIGH
+                                range   = range.fields
                                 
-                                performance_level = "Average High"
-                                
-                            elsif score <= range["quartile_4_max"].mathable && score >= range["quartile_4_min"].mathable
-                            #ABOVE AVERAGE
-                                
-                                performance_level = "Above Average"
-                                
-                            else
-                                
-                                $base.system_notification("Scantron Performance - Score Out of Range","SID: #{sid}")
+                                if score <= range["quartile_1_max"].mathable && score >= range["quartile_1_min"].mathable
+                                #BELOW AVERAGE
+                                    
+                                    performance_level = "Below Average"
+                                    
+                                elsif score <= range["quartile_2_max"].mathable && score >= range["quartile_2_min"].mathable
+                                #AVERAGE LOW
+                                    
+                                    performance_level = "Average Low"
+                                    
+                                elsif score <= range["quartile_3_max"].mathable && score >= range["quartile_3_min"].mathable
+                                #AVERAGE HIGH
+                                    
+                                    performance_level = "Average High"
+                                    
+                                elsif score <= range["quartile_4_max"].mathable && score >= range["quartile_4_min"].mathable
+                                #ABOVE AVERAGE
+                                    
+                                    performance_level = "Above Average"
+                                    
+                                else
+                                    
+                                    $base.system_notification("Scantron Performance - Score Out of Range","SID: #{sid}")
+                                    
+                                end
                                 
                             end
                             
-                            score_field = "stron_#{ent_ext}_score_#{subject[0].chr}"
-                            level_field = "stron_#{ent_ext}_perf_#{subject[0].chr}"
-                            date_field  = "stron_#{ent_ext}_test_date_#{subject[0].chr}"
-                            nce_field   = "stron_#{ent_ext}_nce_#{subject[0].chr}"
+                            score_field = "stron_#{ent_ext}_score_#{        subject[0].chr  }"
+                            level_field = "stron_#{ent_ext}_perf_#{         subject[0].chr  }"
+                            date_field  = "stron_#{ent_ext}_test_date_#{    subject[0].chr  }"
+                            nce_field   = "stron_#{ent_ext}_nce_#{          subject[0].chr  }"
+                            
                             level_record.fields[score_field ].value = score
                             level_record.fields[level_field ].value = performance_level
                             level_record.fields[date_field  ].value = test_date

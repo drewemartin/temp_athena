@@ -24,20 +24,24 @@ end
         
         where_clause = "WHERE `#{student.grade.to_grade_field}` IS TRUE"
         
-        if student.previous_school.previous_school_state.value == "PA"    
-            where_clause << " AND in_state          IS TRUE "   
-        else  
-            where_clause << " AND out_of_state      IS TRUE "   
+        if student.previous_school.existing_record
+            
+            if student.previous_school.previous_school_state.value == "PA"    
+                where_clause << " AND in_state          IS TRUE "   
+            else  
+                where_clause << " AND out_of_state      IS TRUE "   
+            end
+            
+            if student.previous_school.previous_school_type.value == "Home school"    
+                where_clause << " AND home_school       IS TRUE "     
+            end
+            
         end
         
         if student.isspecialed.is_true?
             where_clause << " AND special_education IS TRUE "
         else
             where_clause << " AND general_education IS TRUE " 
-        end
-        
-        if student.previous_school.previous_school_type.value == "Home school"    
-            where_clause << " AND home_school       IS TRUE "     
         end
         
         return primary_ids(where_clause)

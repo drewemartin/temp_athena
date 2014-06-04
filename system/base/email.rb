@@ -27,7 +27,7 @@ end
         #    {:table_name=>nil, :key_field=>nil, :key_field_value=>nil}
         #]
         
-        a[:recipients] = a[:recipients].type == Array.new ? a[:recipients] : [a[:recipients]]
+        a[:recipients] = a[:recipients].class == Array ? a[:recipients] : [a[:recipients]]
         
         #CREATE EMAIL LOGS THEN SEND THE EMAIL, THEN MARK SUCCSSFULL/NOT
         email_record = $tables.attach("EMAIL").new_row

@@ -218,9 +218,9 @@ end
         a3, b3 = "Days Attended:"   , student.attendance.attended_days.length
         a4, b4 = "Days Excused:"    , student.attendance.excused_absences.length
         a5, b5 = "Days Unexcused:"  , student.attendance.unexcused_absences.length
-        a6, b6 = "me:"              , excused_breakdown["me"].length
-        a7, b7 = "t:"               , excused_breakdown["t"].length
-        a8, b8 = "e:"               , excused_breakdown["e"].length
+        a6, b6 = "me:"              , excused_breakdown ? excused_breakdown["me"].length : 0
+        a7, b7 = "t:"               , excused_breakdown ? excused_breakdown["t" ].length : 0
+        a8, b8 = "e:"               , excused_breakdown ? excused_breakdown["e" ].length : 0
         
         
         att_array.push([a1.to_s,b1.to_s])

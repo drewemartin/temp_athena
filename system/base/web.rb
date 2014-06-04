@@ -7,7 +7,7 @@ class Web
         @structure = nil
         self.field = field_obj
         entity_gsub.each_pair do|k,v|
-            self.field.value.gsub!(k,v) if self.field.value.type == String
+            self.field.value.gsub!(k,v) if self.field.value.class == String
         end
     end
     #---------------------------------------------------------------------------
