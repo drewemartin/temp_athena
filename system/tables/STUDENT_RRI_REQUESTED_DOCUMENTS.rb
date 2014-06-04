@@ -21,6 +21,60 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_insert(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        if $tables.attach("RRI_DOCUMENT_TYPES").primary_ids(
+            
+            "WHERE primary_id     = '#{record.fields["record_type_id"].value}'
+            AND document_category = 'Transcripts'"
+         
+        )
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            unless additional_recipients.dup.concat([recipient]).include?($user.email_address_k12.value)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        elsif $tables.attach("RRI_DOCUMENT_TYPES").primary_ids(
+            
+            "WHERE primary_id       = '#{record.fields["record_type_id"].value}'
+            AND document_category   = 'Medical Records'"
+            
+        )
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            unless additional_recipients.dup.concat([recipient]).include?($user.email_address_k12.value)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
@@ -35,6 +89,7 @@ end
     def table
         if !@table_structure
             structure_hash = {
+                :data_base          => "#{$config.school_name}_master",
                 "name"              => "student_rri_requested_documents",
                 "file_name"         => "student_rri_requested_documents.csv",
                 "file_location"     => "student_rri_requested_documents",
