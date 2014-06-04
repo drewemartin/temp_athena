@@ -204,7 +204,7 @@ end
             
         else
             
-            output << $tools.newlabel("no_record", "There are not contacts entered for this student.")
+            output << $tools.newlabel("no_record", "There are no contacts entered for this student.")
             
         end
         
