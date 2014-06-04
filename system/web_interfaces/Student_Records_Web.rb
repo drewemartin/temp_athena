@@ -21,19 +21,12 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
     def load
+        
         $kit.student_data_entry
+        
     end
     
     def response
-        
-        if field = $kit.rows.first[1].fields["serial_number"]
-            if !field.updated
-                student_id = $tables.attach("TEST_PACKETS").field_value("student_id", "WHERE serial_number = '#{field.value}'")
-                $kit.web_error.duplicate_assignment_error(
-                    additional_message="This test packet is already assigned to the student with ID# #{student_id}. You must unassign this packet first."
-                )
-            end
-        end
         
         if $kit.add_new?
             
@@ -53,7 +46,7 @@ end
         tabs = Array.new
         
         tabs.push(["Outgoing",  outgoing_records])
-        tabs.push(["Incoming",  ""])
+        tabs.push(["Incoming",  incoming_records])
         tabs.push(["Documents", record_request_files($focus_student.student_id.value)])
         
         return $kit.tools.tabs(
@@ -168,6 +161,35 @@ end
         
     end
     
+    def add_new_record_student_rri_requests()
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Record Type",
+                "Status",
+                "Priority",
+                "Notes"
+            ]
+            
+        ]
+        
+        row = Array.new
+        
+        record = $focus_student.rri_requests.new_record
+        
+        row.push(record.fields["request_method"  ].web.default())
+        row.push(record.fields["status"          ].web.default())
+        row.push(record.fields["priority_level"  ].web.default())
+        row.push(record.fields["notes"           ].web.default())
+        
+        tables_array.push(row)
+      
+        return $kit.tools.data_table(tables_array, "new_record", type = "NewRecord")
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________DROP_DOWN_OPTIONS
 end
@@ -253,6 +275,64 @@ end
                 row.push(record_record.fields["received_date"  ].web.default())
                 row.push(record_record.fields["notes"          ].web.default())
                 row.push(record_record.fields["created_date"   ].to_user())
+                
+                tables_array.push(row)
+                
+            }
+            
+            output << $kit.tools.data_table(tables_array, "record_students")
+            
+        else
+            
+            output << $tools.newlabel("no_record", "There are not contacts entered for this student.")
+            
+        end
+        
+        return output
+        
+    end
+    
+    def incoming_records
+        
+        output = String.new
+        
+        output << $tools.button_new_row(
+            table_name              = "STUDENT_RRI_REQUESTS",
+            additional_params_str   = "sid",
+            save_params             = "sid"
+        )
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Record Type",
+                "Status",
+                "Received Date",
+                "Notes",
+                "Created Date"
+            ]
+            
+        ]
+        
+        record_pids = $tables.attach("STUDENT_RRI_REQUESTS").primary_ids("WHERE student_id = #{$focus_student.student_id.value}")
+        
+        if record_pids
+            
+            record_pids.each{|pid|
+                
+                row            = Array.new
+                
+                record_record  = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(pid)
+                
+                sid            = record_record.fields["student_id"    ].value
+                
+                #row.push($tables.attach("RRO_DOCUMENT_TYPES").field_value("document_name", "WHERE primary_id = '#{record_type_id}'"))
+                row.push(record_record.fields["request_method"   ].web.defualt() )
+                row.push(record_record.fields["notes"            ].web.default())
+                row.push(record_record.fields["priority_level"   ].web.default())
+                row.push(record_record.fields["status"           ].web.default())
+                row.push(record_record.fields["date_completed"   ].web.default())
                 
                 tables_array.push(row)
                 
