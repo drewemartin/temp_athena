@@ -79,6 +79,46 @@ end
         
     end
 
+    def working_list
+        
+        output = Array.new
+        
+        open_record_pids = nil
+        if $team_member.department_id.include?($tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'nurse'"))
+            
+            open_record_pids = $tables.attach("STUDENT_RRI_DOCUMENTS").primary_ids(
+                "WHERE status NOT IN(
+                    SELECT primary_id
+                    FROM rri_status
+                    WHERE status REGEXP 'complete'
+                )
+                AND "
+            )
+            name    = "MyRecordRequests (#{open_record_pids ? open_record_pids.length : 0})"
+            
+        elsif $team_member.department_id.include?($tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'registrar'"))
+            
+            #placeholder
+            
+        elsif $team_member.department_id.include?($tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'nurse'"))
+            
+            #placeholder
+            
+        end
+        
+        if open_record_pids
+            
+            output.push(
+                :name       => name,
+                :content    => record_requests_working_list(open_record_pids)
+            )
+            
+        end
+        
+        return (output.empty? ? nil : output)
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_PDF
 end
