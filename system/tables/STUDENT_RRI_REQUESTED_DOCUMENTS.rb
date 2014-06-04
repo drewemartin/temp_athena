@@ -21,6 +21,32 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field_status(obj)
+        
+        ready_ids = $tables.attach("RRI_STATUS").primary_ids("WHERE status REGEXP 'ready'")
+        if ready_ids.include?(obj.value)
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        end
+        
+    end
+
     def after_insert(obj)
         
         record = by_primary_id(obj.primary_id)
@@ -38,7 +64,8 @@ end
             recipient               = "jhalverson@agora.org"
             additional_recipients   = ["esaddler@agora.org"]
             
-            unless additional_recipients.dup.concat([recipient]).include?($user.email_address_k12.value)
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
                 
                 $team.find(:email_address=>recipient).send_email(
                     :subject                => subject,
@@ -61,7 +88,8 @@ end
             recipient               = "jhalverson@agora.org"
             additional_recipients   = ["esaddler@agora.org"]
             
-            unless additional_recipients.dup.concat([recipient]).include?($user.email_address_k12.value)
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
                 
                 $team.find(:email_address=>recipient).send_email(
                     :subject                => subject,
