@@ -17,8 +17,10 @@ end
     def load
         
         $kit.tools.tabs([
-            ["Document Types",  load_tab_1],
-            ["Settings",        load_tab_2]
+            ["Outgoing Document Types",  load_tab_1],
+            ["Outgoing Settings",        load_tab_2],
+            ["Incoming Document Types",  load_tab_3],
+            ["Incoming Settings",        load_tab_4]
         ],0)
         
     end
@@ -39,6 +41,14 @@ end
         
         if $kit.params[:add_new_RRO_SETTINGS_STATUS]
             $kit.modify_tag_content("tabs-2", load_tab_2, "update")
+        end
+        
+        if $kit.params[:add_new_RRI_DOCUMENT_TYPES]
+            $kit.modify_tag_content("tabs-3", load_tab_3, "update")
+        end
+                
+        if $kit.params[:add_new_RRI_STATUS]
+            $kit.modify_tag_content("tabs-4", load_tab_4, "update")
         end
         
     end
@@ -202,7 +212,89 @@ end
         
         output << $kit.tools.data_table(
             tables_array,
-            unique_name     = "RRO_SETTINGS_DOC_EXPIRATION",
+            unique_name     = "RRO_SETTINGS_STATUS",
+            table_type      = "default"
+        )   
+        
+        output << $tools.newlabel("bottom")
+        
+        return output
+        
+    end
+    
+    def load_tab_3
+        
+        output = String.new
+        
+        output << $tools.button_new_row(table_name = "RRI_DOCUMENT_TYPES")
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Category",
+                "Name"
+            ]
+            
+        ]
+     
+        pids = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids
+        pids.each{|pid|
+            
+            record = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(pid)
+            
+            row = Array.new
+            
+            row.push(record.fields["document_category"].web.text  )
+            row.push(record.fields["document_name"    ].web.text  )
+            
+            tables_array.push(row)
+            
+        } if pids
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "RRI_DOCUMENT_TYPES",
+            table_type      = "default"
+        )   
+        
+        output << $tools.newlabel("bottom")
+        
+        return output
+        
+    end
+    
+    def load_tab_4(arg = nil)#Batch Request Settings
+        
+        output = String.new
+        
+        output << $tools.button_new_row(table_name = "RRI_STATUS")
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Status Name"
+            ]
+            
+        ]
+     
+        pids = $tables.attach("RRI_STATUS").primary_ids
+        pids.each{|pid|
+            
+            record = $tables.attach("RRI_STATUS").by_primary_id(pid)
+            
+            row = Array.new
+            
+            row.push(record.fields["status"          ].web.text  )
+            
+            tables_array.push(row)
+            
+        } if pids
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "RRI_SETTINGS",
             table_type      = "default"
         )   
         
@@ -320,7 +412,7 @@ end
         tables_array.push(
             
             [
-                record.fields["status_name"     ].web.text,
+                record.fields["status_name"     ].web.text(:validate=>true),
                 record.fields["auto_send"       ].set(0).web.default
             ]
             
@@ -337,7 +429,79 @@ end
         return output
         
     end
-
+    
+    def add_new_record_rri_status()
+        
+        output = String.new
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Status Name"
+            ]
+            
+        ]
+        
+        record = $tables.attach("RRI_STATUS").new_row
+        
+        tables_array.push(
+            
+            [
+                record.fields["status"       ].web.text(:validate=>true)
+            ]
+            
+        )
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "add_new_RRI_STATUS",
+            table_type      = "NewRecord"
+        )
+        
+        output << $tools.newlabel("bottom")
+        
+        return output
+        
+    end
+    
+    def add_new_record_rri_document_types()
+        
+        output = String.new
+        
+        tables_array = [
+            
+            #HEADERS
+            [
+                "Document Category",
+                "Document Name"
+            ]
+            
+        ]
+        
+        record = $tables.attach("RRI_DOCUMENT_TYPES").new_row
+        
+        tables_array.push(
+            
+            [
+                record.fields["document_category"].web.text(:validate=>true),
+                record.fields["document_name"    ].web.text(:validate=>true)
+            ]
+            
+        )
+        
+        output << $kit.tools.data_table(
+            tables_array,
+            unique_name     = "add_new_RRI_DOCUMENT_TYPES",
+            table_type      = "NewRecord"
+        )
+        
+        output << $tools.newlabel("bottom")
+        
+        return output
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_CSV
 end
@@ -347,6 +511,12 @@ end
 def x______________DROP_DOWN_OPTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def rri_document_types_dd()
+        
+        $tables.attach("RRI_DOCUMENT_TYPES").dd_choices("document_name", "primary_id", "ORDER BY document_name")
+        
+    end
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
@@ -375,6 +545,15 @@ end
             padding:    3px 5px !important;
             text-align: center;
         }
+        
+        .RRO_SETTINGS_DOC_EXPIRATION__expiration_interval_number input{ width:50px;}
+        
+        .RRO_SETTINGS_STATUS__status_name input{ width:400px;}
+        
+        .RRI_DOCUMENT_TYPES__document_category{width:200px;}
+        .RRI_DOCUMENT_TYPES__document_name{width:200px;}
+        
+        .RRI_STATUS__status{width:200px;}
         "
         output << "</style>"
         return output
