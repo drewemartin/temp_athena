@@ -141,6 +141,10 @@ end
                 :caption        => false
             )
             
+        else
+            
+            return "There are no Scantrons to display for this student."
+            
         end
         
     end
