@@ -99,9 +99,9 @@ end
             
             #HEADERS
             [
-                "mode"              ,
-                "procedure_type"    ,
-                "description"       
+                "Mode"              ,
+                "Procedure Type"    ,
+                "Description"       
                 
             ]
             
@@ -137,9 +137,9 @@ end
             
             #HEADERS
             [
-                "source"        ,
-                "type"          ,
-                "eligible grades"
+                "Source"        ,
+                "Type"          ,
+                "Eligible Grades"
                 
             ]
             
@@ -775,9 +775,9 @@ end
             
             #HEADERS
             [
-                "source"        ,
-                "type"          ,
-                "eligible grades"   
+                "Source"        ,
+                "Type"          ,
+                "Eligible Grades"   
             ]
             
         ]
@@ -836,10 +836,10 @@ end
             
             #HEADERS
             [
-                "mode"              ,
+                "Mode"              ,
                 #"sources"           ,
-                "description"       ,
-                "procedure_type"
+                "Description"       ,
+                "Procedure Type"
                 
             ]
             

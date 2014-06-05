@@ -911,7 +911,7 @@ end
 
     def expand_documents
         
-        output = "<div style='width:990px;'>"
+        output = "<div style='width:950px;'>"
         
         tables_array = [
             
