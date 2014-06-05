@@ -982,7 +982,7 @@ end
                 {:name=>"Progressing (#{values[2]})"        , :value=>values[2] },
                 {:name=>"Progressing + (#{values[3]})"      , :value=>values[3] },
                 {:name=>"Proficient (#{values[4]})"         , :value=>values[4] },
-                {:name=>"Proficient (#{values[5]})"         , :value=>values[5] },
+                {:name=>"Proficient + (#{values[5]})"       , :value=>values[5] },
                 {:name=>"Distinguished (#{values[6]})"      , :value=>values[6] }
             ]
         end
