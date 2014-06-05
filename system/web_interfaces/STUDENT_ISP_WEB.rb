@@ -228,6 +228,9 @@ end
             div.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_req_billed_monthly   {display: inline-block;}
             input.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_req_billed_monthly {width: 123px;}"
         
+        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__fall_notes    {width: 230px; height: 60px; resize: none;}"
+        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_notes  {width: 230px; height: 60px; resize: none;}"
+        
         output << "</style>"
         return output
         

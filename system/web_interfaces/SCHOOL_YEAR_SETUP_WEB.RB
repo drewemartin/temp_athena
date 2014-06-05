@@ -181,6 +181,7 @@ end
             div.SCHOOL_YEAR_DETAIL__start_date  {margin-bottom: 5px;}
             div.SCHOOL_YEAR_DETAIL__end_date    {margin-bottom: 5px;}
             div.SCHOOL_YEAR_DETAIL__finalized   {margin-bottom: 5px;}
+            div.school_year_content             {margin-bottom: 15px;}
             
         "
         

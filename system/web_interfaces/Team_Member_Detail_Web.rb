@@ -10,7 +10,7 @@ class TEAM_MEMBER_DETAIL_WEB
     
     def page_title
         
-        "Detail Record"
+        "Detailed Record"
         
     end
     
