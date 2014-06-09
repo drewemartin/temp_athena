@@ -378,9 +378,8 @@ end
                 
                 sid            = record_record.fields["student_id"    ].value
                 
-                #row.push($tables.attach("RRO_DOCUMENT_TYPES").field_value("document_name", "WHERE primary_id = '#{record_type_id}'"))
-                row.push(record_record.fields["request_method"   ].web.default() )
-                row.push(record_record.fields["notes"            ].web.default())
+                row.push(record_record.fields["request_method"   ].web.select(:dd_choices=>request_method_dd))
+                row.push(record_record.fields["status"           ].web.select(:dd_choices=>rri_doc_status_dd))
                 row.push(record_record.fields["priority_level"   ].web.default())
                 row.push(record_record.fields["notes"            ].web.default())
                 row.push(record_record.fields["date_completed"   ].web.default())
