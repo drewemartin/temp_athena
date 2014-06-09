@@ -1268,12 +1268,12 @@ end
         
         output << "<caption>#{a[:caption]}</caption>" if a[:caption]
         
-        headers     = a[:table_array][0]
+        headers     = a[:head_section] == :left ? a[:table_array].collect {|ind| ind[0]} : a[:table_array][0]
         
         output << "<thead>\n"
         headers.each{|th|
             output << " <th style='#{a[:embedded_style][:th]}'>#{th}</th>\n"    
-        } if a[:head_section]
+        } if a[:head_section] == true
         output << "</thead>\n"    
         
         output << "<tfoot>\n"
@@ -1284,7 +1284,7 @@ end
         
         output << "<tbody>\n"
         class_row = "even_row"
-        start_at = a[:head_section] ? 1 : 0
+        start_at = a[:head_section]==true ? 1 : 0
         row_num = 0
         a[:table_array][start_at ...a[:table_array].length].each{|trs|
             
@@ -1295,9 +1295,9 @@ end
                 
                 if $tools
                     
-                    case headers[td_index]
+                    case headers[(a[:head_section]==:left ? td_index-1 : td_index)]
                     when "Student ID"
-                        td_value = student_link(td)
+                        td_value = student_link(td, a[:student_link]=="name" ? true : false)
                     when "Team Member ID"
                         td_value = team_member_link(td)
                     else
@@ -1325,6 +1325,7 @@ end
             output << "</tr>\n"
             row_num +=1
         }
+        
         output << "</tbody>\n"
         
         output << "</table>\n"
@@ -1332,18 +1333,19 @@ end
         output << "</div>"
         
         return output
+        
     end
     
     def doc_secure_link(doc_path, text, direct_download=false, title="", text2 = nil)
         return "<a href='/document' style =\"text-decoration:underline; color:#12C;\" onclick=\"return load_secure_doc('#{doc_path}',#{direct_download},false);\" class='doclink'>#{text}</a>#{text2}<br>"
     end
     
-    def student_link(sid)
+    def student_link(sid, to_name = false)
         
         if $base.is_num?(sid)
             
             return $tools.breakaway_button(
-                :button_text        => sid,
+                :button_text        => (to_name ? $students.get(sid).student_id.to_name : sid),
                 :page_name          => "STUDENT_RECORD_WEB",
                 :additional_params  => {:sid=>sid},
                 :class              => nil
