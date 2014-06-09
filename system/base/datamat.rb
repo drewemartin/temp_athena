@@ -487,6 +487,24 @@ end
                 
             end
             
+        elsif self.field_name.match(/student_id/) && !self.value.nil?
+            s = $students.get(self.value)
+            if s
+                case options
+                when :full_name
+                    return s.studentfirstname.value + " " + s.studentlastname.value
+                when :first
+                    return s.studentfirstname.value
+                when :last
+                    return s.studentlastname.value
+                end
+                
+            else
+                
+                return self.value
+                
+            end
+            
         else
             #this operation cannot be done on this field!
             return self.value
