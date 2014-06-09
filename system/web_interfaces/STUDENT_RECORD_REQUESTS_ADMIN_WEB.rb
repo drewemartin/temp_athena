@@ -163,8 +163,8 @@ end
             #HEADERS
             [
                 
-                "expiration_interval_unit"     , 
-                "expiration_interval_number"        
+                "Expiration Interval Unit", 
+                "Expiration Interval Number"        
             ]
             
         ]
@@ -344,19 +344,19 @@ end
         grades.push(["K","1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th"])  
         grades.push(
             [
-                record.fields["grade_k"       ].set(true).web.default(),
-                record.fields["grade_1st"     ].set(true).web.default(),
-                record.fields["grade_2nd"     ].set(true).web.default(),
-                record.fields["grade_3rd"     ].set(true).web.default(),
-                record.fields["grade_4th"     ].set(true).web.default(),
-                record.fields["grade_5th"     ].set(true).web.default(),
-                record.fields["grade_6th"     ].set(true).web.default(),
-                record.fields["grade_7th"     ].set(true).web.default(),
-                record.fields["grade_8th"     ].set(true).web.default(),
-                record.fields["grade_9th"     ].set(true).web.default(),
-                record.fields["grade_10th"    ].set(true).web.default(),
-                record.fields["grade_11th"    ].set(true).web.default(),
-                record.fields["grade_12th"    ].set(true).web.default()
+                record.fields["grade_k"       ].set("1").web.default(),
+                record.fields["grade_1st"     ].set("1").web.default(),
+                record.fields["grade_2nd"     ].set("1").web.default(),
+                record.fields["grade_3rd"     ].set("1").web.default(),
+                record.fields["grade_4th"     ].set("1").web.default(),
+                record.fields["grade_5th"     ].set("1").web.default(),
+                record.fields["grade_6th"     ].set("1").web.default(),
+                record.fields["grade_7th"     ].set("1").web.default(),
+                record.fields["grade_8th"     ].set("1").web.default(),
+                record.fields["grade_9th"     ].set("1").web.default(),
+                record.fields["grade_10th"    ].set("1").web.default(),
+                record.fields["grade_11th"    ].set("1").web.default(),
+                record.fields["grade_12th"    ].set("1").web.default()
             ]
         )
         
@@ -374,14 +374,14 @@ end
         tables_array.push(
             
             [
-                record.fields["document_name"       ].web.text,
-                "#{record.fields["document_name"    ].web.textarea(:validate=>true)}#{record.fields["active"].set(true).web.hidden}",
+                record.fields["document_category"   ].web.text,
+                "#{record.fields["document_name"    ].web.textarea(:validate=>true)}#{record.fields["active"].set("1").web.hidden}",
                 eligible_grades,
-                record.fields["in_state"           ].set(true).web.default(),
-                record.fields["out_of_state"       ].set(true).web.default(),
-                record.fields["general_education"  ].set(true).web.default(),
-                record.fields["special_education"  ].set(true).web.default(),
-                record.fields["home_school"        ].set(true).web.default()
+                record.fields["in_state"           ].set("1").web.default(),
+                record.fields["out_of_state"       ].set("1").web.default(),
+                record.fields["general_education"  ].set("1").web.default(),
+                record.fields["special_education"  ].set("1").web.default(),
+                record.fields["home_school"        ].set("1").web.default()
             ]
             
         )
@@ -543,6 +543,15 @@ end
         output = String.new
         output << "<style>"
         
+        output << "div.RRO_DOCUMENT_TYPES__in_state             {text-align: center;}"
+        output << "div.RRO_DOCUMENT_TYPES__out_of_state         {text-align: center;}"
+        output << "div.RRO_DOCUMENT_TYPES__general_education    {text-align: center;}"
+        output << "div.RRO_DOCUMENT_TYPES__special_education    {text-align: center;}"
+        output << "div.RRO_DOCUMENT_TYPES__home_school          {text-align: center;}"
+        output << "div.RRO_DOCUMENT_TYPES__active               {text-align: center;}"
+        
+        output << "div.RRO_SETTINGS_STATUS__auto_send           {text-align: center;}"
+        
         output << "
         
         .RRO_DOCUMENT_TYPES__document_name  textarea{
@@ -565,6 +574,7 @@ end
         
         .RRI_STATUS__status{width:200px;}
         "
+        
         output << "</style>"
         return output
         
