@@ -127,8 +127,10 @@ end
             
             #HEADERS
             [
-                "Record Type",
+                "Student ID",
+                "Request Method",
                 "Status",
+                "Requested Records",
                 "Priority",
                 "Notes"
             ]
@@ -139,8 +141,10 @@ end
         
         record = $focus_student.rri_requests.new_record
         
-        row.push(record.fields["request_method"  ].web.default())
-        row.push(record.fields["status"          ].web.default())
+        row.push(record.fields["student_id"      ].web.label() + record.fields["student_id"].web.hidden()) 
+        row.push(record.fields["request_method"  ].web.select(:dd_choices=>request_method_dd))
+        row.push(record.fields["status"          ].web.select(:dd_choices=>rri_doc_status_dd))
+        row.push("")
         row.push(record.fields["priority_level"  ].web.default())
         row.push(record.fields["notes"           ].web.default())
         
@@ -164,8 +168,27 @@ end
     end
     
     def status_dd
-        
         return $tables.attach("RRO_SETTINGS_STATUS").dd_choices("status_name", "primary_id")
+    end
+    
+    def rri_doc_status_dd
+        
+        return $tables.attach("RRI_STATUS").dd_choices("status", "primary_id")
+        
+    end
+    
+    def request_method_dd
+        
+        [
+            {:name=>"End Of Year Request",                   :value=>"End Of Year Request"                  },
+            {:name=>"Parent Email",                          :value=>"Parent Email"                         },
+            {:name=>"Parent Written Request",                :value=>"Parent Written Request"               },
+            {:name=>"School or District Email",              :value=>"School or District Email"             },
+            {:name=>"School or District Written Request",    :value=>"School or District Written Request"   },
+            {:name=>"Social Security Determination Request", :value=>"Social Security Determination Request"},
+            {:name=>"Social Service Email",                  :value=>"Social Service Email"                 },
+            {:name=>"Social Service Written Request",        :value=>"Social Service Written Request"       }
+        ]
         
     end
     
@@ -266,11 +289,11 @@ end
             
             #HEADERS
             [
-                "Record Type",
+                "Request Method",
                 "Status",
-                "Received Date",
+                "Priority",
                 "Notes",
-                "Created Date"
+                "Date Completed"
             ]
             
         ]
@@ -287,18 +310,17 @@ end
                 
                 sid            = record_record.fields["student_id"    ].value
                 
-                #row.push($tables.attach("RRO_DOCUMENT_TYPES").field_value("document_name", "WHERE primary_id = '#{record_type_id}'"))
-                row.push(record_record.fields["request_method"   ].web.defualt() )
-                row.push(record_record.fields["notes"            ].web.default())
+                row.push(record_record.fields["request_method"   ].web.select(:dd_choices=>request_method_dd))
+                row.push(record_record.fields["status"           ].web.select(:dd_choices=>rri_doc_status_dd))
                 row.push(record_record.fields["priority_level"   ].web.default())
-                row.push(record_record.fields["status"           ].web.default())
+                row.push(record_record.fields["notes"            ].web.default())
                 row.push(record_record.fields["date_completed"   ].web.default())
                 
                 tables_array.push(row)
                 
             }
             
-            output << $kit.tools.data_table(tables_array, "record_students")
+            output << $kit.tools.data_table(tables_array, "incoming_records")
             
         else
             
