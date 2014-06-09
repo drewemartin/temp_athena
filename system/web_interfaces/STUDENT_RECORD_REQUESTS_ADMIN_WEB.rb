@@ -95,7 +95,11 @@ end
             
             row = Array.new
             
-            row.push(record.fields["document_category"  ].web.text      )
+            row.push(
+                record.fields["document_category"  ].web.select(
+                    :dd_choices=>$dd.from_array(["Transcripts","Nursing","General"])
+                )
+            )
             row.push(record.fields["document_name"      ].web.textarea  )
             
             grades = Array.new
@@ -245,7 +249,10 @@ end
             
             row = Array.new
             
-            row.push(record.fields["document_category"].web.text  )
+            row.push(record.fields["document_category"].web.select(
+                    :dd_choices=>$dd.from_array(["Transcripts","Nursing","General"])
+                )
+            )
             row.push(record.fields["document_name"    ].web.text  )
             
             tables_array.push(row)
@@ -484,7 +491,10 @@ end
         tables_array.push(
             
             [
-                record.fields["document_category"].web.text(:validate=>true),
+                record.fields["document_category"].web.select(
+                    :dd_choices => $dd.from_array(["Transcripts","Nursing","Registrar"]),
+                    :validate   => true
+                ),
                 record.fields["document_name"    ].web.text(:validate=>true)
             ]
             

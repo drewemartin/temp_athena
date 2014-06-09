@@ -21,6 +21,88 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def after_change_field_status(obj)
+        
+        ready_ids = $tables.attach("RRI_STATUS").primary_ids("WHERE status REGEXP 'ready'")
+        if ready_ids.include?(obj.value)
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        end
+        
+    end
+
+    def after_insert(obj)
+        
+        record = by_primary_id(obj.primary_id)
+        
+        if $tables.attach("RRI_DOCUMENT_TYPES").primary_ids(
+            
+            "WHERE primary_id     = '#{record.fields["record_type_id"].value}'
+            AND document_category = 'Transcripts'"
+         
+        )
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        elsif $tables.attach("RRI_DOCUMENT_TYPES").primary_ids(
+            
+            "WHERE primary_id       = '#{record.fields["record_type_id"].value}'
+            AND document_category   = 'Medical Records'"
+            
+        )
+            
+            subject                 = ""
+            content                 = ""
+            
+            recipient               = "jhalverson@agora.org"
+            additional_recipients   = ["esaddler@agora.org"]
+            
+            user_email = $user.class == String ? $user : $user.email_address_k12.value
+            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+                
+                $team.find(:email_address=>recipient).send_email(
+                    :subject                => subject,
+                    :content                => content,
+                    :additional_recipients  => additional_recipients
+                )
+                
+            end
+            
+        end
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end

@@ -72,6 +72,74 @@ end
         
     end
 
+    def working_list
+        
+        output = Array.new
+        
+        open_record_pids        = nil
+        nursing_departments     = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'nurse'")
+        transcripts_department  = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'transcsript'")
+        registrar_department    = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'registrar'")
+        
+        if nursing_departments && nursing_departments.include?($team_member.department_id)
+            
+            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status NOT IN(
+                    SELECT primary_id
+                    FROM rri_status
+                    WHERE status REGEXP 'complete'
+                )
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Nursing'
+                )"
+            )
+            
+        elsif transcripts_department && transcripts_department.include?($team_member.department_id)
+            
+            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status NOT IN(
+                    SELECT primary_id
+                    FROM rri_status
+                    WHERE status REGEXP 'complete'
+                )
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Registrar'
+                )"
+            )
+            
+        elsif registrar_department && registrar_department.include?($team_member.department_id)
+            
+            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status NOT IN(
+                    SELECT primary_id
+                    FROM rri_status
+                    WHERE status REGEXP 'complete'
+                )"
+            )
+            
+        elsif $team_member.preferred_email.value == "jhalverson@agora.org"
+            
+            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids()
+            
+        end
+        
+        if open_record_pids
+            
+            output.push(
+                :name       => "MyRecordRequests (#{open_record_pids ? open_record_pids.length : 0})",
+                :content    => record_requests_working_list(open_record_pids)
+            )
+            
+        end
+        
+        return (output.empty? ? nil : output)
+        
+    end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_PDF
 end
@@ -370,6 +438,158 @@ end
         output << "</div>"
         
         return output
+        
+    end
+    
+    def record_requests_working_list(open_record_pids)
+        
+        if open_record_pids
+            
+            output      = String.new
+            
+            requests    = Hash.new
+            
+            open_record_pids.each{|pid|
+                
+                record      = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").by_primary_id(pid)
+                request_id  = record.fields["rri_request_id"].value.to_sym
+                
+                requests[request_id ] = [
+                    
+                    #HEADERS
+                    [
+                        "Document"      ,
+                        "Status"        ,
+                        "Date Completed"
+                    ]
+                    
+                ] if !requests.has_key?(request_id)
+                
+                requests[request_id].push(
+                    
+                    [
+                     
+                        record.fields["record_type_id"].set(
+                            
+                            $tables.attach("RRI_DOCUMENT_TYPES").field_value(
+                                "document_name",
+                                "WHERE primary_id = '#{record.fields["rri_request_id"].value}'"
+                            )
+                            
+                        ).web.label,
+                        
+                        record.fields["status"].web.select(
+                            
+                            :dd_choices => $tables.attach("RRI_STATUS").dd_choices(
+                                "status"      ,
+                                "primary_id"  ,
+                                nil
+                            )
+                            
+                        ),
+                        
+                        record.fields["date_completed"].web.default
+                        
+                    ]
+                    
+                )
+                
+                
+            }
+            
+            tables_array = [
+                
+                #HEADERS #other requested headres are student name, active status
+                [
+                 
+                    "High Priority?"            ,
+                    "Request Details"           ,
+                    #"Student ID"                ,
+                    #"Request Method"            ,
+                    #"Status"                    ,
+                    #"Notes"                     ,
+                    #"Completed Date"            ,
+                    "Print Labels?"             ,
+                    "Recipients"                ,
+                    "Requested Documents"
+                   
+                ]
+                
+            ]
+            
+            requests.keys.dup.each{|request_id|
+                
+                request_rec = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(request_id)
+                row         = Array.new
+                
+                row.push(request_rec.fields["priority_level"].web.default   )
+                
+                row.push(
+                    
+                    $tools.table(
+                        :table_array    => [
+                            
+                            ["Student ID"       , request_rec.fields["student_id"    ].value            ],
+                            ["Request Method:"  , request_rec.fields["request_method"].web.default      ],
+                            ["Status"           , request_rec.fields["status"        ].web.default      ],
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
+                            ["Date Completed"   , request_rec.fields["date_completed"].web.default      ]
+                        ],
+                        :student_link   => "name",
+                        :unique_name    => "request_details",
+                        :footers        => false,
+                        :head_section   => :left,
+                        :title          => false,
+                        :legend         => false,
+                        :caption        => false#,
+                        #:embedded_style => {
+                        #    :table  => "width:100%;",
+                        #    :th     => nil,
+                        #    :tr     => nil,
+                        #    :tr_alt => nil,
+                        #    :td     => nil
+                        #}
+                    )
+                    
+                )
+                
+                #row.push(request_rec.fields["student_id"    ].value         )
+                #row.push(request_rec.fields["request_method"].web.default   )
+                #row.push(request_rec.fields["status"        ].web.default   )
+                #row.push(request_rec.fields["notes"         ].web.default   )
+                #row.push(request_rec.fields["date_completed"].web.default   )
+              
+                row.push("This will house the checkboxes"                   )
+                row.push("Recipients"                                       )
+                
+                row.push(
+                    
+                    $tools.table(
+                        :table_array    => requests[request_id],
+                        :unique_name    => "requested_docs",
+                        :footers        => false,
+                        :head_section   => true,
+                        :title          => false,
+                        :legend         => false,
+                        :caption        => false#,
+                        #:embedded_style => {
+                        #    :table  => "width:100%;",
+                        #    :th     => nil,
+                        #    :tr     => nil,
+                        #    :tr_alt => nil,
+                        #    :td     => nil
+                        #}
+                    )
+                    
+                )
+                
+                tables_array.push(row)
+                
+            }
+            
+            return $kit.tools.data_table(tables_array, "my_record_requests")
+            
+        end
         
     end
     
