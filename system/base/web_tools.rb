@@ -366,7 +366,7 @@ end
                 });
             });</eval_script>"
             
-        elsif tab_id
+        elsif tab_id && !$kit.params[:new_breakaway] && !$kit.load?
             
             tabs_html << "<eval_script>
                 $(function(){
