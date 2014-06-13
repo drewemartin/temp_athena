@@ -21,6 +21,12 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def before_change_field_completed_date(obj)
+        #If the users attempts to add a completed date and the associated documents are not actually completed then
+        #we should send them an error and not allow the change to take place
+        #make sure to send a modification to re-write the field so they no longer see the completion date they attempted to send.
+        
+    end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
 end
