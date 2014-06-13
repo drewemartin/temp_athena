@@ -28,11 +28,50 @@ end
     
     def response
         
-        if $kit.add_new?
+        if $kit.params[:add_rii_document]
             
-            $kit.student_record.content
+            request_id = $kit.params[:add_rii_document].split("__").first
+            doc_id     = $kit.params[:add_rii_document].split("__").last
+            
+            new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
+            
+            new_row.fields["rri_request_id"].value = request_id
+            new_row.fields["record_type_id"].value = doc_id
+            
+            new_row.save
+            
+            $kit.modify_tag_content("requested_docs_#{request_id}_container", requested_records_table(request_id, true), "update")
             
         end
+        
+        if $kit.params[:add_new_STUDENT_RRI_REQUESTS]
+            
+            $tables.attach("RRI_DOCUMENT_TYPES").primary_ids.each do |pid|
+                
+                if $kit.params["#{pid}__rri_document_type".to_sym] == "1"
+                    
+                    new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
+                    
+                    new_row.fields["rri_request_id"].value = $kit.rows.first[1].fields["primary_id"].value
+                    new_row.fields["record_type_id"].value = pid
+                    
+                    new_row.save
+                    
+                end
+                
+            end
+            
+            $kit.modify_tag_content("tabs-2", incoming_records, "update")
+            
+            return false
+            
+        end
+        
+        #if $kit.add_new?
+        #    
+        #    $kit.student_record.content
+        #    
+        #end
         
     end
     
@@ -195,30 +234,44 @@ end
             
             #HEADERS
             [
-                "Student ID",
+                "Priority",
                 "Request Method",
                 "Status",
                 "Requested Records",
-                "Priority",
                 "Notes"
             ]
             
         ]
         
+        doc_pids = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
+        
+        doc_checkboxes = String.new
+        
+        doc_pids.each do |doc_pid|
+            
+            record = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
+            
+            pid = record.fields["primary_id"].value
+            
+            new_field = $field.new({"type" => "text", "field" => "#{pid}__rri_document_type"})
+            
+            doc_checkboxes << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + record.fields["primary_id"].value, :add_class=>"no_save rri_document_type"})
+            
+        end if doc_pids
+        
         row = Array.new
         
         record = $focus_student.rri_requests.new_record
         
-        row.push(record.fields["student_id"      ].web.label() + record.fields["student_id"].web.hidden()) 
+        row.push(record.fields["priority_level"  ].web.default())
         row.push(record.fields["request_method"  ].web.select(:dd_choices=>request_method_dd))
         row.push(record.fields["status"          ].web.select(:dd_choices=>rri_doc_status_dd))
-        row.push("")
-        row.push(record.fields["priority_level"  ].web.default())
+        row.push(doc_checkboxes)
         row.push(record.fields["notes"           ].web.default())
         
         tables_array.push(row)
       
-        return $kit.tools.data_table(tables_array, "new_record", type = "NewRecord")
+        return record.fields["student_id"].web.hidden() + $kit.tools.data_table(tables_array, "new_record", type = "NewRecord")
         
     end
     
@@ -357,9 +410,10 @@ end
             
             #HEADERS
             [
+                "Priority",
+                "Requested Records",
                 "Request Method",
                 "Status",
-                "Priority",
                 "Notes",
                 "Date Completed"
             ]
@@ -372,15 +426,25 @@ end
             
             record_pids.each{|pid|
                 
-                row            = Array.new
+                row           = Array.new
                 
-                record_record  = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(pid)
+                record_record = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(pid)
                 
-                sid            = record_record.fields["student_id"    ].value
+                sid           = record_record.fields["student_id"].value
                 
+                row.push(record_record.fields["priority_level"   ].web.default())
+                
+                if requests = requested_records_table(pid)
+                    
+                    row.push(requested_records_table(pid))
+                    
+                else
+                    
+                    row.push("")
+                    
+                end
                 row.push(record_record.fields["request_method"   ].web.select(:dd_choices=>request_method_dd))
                 row.push(record_record.fields["status"           ].web.select(:dd_choices=>rri_doc_status_dd))
-                row.push(record_record.fields["priority_level"   ].web.default())
                 row.push(record_record.fields["notes"            ].web.default())
                 row.push(record_record.fields["date_completed"   ].web.default())
                 
@@ -592,6 +656,84 @@ end
         
     end
     
+    def requested_records_table(pid, update=false)
+        
+        requests = [
+            
+            #HEADERS
+            [
+                "Document"      ,
+                "Status"        ,
+                "Date Completed"
+            ]
+            
+        ]
+        
+        all_doc_pids = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids
+        
+        all_doc_pids.each do |doc_pid|
+            
+            requested_document = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").record("WHERE rri_request_id = '#{pid}' AND record_type_id = '#{doc_pid}'")
+            
+            if requested_document
+                
+                requests.push(
+                    
+                    [
+                        
+                        requested_document.fields["record_type_id"].set(
+                            
+                            $tables.attach("RRI_DOCUMENT_TYPES").field_value(
+                                "document_name",
+                                "WHERE primary_id = '#{requested_document.fields["record_type_id"].value}'"
+                            )
+                            
+                        ).web.label,
+                        
+                        requested_document.fields["status"].web.select(
+                            
+                            :dd_choices => $tables.attach("RRI_STATUS").dd_choices(
+                                "status"      ,
+                                "primary_id"  ,
+                                nil
+                            )
+                            
+                        ),
+                        
+                        requested_document.fields["date_completed"].web.default
+                        
+                    ]
+                    
+                )
+                
+            else
+                
+                button_name = "Add " + $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid).fields["document_name"].value
+                
+                button = "
+                    <button class='add_rii_doc_button' id='add_rii_doc_button_#{pid}' onclick='send\(\"add_rii_document_#{pid}_#{doc_pid}\"\)\;setPreSpinner(\"requested_docs_#{pid}_container\");'>#{button_name}</button>
+                    <input id='add_rii_document_#{pid}_#{doc_pid}' type='hidden' value='#{pid}__#{doc_pid}' name='add_rii_document'
+                "
+                
+                requests.push([button,nil,nil])
+                
+            end
+            
+        end
+        
+        return $tools.table(
+            :table_array    => requests,
+            :unique_name    => "requested_docs_#{pid}",
+            :footers        => false,
+            :head_section   => true,
+            :title          => false,
+            :legend         => false,
+            :caption        => false,
+            :no_container   => update
+        )
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
@@ -603,7 +745,11 @@ end
         output << "<style>"
         output << "
             
-            #new_row_button_STUDENT_RRO_REQUIRED_DOCUMENTS                   { float:right; font-size: xx-small !important; margin-bottom:10px;}
+            div.rri_document_type       { width:150px; height:20px;}
+            div.rri_document_type label { float:left; display:inline-block; min-width:100px; text-align:left; margin-top:2px;}
+            div.rri_document_type input { float:right;}
+            
+            div.STUDENT_RRI_REQUESTS__notes textarea{resize:none; overflow-y:scroll; width:250px; height:100px;}
             
         "
         
