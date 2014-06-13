@@ -24,7 +24,7 @@ end
     def after_change_field_status(obj)
         
         ready_ids = $tables.attach("RRI_STATUS").primary_ids("WHERE status REGEXP 'ready'")
-        if ready_ids.include?(obj.value)
+        if ready_ids && ready_ids.include?(obj.value)
             
             subject                 = ""
             content                 = ""
