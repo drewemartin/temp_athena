@@ -76,19 +76,28 @@ end
         
         output = Array.new
         
-        open_record_pids        = nil
         nursing_departments     = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'nurse'")
         transcripts_department  = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'transcsript'")
         registrar_department    = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'registrar'")
         
         if nursing_departments && nursing_departments.include?($team_member.department_id)
             
-            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+            new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status IS NULL
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Nursing'
+                )"
+            )
+            
+            pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status NOT IN(
                     SELECT primary_id
                     FROM rri_status
                     WHERE status REGEXP 'complete'
                 )
+                AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -98,12 +107,22 @@ end
             
         elsif transcripts_department && transcripts_department.include?($team_member.department_id)
             
-            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+            new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status IS NULL
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Registrar'
+                )"
+            )
+            
+            pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status NOT IN(
                     SELECT primary_id
                     FROM rri_status
                     WHERE status REGEXP 'complete'
                 )
+                AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -113,30 +132,53 @@ end
             
         elsif registrar_department && registrar_department.include?($team_member.department_id)
             
-            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+            new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status IS NULL"
+            )
+            
+            pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status NOT IN(
                     SELECT primary_id
                     FROM rri_status
                     WHERE status REGEXP 'complete'
-                )"
+                )
+                AND status IS NOT NULL"
             )
             
         elsif $team_member.preferred_email.value == "jhalverson@agora.org"
             
-            open_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids()
+            new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status IS NULL"
+            )
             
-        end
-        
-        if open_record_pids
-            
-            output.push(
-                :name       => "MyRecordRequests (#{open_record_pids ? open_record_pids.length : 0})",
-                :content    => record_requests_working_list(open_record_pids)
+            pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status NOT IN(
+                    SELECT primary_id
+                    FROM rri_status
+                    WHERE status REGEXP 'complete'
+                )
+                AND status IS NOT NULL"
             )
             
         end
         
-        return (output.empty? ? nil : output)
+        tabulated_list = $kit.tools.tabs(
+            
+            tabs            = [
+                
+                ["New (#{       new_record_pids     ? new_record_pids.length        : '0'   })",    new_record_pids     ? record_requests_working_list(new_record_pids      ) : "There are no 'New' record requests at this time."        ],
+                ["Pending (#{   pending_record_pids ? pending_record_pids.length    : '0'   })",    pending_record_pids ? record_requests_working_list(pending_record_pids  ) : "There are no 'Pending' record requests at this time."    ]
+                
+            ],
+            selected_tab    = 0,
+            tab_id          = "rri",
+            search          = false
+        )
+        
+        output.push(
+            :name       => "MyRecordRequests",
+            :content    => tabulated_list
+        )
         
     end
 
@@ -481,11 +523,6 @@ end
                  
                     "High Priority?"            ,
                     "Request Details"           ,
-                    #"Student ID"                ,
-                    #"Request Method"            ,
-                    #"Status"                    ,
-                    #"Notes"                     ,
-                    #"Completed Date"            ,
                     "Print Labels?"             ,
                     "Recipients"                ,
                     "Requested Documents"
@@ -494,7 +531,7 @@ end
                 
             ]
             
-            requests.keys.dup.each{|request_id|
+            requests.keys.each{|request_id|
                 
                 request_rec = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(request_id)
                 row         = Array.new
@@ -507,10 +544,11 @@ end
                         :table_array    => [
                             
                             ["Student ID"       , request_rec.fields["student_id"    ].value            ],
-                            ["Request Method:"  , request_rec.fields["request_method"].web.default      ],
-                            ["Status"           , request_rec.fields["status"        ].web.default      ],
-                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
-                            ["Date Completed"   , request_rec.fields["date_completed"].web.default      ]
+                            ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
+                            ["Status"           , request_rec.fields["status"        ].web.text         ],
+                            ["Date Completed"   , request_rec.fields["date_completed"].web.default      ],
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ]
+                            
                         ],
                         :student_link   => "name",
                         :unique_name    => "request_details",
@@ -529,12 +567,6 @@ end
                     )
                     
                 )
-                
-                #row.push(request_rec.fields["student_id"    ].value         )
-                #row.push(request_rec.fields["request_method"].web.default   )
-                #row.push(request_rec.fields["status"        ].web.default   )
-                #row.push(request_rec.fields["notes"         ].web.default   )
-                #row.push(request_rec.fields["date_completed"].web.default   )
               
                 row.push("This will house the checkboxes"                   )
                 row.push("Recipients"                                       )
