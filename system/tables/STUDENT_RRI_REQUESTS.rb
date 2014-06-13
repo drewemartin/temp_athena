@@ -60,7 +60,7 @@ end
         structure_hash["fields"] = Hash.new
             
             structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"student_id"        } if field_order.push("student_id"      )
-            structure_hash["fields"]["request_method"   ] = {"data_type"=>"text", "file_field"=>"request_type"      } if field_order.push("request_method"  )
+            structure_hash["fields"]["request_method"   ] = {"data_type"=>"text", "file_field"=>"request_method"    } if field_order.push("request_method"  )
             structure_hash["fields"]["notes"            ] = {"data_type"=>"text", "file_field"=>"notes"             } if field_order.push("notes"           )
             structure_hash["fields"]["priority_level"   ] = {"data_type"=>"bool", "file_field"=>"priority_level"    } if field_order.push("priority_level"  )
             structure_hash["fields"]["status"           ] = {"data_type"=>"text", "file_field"=>"status"            } if field_order.push("status"          )

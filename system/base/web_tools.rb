@@ -1249,6 +1249,7 @@ end
         #:title          => false,
         #:legend         => false,
         #:caption        => false,
+        #:no_container   => false,
         #:embedded_style => {
         #    :table  => "width:100%;",
         #    :th     => nil,
@@ -1261,7 +1262,7 @@ end
         
         output  = String.new
         
-        output << "<div id='#{a[:unique_name]}_container' class='#{a[:unique_name]}_container'>\n"
+        output << "<div id='#{a[:unique_name]}_container' class='#{a[:unique_name]}_container'>\n" if !a[:no_container]
         
         #BUILD TABLE
         output << "<table id='#{a[:unique_name]}' style='#{a[:embedded_style][:table]}'>\n"
@@ -1330,7 +1331,7 @@ end
         
         output << "</table>\n"
         
-        output << "</div>"
+        output << "</div>" if !a[:no_container]
         
         return output
         

@@ -43,7 +43,7 @@ end
                 
             end
             
-        end
+        end if ready_ids
         
     end
 
