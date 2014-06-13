@@ -166,6 +166,8 @@ end
 
     def create_new_attendance_records(eval_date = nil)
         
+        over_ride_mode = $tables.attach("ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE").field_value("override_mode", "WHERE '#{eval_date}' BETWEEN start_date AND end_date")
+        
         eval_date = $base.created_date ? DateTime.parse($base.created_date).strftime("%Y-%m-%d") : ($instance_DateTime - 1).strftime("%Y-%m-%d") if !eval_date
         
         if $field.is_schoolday?(eval_date)
@@ -206,7 +208,8 @@ end
                             record.save
                         end
                         
-                        mode            = student.attendance_mode.attendance_mode.value
+                        overall_mode    = student.attendance_mode.attendance_mode.value
+                        mode            = (over_ride_mode ? (overall_mode.match(/exempt/i) ? overall_mode : over_ride_mode) : overall_mode)
                         procedure_type  = $tables.attach("ATTENDANCE_MODES").field_value("procedure_type", "WHERE mode = '#{mode}'")
                         code            = procedure_type.match(/Manual/) ? (procedure_type.match(/(default p)/) ? "p" : "u") : "u"
                         

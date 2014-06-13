@@ -46,6 +46,10 @@ class ATTENDANCE_ADMIN_WEB
             
             $kit.modify_tag_content($kit.params[:refresh], process_queue_tab, type="update")
             
+        elsif $kit.params[:add_new_ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE]
+            
+            $kit.modify_tag_content("dataTableDefaultattendance_mode_override_wrapper", mode_override_output, "update")
+            
         else
             
             @upload_type = $kit.params[:upload_type      ] != "" ? $kit.params[:upload_type      ] : false
@@ -91,39 +95,21 @@ end
   
     def attendance_mode
         
-        output = String.new
+        new_mode_button     = $tools.button_new_row(table_name = "ATTENDANCE_MODES")
+        new_override_button = $tools.button_new_row(table_name = "ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE")
         
-        output << $tools.button_new_row(table_name = "ATTENDANCE_MODES")
-        
-        table_array = [
+        $kit.tools.tabs(
             
-            #HEADERS
-            [
-                "Mode"              ,
-                "Procedure Type"    ,
-                "Description"       
+            tabs            = [
                 
-            ]
-            
-        ]
-        
-        pids = $tables.attach("ATTENDANCE_MODES").primary_ids
-        pids.each{|pid|
-            
-            row = Array.new
-            
-            record = $tables.attach("ATTENDANCE_MODES").by_primary_id(pid) 
-            row.push(record.fields["mode"               ].web.label())
-            row.push(record.fields["procedure_type"     ].web.label)#select(:dd_choices=>procedure_type_dd))
-            row.push(record.fields["description"        ].web.default())
-            
-            table_array.push(row)
-            
-        } if pids
-        
-        output << $base.web_tools.data_table(table_array, "attendance_modes")
-        
-        return output
+                ["Modes",               "#{new_mode_button}#{mode_output}"              ],
+                ["Override Modes",      "#{new_override_button}#{mode_override_output}" ]
+                
+            ],
+            selected_tab    = 0,
+            tab_id          = "rri",
+            search          = false
+        )
         
     end
     
@@ -316,6 +302,84 @@ end
         
     end
 
+    def mode_output
+        
+        mode_output = String.new
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "Mode"              ,
+                "Procedure Type"    ,
+                "Description"       
+                
+            ]
+            
+        ]
+        
+        pids = $tables.attach("ATTENDANCE_MODES").primary_ids
+        pids.each{|pid|
+            
+            row = Array.new
+            
+            record = $tables.attach("ATTENDANCE_MODES").by_primary_id(pid) 
+            row.push(record.fields["mode"               ].web.label())
+            row.push(record.fields["procedure_type"     ].web.label)#select(:dd_choices=>procedure_type_dd))
+            row.push(record.fields["description"        ].web.default())
+            
+            table_array.push(row)
+            
+        } if pids
+        
+        mode_output << $base.web_tools.data_table(table_array, "attendance_modes")
+        
+    end
+    
+    def mode_override_output
+        
+        mode_override_output = String.new
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "Start Date"    ,
+                "End Date"      ,
+                "Override Mode"       
+                
+            ]
+            
+        ]
+        
+        pids = $tables.attach("ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE").primary_ids
+        pids.each{|pid|
+            
+            row = Array.new
+            
+            record = $tables.attach("ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE").by_primary_id(pid) 
+            row.push(record.fields["start_date"     ].web.default)
+            row.push(record.fields["end_date"       ].web.default)
+            row.push(
+                record.fields["override_mode"  ].web.select(
+                    :dd_choices=> $tables.attach("ATTENDANCE_MODES").dd_choices(
+                        name_field      = "mode",
+                        value_field     = "mode",
+                        clause_string   = nil
+                    )
+                )
+            )
+            
+            table_array.push(row)
+            
+        } if pids
+        
+        mode_override_output << $base.web_tools.data_table(table_array, "attendance_mode_override")
+        
+        return mode_override_output
+        
+    end
+    
     def open_records_tab(init=false, start_date = nil, end_date = nil)
         
         ########################################################################
@@ -819,6 +883,47 @@ end
         )
         
         row.push(grades_included)
+        
+        table_array.push(row) 
+        
+        output << $kit.tools.data_table(table_array, "ATTENDANCE_MODES", type = "NewRecord")
+        
+        return output
+        
+    end
+
+    def add_new_record_attendance_settings_override_daily_mode
+        
+        output = String.new
+        
+        table_array = [
+            
+            #HEADERS
+            [
+                "Start Date"              ,
+                "End Date"       ,
+                "Override Mode"
+                
+            ]
+            
+        ]
+      
+        record = $tables.attach("ATTENDANCE_SETTINGS_OVERRIDE_DAILY_MODE").new_row
+        
+        row = Array.new
+        row.push(record.fields["start_date"     ].web.default)
+        row.push(record.fields["end_date"       ].web.default)
+        row.push(
+            
+            record.fields["override_mode"  ].web.select(
+                :dd_choices=> $tables.attach("ATTENDANCE_MODES").dd_choices(
+                    name_field      = "mode",
+                    value_field     = "mode",
+                    clause_string   = nil
+                )
+            )
+            
+        )
         
         table_array.push(row) 
         
