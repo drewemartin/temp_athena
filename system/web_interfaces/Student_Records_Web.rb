@@ -266,10 +266,9 @@ end
             
             #HEADERS
             [
-                "Priority"          ,
-                "Date Requested"    ,
-                "Request Method"    ,
-                "Requested Records" ,
+                "Priority",
+                "Request Method",
+                "Requested Records",
                 "Notes"
             ]
             
@@ -444,8 +443,7 @@ end
             [
                 "Priority",
                 "Requested Records",
-                "Request Method",
-                "Notes"
+                "Request Details"
             ]
             
         ]
@@ -474,8 +472,12 @@ end
                     
                 end
                 
-                row.push(record_record.fields["request_method"   ].web.select(:dd_choices=>request_method_dd))
-                row.push(record_record.fields["notes"            ].web.default())
+                row.push(
+                    
+                    record_record.fields["request_method"   ].web.select( :label_option=>"Request Method", :dd_choices=>request_method_dd)+
+                    record_record.fields["notes"            ].web.default(:label_option=>"Notes")
+                    
+                )
                 
                 tables_array.push(row)
                 
