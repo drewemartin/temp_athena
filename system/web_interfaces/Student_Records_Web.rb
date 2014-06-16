@@ -6,6 +6,8 @@ class STUDENT_RECORDS_WEB
     #---------------------------------------------------------------------------
     def initialize()
         
+        @my_record_requests = 0
+        
     end
     #---------------------------------------------------------------------------
     
@@ -123,6 +125,7 @@ end
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
+                AND date_completed IS NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -131,11 +134,7 @@ end
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
@@ -148,6 +147,7 @@ end
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
+                AND date_completed IS NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -156,11 +156,7 @@ end
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
@@ -172,30 +168,24 @@ end
         elsif registrar_department && registrar_department.include?($team_member.department_id)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status IS NULL"
+                "WHERE status IS NULL
+                AND date_completed IS NULL"
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL"
             )
             
         elsif $team_member.preferred_email.value == "jhalverson@agora.org"
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status IS NULL"
+                "WHERE status IS NULL
+                AND date_completed IS NULL"
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL"
             )
             
@@ -306,6 +296,7 @@ end
         record = $focus_student.rri_requests.new_record
         
         row.push(record.fields["priority_level"  ].web.default())
+        row.push(record.fields["requested_date"  ].set($idatetime).web.default())
         row.push(record.fields["request_method"  ].web.select(:dd_choices=>request_method_dd))
         row.push(doc_checkboxes)
         row.push(record.fields["notes"           ].web.default())
@@ -561,7 +552,8 @@ end
                     [
                         "Document"      ,
                         "Status"        ,
-                        "Date Completed"
+                        "Date Completed",
+                        "Notes"
                     ]
                     
                 ] if !requests.has_key?(request_id)
@@ -574,7 +566,7 @@ end
                             
                             $tables.attach("RRI_DOCUMENT_TYPES").field_value(
                                 "document_name",
-                                "WHERE primary_id = '#{record.fields["rri_request_id"].value}'"
+                                "WHERE primary_id = '#{record.fields["record_type_id"].value}'"
                             )
                             
                         ).web.label,
@@ -589,7 +581,8 @@ end
                             
                         ),
                         
-                        record.fields["date_completed"].web.default
+                        record.fields["date_completed"  ].web.default,
+                        record.fields["notes"           ].web.default
                         
                     ]
                     
@@ -605,8 +598,6 @@ end
                  
                     "High Priority?"            ,
                     "Request Details"           ,
-                    "Print Labels?"             ,
-                    "Recipients"                ,
                     "Requested Documents"
                    
                 ]
@@ -618,7 +609,12 @@ end
                 request_rec = $tables.attach("STUDENT_RRI_REQUESTS").by_primary_id(request_id)
                 row         = Array.new
                 
-                row.push(request_rec.fields["priority_level"].web.default   )
+                row.push(
+                    
+                    request_rec.fields["requested_date"    ].web.default(:label_option=>"Requested Date") +
+                    request_rec.fields["priority_level"    ].web.default(:label_option=>"Priority?"     )
+                    
+                )
                 
                 row.push(
                     
@@ -627,9 +623,9 @@ end
                             
                             ["Student ID"       , request_rec.fields["student_id"    ].value            ],
                             ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
-                            ["Status"           , request_rec.fields["status"        ].web.text         ],
-                            ["Date Completed"   , request_rec.fields["date_completed"].web.default      ],
-                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ]
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
+                            ["Print Label?"     , "checkbox"                                            ],
+                            ["Recipients"       , "recipients"                                          ]
                             
                         ],
                         :student_link   => "name",
@@ -649,9 +645,6 @@ end
                     )
                     
                 )
-              
-                row.push("This will house the checkboxes"                   )
-                row.push("Recipients"                                       )
                 
                 row.push(
                     
@@ -678,7 +671,9 @@ end
                 
             }
             
-            return $kit.tools.data_table(tables_array, "my_record_requests")
+            @my_record_requests = @my_record_requests+=1
+            
+            return $kit.tools.data_table(tables_array, "my_record_requests_#{@my_record_requests}")
             
         end
         
