@@ -228,6 +228,7 @@ end
             #"STUDENT_ATTENDANCE_AP_WEB",
             "TEST_EVENT_SITE_WEB",
             #"WITHDRAW_REQUESTS_WEB",
+            "STUDENT_RECORDS_WEB"
             
         ]
         #Dir["#{$paths.web_interfaces_path}*.rb"].each {|file|
