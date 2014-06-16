@@ -86,7 +86,7 @@ end
     def is_schoolday?
         if datatype == "date" || datatype == "datetime"
             this_date = to_db.split(" ")[0]
-            if s = $school.school_days
+            if $school.school_days
                 return $school.school_days.include?(this_date) ? true : false
             else
                 return false
