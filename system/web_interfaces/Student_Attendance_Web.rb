@@ -236,7 +236,7 @@ end
         weeks_array = attendance_weeks.sort_by{|number, date| number.to_i}
         if @this_sweek
             this_week = weeks_array.delete_at(@this_sweek)
-            weeks_array.insert(0, this_week)
+            weeks_array.insert(0, this_week) if this_week
         end
         return weeks_array
     end
