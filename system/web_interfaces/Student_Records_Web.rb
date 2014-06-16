@@ -276,9 +276,10 @@ end
             
             #HEADERS
             [
-                "Priority",
-                "Request Method",
-                "Requested Records",
+                "Priority"          ,
+                "Date Requested"    ,
+                "Request Method"    ,
+                "Requested Records" ,
                 "Notes"
             ]
             
