@@ -125,6 +125,7 @@ end
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
+                AND date_completed IS NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -133,11 +134,7 @@ end
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
@@ -150,6 +147,7 @@ end
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
+                AND date_completed IS NULL
                 AND record_type_id IN (
                     SELECT primary_id
                     FROM RRI_DOCUMENT_TYPES
@@ -158,11 +156,7 @@ end
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL
                 AND record_type_id IN (
                     SELECT primary_id
@@ -174,30 +168,24 @@ end
         elsif registrar_department && registrar_department.include?($team_member.department_id)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status IS NULL"
+                "WHERE status IS NULL
+                AND date_completed IS NULL"
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL"
             )
             
         elsif $team_member.preferred_email.value == "jhalverson@agora.org"
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status IS NULL"
+                "WHERE status IS NULL
+                AND date_completed IS NULL"
             )
             
             pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
-                "WHERE status NOT IN(
-                    SELECT primary_id
-                    FROM rri_status
-                    WHERE status REGEXP 'complete'
-                )
+                "WHERE date_completed IS NULL
                 AND status IS NOT NULL"
             )
             
