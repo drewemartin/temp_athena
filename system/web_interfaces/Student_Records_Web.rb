@@ -117,11 +117,12 @@ end
         
         output = Array.new
         
-        nursing_departments     = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'nurse'")
-        transcripts_department  = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'transcsript'")
-        registrar_department    = $tables.attach("department").field_value("primary_id", "WHERE name REGEXP 'registrar'")
+        nursing_departments     = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'nurse'")
+        transcripts_department  = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'transcsript'")
+        registrar_department    = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'registrar'")
+        speced_department       = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'special education'")
         
-        if nursing_departments && nursing_departments.include?($team_member.department_id)
+        if nursing_departments && nursing_departments.include?($team_member.department_id.value)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -143,7 +144,7 @@ end
                 )"
             )
             
-        elsif transcripts_department && transcripts_department.include?($team_member.department_id)
+        elsif transcripts_department && transcripts_department.include?($team_member.department_id.value)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -165,7 +166,7 @@ end
                 )"
             )
             
-        elsif registrar_department && registrar_department.include?($team_member.department_id)
+        elsif registrar_department && registrar_department.include?($team_member.department_id.value)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -177,6 +178,28 @@ end
                 AND status IS NOT NULL"
             )
             
+        elsif speced_department && speced_department.include?($team_member.department_id.value)
+            
+            new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE status IS NULL
+                AND date_completed IS NULL
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Special Education'
+                )"
+            )
+            
+            pending_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
+                "WHERE date_completed IS NULL
+                AND status IS NOT NULL
+                AND record_type_id IN (
+                    SELECT primary_id
+                    FROM RRI_DOCUMENT_TYPES
+                    WHERE document_category = 'Special Education'
+                )"
+            )
+          
         elsif $team_member.preferred_email.value == "jhalverson@agora.org"
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
@@ -260,12 +283,83 @@ end
         
     end
     
+    def add_new_record_student_rri_recipients
+        
+        table_array = [
+            
+            "rri_request_id"    ,
+            "attn"              ,
+            "via_mail"          ,
+            "address_1"         ,
+            "address_2"         ,
+            "city"              ,
+            "state"             ,
+            "zip"               ,
+            "via_fax"           ,
+            "fax_number"        ,
+            "via_email"         ,
+            "email_address"    
+           
+        ]
+        
+        record = $focus_student.rri_requests.new_record
+        
+        table_array.push(
+            
+            [
+             
+                record.fields["rri_request_id"  ].web.default(),
+                record.fields["attn"            ].web.default(),
+                record.fields["via_mail"        ].web.default(),
+                record.fields["address_1"       ].web.default(),
+                record.fields["address_2"       ].web.default(),
+                record.fields["city"            ].web.default(),
+                record.fields["state"           ].web.default(),
+                record.fields["zip"             ].web.default(),
+                record.fields["via_fax"         ].web.default(),
+                record.fields["fax_number"      ].web.default(),
+                record.fields["via_email"       ].web.default(),
+                record.fields["email_address"   ].web.default()
+                
+            ]
+            
+        )
+        
+        $tools.table(
+            :table_array    => [
+                
+                ["Student ID"       , request_rec.fields["student_id"    ].value            ],
+                ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
+                ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
+                ["Print Label?"     , "checkbox"                                            ],
+                ["Recipients"       , "recipients"                                          ]
+                
+            ],
+            :student_link   => "name",
+            :unique_name    => "request_details",
+            :footers        => false,
+            :head_section   => :left,
+            :title          => false,
+            :legend         => false,
+            :caption        => false#,
+            #:embedded_style => {
+            #    :table  => "width:100%;",
+            #    :th     => nil,
+            #    :tr     => nil,
+            #    :tr_alt => nil,
+            #    :td     => nil
+            #}
+        )
+        
+    end
+    
     def add_new_record_student_rri_requests()
         
         tables_array = [
             
             #HEADERS
             [
+                "Recipients Test (This form needs cleanup)",
                 "Priority"          ,
                 "Date Requested"    ,
                 "Request Method"    ,
@@ -275,17 +369,17 @@ end
             
         ]
         
-        doc_pids = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
+        doc_pids        = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
         
-        doc_checkboxes = String.new
+        doc_checkboxes  = String.new
         
         doc_pids.each do |doc_pid|
             
-            record = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
+            record      = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
             
-            pid = record.fields["primary_id"].value
+            pid         = record.fields["primary_id"].value
             
-            new_field = $field.new({"type" => "text", "field" => "#{pid}__rri_document_type"})
+            new_field   = $field.new({"type" => "text", "field" => "#{pid}__rri_document_type"})
             
             doc_checkboxes << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + record.fields["primary_id"].value, :add_class=>"no_save rri_document_type"})
             
@@ -293,9 +387,22 @@ end
         
         row = Array.new
         
+        row.push(
+            
+            $field.new("field"=>"modify_tag").set("new_recipients").web.hidden +
+            $tools.button_new_row(
+                table_name              = "STUDENT_RRI_RECIPIENTS"  ,
+                additional_params_str   = "modify_tag"              ,
+                save_params             = "modify_tag",
+                nil,nil,true
+            ) +
+            "<DIV id='new_recipients'></DIV>"
+            
+        )
+        
         record = $focus_student.rri_requests.new_record
         
-        row.push(record.fields["priority_level"  ].web.default())
+        row.push(record.fields["priority_level"  ].set("Normal").web.select(:dd_choices=>priority_levels))
         row.push(record.fields["requested_date"  ].set($idatetime).web.default())
         row.push(record.fields["request_method"  ].web.select(:dd_choices=>request_method_dd))
         row.push(doc_checkboxes)
@@ -318,6 +425,17 @@ end
         
         $tables.attach("RRO_DOCUMENT_TYPES").dd_choices("document_name", "primary_id", "WHERE primary_id IN(#{pids.join(",")}) ORDER BY document_name") if pids
         
+    end
+    
+    def priority_levels
+        
+        $dd.from_array(
+            [
+                "Normal"        ,
+                "*High*"          ,
+                "**Court Order**"
+            ]
+        )
     end
     
     def status_dd
@@ -462,7 +580,7 @@ end
                 
                 sid           = record_record.fields["student_id"].value
                 
-                row.push(record_record.fields["priority_level"   ].web.default())
+                row.push(record_record.fields["priority_level"   ].web.select(:dd_choices=>priority_levels))
                 
                 if requests = requested_records_table(pid)
                     
@@ -610,8 +728,8 @@ end
                 
                 row.push(
                     
-                    request_rec.fields["requested_date"    ].web.default(:label_option=>"Requested Date") +
-                    request_rec.fields["priority_level"    ].web.default(:label_option=>"Priority?"     )
+                    request_rec.fields["priority_level"    ].web.select(    :label_option=>"Priority Level", :dd_choices=>priority_levels   ) +
+                    request_rec.fields["requested_date"    ].web.default(   :label_option=>"Requested Date"                                 )
                     
                 )
                 
