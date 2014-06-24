@@ -50,7 +50,7 @@ end
             
             $tables.attach("RRI_DOCUMENT_TYPES").primary_ids.each do |pid|
                 
-                if $kit.params["#{pid}__rri_document_type".to_sym] == "1"
+                if $kit.params["rri_document_type__#{pid}".to_sym] == "1"
                     
                     new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
                     
@@ -64,6 +64,7 @@ end
             end
             
             $kit.modify_tag_content("tabs-2", incoming_records, "update")
+            
             
             return false
             
@@ -379,7 +380,7 @@ end
             
             pid         = record.fields["primary_id"].value
             
-            new_field   = $field.new({"type" => "text", "field" => "#{pid}__rri_document_type"})
+            new_field = $field.new({"type" => "text", "field" => "rri_document_type__#{pid}"})
             
             doc_checkboxes << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + record.fields["primary_id"].value, :add_class=>"no_save rri_document_type"})
             
@@ -562,8 +563,7 @@ end
             [
                 "Priority",
                 "Requested Records",
-                "Request Method",
-                "Notes"
+                "Request Details"
             ]
             
         ]
@@ -591,8 +591,13 @@ end
                     row.push("")
                     
                 end
-                row.push(record_record.fields["request_method"   ].web.select(:dd_choices=>request_method_dd))
-                row.push(record_record.fields["notes"            ].web.default())
+                
+                row.push(
+                    
+                    record_record.fields["request_method"   ].web.select( :label_option=>"Request Method", :dd_choices=>request_method_dd)+
+                    record_record.fields["notes"            ].web.default(:label_option=>"Notes")
+                    
+                )
                 
                 tables_array.push(row)
                 
@@ -804,7 +809,8 @@ end
             [
                 "Document"      ,
                 "Status"        ,
-                "Date Completed"
+                "Date Completed",
+                "Notes"
             ]
             
         ]
@@ -840,7 +846,8 @@ end
                             
                         ),
                         
-                        requested_document.fields["date_completed"].web.default
+                        requested_document.fields["date_completed"].web.default,
+                        requested_document.fields["notes"].web.default
                         
                     ]
                     
@@ -851,7 +858,7 @@ end
                 button_name = "Add " + $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid).fields["document_name"].value
                 
                 button = "
-                    <button class='add_rii_doc_button' id='add_rii_doc_button_#{pid}' onclick='send\(\"add_rii_document_#{pid}_#{doc_pid}\"\)\;setPreSpinner(\"requested_docs_#{pid}_container\");'>#{button_name}</button>
+                    <button class='add_rii_doc_button' id='add_rii_doc_button_#{pid}' onclick='send\(\"add_rii_document_#{pid}_#{doc_pid}\"\)\;var par_div = this.parentNode.parentNode.parentNode.parentNode.parentNode; par_div.style.height = par_div.offsetHeight+\"px\";setPreSpinner(\"requested_docs_#{pid}_container\");'>#{button_name}</button>
                     <input id='add_rii_document_#{pid}_#{doc_pid}' type='hidden' value='#{pid}__#{doc_pid}' name='add_rii_document'
                 "
                 
@@ -889,7 +896,13 @@ end
             div.rri_document_type label { float:left; display:inline-block; min-width:100px; text-align:left; margin-top:2px;}
             div.rri_document_type input { float:right;}
             
-            div.STUDENT_RRI_REQUESTS__notes textarea{resize:none; overflow-y:scroll; width:250px; height:100px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  input    {width:70px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:120px; height:36px; resize:none; overflow-y:scroll; }
+            
+            div.STUDENT_RRI_REQUESTS__request_method                      {margin-bottom:10px;}
+            div.STUDENT_RRI_REQUESTS__notes                      textarea {width:220px; height:100px; resize:none; overflow-y:scroll; }
+            
+            div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
         "
         
