@@ -97,7 +97,7 @@ end
             
             row.push(
                 record.fields["document_category"  ].web.select(
-                    :dd_choices=>$dd.from_array(["Transcripts","Nursing","General"])
+                    :dd_choices=>$dd.from_array(["Transcripts","Nursing","General","Special Education"])
                 )
             )
             row.push(record.fields["document_name"      ].web.textarea  )
@@ -250,7 +250,7 @@ end
             row = Array.new
             
             row.push(record.fields["document_category"].web.select(
-                    :dd_choices=>$dd.from_array(["Transcripts","Nursing","General"])
+                    :dd_choices=>document_categories
                 )
             )
             row.push(record.fields["document_name"    ].web.text  )
@@ -492,7 +492,7 @@ end
             
             [
                 record.fields["document_category"].web.select(
-                    :dd_choices => $dd.from_array(["Transcripts","Nursing","Registrar"]),
+                    :dd_choices => document_categories,
                     :validate   => true
                 ),
                 record.fields["document_name"    ].web.text(:validate=>true)
@@ -528,6 +528,10 @@ end
         
     end
 
+    def document_categories
+        $dd.from_array(["Transcripts","Nursing","General","Special Education"])
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
