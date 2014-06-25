@@ -280,7 +280,7 @@ end
         
         template = "RECORD_REQUESTS_LABELS_PDF.rb"
         
-        pdf = Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
+        Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
             require "#{$paths.templates_path}pdf_templates/#{template}"
             template = eval("#{template.gsub(".rb","")}.new")
             template.generate_pdf([pids], pdf)
