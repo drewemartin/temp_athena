@@ -608,8 +608,87 @@ end
                     
                 end
                 
+                recipients = $focus_student.rri_recipients.existing_records("WHERE rri_request_id = '#{pid}'")
+                if recipients
+                    
+                    rec_table_array = Array.new
+                    
+                    rec_table_array.push(
+                        
+                        [
+                            
+                            #HEADERS =
+                            "Print Label?"      ,
+                            "To:"               ,
+                            "Mail"              ,
+                            "Fax"               ,
+                            "Email"
+                            #"name"         ,
+                            #"attn"         ,
+                            #"via_mail"     ,
+                            #"address_1"    ,
+                            #"address_2"    ,
+                            #"city"         ,
+                            #"state"        ,
+                            #"zip"          ,
+                            #"via_fax"      ,
+                            #"fax_number"   ,
+                            #"via_email"    ,
+                            #"email_address"
+                            
+                        ]
+                        
+                    )
+                    recipients.each{|recipient|
+                        
+                        rec_table_array.push(
+                            
+                            [
+                                
+                                recipient.batch_checkbox                        ,
+                                recipient.fields["name"          ].web.label()  +
+                                recipient.fields["attn"          ].web.label()  ,
+                                recipient.fields["address_1"     ].web.label()  +
+                                recipient.fields["address_2"     ].web.label()  +
+                                recipient.fields["city"          ].web.label()  +
+                                recipient.fields["state"         ].web.label()  +
+                                recipient.fields["zip"           ].web.label()  ,
+                                recipient.fields["fax_number"    ].web.label()  ,
+                                recipient.fields["email_address" ].web.label()
+                              
+                            ]
+                            
+                        )
+                        
+                    }
+                    
+                else
+                    
+                    recipient_table = "No recipients found."
+                    
+                end
+                
+                recipient_table = $tools.table(
+                    :table_array    => rec_table_array,
+                    :student_link   => "name",
+                    :unique_name    => "request_details",
+                    :footers        => false,
+                    :head_section   => true,
+                    :title          => false,
+                    :legend         => false,
+                    :caption        => false#,
+                    #:embedded_style => {
+                    #    :table  => "width:100%;",
+                    #    :th     => nil,
+                    #    :tr     => nil,
+                    #    :tr_alt => nil,
+                    #    :td     => nil
+                    #}
+                )
+                
                 row.push(
                     
+                    recipient_table+
                     record_record.fields["request_method"   ].web.select( :label_option=>"Request Method", :dd_choices=>request_method_dd)+
                     record_record.fields["notes"            ].web.default(:label_option=>"Notes")
                     
@@ -1001,7 +1080,7 @@ end
             div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:120px; height:36px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRI_REQUESTS__request_method                      {margin-bottom:10px;}
-            div.STUDENT_RRI_REQUESTS__notes                      textarea {width:220px; height:100px; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTS__notes                      textarea {width:270px; height:100px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
