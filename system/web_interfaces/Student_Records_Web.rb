@@ -63,7 +63,20 @@ end
                 
             end
             
-            $kit.modify_tag_content("tabs-2", incoming_records, "update")
+            js_string = $tools.button_new_row(
+                table_name                  = "STUDENT_RRI_RECIPIENTS",
+                additional_params_str       = "rri_request_id=#{$kit.rows.first[1].primary_id}",
+                save_params                 = "sid",
+                button_text                 = nil,
+                i_will_manually_add_the_div = true,
+                inner_add_new               = false,
+                return_js_string            = true
+                
+            )
+            $kit.output = "<eval_script>#{js_string}</eval_script>"
+            #$kit.params[:new_row] = "STUDENT_RRI_RECIPIENTS"
+            
+            #$kit.modify_tag_content("tabs-2", incoming_records, "update")
             
             
             return false
@@ -286,9 +299,16 @@ end
     
     def add_new_record_student_rri_recipients
         
+        output = String.new
+        
+        record = $focus_student.rri_recipients.new_record
+        
+        output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() +
+            record.fields["student_id"  ].web.hidden()
+            
         table_array = [
             
-            "rri_request_id"    ,
+            #"rri_request_id"    ,
             "attn"              ,
             "via_mail"          ,
             "address_1"         ,
@@ -303,13 +323,10 @@ end
            
         ]
         
-        record = $focus_student.rri_requests.new_record
-        
         table_array.push(
             
             [
              
-                record.fields["rri_request_id"  ].web.default(),
                 record.fields["attn"            ].web.default(),
                 record.fields["via_mail"        ].web.default(),
                 record.fields["address_1"       ].web.default(),
@@ -326,18 +343,10 @@ end
             
         )
         
-        $tools.table(
-            :table_array    => [
-                
-                ["Student ID"       , request_rec.fields["student_id"    ].value            ],
-                ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
-                ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
-                ["Print Label?"     , "checkbox"                                            ],
-                ["Recipients"       , "recipients"                                          ]
-                
-            ],
+        output << $tools.table(
+            :table_array    => table_array,
             :student_link   => "name",
-            :unique_name    => "request_details",
+            :unique_name    => "new_recipients",
             :footers        => false,
             :head_section   => :left,
             :title          => false,
@@ -352,6 +361,8 @@ end
             #}
         )
         
+        return output
+        
     end
     
     def add_new_record_student_rri_requests()
@@ -360,7 +371,7 @@ end
             
             #HEADERS
             [
-                "Recipients Test (This form needs cleanup)",
+                #"Recipients Test (This form needs cleanup)",
                 "Priority"          ,
                 "Date Requested"    ,
                 "Request Method"    ,
@@ -388,18 +399,18 @@ end
         
         row = Array.new
         
-        row.push(
-            
-            $field.new("field"=>"modify_tag").set("new_recipients").web.hidden +
-            $tools.button_new_row(
-                table_name              = "STUDENT_RRI_RECIPIENTS"  ,
-                additional_params_str   = "modify_tag"              ,
-                save_params             = "modify_tag",
-                nil,nil,true
-            ) +
-            "<DIV id='new_recipients'></DIV>"
-            
-        )
+        #row.push(
+        #    
+        #    $field.new("field"=>"modify_tag").set("new_recipients").web.hidden +
+        #    $tools.button_new_row(
+        #        table_name              = "STUDENT_RRI_RECIPIENTS"  ,
+        #        additional_params_str   = "modify_tag"              ,
+        #        save_params             = "modify_tag",
+        #        nil,nil,true
+        #    ) +
+        #    "<DIV id='new_recipients'></DIV>"
+        #    
+        #)
         
         record = $focus_student.rri_requests.new_record
         
@@ -557,6 +568,10 @@ end
             save_params             = "sid"
         )
         
+        output << "<DIV id='add_new_dialog_STUDENT_RRI_RECIPIENTS' style='display:none;' class='add_new_dialog'></DIV>\n"
+        
+        output << "<input id='new_row_STUDENT_RRI_RECIPIENTS' type='hidden' value='STUDENT_RRI_RECIPIENTS' name='new_row'>"
+        
         tables_array = [
             
             #HEADERS
@@ -678,7 +693,7 @@ end
                         "Notes"
                     ]
                     
-                ] if !requests.has_key?(request_id)
+                ] 
                 
                 requests[request_id].push(
                     
@@ -738,6 +753,84 @@ end
                     
                 )
                 
+                recipients = $students.get(request_rec.fields["student_id"].value).rri_recipients.existing_records("WHERE rri_request_id = '#{request_id}'")
+                if recipients
+                    
+                    rec_table_array = Array.new
+                    
+                    rec_table_array.push(
+                        
+                        [
+                            
+                            #HEADERS =
+                            "Print Label?"      ,
+                            "To:"               ,
+                            "Mail"              ,
+                            "Fax"               ,
+                            "Email"
+                            #"name"         ,
+                            #"attn"         ,
+                            #"via_mail"     ,
+                            #"address_1"    ,
+                            #"address_2"    ,
+                            #"city"         ,
+                            #"state"        ,
+                            #"zip"          ,
+                            #"via_fax"      ,
+                            #"fax_number"   ,
+                            #"via_email"    ,
+                            #"email_address"
+                            
+                        ]
+                        
+                    )
+                    recipients.each{|recipient|
+                        
+                        rec_table_array.push(
+                            
+                            [
+                                
+                                recipient.batch_checkbox                        ,
+                                recipient.fields["name"          ].web.label()  +
+                                recipient.fields["attn"          ].web.label()  ,
+                                recipient.fields["address_1"     ].web.label()  +
+                                recipient.fields["address_2"     ].web.label()  +
+                                recipient.fields["city"          ].web.label()  +
+                                recipient.fields["state"         ].web.label()  +
+                                recipient.fields["zip"           ].web.label()  ,
+                                recipient.fields["fax_number"    ].web.label()  ,
+                                recipient.fields["email_address" ].web.label()
+                              
+                            ]
+                            
+                        )
+                        
+                    } 
+                    
+                    recipient_table = $tools.table(
+                        :table_array    => rec_table_array,
+                        :student_link   => "name",
+                        :unique_name    => "request_details",
+                        :footers        => false,
+                        :head_section   => true,
+                        :title          => false,
+                        :legend         => false,
+                        :caption        => false#,
+                        #:embedded_style => {
+                        #    :table  => "width:100%;",
+                        #    :th     => nil,
+                        #    :tr     => nil,
+                        #    :tr_alt => nil,
+                        #    :td     => nil
+                        #}
+                    )
+                    
+                else
+                    
+                    recipient_table = "No recipients found."
+                    
+                end
+                
                 row.push(
                     
                     $tools.table(
@@ -746,8 +839,7 @@ end
                             ["Student ID"       , request_rec.fields["student_id"    ].value            ],
                             ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
                             ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
-                            ["Print Label?"     , "checkbox"                                            ],
-                            ["Recipients"       , "recipients"                                          ]
+                            ["Recipients"       , recipient_table                                       ]
                             
                         ],
                         :student_link   => "name",
