@@ -54,6 +54,8 @@ end
         structure_hash["fields"] = Hash.new
             
             structure_hash["fields"]["rri_request_id"   ] = {"data_type"=>"int",  "file_field"=>"rri_request_id"} if field_order.push("rri_request_id"  )
+            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"student_id"    } if field_order.push("student_id"      )   
+            structure_hash["fields"]["name"             ] = {"data_type"=>"text", "file_field"=>"name"          } if field_order.push("name"            )
             structure_hash["fields"]["attn"             ] = {"data_type"=>"text", "file_field"=>"attn"          } if field_order.push("attn"            )
             structure_hash["fields"]["via_mail"         ] = {"data_type"=>"bool", "file_field"=>"via_mail"      } if field_order.push("via_mail"        )
             structure_hash["fields"]["address_1"        ] = {"data_type"=>"text", "file_field"=>"address_1"     } if field_order.push("address_1"       )
