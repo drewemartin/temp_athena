@@ -278,12 +278,14 @@ end
     
     def add_new_pdf_rri_labels(pids)
         
+        pids = pids.split(",")
+        
         template = "RECORD_REQUESTS_LABELS_PDF.rb"
         
         Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
             require "#{$paths.templates_path}pdf_templates/#{template}"
             template = eval("#{template.gsub(".rb","")}.new")
-            template.generate_pdf([pids], pdf)
+            template.generate_pdf(pids, pdf)
         end
         
     end
