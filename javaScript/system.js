@@ -1780,8 +1780,16 @@ function x___________________UNSORTED(){}
 		var oTable1 = $("table[id=dataTableDefaultmy_record_requests_1]").dataTable()
 		var oTable2 = $("table[id=dataTableDefaultmy_record_requests_2]").dataTable()
 		
-		x1 = oTable1.$("[id^=selected__][value='1']")
-		x2 = oTable2.$("[id^=selected__][value='1']")
+		x1 = []
+		x2 = []
+		
+		if (oTable1 == true) {
+			x1 = oTable1.$("[id^=selected__][value='1']")
+		}
+		
+		if (oTable2 == true) {
+			x2 = oTable2.$("[id^=selected__][value='1']")
+		}
 		
 		if (x1.length > 0){
 			
