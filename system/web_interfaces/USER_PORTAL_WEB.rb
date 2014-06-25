@@ -272,6 +272,23 @@ end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________ADD_NEW_PDF
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def add_new_pdf_rri_labels(pids)
+        
+        template = "RECORD_REQUESTS_LABELS_PDF.rb"
+        
+        pdf = Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
+            require "#{$paths.templates_path}pdf_templates/#{template}"
+            template = eval("#{template.gsub(".rb","")}.new")
+            template.generate_pdf([pids], pdf)
+        end
+        
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________ADD_NEW_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -373,6 +390,9 @@ end
             table.dataTable td{                 text-align: center;}
             div.menu_buttons_container{         clear:both;}
             div#school_year_container{          float:right; margin-bottom:10px; margin-right:10px; size:1.1em;}
+            
+            div.STUDENT_RRI_REQUESTS__notes                      textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
             
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}

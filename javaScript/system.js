@@ -1773,6 +1773,49 @@ function x___________________JQUERY_UI_DIALOGS(){}
 function x___________________UNSORTED(){}
 //------------------------------------------------------------------------------
 	
+	function print_labels(pdf_name){
+		
+		batch_action_ids = new Array;
+		
+		var oTable1 = $("table[id=dataTableDefaultmy_record_requests_1]").dataTable()
+		var oTable2 = $("table[id=dataTableDefaultmy_record_requests_2]").dataTable()
+		
+		x1 = oTable1.$("[id^=selected__][value='1']")
+		x2 = oTable2.$("[id^=selected__][value='1']")
+		
+		if (x1.length > 0){
+			
+			x1.each(function(){
+				if (this.value == "1"){
+					batch_action_ids.push(this.name.split("__")[1])
+				}
+			})
+			
+		}
+		
+		if (x2.length > 0){
+			
+			x2.each(function(){
+				if (this.value == "1"){
+					batch_action_ids.push(this.name.split("__")[1])
+				}
+			})
+			
+		}
+		
+		if (batch_action_ids.length > 0){
+			
+			$("#view_pdf_"+pdf_name).val(pdf_name+"ARGV"+batch_action_ids.join(","))
+			
+			load_secure_doc(false,false,pdf_name)
+			
+		}else{
+			
+			alert("Nothing was selected!")
+		}
+		
+	}
+	
 	function testConnection(){
 		
 		var online = false

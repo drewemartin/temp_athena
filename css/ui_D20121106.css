@@ -123,3 +123,43 @@ div.ui-datepicker-buttonpane{
     width:  16px;
     height: 16px;
 }
+
+.ui-tabs-selected a {
+    cursor:default !important;
+}
+
+.tabs-buttons .ui-tabs-nav { 
+    padding: 0em; 
+    background: transparent; 
+    border-width: 0px;
+    display: table;
+    width:100%;
+} 
+.tabs-buttons .ui-tabs-nav li { 
+    position: static; 
+    margin: 0px; 
+    border-bottom: 1px solid #AED0EA !important; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px;
+    display: table-cell;
+    position: static;
+    float:none;
+} 
+.tabs-buttons .ui-tabs-nav li:first-child { 
+    -moz-border-radius: 6px 0px 0px 6px; 
+    -webkit-border-radius: 6px 0px 0px 6px; 
+    border-radius: 6px 0px 0px 6px; 
+} 
+.tabs-buttons .ui-tabs-nav li:last-child { 
+    -moz-border-radius: 0px 6px 6px 0px; 
+    -webkit-border-radius: 0px 6px 6px 0px; 
+    border-radius: 0px 6px 6px 0px; 
+} 
+.tabs-buttons .ui-tabs-nav li.ui-tabs-selected { 
+    padding-bottom: 0px; 
+    border-bottom: 1px solid #AED0EA !important; 
+}
+.tabs-buttons .ui-tabs-nav a {
+    width:95%;
+}

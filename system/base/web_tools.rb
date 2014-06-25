@@ -10,6 +10,7 @@ class Web_Tools
         @csv_iterator                   = 1
         @expand_iterator                = 1
         @tabs_iterator                  = 0
+        @sub_tabs_iterator              = 1000
         @new_row_table_itterator        = Hash.new
     end
     #---------------------------------------------------------------------------
@@ -292,7 +293,7 @@ end
         return forms_html
     end
     
-    def tabs(tab_elements, active_tab=0, tab_id=nil, search=true)
+    def tabs(tab_elements, active_tab=0, tab_id=nil, search=true, sub_tab=false)
         
         tabs_html =
         "<script type=\'text/javascript\'>
@@ -315,14 +316,19 @@ end
        
         title_html   = String.new
         #title_html   << "<button class='search_button' id='search_dialog_button' style='position:absolute; right:10px; top:10px;'>Search</button>" if search
-        
         content_html = ""
         tab_elements.each_with_index do |element, i|
-            title_html   << "<li><a id='tab_title-#{i+1}' href='#tabs-#{i+1}'>#{element[0]}</a></li>"
-            content_html << "<DIV class='ui-tabs-hide' id='tabs-#{i+1}'>#{element[1]}</DIV>"
+            iterator = sub_tab ? "#{@sub_tabs_iterator}" : "#{@tabs_iterator}"
+            title_html   << "<li><a id='tab_title-#{iterator}' href='#tabs-#{iterator}'>#{element[0]}</a></li>"
+            content_html << "<DIV class='ui-tabs-hide' id='tabs-#{iterator}'>#{element[1]}</DIV>"
+            if sub_tab
+                @sub_tabs_iterator += 1
+            else
+                @tabs_iterator += 1
+            end
         end
         
-        tabs_html << "<DIV class='ui-tabs' id='tabs_#{tab_id}'>"
+        tabs_html << "<DIV class='ui-tabs #{'tabs-buttons' if sub_tab}' id='tabs_#{tab_id}'>"
         tabs_html << "<UL>#{title_html}</UL>"
         tabs_html << content_html
         tabs_html << "</DIV>"
