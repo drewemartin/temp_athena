@@ -214,7 +214,7 @@ end
                 )"
             )
           
-        elsif $team_member.preferred_email.value == "jhalverson@agora.org"
+        elsif $team_member.preferred_email.value == "jhalverson@agora.org" || "esaddler@agora.org"
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -304,63 +304,19 @@ end
         
         record = $focus_student.rri_recipients.new_record
         
-        output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() +
-            record.fields["student_id"  ].web.hidden()
-            
-        table_array = [
-            
-            #"rri_request_id"    ,
-            "attn"              ,
-            "via_mail"          ,
-            "address_1"         ,
-            "address_2"         ,
-            "city"              ,
-            "state"             ,
-            "zip"               ,
-            "via_fax"           ,
-            "fax_number"        ,
-            "via_email"         ,
-            "email_address"    
-           
-        ]
+        output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() + record.fields["student_id"  ].web.hidden()
         
-        table_array.push(
-            
-            [
-             
-                record.fields["attn"            ].web.default(),
-                record.fields["via_mail"        ].web.default(),
-                record.fields["address_1"       ].web.default(),
-                record.fields["address_2"       ].web.default(),
-                record.fields["city"            ].web.default(),
-                record.fields["state"           ].web.default(),
-                record.fields["zip"             ].web.default(),
-                record.fields["via_fax"         ].web.default(),
-                record.fields["fax_number"      ].web.default(),
-                record.fields["via_email"       ].web.default(),
-                record.fields["email_address"   ].web.default()
-                
-            ]
-            
-        )
-        
-        output << $tools.table(
-            :table_array    => table_array,
-            :student_link   => "name",
-            :unique_name    => "new_recipients",
-            :footers        => false,
-            :head_section   => :left,
-            :title          => false,
-            :legend         => false,
-            :caption        => false#,
-            #:embedded_style => {
-            #    :table  => "width:100%;",
-            #    :th     => nil,
-            #    :tr     => nil,
-            #    :tr_alt => nil,
-            #    :td     => nil
-            #}
-        )
+        output << record.fields["attn"            ].web.text(:label_option=>"Attention:")
+        output << record.fields["via_mail"        ].web.default(:label_option=>"Via Mail?")
+        output << record.fields["address_1"       ].web.text(:label_option=>"Address 1:")
+        output << record.fields["address_2"       ].web.text(:label_option=>"Address 2:")
+        output << record.fields["city"            ].web.text(:label_option=>"City:")
+        output << record.fields["state"           ].web.text(:label_option=>"State:")
+        output << record.fields["zip"             ].web.text(:label_option=>"Zip:")
+        output << record.fields["via_fax"         ].web.default(:label_option=>"Via Fax?")
+        output << record.fields["fax_number"      ].web.text(:label_option=>"Fax Number:")
+        output << record.fields["via_email"       ].web.default(:label_option=>"Via Email?")
+        output << record.fields["email_address"   ].web.text(:label_option=>"Email Address:")
         
         return output
         
@@ -1004,6 +960,30 @@ end
             div.STUDENT_RRI_REQUESTS__notes                      textarea {width:220px; height:100px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
+            
+            div.STUDENT_RRI_RECIPIENTS__attn                     label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__via_mail                 label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__address_1                label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__address_2                label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__city                     label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__state                    label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__zip                      label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__via_fax                  label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__fax_number               label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__via_email                label {width:110px; display:inline-block;}
+            div.STUDENT_RRI_RECIPIENTS__email_address            label {width:110px; display:inline-block;}
+            
+            div.STUDENT_RRI_RECIPIENTS__attn                     input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__address_1                input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__address_2                input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__city                     input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__state                    input {width:25px;  }
+            div.STUDENT_RRI_RECIPIENTS__zip                      input {width:100px; }
+            div.STUDENT_RRI_RECIPIENTS__fax_number               input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__email_address            input {width:250px; }
+            div.STUDENT_RRI_RECIPIENTS__via_mail                 input {}
+            div.STUDENT_RRI_RECIPIENTS__via_fax                  input {}
+            div.STUDENT_RRI_RECIPIENTS__via_email                input {}
             
             
         "
