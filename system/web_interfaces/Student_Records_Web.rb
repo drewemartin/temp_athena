@@ -177,7 +177,7 @@ end
                 AND status IS NOT NULL"
             )
             
-        elsif $team_member.preferred_email.value == "jhalverson@agora.org"
+        elsif $team_member.preferred_email.value == "esaddler@agora.org"
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -201,12 +201,13 @@ end
             ],
             selected_tab    = 0,
             tab_id          = "rri",
-            search          = false
+            search          = false,
+            sub_tab         = true
         )
         
         output.push(
             :name       => "MyRecordRequests",
-            :content    => tabulated_list
+            :content    => button_print_labels("rri_labels")+tabulated_list
         )
         
     end
@@ -626,7 +627,7 @@ end
                             ["Student ID"       , request_rec.fields["student_id"    ].value            ],
                             ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
                             ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
-                            ["Print Label?"     , "checkbox"                                            ],
+                            ["Print Label?"     , request_rec.batch_checkbox                            ],
                             ["Recipients"       , "recipients"                                          ]
                             
                         ],
@@ -761,6 +762,14 @@ end
         
     end
     
+    def button_print_labels(pdf_name)
+        button_html = String.new
+        button_html << "<input id='label_ids'    name='label_ids'        value=''    type='hidden'>"
+        button_html << "<input id='view_pdf_#{pdf_name}' name='view_pdf' value='#{pdf_name}' type='hidden'>"
+        button_html << "<button name='new_pdf_button' class='new_pdf_button' id='new_pdf_button' onclick=\"print_labels\('rri_labels'\);\">PRINT LABELS</button>"
+        return button_html
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
@@ -783,6 +792,7 @@ end
             div.STUDENT_RRI_REQUESTS__notes                      textarea {width:220px; height:100px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
+            
             
         "
         
