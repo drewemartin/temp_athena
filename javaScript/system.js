@@ -1783,11 +1783,11 @@ function x___________________UNSORTED(){}
 		x1 = []
 		x2 = []
 		
-		if (oTable1 == true) {
+		if ($("table[id=dataTableDefaultmy_record_requests_1]").length != 0) {
 			x1 = oTable1.$("[id^=selected__][value='1']")
 		}
 		
-		if (oTable2 == true) {
+		if ($("table[id=dataTableDefaultmy_record_requests_2]").length != 0) {
 			x2 = oTable2.$("[id^=selected__][value='1']")
 		}
 		
@@ -1795,7 +1795,10 @@ function x___________________UNSORTED(){}
 			
 			x1.each(function(){
 				if (this.value == "1"){
-					batch_action_ids.push(this.name.split("__")[1])
+					id = this.name.split("__")[1]
+					if (batch_action_ids.indexOf(id)== -1){
+						batch_action_ids.push(id)
+					}
 				}
 			})
 			
@@ -1805,7 +1808,10 @@ function x___________________UNSORTED(){}
 			
 			x2.each(function(){
 				if (this.value == "1"){
-					batch_action_ids.push(this.name.split("__")[1])
+					id = this.name.split("__")[1]
+					if (batch_action_ids.indexOf(id)== -1){
+						batch_action_ids.push(id)
+					}
 				}
 			})
 			
