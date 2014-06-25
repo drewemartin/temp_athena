@@ -890,13 +890,16 @@ end
         
     end
     
-    def button_new_row(table_name, additional_params_str = nil, save_params = nil, button_text="Add New", i_will_manually_add_the_div=false)
+    def button_new_row(table_name, additional_params_str = nil, save_params = nil, button_text="Add New", i_will_manually_add_the_div=false, inner_add_new = false, return_js_string = false)
+        
+        button_text = "<span class=\"ui-icon ui-icon-plusthick\"></span>" if inner_add_new
         
         pstr = String.new
         pstr << "'new_row_#{table_name}"
         pstr << (additional_params_str ? ",#{additional_params_str}'" : "'")
-        pstr << ",'#{table_name}'"
-        pstr << ",'#{save_params}'" if save_params
+        pstr << ",'#{table_name     }'"
+        pstr << ",'#{save_params    }'" if save_params
+        pstr << (save_params ? ",'#{inner_add_new}'" : ",'','#{inner_add_new}'")  if inner_add_new
         
         button_html = String.new
         
@@ -932,7 +935,11 @@ end
         
         @new_row_table_itterator[table_name] = (!@new_row_table_itterator[table_name] ? 1 : @new_row_table_itterator[table_name]+=1)
         
-        return button_html
+        if return_js_string
+            return "get_new_row(#{pstr});"
+        else
+            return button_html
+        end
         
     end
     
@@ -1288,6 +1295,8 @@ end
         start_at = a[:head_section]==true ? 1 : 0
         row_num = 0
         a[:table_array][start_at ...a[:table_array].length].each{|trs|
+            
+            trs = [trs] if (trs.class != Array)
             
             class_row   = class_row == "even_row" ? "odd_row" : "even_row"
             output << "<tr class='row_#{row_num} #{class_row}' style='#{a[:embedded_style][:tr_alt] ? (class_row == "even_row" ? a[:embedded_style][:tr_alt] : "") : a[:embedded_style][:tr]}'>\n"
