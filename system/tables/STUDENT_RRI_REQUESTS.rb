@@ -63,7 +63,7 @@ end
             structure_hash["fields"]["request_method"   ] = {"data_type"=>"text", "file_field"=>"request_method"    } if field_order.push("request_method"  )
             structure_hash["fields"]["requested_date"   ] = {"data_type"=>"date", "file_field"=>"requested_date"    } if field_order.push("requested_date"  )
             structure_hash["fields"]["notes"            ] = {"data_type"=>"text", "file_field"=>"notes"             } if field_order.push("notes"           )
-            structure_hash["fields"]["priority_level"   ] = {"data_type"=>"bool", "file_field"=>"priority_level"    } if field_order.push("priority_level"  )
+            structure_hash["fields"]["priority_level"   ] = {"data_type"=>"text", "file_field"=>"priority_level"    } if field_order.push("priority_level"  )
             
         structure_hash["field_order"] = field_order
         return structure_hash
