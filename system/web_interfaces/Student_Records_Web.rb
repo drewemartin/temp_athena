@@ -623,29 +623,29 @@ end
                         
                     }
                     
+                    recipient_table = $tools.table(
+                        :table_array    => rec_table_array,
+                        :student_link   => "name",
+                        :unique_name    => "request_details",
+                        :footers        => false,
+                        :head_section   => true,
+                        :title          => false,
+                        :legend         => false,
+                        :caption        => false#,
+                        #:embedded_style => {
+                        #    :table  => "width:100%;",
+                        #    :th     => nil,
+                        #    :tr     => nil,
+                        #    :tr_alt => nil,
+                        #    :td     => nil
+                        #}
+                    )
+                    
                 else
                     
                     recipient_table = "No recipients found."
                     
                 end
-                
-                recipient_table = $tools.table(
-                    :table_array    => rec_table_array,
-                    :student_link   => "name",
-                    :unique_name    => "request_details",
-                    :footers        => false,
-                    :head_section   => true,
-                    :title          => false,
-                    :legend         => false,
-                    :caption        => false#,
-                    #:embedded_style => {
-                    #    :table  => "width:100%;",
-                    #    :th     => nil,
-                    #    :tr     => nil,
-                    #    :tr_alt => nil,
-                    #    :td     => nil
-                    #}
-                )
                 
                 row.push(
                     
