@@ -30,7 +30,9 @@ class STUDENT_ATTENDANCE_WEB
         
         how_to_button = $tools.button_how_to("How To: How Attendance Is Decided", "How To: How Attendance Is Decided")
         
-        "Attendance#{how_to_button}#{new_contact_button}"
+        attendance_record_button = $tools.button_view_pdf("attendance_record", "", $focus_student.student_id.value)
+        
+        "Attendance#{how_to_button}#{new_contact_button}#{attendance_record_button}"
         
     end
     
@@ -271,6 +273,23 @@ end
             :onclick        => "select_student"
         }
         return student_link_params
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________ADD_NEW_PDF
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def add_new_pdf_attendance_record(sid)
+        
+        template = "ATTENDANCE_RECORD_PDF.rb"
+        
+        pdf = Prawn::Document.generate "#{$paths.htdocs_path}temp/attendance_record_temp#{$ifilestamp}.pdf" do |pdf|
+            require "#{$paths.templates_path}pdf_templates/#{template}"
+            template = eval("#{template.gsub(".rb","")}.new")
+            template.generate_pdf(sid, pdf)
+        end
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
