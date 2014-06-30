@@ -264,6 +264,32 @@ end
     
     def response
         
+        if $kit.params[:refresh] == "tabs_rri"
+            
+            $kit.modify_tag_content("rri_wl",web_script_funtion("STUDENT_RECORDS_WEB", "working_list", "true"), "update")
+            
+        end
+        
+    end
+    
+    def web_script_funtion(page, function_str, args = nil)
+        
+        output = String.new
+        
+        web_script = $kit.web_script_alt_page(page)
+        
+        if web_script.respond_to?(function_str)
+            
+            if args
+                output =  web_script.send(function_str, args)
+            else
+                output =  web_script.send(function_str)
+            end
+            
+        end
+        
+        return output
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -395,6 +421,23 @@ end
             
             div.STUDENT_RRI_REQUESTS__notes                      textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
             div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  input    {width:70px; float:left;}
+            div.STUDENT_RRI_REQUESTS__requested_date             input    {width:70px;}
+            
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           label {float:left; display:inline-block; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes                 {float:left; width:175px; }
+            
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  label {float:left; display:inline-block; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed        {float:left; clear:left; width:100px; margin-bottom:5px;}
+            
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status  label {float:left; display:inline-block; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status        {float:left; clear:left; width:100px; margin-bottom:5px;}
+            
+            #request_details td {text-align:left !important;}
+            
+            #new_pdf_button{margin-bottom:5px; margin-right:10px;}
+            
+            #refresh__tabs_rri{margin-top:1px; margin:bottom:5px;}
             
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}
