@@ -9,7 +9,7 @@ class Web_Tools
         @breakaway_iterator             = 1
         @csv_iterator                   = 1
         @expand_iterator                = 1
-        @tabs_iterator                  = 0
+        @tabs_iterator                  = 1
         @sub_tabs_iterator              = 1000
         @new_row_table_itterator        = Hash.new
     end

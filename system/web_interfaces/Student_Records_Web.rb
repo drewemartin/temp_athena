@@ -127,7 +127,7 @@ end
         
     end
 
-    def working_list
+    def working_list(refresh=false)
         
         output = Array.new
         
@@ -214,7 +214,7 @@ end
                 )"
             )
           
-        elsif $team_member.preferred_email.value == "jhalverson@agora.org" || "esaddler@agora.org"
+        elsif $team_member.preferred_email.value.match(/jhalverson@agora.org|esaddler@agora.org/)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -242,10 +242,14 @@ end
             sub_tab         = true
         )
         
-        output.push(
-            :name       => "MyRecordRequests",
-            :content    => button_print_labels("rri_labels")+tabulated_list
-        )
+        if refresh
+            tabulated_list
+        else
+            output.push(
+                :name       => "MyRecordRequests",
+                :content    => button_print_labels("rri_labels")+$tools.button_refresh("tabs_rri")+$tools.div_open("rri_wl","rri_wl")+tabulated_list+$tools.div_close
+            )
+        end
         
     end
 
@@ -306,17 +310,18 @@ end
         
         output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() + record.fields["student_id"  ].web.hidden()
         
-        output << record.fields["attn"            ].web.text(:label_option=>"Attention:")
-        output << record.fields["via_mail"        ].web.default(:label_option=>"Via Mail?")
-        output << record.fields["address_1"       ].web.text(:label_option=>"Address 1:")
-        output << record.fields["address_2"       ].web.text(:label_option=>"Address 2:")
-        output << record.fields["city"            ].web.text(:label_option=>"City:")
-        output << record.fields["state"           ].web.text(:label_option=>"State:")
-        output << record.fields["zip"             ].web.text(:label_option=>"Zip:")
-        output << record.fields["via_fax"         ].web.default(:label_option=>"Via Fax?")
-        output << record.fields["fax_number"      ].web.text(:label_option=>"Fax Number:")
-        output << record.fields["via_email"       ].web.default(:label_option=>"Via Email?")
-        output << record.fields["email_address"   ].web.text(:label_option=>"Email Address:")
+        output << record.fields["name"            ].web.text(    :label_option => "Name:"            )
+        output << record.fields["attn"            ].web.text(    :label_option => "Attention:"       )
+        output << record.fields["via_mail"        ].web.default( :label_option => "Via Mail?"        )
+        output << record.fields["address_1"       ].web.text(    :label_option => "Address 1:"       )
+        output << record.fields["address_2"       ].web.text(    :label_option => "Address 2:"       )
+        output << record.fields["city"            ].web.text(    :label_option => "City:"            )
+        output << record.fields["state"           ].web.text(    :label_option => "State:"           )
+        output << record.fields["zip"             ].web.text(    :label_option => "Zip:"             )
+        output << record.fields["via_fax"         ].web.default( :label_option => "Via Fax?"         )
+        output << record.fields["fax_number"      ].web.text(    :label_option => "Fax Number:"      )
+        output << record.fields["via_email"       ].web.default( :label_option => "Via Email?"       )
+        output << record.fields["email_address"   ].web.text(    :label_option => "Email Address:"   )
         
         return output
         
@@ -723,13 +728,11 @@ end
                     
                     #HEADERS
                     [
-                        "Document"      ,
-                        "Status"        ,
-                        "Date Completed",
-                        "Notes"
+                        "Document",
+                        "Details"
                     ]
                     
-                ] 
+                ] if requests[request_id].nil?
                 
                 requests[request_id].push(
                     
@@ -750,12 +753,13 @@ end
                                 "status"      ,
                                 "primary_id"  ,
                                 nil
-                            )
+                            ),
+                            :label_option=>"Status"
                             
-                        ),
+                        )+
                         
-                        record.fields["date_completed"  ].web.default,
-                        record.fields["notes"           ].web.default
+                        record.fields["date_completed"  ].web.default(:label_option=>"Date Completed")+
+                        record.fields["notes"           ].web.default(:label_option=>"Notes")
                         
                     ]
                     
@@ -770,6 +774,7 @@ end
                 [
                  
                     "High Priority?"            ,
+                    "Requested Date"            ,
                     "Request Details"           ,
                     "Requested Documents"
                    
@@ -784,8 +789,8 @@ end
                 
                 row.push(
                     
-                    request_rec.fields["priority_level"    ].web.select(    :label_option=>"Priority Level", :dd_choices=>priority_levels   ) +
-                    request_rec.fields["requested_date"    ].web.default(   :label_option=>"Requested Date"                                 )
+                    request_rec.fields["priority_level"    ].web.select( :dd_choices=>priority_levels),
+                    request_rec.fields["requested_date"    ].web.default()
                     
                 )
                 
@@ -798,50 +803,51 @@ end
                         
                         [
                             
-                            #HEADERS =
-                            "Print Label?"      ,
-                            "To:"               ,
-                            "Mail"              ,
-                            "Fax"               ,
-                            "Email"
-                            #"name"         ,
-                            #"attn"         ,
-                            #"via_mail"     ,
-                            #"address_1"    ,
-                            #"address_2"    ,
-                            #"city"         ,
-                            #"state"        ,
-                            #"zip"          ,
-                            #"via_fax"      ,
-                            #"fax_number"   ,
-                            #"via_email"    ,
-                            #"email_address"
+                            "Print?",
+                            "Recipients"               
                             
                         ]
                         
                     )
                     recipients.each{|recipient|
                         
+                        add_table_arr = [
+                            ["Mail",
+                                "#{recipient.fields["name"].value}"+"<br>"+
+                                "Attn: "+"#{recipient.fields["attn" ].value}"+"<br>"+
+                                "#{recipient.fields["address_1"     ].value}"+"<br>"+
+                                "#{recipient.fields["address_2"     ].value}"+"<br>"+
+                                "#{recipient.fields["city"          ].value}"+", "+
+                                "#{recipient.fields["state"         ].value} "+
+                                "#{recipient.fields["zip"           ].value}"],
+                            ["Fax",
+                                recipient.fields["fax_number"    ].value],
+                            ["Email",
+                                recipient.fields["email_address" ].value]
+                        ]
+                        
+                        add_table = $tools.table(
+                            :table_array    => add_table_arr,
+                            :unique_name    => "address_block",
+                            :footers        => false,
+                            :head_section   => false,
+                            :title          => false,
+                            :legend         => false,
+                            :caption        => false
+                        )
+                        
                         rec_table_array.push(
                             
                             [
                                 
                                 recipient.batch_checkbox                        ,
-                                recipient.fields["name"          ].web.label()  +
-                                recipient.fields["attn"          ].web.label()  ,
-                                recipient.fields["address_1"     ].web.label()  +
-                                recipient.fields["address_2"     ].web.label()  +
-                                recipient.fields["city"          ].web.label()  +
-                                recipient.fields["state"         ].web.label()  +
-                                recipient.fields["zip"           ].web.label()  ,
-                                recipient.fields["fax_number"    ].web.label()  ,
-                                recipient.fields["email_address" ].web.label()
+                                add_table
                               
                             ]
                             
                         )
                         
-                    } 
+                    }
                     
                     recipient_table = $tools.table(
                         :table_array    => rec_table_array,
@@ -873,9 +879,8 @@ end
                         :table_array    => [
                             
                             ["Student ID"       , request_rec.fields["student_id"    ].value            ],
-                            ["Request Method:"  , request_rec.fields["request_method"].web.text         ],
-                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ],
-                            ["Recipients"       , recipient_table                                       ]
+                            ["Request Method:"  , request_rec.fields["request_method"].web.select(:dd_choices=>request_method_dd)         ],
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ]
                             
                         ],
                         :student_link   => "name",
@@ -892,7 +897,8 @@ end
                         #    :tr_alt => nil,
                         #    :td     => nil
                         #}
-                    )
+                    )+
+                    recipient_table
                     
                 )
                 
@@ -905,14 +911,14 @@ end
                         :head_section   => true,
                         :title          => false,
                         :legend         => false,
-                        :caption        => false#,
-                        #:embedded_style => {
+                        :caption        => false,
+                        :embedded_style => {
                         #    :table  => "width:100%;",
                         #    :th     => nil,
                         #    :tr     => nil,
                         #    :tr_alt => nil,
-                        #    :td     => nil
-                        #}
+                            :td     => "border-bottom:1px dashed #6B6B6B"
+                        }
                     )
                     
                 )
@@ -1040,6 +1046,7 @@ end
             
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
+            div.STUDENT_RRI_RECIPIENTS__name                     label {width:110px; display:inline-block;}
             div.STUDENT_RRI_RECIPIENTS__attn                     label {width:110px; display:inline-block;}
             div.STUDENT_RRI_RECIPIENTS__via_mail                 label {width:110px; display:inline-block;}
             div.STUDENT_RRI_RECIPIENTS__address_1                label {width:110px; display:inline-block;}
@@ -1052,6 +1059,7 @@ end
             div.STUDENT_RRI_RECIPIENTS__via_email                label {width:110px; display:inline-block;}
             div.STUDENT_RRI_RECIPIENTS__email_address            label {width:110px; display:inline-block;}
             
+            div.STUDENT_RRI_RECIPIENTS__name                     input {width:250px; }
             div.STUDENT_RRI_RECIPIENTS__attn                     input {width:250px; }
             div.STUDENT_RRI_RECIPIENTS__address_1                input {width:250px; }
             div.STUDENT_RRI_RECIPIENTS__address_2                input {width:250px; }

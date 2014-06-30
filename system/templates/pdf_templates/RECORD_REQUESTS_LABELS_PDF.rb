@@ -72,8 +72,8 @@ class RECORD_REQUESTS_LABELS_PDF
                             
                             text = String.new
                             
-                            #text << "#{fields["name"     ].value}\n" if name && name != ""
-                            text << "ATTN:#{fields["attn"].value}\n" if fields["attn"] && fields["attn"].value != ""
+                            text << "#{fields["name"     ].value}\n" if fields["name"     ] && fields["name"     ].value != ""
+                            text << "ATTN:#{fields["attn"].value}\n" if fields["attn"     ] && fields["attn"     ].value != ""
                             text << "#{fields["address_1"].value}\n"
                             text << "#{fields["address_2"].value}\n" if fields["address_2"] && fields["address_2"].value != ""
                             text << "#{fields["city"     ].value}, #{fields["state"].value} #{fields["zip"].value}"
