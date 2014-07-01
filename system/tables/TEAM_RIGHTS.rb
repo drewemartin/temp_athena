@@ -100,6 +100,7 @@ end
             structure_hash["fields"]["sapphire_data_management_access"                          ] = {"data_type"=>"bool", "file_field"=>"sapphire_data_management_access"                       } if field_order.push("sapphire_data_management_access"                         )
             structure_hash["fields"]["schools_access"                                           ] = {"data_type"=>"bool", "file_field"=>"schools_access"                                        } if field_order.push("schools_access"                                          )
             structure_hash["fields"]["test_packets_access"                                      ] = {"data_type"=>"bool", "file_field"=>"test_packets_access"                                   } if field_order.push("test_packets_access"                                     )
+            structure_hash["fields"]["student_record_requests_admin_access"                     ] = {"data_type"=>"bool", "file_field"=>"student_record_requests_admin_access"                  } if field_order.push("student_record_requests_admin_access"                    )
             
             #LIVE_REPORTS_RIGHTS
             structure_hash["fields"]["live_reports_athena_project"                              ] = {"data_type"=>"bool", "file_field"=>"live_reports_athena_project"                           } if field_order.push("live_reports_athena_project"                             )
