@@ -122,204 +122,208 @@ class ATHENA_CGI < Base
                 save            unless (load? || fill_select_option?)
                 search_results  unless (load? || fill_select_option?)
                 
-                if load?
+                if !(web_script.response == false)
                     
-                    web_script.load
-                 
-                elsif func_string = tab_load_requested?
-                    
-                    if web_script.respond_to?(func_string)
+                    if load?
                         
-                        arg         = params[func_string]
-                        tab_number  = func_string.to_s.split("_")[-1]
-                        content     = web_script.send(func_string, arg)
+                        web_script.load
+                     
+                    elsif func_string = tab_load_requested?
+                        
+                        if web_script.respond_to?(func_string)
+                            
+                            arg         = params[func_string]
+                            tab_number  = func_string.to_s.split("_")[-1]
+                            content     = web_script.send(func_string, arg)
+                            
+                            $kit.modify_tag_content(
+                                "tabs-#{tab_number}",
+                                content+$tools.newlabel("bottom")
+                            )
+                            
+                        end
+                        
+                    elsif expand_function = expandable?
+                        
+                        expansion_arr    = params[expand_function].split(":")
+                        expansion_cls    = expansion_arr[0]
+                        expansion_arg    = expansion_arr[1]
+                        
+                        require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/athena/system/web_interfaces/#{expansion_cls}")
+                        script = Object.const_get(expansion_cls.upcase).new();
+                        
+                        this_function = expand_function.to_s.split("_")
+                        this_function.pop
+                        this_function = this_function.join("_")
+                        if expansion_arg
+                            content = script.send(this_function,expansion_arg)
+                        else
+                            content = script.send(this_function)
+                        end
                         
                         $kit.modify_tag_content(
-                            "tabs-#{tab_number}",
+                            "content_div_#{expand_function}",
                             content+$tools.newlabel("bottom")
                         )
-                        
-                    end
-                    
-                elsif expand_function = expandable?
-                    
-                    expansion_arr    = params[expand_function].split(":")
-                    expansion_cls    = expansion_arr[0]
-                    expansion_arg    = expansion_arr[1]
-                    
-                    require File.dirname(__FILE__).gsub("cgi-bin", "htdocs/athena/system/web_interfaces/#{expansion_cls}")
-                    script = Object.const_get(expansion_cls.upcase).new();
-                    
-                    this_function = expand_function.to_s.split("_")
-                    this_function.pop
-                    this_function = this_function.join("_")
-                    if expansion_arg
-                        content = script.send(this_function,expansion_arg)
-                    else
-                        content = script.send(this_function)
-                    end
-                    
-                    $kit.modify_tag_content(
-                        "content_div_#{expand_function}",
-                        content+$tools.newlabel("bottom")
-                    )
-                 
-                elsif fill_select_option_id = fill_select_option?
-                    
-                    if fill_select_option_id.to_s.include?("__")
-                        func_str    = "fill_select_option_"+fill_select_option_id.to_s.split("__").pop()
-                    else
-                        func_str    = fill_select_option_id
-                    end 
-                    
-                    pid         = fill_select_option_id.to_s.split("__")[1]
-                    field_name  = params[fill_select_option_id.to_sym].split(":")[0]
-                    field_value = params[fill_select_option_id.to_sym].split(":")[1]
-                    if web_script.respond_to?(func_str)
-                        
-                        $kit.modify_tag_content(
-                            fill_select_option_id.to_s.gsub("fill_select_option_",""),
-                            web_script.send(func_str, field_name, field_value, pid)
-                        )
                      
-                    elsif params[:student_page_view] && web_script_alt_page(params[:student_page_view]).respond_to?(func_str)
+                    elsif fill_select_option_id = fill_select_option?
+                        
+                        if fill_select_option_id.to_s.include?("__")
+                            func_str    = "fill_select_option_"+fill_select_option_id.to_s.split("__").pop()
+                        else
+                            func_str    = fill_select_option_id
+                        end 
+                        
+                        pid         = fill_select_option_id.to_s.split("__")[1]
+                        field_name  = params[fill_select_option_id.to_sym].split(":")[0]
+                        field_value = params[fill_select_option_id.to_sym].split(":")[1]
+                        if web_script.respond_to?(func_str)
+                            
+                            $kit.modify_tag_content(
+                                fill_select_option_id.to_s.gsub("fill_select_option_",""),
+                                web_script.send(func_str, field_name, field_value, pid)
+                            )
+                         
+                        elsif params[:student_page_view] && web_script_alt_page(params[:student_page_view]).respond_to?(func_str)
+                            
+                            $kit.modify_tag_content(
+                                fill_select_option_id.to_s.gsub("fill_select_option_",""),
+                                web_script_alt_page(params[:student_page_view]).send(func_str, field_name, field_value, pid)
+                            )
+                            
+                        end
+                        
+                    elsif params[:accordion_doctype]
+                        load_accordion_links
+                        
+                    elsif params[:new_breakaway]
+                        add_new_breakaway
+                      
+                    elsif params[:new_csv]
+                        structure[:output] = add_new_csv
+                        
+                    elsif params[:view_pdf]
+                        view_new_pdf
+                        
+                    elsif params[:doc_id]
+                        load_secure_document
+                        
+                    elsif params[:upload_pdf]
+                        
+                        output = String.new
+                        
+                        func = params[:upload_pdf].split("ARGV")[0]
+                        args = params[:upload_pdf].split("ARGV").length > 1 ? params[:upload_pdf].split("ARGV")[1] : params[:upload_pdf].split("ARGV")[1]
+                        
+                        function_str = "upload_pdf_#{func}"
+                        
+                        if web_script.respond_to?(function_str)
+                           
+                            if args
+                                output <<  web_script.send(function_str, args)
+                            else
+                                output <<  web_script.send(function_str)
+                            end
+                          
+                        end
+                        
+                        $kit.modify_tag_content("upload_new_pdf_#{func}", output, "update")
+                        
+                    elsif params[:upload_doc]
+                        
+                        output = String.new
+                        
+                        func = params[:upload_doc]
+                        
+                        function_str = "upload_doc_#{func}"
+                        
+                        if web_script.respond_to?(function_str)
+                           
+                            if params[:sid]
+                                output <<  web_script.send(function_str, params[:sid])
+                            elsif params[:tid]
+                                output <<  web_script.send(function_str, params[:tid])
+                            else
+                                output <<  web_script.send(function_str)
+                            end
+                          
+                        end
+                        
+                        $kit.modify_tag_content("upload_new_doc_#{func}", output, "update")
+                        
+                    elsif params[:doc_upload]
+                        
+                        doc      = $kit.params[:doc_upload]     != "" ? $kit.params[:doc_upload]   : false
+                        category = $kit.params[:doc_category]   != "" ? $kit.params[:doc_category] : false
+                        type     = $kit.params[:doc_type]       != "" ? $kit.params[:doc_type]     : false
+                        name     = $kit.params[:file_name]      != "" ? $kit.params[:file_name]    : false
+                        ext      = $kit.params[:extension]      != "" ? $kit.params[:extension]    : false
+                        sid      = $kit.params[:sidref]         != "" ? $kit.params[:sidref]       : false
+                        tid      = $kit.params[:tidref]         != "" ? $kit.params[:tidref]       : false
+                        
+                        if doc && type && category && ext
+                            
+                            if sid
+                                
+                                save_document(sid, category, type, ext, doc, "student")
+                                
+                            elsif tid
+                                
+                                save_document(tid, category, type, ext, doc, "team")
+                                
+                            end
+                            
+                        else
+                            
+                            doc_validation_check(type, ext, doc, sid, tid)
+                            
+                        end
+                     
+                    elsif params[:how_to]
+                        get_how_to
+                        
+                    elsif params[:new_row]
+                        add_new_record
+                      
+                    elsif params[:get_row]
+                        get_row
+                        
+                    elsif params[:new_request]
+                        request_report(params[:new_request])
+                        
+                    elsif params[:sid] && params[:sid] != ""
                         
                         $kit.modify_tag_content(
-                            fill_select_option_id.to_s.gsub("fill_select_option_",""),
-                            web_script_alt_page(params[:student_page_view]).send(func_str, field_name, field_value, pid)
+                            "student_record_title",
+                            web_script.page_title,
+                            type="update"
                         )
                         
-                    end
-                    
-                elsif params[:accordion_doctype]
-                    load_accordion_links
-                    
-                elsif params[:new_breakaway]
-                    add_new_breakaway
-                  
-                elsif params[:new_csv]
-                    structure[:output] = add_new_csv
-                    
-                elsif params[:view_pdf]
-                    view_new_pdf
-                    
-                elsif params[:doc_id]
-                    load_secure_document
-                    
-                elsif params[:upload_pdf]
-                    
-                    output = String.new
-                    
-                    func = params[:upload_pdf].split("ARGV")[0]
-                    args = params[:upload_pdf].split("ARGV").length > 1 ? params[:upload_pdf].split("ARGV")[1] : params[:upload_pdf].split("ARGV")[1]
-                    
-                    function_str = "upload_pdf_#{func}"
-                    
-                    if web_script.respond_to?(function_str)
+                        student_record.content
+                        
+                    elsif params[:tid]
+                        
+                        team_member_record_title    =  String.new
+                        page_title                  =  web_script.page_title
+                        team_member_record_title    << page_title if !page_title.nil?
+                        $kit.modify_tag_content(
+                            
+                            "team_member_record_title",
+                            team_member_record_title,
+                            type="update"
+                            
+                        )
+                        
+                        team_member_record.content
+                        
+                    elsif !params[:batch_action].nil? && !params[:batch_ids].nil?
+                        
+                        web_script.send(params[:batch_action], params[:batch_ids], params[:batch_value])
                        
-                        if args
-                            output <<  web_script.send(function_str, args)
-                        else
-                            output <<  web_script.send(function_str)
-                        end
-                      
-                    end
-                    
-                    $kit.modify_tag_content("upload_new_pdf_#{func}", output, "update")
-                    
-                elsif params[:upload_doc]
-                    
-                    output = String.new
-                    
-                    func = params[:upload_doc]
-                    
-                    function_str = "upload_doc_#{func}"
-                    
-                    if web_script.respond_to?(function_str)
-                       
-                        if params[:sid]
-                            output <<  web_script.send(function_str, params[:sid])
-                        elsif params[:tid]
-                            output <<  web_script.send(function_str, params[:tid])
-                        else
-                            output <<  web_script.send(function_str)
-                        end
-                      
-                    end
-                    
-                    $kit.modify_tag_content("upload_new_doc_#{func}", output, "update")
-                    
-                elsif params[:doc_upload]
-                    
-                    doc      = $kit.params[:doc_upload]     != "" ? $kit.params[:doc_upload]   : false
-                    category = $kit.params[:doc_category]   != "" ? $kit.params[:doc_category] : false
-                    type     = $kit.params[:doc_type]       != "" ? $kit.params[:doc_type]     : false
-                    name     = $kit.params[:file_name]      != "" ? $kit.params[:file_name]    : false
-                    ext      = $kit.params[:extension]      != "" ? $kit.params[:extension]    : false
-                    sid      = $kit.params[:sidref]         != "" ? $kit.params[:sidref]       : false
-                    tid      = $kit.params[:tidref]         != "" ? $kit.params[:tidref]       : false
-                    
-                    if doc && type && category && ext
-                        
-                        if sid
-                            
-                            save_document(sid, category, type, ext, doc, "student")
-                            
-                        elsif tid
-                            
-                            save_document(tid, category, type, ext, doc, "team")
-                            
-                        end
-                        
-                    else
-                        
-                        doc_validation_check(type, ext, doc, sid, tid)
+                    #else
+                    #    web_script.response if web_script.respond_to?("response")
                         
                     end
-                 
-                elsif params[:how_to]
-                    get_how_to
-                    
-                elsif params[:new_row]
-                    add_new_record
-                  
-                elsif params[:get_row]
-                    get_row
-                    
-                elsif params[:new_request]
-                    request_report(params[:new_request])
-                    
-                elsif params[:sid] && params[:sid] != ""
-                    
-                    $kit.modify_tag_content(
-                        "student_record_title",
-                        web_script.page_title,
-                        type="update"
-                    )
-                    
-                    student_record.content
-                    
-                elsif params[:tid]
-                    
-                    team_member_record_title    =  String.new
-                    page_title                  =  web_script.page_title
-                    team_member_record_title    << page_title if !page_title.nil?
-                    $kit.modify_tag_content(
-                        
-                        "team_member_record_title",
-                        team_member_record_title,
-                        type="update"
-                        
-                    )
-                    
-                    team_member_record.content
-                    
-                elsif !params[:batch_action].nil? && !params[:batch_ids].nil?
-                    
-                    web_script.send(params[:batch_action], params[:batch_ids], params[:batch_value])
-                   
-                else
-                    web_script.response if web_script.respond_to?("response")
                     
                 end
                 
@@ -1003,13 +1007,19 @@ end
             if web_script.respond_to?(function_str)
                 
                 new_record_str = web_script.send(function_str) 
-                modify_tag_content("add_new_dialog_#{table_name}", "<input type='hidden' name='save_new_record'>"+new_record_str, type="update")
+                modify_tag_content(
+                    params[:modify_tag] ? params[:modify_tag] : "add_new_dialog_#{table_name}",
+                    "<input type='hidden' name='save_new_record'>"+new_record_str, type="update"
+                )
                 
             elsif params[:student_page_view] && web_script_alt_page(params[:student_page_view]).respond_to?(function_str)
                 
                 new_record_str  = web_script_alt_page(params[:student_page_view]).send(function_str)
                 css             = web_script_alt_page(params[:student_page_view]).css
-                modify_tag_content("add_new_dialog_#{table_name}", css+new_record_str, type="update")
+                modify_tag_content(
+                    params[:modify_tag] ? params[:modify_tag] : "add_new_dialog_#{table_name}",
+                    css+new_record_str, type="update"
+                )
                 
             end
             
@@ -1225,7 +1235,7 @@ end
             fields["team_id"        ].value = tid
             fields["report_name"    ].value = report_name
             fields["status"         ].value = "Requested"
-            fields["expiration_date"].value = (DateTime.now+(6.0/24)).strftime("%Y-%m-%d %H:%M:%S")
+            fields["expiration_date"].value = (DateTime.now+(2.0/24)).strftime("%Y-%m-%d %H:%M:%S")
             
             requested_pid = new_row.save
             
