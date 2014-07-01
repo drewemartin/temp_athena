@@ -105,6 +105,7 @@ end
             a3, b3 = "Team Members#{team_email_link || ''}"     , team_members
             a4, b4 = "Assessments"                              , assessments
             a5, b5 = "Attendance"                               , attendance
+            
             demo_section.push([a1.to_s,a2.to_s,a3.to_s,a4.to_s,a5.to_s])
             demo_section.push([b1.to_s,b2.to_s,b3.to_s,b4.to_s,b5.to_s])
             
@@ -118,12 +119,12 @@ end
             )
             
             #CSS
-            output << "<style>"
+            output << "<style>
                 
-                output << "table#demo_section                          { width:100%; font-size: small; text-align:center; margin-bottom: 15px; border:1px solid #E1E1E1; border-radius:6px; background:#E9EEEF;  }"
-                output << "table#demo_section                        td{ width:20%; height:20px;                             }"  
+                table#demo_section                          { width:100%; font-size: small; text-align:center; margin-bottom: 15px; border:1px solid #E1E1E1; border-radius:6px; background:#E9EEEF;  }
+                table#demo_section                        td{ width:20%; height:10px;                             }
                 
-            output << "</style>"
+            </style>"
             
         output << "</div>"
         
@@ -138,37 +139,42 @@ end
 
     def assessments
         
-        sec_array = Array.new
+        s = $focus_student
         
-        scantron_record     = $focus_student.scantron_performance_level
-        assessment_record   = $focus_student.assessment
-        leap_record         = $focus_student.leap
+        scantron_record     = s.scantron_performance_level
+        assessment_record   = s.assessment
+        leap_record         = s.leap
         
-        a1, b1 = "Scantron Math     Ent:"   , ( scantron_record.stron_ent_perf_m ? scantron_record.stron_ent_perf_m.value : "") 
-        a2, b2 = "Scantron Reading  Ent:"   , ( scantron_record.stron_ent_perf_r ? scantron_record.stron_ent_perf_r.value : "")
-        a3, b3 = "Scantron Math     Ext:"   , ( scantron_record.stron_ext_perf_m ? scantron_record.stron_ext_perf_m.value : "")
-        a4, b4 = "Scantron Reading  Ext:"   , ( scantron_record.stron_ext_perf_r ? scantron_record.stron_ext_perf_r.value : "")
-        si_level = $focus_student.study_island_level.color_code
-        a5, b5 = "Study Island Level:"    , (!si_level ?  "" : si_level.web.label(:style=>"color:#{(si_level.value.nil? ? "" : si_level.value.downcase)};"))
-                
+        a1, b1 = "Scantron Math     Ent:"   , ( scantron_record.stron_ent_perf_m ? scantron_record.stron_ent_perf_m.value : "-") 
+        a2, b2 = "Scantron Reading  Ent:"   , ( scantron_record.stron_ent_perf_r ? scantron_record.stron_ent_perf_r.value : "-")
+        a3, b3 = "Scantron Math     Ext:"   , ( scantron_record.stron_ext_perf_m ? scantron_record.stron_ext_perf_m.value : "-")
+        a4, b4 = "Scantron Reading  Ext:"   , ( scantron_record.stron_ext_perf_r ? scantron_record.stron_ext_perf_r.value : "-")
+        
+        si_level = s.study_island_level.color_code
+        a5, b5 = "Study Island Level:"      , (!si_level ?  "-" : si_level.web.label(:style=>"color:#{(si_level.value.nil? ? "-" : si_level.value.downcase)};"))
+        
         if [].include? $kit.user
-            a6, b6 = "Tier Level Math:"         , ( assessment_record.tier_level_math    ? assessment_record.tier_level_math.web.select(:dd_choices=>tiers)    : "")
-            a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.web.select(:dd_choices=>tiers) : "")
+            a6, b6 = "Tier Level Math:"         , ( assessment_record.tier_level_math    ? assessment_record.tier_level_math.web.select(:dd_choices=>tiers)    : "-")
+            a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.web.select(:dd_choices=>tiers) : "-")
         else
-            a6, b6 = "Tier Level Math:"         , ( assessment_record.tier_level_math    ? assessment_record.tier_level_math.value    : "")
-            a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.value : "")
+            a6, b6 = "Tier Level Math:"         , ( assessment_record.tier_level_math    ? assessment_record.tier_level_math.value    : "-")
+            a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.value : "-")
         end
         
         a8, b8 = "LEAP Level:"   , ( leap_record.existing_record ? leap_record.leap_level.value : "0")
         
-        sec_array.push([a8.to_s,b8.to_s])
-        sec_array.push([a6.to_s,b6.to_s])
-        sec_array.push([a7.to_s,b7.to_s])
-        sec_array.push([a1.to_s,b1.to_s])
-        sec_array.push([a2.to_s,b2.to_s])
-        sec_array.push([a3.to_s,b3.to_s])
-        sec_array.push([a4.to_s,b4.to_s])
-        sec_array.push([a5.to_s,b5.to_s])
+        sec_array =[
+            
+            [a8.to_s,b8.to_s],
+            [a6.to_s,b6.to_s],
+            [a7.to_s,b7.to_s],
+            [a1.to_s,b1.to_s],
+            [a2.to_s,b2.to_s],
+            [a3.to_s,b3.to_s],
+            [a4.to_s,b4.to_s],
+            [a5.to_s,b5.to_s]
+            
+        ]
         
         output = "<DIV style='height:120px; overflow:auto;'>"
         
@@ -184,23 +190,24 @@ end
         output << "</DIV>"
         
         #CSS
-        output << "<style>"
+        output << "<style>
             
-            output << "table#demo_section_assessment{ 
+            table#demo_section_assessment{ 
                 width       : 80%;
                 font-size   : x-small;
                 text-align  : center;
                 margin-left : auto;
                 margin-right: auto;
-            }"
-            output << "table#demo_section_assessment                    td{ width:50%;                                          }"
-            output << "table#demo_section_assessment           td.column_0{ vertical-align:middle; text-align:left;             }"
-            output << "table#demo_section_assessment           td.column_1{ vertical-align:middle; text-align:right;            }"
-            output << "table#demo_section_assessment            td.odd_row{ vertical-align:middle; font-weight:normal;          }"
-            output << "table#demo_section_assessment           td.even_row{ vertical-align:middle;                              }"
-            output << "table#demo_section_assessment                    th{ width:300px; border-bottom: 1px solid #000000;      }"
+            }
             
-        output << "</style>"
+            table#demo_section_assessment                    td{                                                       }
+            table#demo_section_assessment           td.column_0{ vertical-align:middle; text-align:left;    width:80%; }
+            table#demo_section_assessment           td.column_1{ vertical-align:middle; text-align:right;   width:20%; }
+            table#demo_section_assessment            td.odd_row{ vertical-align:middle; font-weight:normal;            }
+            table#demo_section_assessment           td.even_row{ vertical-align:middle;                                }
+            table#demo_section_assessment                    th{ width:300px; border-bottom: 1px solid #000000;        }
+            
+        </style>"
         
         return output
         
@@ -208,12 +215,13 @@ end
     
     def attendance
         
-        student             = $students.attach($focus_student.student_id.value)#FNORD - DELETE THIS OBJECT ASAP
+        s                 = $focus_student
+        
+        student           = $students.attach(s.student_id.value) #FNORD - DELETE THIS OBJECT ASAP
         
         excused_breakdown = student.attendance.excused_absences_breakdown
         
-        att_array = Array.new
-        a1, b1 = "Enroll Date:"     , $focus_student.schoolenrolldate.to_user
+        a1, b1 = "Enroll Date:"     , s.schoolenrolldate.to_user
         a2, b2 = "Days Enrolled:"   , student.attendance.enrolled_days.length
         a3, b3 = "Days Attended:"   , student.attendance.attended_days.length
         a4, b4 = "Days Excused:"    , student.attendance.excused_absences.length
@@ -222,15 +230,18 @@ end
         a7, b7 = "t:"               , excused_breakdown ? excused_breakdown["t" ].length : 0
         a8, b8 = "e:"               , excused_breakdown ? excused_breakdown["e" ].length : 0
         
-        
-        att_array.push([a1.to_s,b1.to_s])
-        att_array.push([a2.to_s,b2.to_s])
-        att_array.push([a3.to_s,b3.to_s])
-        att_array.push([a4.to_s,b4.to_s])
-        att_array.push([a5.to_s,b5.to_s])
-        att_array.push([a6.to_s,b6.to_s])
-        att_array.push([a7.to_s,b7.to_s])
-        att_array.push([a8.to_s,b8.to_s])
+        att_array = [
+            
+            [a1.to_s,b1.to_s],
+            [a2.to_s,b2.to_s],
+            [a3.to_s,b3.to_s],
+            [a4.to_s,b4.to_s],
+            [a5.to_s,b5.to_s],
+            [a6.to_s,b6.to_s],
+            [a7.to_s,b7.to_s],
+            [a8.to_s,b8.to_s]
+            
+        ]
         
         output = "<DIV style='height:120px; overflow:auto;'>"
         
@@ -246,23 +257,24 @@ end
         output << "</DIV>"
         
         #CSS
-        output << "<style>"
+        output << "<style>
             
-            output << "table#demo_section_att{ 
+            table#demo_section_att{ 
                 width       : 80%;
                 font-size   : x-small;
                 text-align  : center;
                 margin-left : auto;
                 margin-right: auto;
-            }"
-            output << "table#demo_section_att                    td{ width:50%;                                          }"
-            output << "table#demo_section_att           td.column_0{ vertical-align:middle; text-align:left;             }"
-            output << "table#demo_section_att           td.column_1{ vertical-align:middle; text-align:right;            }"
-            output << "table#demo_section_att            td.odd_row{ vertical-align:middle; font-weight:normal;          }"
-            output << "table#demo_section_att           td.even_row{ vertical-align:middle;                              }"
-            output << "table#demo_section_att                    th{ width:300px; border-bottom: 1px solid #000000;      }"
+            }
             
-        output << "</style>"
+            table#demo_section_att                    td{ width:50%;                                          }
+            table#demo_section_att           td.column_0{ vertical-align:middle; text-align:left;             }
+            table#demo_section_att           td.column_1{ vertical-align:middle; text-align:right;            }
+            table#demo_section_att            td.odd_row{ vertical-align:middle; font-weight:normal;          }
+            table#demo_section_att           td.even_row{ vertical-align:middle;                              }
+            table#demo_section_att                    th{ width:300px; border-bottom: 1px solid #000000;      }
+            
+        </style>"
         
         return output
         
@@ -272,19 +284,25 @@ end
         
         id_array = Array.new
         
-        add_str = "#{$focus_student.mailingaddress1.value}<br>"
-        add_str << "#{!$focus_student.mailingaddress2.value.nil? ? $focus_student.mailingaddress2.value+"<br>" : ""}"
-        add_str << "#{$focus_student.mailingcity.value}, #{$focus_student.mailingstate.value} #{$focus_student.mailingzip.value}"
+        s = $focus_student
         
-        a1, b1 = "Mailing Address:"                                     , add_str
-        a2, b2 = "Phone:"                                       , $focus_student.studenthomephone.to_phone_number
-        a3, b3 = "LC (#{$focus_student.lcrelationship.value}):"    , "#{$focus_student.lcfirstname.value} #{$focus_student.lclastname.value}" 	
-        a4, b4 = "LG (#{$focus_student.lgrelationship.value}):"    , "#{$focus_student.lgfirstname.value} #{$focus_student.lglastname.value}"
+        add_str =  "#{s.mailingaddress1.value}<br>"
+        add_str << "#{!s.mailingaddress2.value.nil? ? s.mailingaddress2.value+"<br>" : ""}"
+        add_str << "#{s.mailingcity.value}, #{s.mailingstate.value} #{s.mailingzip.value}"
+        
+        a1, b1 = "Mailing Address:"                   , add_str
+        a2, b2 = "County:"                            , s.pcounty.value
+        a3, b3 = "Phone:"                             , s.studenthomephone.to_phone_number
+        a4, b4 = ""                                   , "<div style='color:red;'>#{s.physicalregion.value}</div>"
+        a5, b5 = "LC (#{s.lcrelationship.value}):"    , "#{s.lcfirstname.value} #{s.lclastname.value}" 	
+        a6, b6 = "LG (#{s.lgrelationship.value}):"    , "#{s.lgfirstname.value} #{s.lglastname.value}"
         
         id_array.push([a1.to_s,b1.to_s])
+        id_array.push([a4.to_s,b4.to_s]) if !s.physicalregion.value.nil?
         id_array.push([a2.to_s,b2.to_s])
         id_array.push([a3.to_s,b3.to_s])
-        id_array.push([a4.to_s,b4.to_s])
+        id_array.push([a5.to_s,b5.to_s])
+        id_array.push([a6.to_s,b6.to_s])
         
         output = $tools.table(
             :table_array    => id_array,
@@ -296,55 +314,62 @@ end
         )
         
         #CSS
-        output << "<style>"
+        output << "<style>
             
-            output << "table#demo_section_contact{
+            table#demo_section_contact{
                 width       : 85%;
                 font-size   : x-small;
                 text-align  : center;
                 margin-left : auto;
                 margin-right: auto;
-            }"
-            output << "table#demo_section_contact                     td{ width:50%;                                          }"
-            output << "table#demo_section_contact            td.column_0{ vertical-align:middle; text-align:left;             }"
-            output << "table#demo_section_contact            td.column_1{ vertical-align:middle; text-align:right;            }"
+            }
             
-            output << "table#demo_section_contact            tr.row_0 td.column_0 { width:10%; vertical-align:middle; text-align:left;   }"
-            output << "table#demo_section_contact            tr.row_0 td.column_1 { width:90%; vertical-align:middle; text-align:right;   }"
+            table#demo_section_contact                     td{ width:50%;                                          }
+            table#demo_section_contact            td.column_0{ vertical-align:middle; text-align:left;             }
+            table#demo_section_contact            td.column_1{ vertical-align:middle; text-align:right;            }
             
-            output << "table#demo_section_contact             td.odd_row{ vertical-align:middle; font-weight:normal;          }"
-            output << "table#demo_section_contact            td.even_row{ vertical-align:middle;                              }"
-            output << "table#demo_section_contact                     th{ width:300px; border-bottom: 1px solid #000000;      }"
+            table#demo_section_contact  tr.row_0 td.column_0 { width:10%; vertical-align:middle; text-align:left;  }
+            table#demo_section_contact  tr.row_0 td.column_1 { width:90%; vertical-align:middle; text-align:right; }
             
-        output << "</style>"
+            table#demo_section_contact             td.odd_row{ vertical-align:middle; font-weight:normal;          }
+            table#demo_section_contact            td.even_row{ vertical-align:middle;                              }
+            table#demo_section_contact                     th{ width:300px; border-bottom: 1px solid #000000;      }
+            
+        </style>"
         
         return output
+        
     end
     
     def identity
         
+        s = $focus_student
         
+        dob = Date.strptime(s.birthday.value)
+        now = Date.today
+        age = now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
         
-        id_array = Array.new
+        a1, b1 = "First Name:"      , s.studentfirstname.value
+        a2, b2 = "Last Name:"       , s.studentlastname.value
+        a3, b3 = "StudentID:"       , s.student_id.value + s.student_id.web.hidden(:field_id=>"student_id", :field_name=>"student_id")
+        a4, b4 = "FamilyID:"        , s.familyid.value
+        a5, b5 = "Grade:"           , s.grade.value
+        a6, b6 = "Birthday:"        , s.birthday.to_user
+        a7, b7 = "Age:"             , age
+        a8, b8 = "Is Special Ed:"   , s.isspecialed.value == 1 ? "<div style='color:red;'>Yes</div>" : "No"
         
-        a1, b1 = "First Name:"      , $focus_student.studentfirstname.value
-        a2, b2 = "Last Name:"       , $focus_student.studentlastname.value
-        a3, b3 = "StudentID:"       , "#{$focus_student.student_id.value}#{$focus_student.student_id.web.hidden(:field_id=>"student_id", :field_name=>"student_id")}"
-        a4, b4 = "FamilyID:"        , $focus_student.familyid.value
-        a5, b5 = "Grade:"           , $focus_student.grade.value
-        a6, b6 = "Birthday:"        , $focus_student.birthday.to_user
-        a7, b7 = "Is Special Ed:"   , $focus_student.isspecialed.value == 1 ? "<div style='color:red;'>Yes</div>" : "No"
-        #a7, b7 = "Age:"             , $base.age_from_date($focus_student.birthday.value) if $focus_student.birthday.value
-        
-        
-        id_array.push([a1.to_s,b1.to_s])
-        id_array.push([a2.to_s,b2.to_s])
-        id_array.push([a3.to_s,b3.to_s])
-        id_array.push([a4.to_s,b4.to_s])
-        id_array.push([a5.to_s,b5.to_s])
-        id_array.push([a6.to_s,b6.to_s])
-        id_array.push([a7.to_s,b7.to_s])
-        #id_array.push([a7.to_s,b7.to_s])
+        id_array = [
+            
+            [a1.to_s,b1.to_s],
+            [a2.to_s,b2.to_s],
+            [a3.to_s,b3.to_s],
+            [a4.to_s,b4.to_s],
+            [a5.to_s,b5.to_s],
+            [a6.to_s,b6.to_s],
+            [a7.to_s,b7.to_s],
+            [a8.to_s,b8.to_s]
+            
+        ]
         
         output = $tools.table(
             :table_array    => id_array,
@@ -356,23 +381,24 @@ end
         )
         
         #CSS
-        output << "<style>"
+        output << "<style>
             
-            output << "table#demo_section_id{
+            table#demo_section_id{
                 width       : 80%;
                 font-size   : x-small;
                 text-align  : center;
                 margin-left : auto;
                 margin-right: auto;
-            }"
-            output << "table#demo_section_id                     td{ width:50%;                                          }"
-            output << "table#demo_section_id            td.column_0{ vertical-align:middle; text-align:left;             }"
-            output << "table#demo_section_id            td.column_1{ vertical-align:middle; text-align:right;            }"
-            output << "table#demo_section_id             td.odd_row{ vertical-align:middle; font-weight:normal;          }"
-            output << "table#demo_section_id            td.even_row{ vertical-align:middle;                              }"
-            output << "table#demo_section_id                     th{ width:300px; border-bottom: 1px solid #000000;      }"
+            }
             
-        output << "</style>"
+            table#demo_section_id                     td{ width:50%;                                          }
+            table#demo_section_id            td.column_0{ vertical-align:middle; text-align:left;             }
+            table#demo_section_id            td.column_1{ vertical-align:middle; text-align:right;            }
+            table#demo_section_id             td.odd_row{ vertical-align:middle; font-weight:normal;          }
+            table#demo_section_id            td.even_row{ vertical-align:middle;                              }
+            table#demo_section_id                     th{ width:300px; border-bottom: 1px solid #000000;      }
+            
+        </style>"
         
         return output
     end
@@ -429,24 +455,23 @@ end
         output << "</DIV>"
         
         #CSS
-        output << "<style>"
+        output << "<style>
             
-            output << "table#demo_section_team{
+            table#demo_section_team{
                 width       : 80%;
                 font-size   : x-small;
                 text-align  : center;
                 margin-left : auto;
                 margin-right: auto;
-            }"
+            }
             
-            output << "table#demo_section_team             div.day { display:inline-block; width:20%;  text-align:center;}"
-            output << "table#demo_section_team         td.column_0 { width:20%; vertical-align:middle; text-align:left;  }"
-            output << "table#demo_section_team         td.column_1 { width:60%; vertical-align:middle; text-align:left;  }"
-            #output << "table#demo_section_team                  td { border-bottom: 1px groove black; }"
-            output << "select#field_id__2__STUDENT_SPECIALIST_MATH__team_id     { width:100%;                            }"
-            output << "select#field_id__2__STUDENT_SPECIALIST_READING__team_id  { width:100%;                            }"
+            table#demo_section_team                                         div.day { display:inline-block; width:20%;  text-align:center;}
+            table#demo_section_team                                     td.column_0 { width:20%; vertical-align:middle; text-align:left;  }
+            table#demo_section_team                                     td.column_1 { width:60%; vertical-align:middle; text-align:left;  }
+            select#field_id__2__STUDENT_SPECIALIST_MATH__team_id                    { width:100%;                                         }
+            select#field_id__2__STUDENT_SPECIALIST_READING__team_id                 { width:100%;                                         }
             
-        output << "</style>"
+        </style>"
         
     end
   
