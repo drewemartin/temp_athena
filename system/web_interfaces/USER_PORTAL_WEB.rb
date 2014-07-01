@@ -189,7 +189,7 @@ end
             :additional_params  => nil,
             :class              => "module_bar"
             
-        ) if $team_member.super_user? #|| $team_member.rights.student_record_requests_admin_access.is_true?
+        ) if $team_member.super_user? || $team_member.rights.student_record_requests_admin_access.is_true?
         
         $kit.output << $tools.breakaway_button(
             
@@ -308,7 +308,7 @@ end
         
         template = "RECORD_REQUESTS_LABELS_PDF.rb"
         
-        pdf = Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
+        Prawn::Document.generate "#{$paths.htdocs_path}temp/rr_labels_temp#{$ifilestamp}.pdf" do |pdf|
             require "#{$paths.templates_path}pdf_templates/#{template}"
             template = eval("#{template.gsub(".rb","")}.new")
             template.generate_pdf(pids, pdf)

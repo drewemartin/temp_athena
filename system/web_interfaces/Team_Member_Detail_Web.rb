@@ -628,6 +628,15 @@ end
             ],
             [
                 (
+                    this_field = $focus_team_member.rights.student_record_requests_admin_access
+                    this_field.web.checkbox(
+                        :label_option   => "Record Requests Admin",
+                        :disabled       => disabled("student_record_requests_admin_access")
+                    )
+                )
+            ],
+            [
+                (
                     this_field = $focus_team_member.rights.rtii_behavior_vault_access
                     this_field.web.checkbox(
                         :label_option   => "RTII Vault",
