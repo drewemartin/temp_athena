@@ -334,6 +334,7 @@ end
         a5, b5 = "Grade:"           , $focus_student.grade.value
         a6, b6 = "Birthday:"        , $focus_student.birthday.to_user
         a7, b7 = "Is Special Ed:"   , $focus_student.isspecialed.value == 1 ? "<div style='color:red;'>Yes</div>" : "No"
+        a8, b8 = "Is Active:"       , $focus_student.active == 1 ? "Yes" : "No"
         #a7, b7 = "Age:"             , $base.age_from_date($focus_student.birthday.value) if $focus_student.birthday.value
         
         
@@ -344,6 +345,7 @@ end
         id_array.push([a5.to_s,b5.to_s])
         id_array.push([a6.to_s,b6.to_s])
         id_array.push([a7.to_s,b7.to_s])
+        id_array.push([a8.to_s,b8.to_s])
         #id_array.push([a7.to_s,b7.to_s])
         
         output = $tools.table(

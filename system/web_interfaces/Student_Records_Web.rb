@@ -214,7 +214,7 @@ end
                 )"
             )
           
-        elsif $team_member.preferred_email.value.match(/jhalverson@agora.org|esaddler@agora.org/)
+        elsif $team_member.preferred_email.value.match(/jhalverson@agora.org|esaddler@agora.org|mmarkert2@agora.org/)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -799,9 +799,10 @@ end
                     $tools.table(
                         :table_array    => [
                             
-                            ["Student ID"       , request_rec.fields["student_id"    ].value            ],
-                            ["Request Method:"  , request_rec.fields["request_method"].web.select(:dd_choices=>request_method_dd)         ],
-                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ]
+                            ["Student ID:"      , request_rec.fields["student_id"    ].value],
+                            ["Active?:"         , $students.get(request_rec.fields["student_id"].value).active == 1 ? "Yes" : "No"],
+                            ["Request Method:"  , request_rec.fields["request_method"].web.select(:dd_choices=>request_method_dd)],
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default]
                             
                         ],
                         :student_link   => "name",
