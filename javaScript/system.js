@@ -129,8 +129,16 @@ function toggle_checkbox(checkbox){
 //Replaces HTML content
 function updateInnerHTML(id, content){
 	
-	document.getElementById(id).innerHTML = content;
-	
+	if(document.getElementById(id).hasAttribute("value")){
+		
+		document.getElementById(id).value = content
+		
+	}else{
+		
+		document.getElementById(id).innerHTML = content;
+		
+	}
+
 }
 
 //Updates error message box
