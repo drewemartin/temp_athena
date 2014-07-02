@@ -424,14 +424,16 @@ end
             div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  input    {width:70px; float:left;}
             div.STUDENT_RRI_REQUESTS__requested_date             input    {width:70px;}
             
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           label {float:left; display:inline-block; }
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes                 {float:left; width:175px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes        textarea {float:left; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes                 {float:left; width:250px; }
             
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  label {float:left; display:inline-block; }
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed        {float:left; clear:left; width:100px; margin-bottom:5px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed        {float:left; clear:left; width:250px; margin-bottom:5px;}
             
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status  label {float:left; display:inline-block; }
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status        {float:left; clear:left; width:100px; margin-bottom:5px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status  label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status select {float:left; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status        {float:left; clear:left; width:250px; margin-bottom:5px;}
             
             #request_details td {text-align:left !important;}
             
