@@ -310,6 +310,31 @@ end
         
         output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() + record.fields["student_id"  ].web.hidden()
         
+        school_dd = $tables.attach("SCHOOLS").dd_choices(
+            name            = "school_name" ,
+            value           = "primary_id"  ,
+            where_clause    = nil
+        )
+        
+        output << $field.new(
+            "type"  =>  "text",
+            "field" =>  "school_name",
+            "value" =>  nil
+        ).web.select(
+            {
+                :dd_choices => school_dd,
+                :onchange   => "
+                fill_select_option('#{record.fields["name"          ].web.field_id}', this );
+                fill_select_option('#{record.fields["address_1"     ].web.field_id}', this );
+                fill_select_option('#{record.fields["city"          ].web.field_id}', this );
+                fill_select_option('#{record.fields["state"         ].web.field_id}', this );
+                fill_select_option('#{record.fields["zip"           ].web.field_id}', this );"
+                #fill_select_option('#{record.fields["fax_number"    ].web.field_id}', this );
+                #fill_select_option('#{record.fields["email_address" ].web.field_id}', this );"
+            },
+            true
+        )
+        
         output << record.fields["name"            ].web.text(    :label_option => "Name:"            )
         output << record.fields["attn"            ].web.text(    :label_option => "Attention:"       )
         output << record.fields["via_mail"        ].web.default( :label_option => "Via Mail?"        )
@@ -434,6 +459,41 @@ end
             {:name=>"Social Service Email",                  :value=>"Social Service Email"                 },
             {:name=>"Social Service Written Request",        :value=>"Social Service Written Request"       }
         ]
+        
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________FILL_OPTIONS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+    def fill_select_option_name(field_name, field_value, pid)
+        
+        return $tables.attach("SCHOOLS").field_value("school_name", "WHERE primary_id = '#{field_value}'")
+        
+    end
+    
+    def fill_select_option_address_1(field_name, field_value, pid)
+        
+        return $tables.attach("SCHOOLS").field_value("street_address", "WHERE primary_id = '#{field_value}'")
+        
+    end
+    
+    def fill_select_option_city(field_name, field_value, pid)
+        
+        return $tables.attach("SCHOOLS").field_value("city", "WHERE primary_id = '#{field_value}'")
+        
+    end
+    
+    def fill_select_option_state(field_name, field_value, pid)
+        
+        return $tables.attach("SCHOOLS").field_value("state", "WHERE primary_id = '#{field_value}'")
+        
+    end
+    
+    def fill_select_option_zip(field_name, field_value, pid)
+        
+        return $tables.attach("SCHOOLS").field_value("zip", "WHERE primary_id = '#{field_value}'")
         
     end
     
