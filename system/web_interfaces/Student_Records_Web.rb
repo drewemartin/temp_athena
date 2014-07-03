@@ -214,7 +214,7 @@ end
                 )"
             )
           
-        elsif $team_member.preferred_email.value.match(/jhalverson@agora.org|esaddler@agora.org/)
+        elsif $team_member.preferred_email.value.match(/jhalverson@agora.org|esaddler@agora.org|mmarkert2@agora.org/)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL
@@ -634,52 +634,22 @@ end
                     
                     rec_table_array = Array.new
                     
-                    rec_table_array.push(
-                        
-                        [
-                            
-                            #HEADERS =
-                            "Print Label?"      ,
-                            "To:"               ,
-                            "Mail"              ,
-                            "Fax"               ,
-                            "Email"
-                            #"name"         ,
-                            #"attn"         ,
-                            #"via_mail"     ,
-                            #"address_1"    ,
-                            #"address_2"    ,
-                            #"city"         ,
-                            #"state"        ,
-                            #"zip"          ,
-                            #"via_fax"      ,
-                            #"fax_number"   ,
-                            #"via_email"    ,
-                            #"email_address"
-                            
-                        ]
-                        
-                    )
                     recipients.each{|recipient|
                         
-                        rec_table_array.push(
-                            
-                            [
-                                
-                                recipient.batch_checkbox                        ,
-                                recipient.fields["name"          ].web.label()  +
-                                recipient.fields["attn"          ].web.label()  ,
-                                recipient.fields["address_1"     ].web.label()  +
-                                recipient.fields["address_2"     ].web.label()  +
-                                recipient.fields["city"          ].web.label()  +
-                                recipient.fields["state"         ].web.label()  +
-                                recipient.fields["zip"           ].web.label()  ,
-                                recipient.fields["fax_number"    ].web.label()  ,
-                                recipient.fields["email_address" ].web.label()
-                              
-                            ]
-                            
-                        )
+                        rec_table_array = [
+                            ["Mail:",
+                                "#{recipient.fields["name"].value}"+"<br>"+
+                                "Attn: "+"#{recipient.fields["attn" ].value}"+"<br>"+
+                                "#{recipient.fields["address_1"     ].value}"+"<br>"+
+                                "#{recipient.fields["address_2"     ].value}"+"<br>"+
+                                "#{recipient.fields["city"          ].value}"+", "+
+                                "#{recipient.fields["state"         ].value} "+
+                                "#{recipient.fields["zip"           ].value}"],
+                            ["Fax:",
+                                recipient.fields["fax_number"    ].value],
+                            ["Email:",
+                                recipient.fields["email_address" ].value]
+                        ]
                         
                     }
                     
@@ -688,17 +658,10 @@ end
                         :student_link   => "name",
                         :unique_name    => "request_details",
                         :footers        => false,
-                        :head_section   => true,
+                        :head_section   => false,
                         :title          => false,
                         :legend         => false,
-                        :caption        => false#,
-                        #:embedded_style => {
-                        #    :table  => "width:100%;",
-                        #    :th     => nil,
-                        #    :tr     => nil,
-                        #    :tr_alt => nil,
-                        #    :td     => nil
-                        #}
+                        :caption        => false
                     )
                     
                 else
@@ -710,8 +673,8 @@ end
                 row.push(
                     
                     recipient_table+
-                    record_record.fields["request_method"   ].web.select( :label_option=>"Request Method", :dd_choices=>request_method_dd)+
-                    record_record.fields["notes"            ].web.default(:label_option=>"Notes")
+                    record_record.fields["request_method"   ].web.select( :label_option=>"Request Method:", :dd_choices=>request_method_dd)+
+                    record_record.fields["notes"            ].web.default(:label_option=>"Notes:")
                     
                 )
                 
@@ -814,12 +777,12 @@ end
                                 "primary_id"  ,
                                 nil
                             ),
-                            :label_option=>"Status"
+                            :label_option=>"Status:"
                             
                         )+
                         
-                        record.fields["date_completed"  ].web.default(:label_option=>"Date Completed")+
-                        record.fields["notes"           ].web.default(:label_option=>"Notes")
+                        record.fields["date_completed"  ].web.default(:label_option=>"Date Completed:")+
+                        record.fields["notes"           ].web.default(:label_option=>"Notes:")
                         
                     ]
                     
@@ -872,7 +835,7 @@ end
                     recipients.each{|recipient|
                         
                         add_table_arr = [
-                            ["Mail",
+                            ["Mail:",
                                 "#{recipient.fields["name"].value}"+"<br>"+
                                 "Attn: "+"#{recipient.fields["attn" ].value}"+"<br>"+
                                 "#{recipient.fields["address_1"     ].value}"+"<br>"+
@@ -880,9 +843,9 @@ end
                                 "#{recipient.fields["city"          ].value}"+", "+
                                 "#{recipient.fields["state"         ].value} "+
                                 "#{recipient.fields["zip"           ].value}"],
-                            ["Fax",
+                            ["Fax:",
                                 recipient.fields["fax_number"    ].value],
-                            ["Email",
+                            ["Email:",
                                 recipient.fields["email_address" ].value]
                         ]
                         
@@ -938,9 +901,10 @@ end
                     $tools.table(
                         :table_array    => [
                             
-                            ["Student ID"       , request_rec.fields["student_id"    ].value            ],
-                            ["Request Method:"  , request_rec.fields["request_method"].web.select(:dd_choices=>request_method_dd)         ],
-                            ["Notes:"           , request_rec.fields["notes"         ].web.default      ]
+                            ["Student ID:"      , request_rec.fields["student_id"    ].value],
+                            ["Active?:"         , $students.get(request_rec.fields["student_id"].value).active == 1 ? "Yes" : "No"],
+                            ["Request Method:"  , request_rec.fields["request_method"].web.select(:dd_choices=>request_method_dd)],
+                            ["Notes:"           , request_rec.fields["notes"         ].web.default]
                             
                         ],
                         :student_link   => "name",
@@ -1002,9 +966,10 @@ end
             #HEADERS
             [
                 "Document"      ,
-                "Status"        ,
-                "Date Completed",
-                "Notes"
+                "Details"
+                #"Status"        ,
+                #"Date Completed",
+                #"Notes"
             ]
             
         ]
@@ -1036,12 +1001,12 @@ end
                                 "status"      ,
                                 "primary_id"  ,
                                 nil
-                            )
-                            
-                        ),
+                            ),
+                            :label_option=>"Status:"
+                        )+
                         
-                        requested_document.fields["date_completed"].web.default,
-                        requested_document.fields["notes"].web.default
+                        requested_document.fields["date_completed"].web.default(:label_option=>"Date Completed:")+
+                        requested_document.fields["notes"].web.default(:label_option=>"Notes:")
                         
                     ]
                     
@@ -1070,7 +1035,14 @@ end
             :title          => false,
             :legend         => false,
             :caption        => false,
-            :no_container   => update
+            :no_container   => update,
+            :embedded_style => {
+            #    :table  => "width:100%;",
+            #    :th     => nil,
+            #    :tr     => nil,
+            #    :tr_alt => nil,
+                :td     => "border-bottom:1px dashed #6B6B6B"
+            }
         )
         
     end
@@ -1098,13 +1070,23 @@ end
             div.rri_document_type label { float:left; display:inline-block; min-width:100px; text-align:left; margin-top:2px;}
             div.rri_document_type input { float:right;}
             
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  input    {width:70px;}
-            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:120px; height:36px; resize:none; overflow-y:scroll; }
             
-            div.STUDENT_RRI_REQUESTS__request_method                      {margin-bottom:10px;}
-            div.STUDENT_RRI_REQUESTS__notes                      textarea {width:270px; height:100px; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes        textarea {width:200px; height:36px; float:left; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes                 {float:left; width:300px; }
             
-            div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes            textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  input {width:70px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed  label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__date_completed        {float:left; clear:left; width:300px; margin-bottom:5px;}
+            
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status          label {float:left; display:inline-block; margin-right:10px; }
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status                {float:left; clear:left; width:300px; margin-bottom:5px;}
+            div.STUDENT_RRI_REQUESTED_DOCUMENTS__status         select {float:left;}
+            
+            div.STUDENT_RRI_REQUESTS__request_method                   {margin-bottom:10px;}
+            div.STUDENT_RRI_REQUESTS__notes                   textarea {width:270px; height:100px; resize:none; overflow-y:scroll; }
+            
+            div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes         textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRI_RECIPIENTS__name                     label {width:110px; display:inline-block;}
             div.STUDENT_RRI_RECIPIENTS__attn                     label {width:110px; display:inline-block;}

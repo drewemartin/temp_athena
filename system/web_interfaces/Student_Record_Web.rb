@@ -357,6 +357,7 @@ end
         a6, b6 = "Birthday:"        , s.birthday.to_user
         a7, b7 = "Age:"             , age
         a8, b8 = "Is Special Ed:"   , s.isspecialed.value == 1 ? "<div style='color:red;'>Yes</div>" : "No"
+        a9, b9 = "Is Active:"       , s.active == 1 ? "Yes" : "No"
         
         id_array = [
             
@@ -367,7 +368,8 @@ end
             [a5.to_s,b5.to_s],
             [a6.to_s,b6.to_s],
             [a7.to_s,b7.to_s],
-            [a8.to_s,b8.to_s]
+            [a8.to_s,b8.to_s],
+            [a9.to_s,b9.to_s]
             
         ]
         
