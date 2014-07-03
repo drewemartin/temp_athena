@@ -1290,6 +1290,18 @@ end
             output << "div.TEAM_EVALUATION_SUMMARY__goal_1   textarea{  width:800px; overflow-y: scroll; resize: none;}"
             output << "div.TEAM_EVALUATION_SUMMARY__goal_2   textarea{  width:800px; overflow-y: scroll; resize: none;}"
             output << "div.TEAM_EVALUATION_SUMMARY__goal_3   textarea{  width:800px; overflow-y: scroll; resize: none;}"
+            
+            output << "div.TEAM_EVALUATION_SUMMARY__team_member_comments                        label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_SUMMARY__supervisor_comments                         label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_METRICS__team_member_comments             label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_METRICS__supervisor_comments              label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_OBSERVATION__team_member_comments         label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_OBSERVATION__supervisor_comments          label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_PROFESSIONALISM__team_member_comments     label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_ENGAGEMENT_PROFESSIONALISM__supervisor_comments      label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_AAB__team_member_comments                            label {font-size:small;}"
+            output << "div.TEAM_EVALUATION_AAB__supervisor_comments                             label {font-size:small;}"
+            
             #output << "table#evaluation_summary            td.column_0{ font-size:small; font-weight:bold; vertical-align:middle; text-align:left;             }"
             #output << "table#evaluation_summary            td.column_1{ vertical-align:middle; text-align:right;            }"
             
