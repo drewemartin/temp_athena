@@ -232,8 +232,8 @@ end
             
             tabs            = [
                 
-                ["New Documents(#{       new_record_pids     ? new_record_pids.length        : '0'   })",    new_record_pids     ? record_requests_working_list(new_record_pids      ) : "There are no 'New' record requests at this time."        ],
-                ["Pending Documents(#{   pending_record_pids ? pending_record_pids.length    : '0'   })",    pending_record_pids ? record_requests_working_list(pending_record_pids  ) : "There are no 'Pending' record requests at this time."    ]
+                ["New Documents (#{       new_record_pids     ? new_record_pids.length        : '0'   })",    new_record_pids     ? record_requests_working_list(new_record_pids      ) : "There are no 'New' record requests at this time."        ],
+                ["Pending Documents (#{   pending_record_pids ? pending_record_pids.length    : '0'   })",    pending_record_pids ? record_requests_working_list(pending_record_pids  ) : "There are no 'Pending' record requests at this time."    ]
                 
             ],
             selected_tab    = 0,
