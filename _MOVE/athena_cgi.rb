@@ -122,7 +122,7 @@ class ATHENA_CGI < Base
                 save            unless (load? || fill_select_option?)
                 search_results  unless (load? || fill_select_option?)
                 
-                if !(web_script.response == false)
+                if (params[:new_breakaway] || web_script.response != false)
                     
                     if load?
                         

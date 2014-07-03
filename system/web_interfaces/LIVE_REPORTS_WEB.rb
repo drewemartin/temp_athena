@@ -257,6 +257,34 @@ end
             "List of students whose previous school entry doesn't match the official database of schools."
         ]) if $team_member.super_user?
         
+        #RRI Open Nursing Requests
+        tables_array.push([
+            $tools.button_new_csv("rri_requests_open", "Nursing"),
+            "RRI Open Nursing Requests",
+            "This report contains all of the open incoming Nursing record requests"
+        ]) if $team_member.super_user?
+        
+        #RRI Open Transcript Requests
+        tables_array.push([
+            $tools.button_new_csv("rri_requests_open", "Transcripts"),
+            "RRI Open Transcript Requests",
+            "This report contains all of the open incoming Transcript record requests"
+        ]) if $team_member.super_user?
+        
+        #RRI All Open Requests
+        tables_array.push([
+            $tools.button_new_csv("rri_requests_open"),
+            "RRI All Open Requests",
+            "This report contains all of the open incoming record requests from all departments"
+        ]) if $team_member.super_user?
+        
+        #RRI All Requests
+        tables_array.push([
+            $tools.button_new_csv("rri_requests_open", "all"),
+            "RRI All Requests",
+            "This report contains all incoming record requests"
+        ]) if $team_member.super_user?
+        
         output << $kit.tools.data_table(tables_array, "leadership_reports")
         
     end
@@ -1250,6 +1278,78 @@ end
         ]
         
         results = $db.get_data(sql_str)
+        if results
+            return results.insert(0, headers)
+            
+        else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_rri_requests_open(options = nil)
+        
+        s_db        = $tables.attach("STUDENT"                         ).data_base
+        srri_rd_db  = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS" ).data_base
+        srri_r_db   = $tables.attach("STUDENT_RRI_REQUESTS"            ).data_base
+        rri_dt_db   = $tables.attach("RRI_DOCUMENT_TYPES"              ).data_base
+        rri_s_db    = $tables.attach("RRI_STATUS"                      ).data_base
+        
+        sql_str =
+        "SELECT
+            
+            student_rri_requests.student_id,
+            student_rri_requests.request_method,
+            student_rri_requests.notes,
+            student_rri_requests.priority_level,
+            student_rri_requests.requested_date,
+            (
+                SELECT CONCAT(document_category, ' - ', document_name)
+                FROM #{rri_dt_db}.rri_document_types
+                WHERE primary_id = student_rri_requested_documents.record_type_id
+            ),
+            (
+                SELECT status
+                FROM #{rri_s_db}.rri_status
+                WHERE primary_id = student_rri_requested_documents.status
+            ),
+            student_rri_requested_documents.notes
+            
+        FROM #{srri_r_db}.student_rri_requests
+        
+        LEFT JOIN #{srri_rd_db}.student_rri_requested_documents  ON student_rri_requests.primary_id = student_rri_requested_documents.rri_request_id " 
+        
+        if options != "all"
+            
+            sql_str << "WHERE student_rri_requested_documents.date_completed IS NULL "
+            
+            if options
+                sql_str << "AND student_rri_requested_documents.record_type_id IN (
+                    SELECT GROUP_CONCAT(primary_id)
+                    FROM #{rri_dt_db}.rri_document_types
+                    WHERE document_category = '#{options}'
+                )"
+            end
+            
+        end
+        
+        headers =
+        [
+            
+            "Student ID",
+            "Request Method",
+            "Request Notes",
+            "Prioriyt Level",
+            "Request Date",
+            "Record Type",
+            "Record Status",
+            "Record Notes"
+           
+        ]
+        
+        results = $db.get_data(sql_str)
+        
         if results
             return results.insert(0, headers)
             
