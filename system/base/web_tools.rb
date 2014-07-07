@@ -1311,10 +1311,10 @@ end
                 
                 if $tools
                     
-                    case headers[(a[:head_section]==:left ? td_index-1 : td_index)]
-                    when "Student ID"
+                    case headers[(a[:head_section]==:left ? (td_index==0 ? td_index : td_index-1) : td_index)]
+                    when /Student ID/
                         td_value = student_link(td, a[:student_link]=="name" ? true : false)
-                    when "Team Member ID"
+                    when /Team Member ID/
                         td_value = team_member_link(td)
                     else
                         td_value = td
