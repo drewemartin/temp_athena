@@ -328,9 +328,9 @@ end
                     [
                      
                         t.preferred_email.to_email_link(
-                            :text   =>t.legal_first_name.value + " " + t.legal_last_name.value,
-                            :subject=>"",
-                            :content=>""
+                            :text       => t.legal_first_name.value + " " + t.legal_last_name.value,
+                            :subject    => "Supervisor: #{$focus_team_member.supervisor_team_id.to_name(:full_name)}, Group: #{$focus_team_member.peer_group_id.value}",
+                            :content    => ""
                         )
                         
                     ]
@@ -394,7 +394,7 @@ end
                 "field"     => "email_peer_group",
                 "value"     => peer_group_email_addresses.join(";")
             ).to_email_link(
-                :subject    => "#{$focus_team_member.supervisor_team_id.to_name(:full_name)} Group: #{$focus_team_member.peer_group_id.value}",
+                :subject    => "Supervisor: #{$focus_team_member.supervisor_team_id.to_name(:full_name)}, Group: #{$focus_team_member.peer_group_id.value}",
                 :content    => "",
                 :class      => "ui-icon ui-icon-mail-closed",
                 :style      => "display:inline-block; margin-left:5px;"
