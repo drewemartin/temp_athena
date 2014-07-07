@@ -86,6 +86,25 @@ end
                 VALUES('#{user_id}','#{k}','#{v}')"
             results = $db.query(insert_sql)    
         }
+        
+        subject = "Athena Log-in Information"
+        content = "An Athena account has been created for you. Please go to http://athena-sis.com to sign in.<br>
+            Your username and password are below.<br><br>
+            Username: #{user_login}<br>
+            Password: #{uniq_pass}"
+        $base.email.send(
+            :subject            => subject,
+            :content            => content,
+            :sender             => "donotreply@athena-sis.com",
+            :recipients         => user_login,
+            :attachment_name    => nil,
+            :attachment_path    => nil,
+            :email_relate       => [
+                {:table_name=>nil, :key_field=>nil, :key_field_value=>nil},
+                {:table_name=>nil, :key_field=>nil, :key_field_value=>nil}
+            ]
+        )
+        
         return user_id
     end
     
