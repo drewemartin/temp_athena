@@ -282,7 +282,7 @@ end
                 #in this class without complicated installs of unrelated and otherwise unneeded gems.
                 #At this time this line of code is needed to run in the Ruby 1.9.3 environment.
                 #If there are troubles try uncommenting the following code:
-                #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+                http.verify_mode = OpenSSL::SSL::VERIFY_NONE if ( ENV["COMPUTERNAME"] && ENV["COMPUTERNAME"].match(/IT1201964/) )
                 
                 http.start do |http|
                     
@@ -1248,7 +1248,7 @@ end
             
             if respond_to?(:after_change)
                 
-                resaults = send(:after_change, args)
+                results = send(:after_change, args)
                 return false if results == false
                 
             end
@@ -1728,7 +1728,7 @@ end
         return dest_path
         
     end
-    
+
     def init(audit = false, table_only = false)
         
         #INITIALIZES TABLES THAT THE WHOLE SYSTEM DEPENDS ON
@@ -1831,6 +1831,7 @@ end
         if !audit && table["audit"]
             init(true, table_only)
         end
+        
         if table_name != "db_config"
             config = $tables.attach("Db_Config")
             config_record = config.by_table_name(self.class.to_s)
