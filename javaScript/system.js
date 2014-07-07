@@ -626,6 +626,21 @@ $(function () {
 		
 	})
 	
+	$("#clear_student_search_button").button({
+		text		: true,
+		label		: "Clear"
+		
+	}).bind("click", function() {
+		
+		$(":input[class^='search__STUDENT__student_id']").val("")
+		$(":input[class^='search__STUDENT__studentfirstname']").val("")
+		$(":input[class^='search__STUDENT__studentlastname']").val("")
+		$(":input[class^='search__STUDENT__familyid']").val("")
+		$(":input[class^='search__STUDENT__grade']").val("")
+		$(":input[class^='search__STUDENT__active']").removeAttr('checked')
+		
+	})
+	
 	$(":input[class^='search__STUDENT']").bind("keyup", function(e){
 		
 		if (e.which == 13){
@@ -644,6 +659,18 @@ $(function () {
 	}).bind("click", function() {
 		
 		$("#team_search_results").html("Retrieving Search Results..." + spinner());
+		
+	})
+	
+	$("#clear_team_search_button").button({
+		text		: true,
+		label		: "Clear"
+		
+	}).bind("click", function() {
+		
+		$(":input[class^='search__TEAM__primary_id']").val("")
+		$(":input[class^='search__TEAM__legal_first_name']").val("")
+		$(":input[class^='search__TEAM__legal_last_name']").val("")
 		
 	})
 	
