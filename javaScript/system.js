@@ -2622,19 +2622,6 @@ function x___________________UNSORTED(){}
 			}
 			
 		});
-		
-		//$('#history'+params).dialog("open");
-		//send(params);
-		
-		//$("#show_history_button").button({
-		//	
-		//	text		: true,
-		//	label		: "H"
-		//	
-		//}).bind("click", function() {
-		//	
-		//})
-		
 	};
 	
 	function get_new_request(params, table_name, dialog_title) {
