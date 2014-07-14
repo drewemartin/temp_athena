@@ -97,7 +97,7 @@ end
                             
                             #how_to_button_attendance_modes = $tools.button_how_to("How To: Attendance Modes")
                             
-                            output << fields["mode"].web.select({:label_option=>"Mode", :dd_choices=>modes_dd, :disabled=>disabled}, true)
+                            output << fields["mode"].web.select({:label_option=>"Mode", :dd_choices=>modes_dd, :disabled=>disabled, :history=>true}, true)
                             
                             output << $tools.newlabel("activity", "Activity Log")
                             
@@ -164,11 +164,20 @@ end
                         output << $tools.div_close
                     end
                     
-                    #how_to_button_attendance_codes = $tools.button_how_to("How To: Attendance Codes")
-                    
                     attendance_code = date_string ? $tables.attach("STUDENT_ATTENDANCE_MASTER").field_bystudentid("code_#{date_string}", sid):false
-                    output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :disabled=>disabled}, false, true) if !attendance_code.nil? && attendance_code
+                    
+                    if !date.nil?
+                        
+                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :disabled=>disabled, :history=>true}, false, true) if !attendance_code.nil? && attendance_code
+                        
+                    else
+                        
+                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :disabled=>disabled}, false, true) if !attendance_code.nil? && attendance_code
+                        
+                    end
+                    
                     output << $tools.div_close()
+                    
                 end
         
                 output << $tools.div_close
@@ -317,15 +326,15 @@ end
         #new_row_button_STUDENT_ATTENDANCE{                     float:right; font-size: xx-small !important;}
         
         div.weekdays_div{                                       clear:left; margin-left:auto; margin-right:auto; margin-bottom:15px; display:table;}
-        div.weekday_div{                                        float:left; margin-left:1px; margin-right:1px; width:175px; height:210px; border: 1px solid black; border-radius:5px;}
+        div.weekday_div{                                        float:left; margin-left:1px; margin-right:1px; width:200px; height:210px; border: 1px solid black; border-radius:5px;}
         div.week{                                               clear:left; margin-left:65px; margin-top:10px; margin-bottom:5px;}
-        div.day_header{                                         float:left; clear:left; width:169px; height:18px; padding:3px; background-color:#3BAAE3; border-bottom: 1px solid black; border-top-left-radius:5px; border-top-right-radius:5px;}
+        div.day_header{                                         float:left; clear:left; width:194px; height:18px; padding:3px; background-color:#3BAAE3; border-bottom: 1px solid black; border-top-left-radius:5px; border-top-right-radius:5px;}
         div.dotw{                                               float:left; color:white;}
         div.att_date{                                           float:right; color:white;}
         div.STUDENT_ATTENDANCE_MODE__attendance_mode{           clear:left; margin-bottom:10px; margin-left:65px;}
-        div.STUDENT_ATTENDANCE__mode{                           width:150px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
+        div.STUDENT_ATTENDANCE__mode{                           width:180px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
         div.STUDENT_ATTENDANCE__code{                           width:160px; height:80px; margin-left:auto; margin-right:auto; text-align:center; border: 1px solid black; overflow-y:scroll; background-color:white}
-        div.code{                                               width:60px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
+        div.code{                                               width:80px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
         div.activity{                                           width:150px; margin-left:auto; margin-right:auto; margin-top:5px; text-align:center;}
         div.activity_container{                                 width:160px; height:80px; margin-left:auto; margin-right:auto; border: 1px solid black; overflow-y:scroll; background-color:white}
 

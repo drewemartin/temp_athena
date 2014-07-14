@@ -627,6 +627,7 @@ $(function () {
 	})
 	
 	$("#clear_student_search_button").button({
+		
 		text		: true,
 		label		: "Clear"
 		
@@ -640,6 +641,8 @@ $(function () {
 		$(":input[class^='search__STUDENT__active']").removeAttr('checked')
 		
 	})
+	
+	
 	
 	$(":input[class^='search__STUDENT']").bind("keyup", function(e){
 		
@@ -838,6 +841,10 @@ $(function () {
 	        "width"        : "32px",
 		"border-width" : "2px"
 	})
+	
+	
+	
+	$("history").tooltip();
 
 });
 
@@ -2592,6 +2599,42 @@ function x___________________UNSORTED(){}
 		
 		$('#get_row_dialog_'+table_name).dialog("open");
 		send(params);
+	};
+	
+	function show_history(params) {
+		
+		$('#history').dialog({
+			position	: ["center",dialog_Ypos()],
+			title		: "History",
+			autoOpen	: true,
+			draggable	: true,
+			resizable	: true,
+			closeOnEscape	: false,
+			modal		: true,
+			height		: "auto",
+			width		: "auto",
+			open		: function(event, ui) {
+				$("div[ariaLabelledBy='ui-dialog-title-history']", ui.dialog).show();
+				$(".ui-dialog-titlebar-close", ui.dialog).show();
+				
+				$(this).html(spinner);
+				send(params);
+			}
+			
+		});
+		
+		//$('#history'+params).dialog("open");
+		//send(params);
+		
+		//$("#show_history_button").button({
+		//	
+		//	text		: true,
+		//	label		: "H"
+		//	
+		//}).bind("click", function() {
+		//	
+		//})
+		
 	};
 	
 	function get_new_request(params, table_name, dialog_title) {

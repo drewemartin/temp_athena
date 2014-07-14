@@ -62,3 +62,19 @@ div.no_record{
     padding             :10px;
     text-align          :center;
 }
+
+div#history{
+    width       : 80%;
+    font-size   : small;
+    text-align  : center;
+    margin-left : auto;
+    margin-right: auto;
+}
+
+table#history_table             td{ vertical-align:middle;}
+table#history_table             th{ width:250px; border-bottom: 1px solid #000000;}
+
+div#history_table_container{
+    max-height:500px;
+    overflow-y:scroll;
+}
