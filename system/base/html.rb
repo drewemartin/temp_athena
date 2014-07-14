@@ -62,6 +62,7 @@ end
             <DIV id='warning_dialog' style='text-align:center;'></DIV>\n
             #{default_search if a[:default_search]}
             <div id='get_row_dialog' class='get_row_dialog'></div>
+            <div id='history' class='history'></div>
             
             <div id='message_box'   style='position:fixed; bottom:0px; left:0px; width:100%; background-color:#D8EBF9; text-align:center; color:red; z-index:999999;'></DIV>
             <div id='loading_box'   style='position:fixed; bottom:0px; right:0px; margin-left:-32px; margin-top:-32px; z-index:999999;'></DIV>

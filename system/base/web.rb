@@ -56,6 +56,10 @@ end
         disabled? ? "disabled='disabled'" : ""  
     end
     
+    def history
+        history? ? button_show_history : ""
+    end
+    
     def display
         display? ? "style='display:none'" : ""
     end
@@ -203,7 +207,7 @@ end
     def text(arg = nil)
         self.options = arg
         element = "<input #{options} #{identifiers} type='text' value='#{field.value}'>#{validate_mark}\n"
-        div(element)
+        div(element+history)
     end
     
     def label(arg = nil)
@@ -236,7 +240,7 @@ end
         
         checked = field.is_true? ? "checked='checked'" : ''
         element = "<input #{options} #{identifiers} type='checkbox' #{checked} value='#{field.value}'>#{validate_mark}\n"
-        div(element)
+        div(element+history)
     end
     
     def date(arg = nil)
@@ -252,7 +256,7 @@ end
         catch_id = defaultDate_catch ? "#{defaultDate_catch}_#{field.primary_id}" : ""
         
         element = "<input #{options} readonly='readonly' type='text' name='#{field_id}' class='datepick #{add_class}' id='#{date_id}' value='#{field.to_user}' min='#{date_range_start}' max='#{date_range_end}' throw_to='#{throw_id}' catch_from='#{catch_id}'>#{validate_mark}\n"
-        div(element)
+        div(element+history)
     end
     
     def datetime(arg = nil)
@@ -264,7 +268,7 @@ end
             date_id="datetime_#{date_iterator}"
         end
         element = "<input #{options} readonly='readonly' type='text' name='#{field_id}' class='datetimepick #{add_class}' id='#{date_id}' value='#{field.to_user}' min='#{date_range_start}' max='#{date_range_end}'>#{validate_mark}\n"
-        div(element)
+        div(element+history)
     end
     
     def radio(arg = nil)
@@ -274,7 +278,7 @@ end
             selected = choice[:value] == field.value ? "checked" : ""
             element <<  "<input type='radio' id='#{field_id}_#{i}' class='#{field_class}' name='#{field_name}' value='#{choice[:value]}' #{selected}>#{choice[:name]}<br>"
         }if structure[:radio_choices]
-        div(element)
+        div(element+history)
     end
     
     def select(arg = nil, no_null = nil, select_on_name = nil)
@@ -304,7 +308,7 @@ end
             element << "<option value='#{choice[:value]}' #{selected}>#{choice[:name]}</option>"
         } if structure[:dd_choices]
         element << "</select>#{validate_mark}"
-        div(element)
+        div(element+history)
     end
     
     def select_replacement(arg = nil, no_null = nil, select_on_name = nil)
@@ -379,7 +383,7 @@ end
         self.options = arg
         
         element = "<textarea #{options} #{identifiers} type='textarea'>#{field.value}</textarea>#{validate_mark}\n"
-        div(element)
+        div(element+history)
         
     end
     
@@ -388,6 +392,19 @@ end
         self.options = {:onchange=>"filetype(this, #{file_ext}"}
         element = "<INPUT #{options} #{identifiers} type='file' size='50' enctype='multipart/form-data')/>\n"
         div(element)
+    end
+    
+    def button_show_history #(primary_id, table_name, field_name)
+        
+        button_html = String.new
+        
+        params = "#{field.primary_id}__#{field.table_class}__#{field.field_name}"
+        
+        button_html << "<input id='show_history__#{params}' name='show_history' value='#{params}' type='hidden'>"
+        button_html << "<button name='show_history_button' class='show_history_button ui-icon ui-icon-bookmark' id='show_history_button__#{params}' onclick=\"show_history('show_history__#{params}');\"></button>"
+        
+        return button_html
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -439,6 +456,12 @@ end
         
         return answer
         
+    end
+    
+    def history?
+        answer = false
+        answer = true if !structure[:history] == false
+        return answer
     end
     
     def display?
