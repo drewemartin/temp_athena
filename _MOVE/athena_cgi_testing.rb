@@ -209,6 +209,9 @@ class ATHENA_CGI_TESTING < Base
                     elsif params[:view_pdf]
                         view_new_pdf
                         
+                    elsif params[:show_history]
+                        show_this_history
+                        
                     elsif params[:doc_id]
                         load_secure_document
                         
@@ -996,6 +999,117 @@ end
             end
             
         end
+        
+    end
+    
+    def show_this_history
+        
+        info = params[:show_history].split("__")
+        
+        primary_id = info[0]
+        table_name = info[1]
+        field_name = info[2]
+        
+        list_info = $db.get_data("
+            SELECT
+                `#{field_name}`,
+                modified_date,
+                modified_by,
+                modified_value
+            FROM zz_#{table_name}
+            WHERE modified_field = '#{field_name}'
+            AND modified_pid = '#{primary_id}'
+        ")
+        
+        output = String.new
+        
+        if list_info
+            
+            changes_array = Array.new
+            
+            list_info.each{|item|
+                
+                old_value       = item[0]
+                modified_date   = item[1]
+                modified_by     = item[2]
+                modified_value  = item[3]
+                
+                team_id = $db.get_data_single("SELECT team_id
+                    FROM agora_master.team_email
+                    WHERE email_address = '#{modified_by}'
+                ")
+                
+                first_name = $db.get_data_single("SELECT legal_first_name
+                    FROM agora_master.team
+                    WHERE primary_id = #{team_id}
+                ")
+                
+                last_name = $db.get_data_single("SELECT legal_last_name
+                    FROM agora_master.team
+                    WHERE primary_id = #{team_id}
+                ")
+                
+                date_time = modified_date.split(" ")
+                date = date_time[0]
+                time = date_time[1]
+                broken_date = date.split("-")
+                year = broken_date[0]
+                month = broken_date[1]
+                day = broken_date[2]
+                broken_time = time.split(":")
+                hour = broken_time[0]
+                minute = broken_time[1]
+                
+                a2, b2, c2, d2 = "#{first_name} #{last_name}", "#{old_value}", "#{modified_value}", "#{month}-#{day}-#{year}  #{hour}:#{minute}"
+                changes_array.push([a2.to_s, b2.to_s, c2.to_s, d2.to_s])
+                
+            }
+            
+            changes_array.reverse!
+            
+            finalized_array = Array.new
+            finalized_array[0] = changes_array[0]
+            i = 1
+            last_datetime = finalized_array[0][3]
+            last_user = finalized_array[0][0]
+            
+            changes_array.each{|element|
+                
+                if !(element[3] == last_datetime) || !(element[0] == last_user)
+                    
+                    finalized_array[i] = element
+                    finalized_array[i-1][1] = element[2] if finalized_array[i-1][1] != element[2]
+                    last_datetime = element[3]
+                    last_user = element[0]
+                    i = i+1
+                    
+                end
+                
+            }
+            
+            a1, b1, c1, d1 = "Modified by" , "Old Value", "New Value", "Date Modified"
+            finalized_array.insert(0,[a1.to_s, b1.to_s, c1.to_s, d1.to_s])
+            
+            output << $tools.div_open("history_dialog", "history_dialog")
+            table = $tools.table(:table_array    => finalized_array,
+                :unique_name    => "history_table",
+                :footers        => false,
+                :head_section   => true,
+                :title          => false,
+                :legend         => false,
+                :caption        => false
+            )
+            
+            output << $tools.div_close()
+            output << table
+            
+        else
+            
+            output << "There is no history for this record."
+            
+        end
+        
+        modify_tag_content("history", output, "update")
         
     end
     

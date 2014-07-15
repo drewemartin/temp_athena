@@ -841,10 +841,6 @@ $(function () {
 	        "width"        : "32px",
 		"border-width" : "2px"
 	})
-	
-	
-	
-	$("history").tooltip();
 
 });
 
