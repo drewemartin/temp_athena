@@ -110,6 +110,13 @@ end
             "This report includes all students who have had any attendance records created this school year."
         ]) if $team_member.super_user? || $team_member.rights.live_reports_attendance_master.is_true?
         
+        #DNC Students
+        tables_array.push([
+            $tools.button_new_csv("dnc_students"),
+            "DNC Students",
+            "This report includes all do not call requests entered into Athena."
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_dnc_students.is_true?
+        
         #Ink Orders
         tables_array.push([
             $tools.button_new_csv("ink_orders", additional_params_str = nil),
@@ -755,6 +762,47 @@ end
             return results.insert(0, headers)
             
         else
+            return false
+            
+        end
+        
+    end
+    
+    def add_new_csv_dnc_students(options = nil)
+        
+        headers =
+        [
+            
+            "Student ID",
+            "Reason",
+            "Category",
+            "Authorizer",
+            "Created Date",
+            "Created By"
+            
+        ]
+        
+        dnc_db = $tables.attach("dnc_students").data_base
+        
+        sql_str =
+        "SELECT
+            studentid,
+            reason,
+            category,
+            authorizer,
+            created_date,
+            created_by
+        FROM #{dnc_db}.dnc_students
+        ORDER BY created_date DESC"
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            return results.insert(0, headers)
+            
+        else
+            
             return false
             
         end
