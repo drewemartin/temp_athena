@@ -292,6 +292,7 @@ end
         
         a1, b1 = "Mailing Address:"                   , add_str
         a2, b2 = "County:"                            , s.pcounty.value
+        a7, b7 = "District"                           , s.districtofresidence.value
         a3, b3 = "Phone:"                             , s.studenthomephone.to_phone_number
         a4, b4 = ""                                   , "<div style='color:red;'>#{s.physicalregion.value}</div>"
         a5, b5 = "LC (#{s.lcrelationship.value}):"    , "#{s.lcfirstname.value} #{s.lclastname.value}" 	
@@ -300,6 +301,7 @@ end
         id_array.push([a1.to_s,b1.to_s])
         id_array.push([a4.to_s,b4.to_s]) if !s.physicalregion.value.nil?
         id_array.push([a2.to_s,b2.to_s])
+        id_array.push([a7.to_s,b7.to_s])
         id_array.push([a3.to_s,b3.to_s])
         id_array.push([a5.to_s,b5.to_s])
         id_array.push([a6.to_s,b6.to_s])
