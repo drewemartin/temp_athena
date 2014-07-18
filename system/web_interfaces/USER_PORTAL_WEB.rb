@@ -228,7 +228,7 @@ end
             #"STUDENT_ATTENDANCE_AP_WEB",
             "TEST_EVENT_SITE_WEB",
             #"WITHDRAW_REQUESTS_WEB",
-            "STUDENT_RECORDS_WEB"
+            "STUDENT_RECORDS_INCOMING_WEB"
             
         ]
         #Dir["#{$paths.web_interfaces_path}*.rb"].each {|file|
@@ -266,7 +266,7 @@ end
         
         if $kit.params[:refresh] == "tabs_rri"
             
-            $kit.modify_tag_content("rri_wl",web_script_funtion("STUDENT_RECORDS_WEB", "working_list", "true"), "update")
+            $kit.modify_tag_content("rri_wl",web_script_funtion("STUDENT_RECORDS_INCOMING_WEB", "working_list", "true"), "update")
             
         end
         
@@ -321,6 +321,13 @@ def x______________ADD_NEW_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
+    def add_new_record_student_rri_recipients
+     
+        $kit.web_script(new_page = "STUDENT_RECORDS_INCOMING_WEB")
+        $kit.add_new_record
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
