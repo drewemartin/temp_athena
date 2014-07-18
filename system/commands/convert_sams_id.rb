@@ -7,7 +7,8 @@ class Convert_sams_id < Base
     def initialize(table = nil)
         super()
         #convert("student_tep_agreement", "conducted_by", "conducted_by_team_id")
-        convert("student_attendance_ap", "staff_id", "team_id")
+        #convert("student_attendance_ap", "staff_id", "team_id")
+        convert("student_tests", "test_administrator", "test_administrator_team_id")
     end
     #---------------------------------------------------------------------------
     
@@ -25,13 +26,17 @@ class Convert_sams_id < Base
             record = $tables.attach(tableName).by_primary_id(pid)
             
             sid = record.fields[sams_id_field].value
-            tid = $db.get_data_single("SELECT team_id
-                FROM agora_master.team_sams_ids
-                WHERE sams_id = #{sid}
-            ")
-            
-            record.fields[team_id_field].value = tid[0]
-            record.save
+            if sid
+                
+                tid = $db.get_data_single("SELECT team_id
+                    FROM agora_master.team_sams_ids
+                    WHERE sams_id = #{sid}
+                ")
+                
+                record.fields[team_id_field].value = tid[0]
+                record.save
+                
+            end
             
         }
         

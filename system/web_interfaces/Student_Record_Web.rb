@@ -488,7 +488,7 @@ end
         team_records = $focus_student.related_team_records
         team_records.each{|record|
             
-            t = $team.by_sams_id(record.fields["staff_id"].value)
+            t = $team.get(record.fields["team_id"].value)
             if t
                 team_email_addresses.push(t.preferred_email.value) if !team_email_addresses.include?(t.preferred_email.value)
             end 
