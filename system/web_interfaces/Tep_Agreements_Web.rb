@@ -99,13 +99,16 @@ end
                 
                 output << $tools.div_open("required_info_container", "required_info_container")
                     
-                    if !s.tep_agreement.conducted_by.value.nil?
-                        staff_name = $team.by_sams_id(s.tep_agreement.conducted_by.value).full_name
+                    if !s.tep_agreement.conducted_by_team_id.value.nil?
+                        record = $tables.attach("team").by_primary_id(s.tep_agreement.conducted_by_team_id.value)
+                        first_name = record.fields["legal_first_name"].value
+                        last_name = record.fields["legal_last_name"].value
+                        staff_name = first_name + " " + last_name
                     else
                         staff_name = "Team Member Not Found"
                     end
                     
-                    output << s.tep_agreement.conducted_by.set(staff_name).web.default(     :label_option=>"Conducted By:",   :disabled=>true)
+                    output << s.tep_agreement.conducted_by_team_id.set(staff_name).web.default(     :label_option=>"Conducted By:",   :disabled=>true)
                     output << s.tep_agreement.date_conducted.web.default(   :label_option=>"Conducted Date:")
                     output << s.tep_agreement.face_to_face.web.default(     :label_option=>"Face to Face:"  )
                     
@@ -313,7 +316,7 @@ end
             
             output << $tools.div_open("required_info_container", "required_info_container")
                 
-                output << fields["conducted_by"     ].set($team_member.sams_ids.existing_records[0].fields["sams_id"].value).web.hidden
+                output << fields["conducted_by_team_id"     ].set($team_member.primary_id.value).web.hidden
                 output << fields["date_conducted"   ].web.default(              :label_option=>"Conducted Date:"                    )
                 output << fields["face_to_face"     ].web.default(              :label_option=>"Face to Face:"                      ) 
                 output << fields["student_id"       ].web.hidden(                                                          )
@@ -673,19 +676,19 @@ end
                 
                 div.required_info_container                                 {       background-color:red; margin-top:20px; margin-left:4px; margin-right:auto;}
                 
-                div.STUDENT_TEP_AGREEMENT__conducted_by                     {       width:318px; float:left; margin-right:10px;}
+                div.STUDENT_TEP_AGREEMENT__conducted_by_team_id             {       width:318px; float:left; margin-right:10px;}
                 div.STUDENT_TEP_AGREEMENT__date_conducted                   {       width:335px; float:left;}
                 div.STUDENT_TEP_AGREEMENT__face_to_face                     {       width:125px; float:left; margin-left:10px;}
                 div.STUDENT_TEP_AGREEMENT__goal                             {       float:left; width:48%; margin:4px; padding-right:1%; clear:left;}
                 div.STUDENT_TEP_AGREEMENT__special_needs                    {       float:left; width:48%; margin:4px; padding-bottom:1%;}
              
-                div.STUDENT_TEP_AGREEMENT__conducted_by                label{       width:103px; display:inline-block;}
+                div.STUDENT_TEP_AGREEMENT__conducted_by_team_id        label{       width:103px; display:inline-block;}
                 div.STUDENT_TEP_AGREEMENT__date_conducted              label{       width:120px; display:inline-block;}
                 div.STUDENT_TEP_AGREEMENT__face_to_face                label{       width:95px; display:inline-block;}
                 div.STUDENT_TEP_AGREEMENT__goal                        label{       width:210px; display:inline-block;}
                 div.STUDENT_TEP_AGREEMENT__special_needs               label{       width:210px; display:inline-block;}
                 
-                div.STUDENT_TEP_AGREEMENT__conducted_by                input{       width:210px;}
+                div.STUDENT_TEP_AGREEMENT__conducted_by_team_id        input{       width:210px;}
                 div.STUDENT_TEP_AGREEMENT__date_conducted              input{       width:210px;}
                 div.STUDENT_TEP_AGREEMENT__face_to_face                input{       }
                 div.STUDENT_TEP_AGREEMENT__goal                     textarea{       width:100%; height: 100%; overflow-y: scroll; resize: none;}

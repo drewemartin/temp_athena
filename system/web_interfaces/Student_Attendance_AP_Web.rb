@@ -67,17 +67,17 @@ end
             ]
             dates.each{|date| tables_array[0].push(date)}
             
-            staff_ids = $tables.attach("STUDENT_ATTENDANCE_AP").staffids_by_studentid(sid)
-            staff_ids.each{|staff_id|
+            team_ids = $tables.attach("STUDENT_ATTENDANCE_AP").teamids_by_studentid(sid)
+            team_ids.each{|team_id|
                 
                 row = Array.new
                 
-                row.push(teacher_group(staff_id, sid))
+                row.push(teacher_group_by_team_id(team_id, sid))
                 
                 dates.each{|date|
                     
                     disabled   = true #unless date == $base.today.iso_date
-                    if record  = $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old(sid, staff_id, date)
+                    if record = $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old_team_id(sid, team_id, date)
                         
                         row.push(attendance_group(record, disabled))  
                         
@@ -156,37 +156,33 @@ end
             
             disabled = false
             
-            sams_ids = $team_member.sams_ids.existing_records
-            sams_ids.each{|samsid_record|
+            team_id = $team_member.primary_id
+            
+            if $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old_team_id(sid, team_id)
                 
-                samsid = samsid_record.fields["sams_id"].value
-                if $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old(sid, samsid)
-                    
-                    row = Array.new
-                    
-                    row.push(sid)
-                    row.push($students.get(sid).studentfirstname.value)
-                    row.push($students.get(sid).studentlastname.value )
-                    
-                    @dates.each{|date|
-                        
-                        if record = $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old(sid, samsid, date)
-                            
-                            row.push(attendance_group(record, disabled))
-                            
-                        else
-                            
-                            row.push("")
-                            
-                        end
-                        
-                    }
-                    
-                    tables_array.push(row)
-                    
-                end
+                row = Array.new
                 
-            } if sams_ids
+                row.push(sid)
+                row.push($students.get(sid).studentfirstname.value)
+                row.push($students.get(sid).studentlastname.value )
+                
+                @dates.each{|date|
+                    
+                    if record = $tables.attach("STUDENT_ATTENDANCE_AP").by_studentid_old_team_id(sid, team_id, date)
+                        
+                        row.push(attendance_group(record, disabled))
+                        
+                    else
+                        
+                        row.push("")
+                        
+                    end
+                    
+                }
+                
+                tables_array.push(row)
+                
+            end
             
         } if @sids
         
@@ -291,15 +287,44 @@ end
         
     end
     
-    def teacher_group(staff_id, sid)
+    #to remove
+    #def teacher_group(staff_id, sid)
+    #    
+    #    table_array = Array.new
+    #    
+    #    staff_name = $team.by_sams_id(staff_id).full_name
+    #    
+    #    table_array.push([staff_name ? "<b>#{staff_name}</b>" : "Not Found"])
+    #    
+    #    relate_records = $tables.attach("STUDENT_RELATE").by_staffid(staff_id, sid, active = true)
+    #    relate_records.each{|record|
+    #        table_array.push([record.fields["role"           ].value])
+    #        table_array.push([record.fields["role_details"   ].value])
+    #    } if relate_records
+    #    
+    #    return $tools.table(
+    #        :table_array    => table_array,
+    #        :unique_name    => "teacher_group_by_team_id",
+    #        :footers        => false,
+    #        :head_section   => false,
+    #        :title          => false,
+    #        :caption        => false
+    #    )
+    #    
+    #end
+    
+    def teacher_group_by_team_id(team_id, sid)
         
         table_array = Array.new
         
-        staff_name = $team.by_sams_id(staff_id).full_name
+        record = $tables.attach("team").by_primary_id(team_id)
+        first_name = record.fields["legal_first_name"].value
+        last_name = record.fields["legal_last_name"].value
+        staff_name = first_name + " " + last_name
         
         table_array.push([staff_name ? "<b>#{staff_name}</b>" : "Not Found"])
         
-        relate_records = $tables.attach("STUDENT_RELATE").by_staffid(staff_id, sid, active = true)
+        relate_records = $tables.attach("STUDENT_RELATE").by_staffid(team_id, sid, active = true)
         relate_records.each{|record|
             table_array.push([record.fields["role"           ].value])
             table_array.push([record.fields["role_details"   ].value])
@@ -307,7 +332,7 @@ end
         
         return $tools.table(
             :table_array    => table_array,
-            :unique_name    => "teacher_group",
+            :unique_name    => "teacher_group_by_team_id",
             :footers        => false,
             :head_section   => false,
             :title          => false,
@@ -344,7 +369,7 @@ end
             div.STUDENT_ATTENDANCE_AP__office_hours_engaged                 {margin-left:auto; margin-right:auto; width:21px;}
             div.STUDENT_ATTENDANCE_AP__assignment_completion_engaged        {margin-left:auto; margin-right:auto; width:21px;}
             div.STUDENT_ATTENDANCE_AP__assessment_completion_engaged        {margin-left:auto; margin-right:auto; width:21px;}
-            table#teacher_group                                             { width:150px; text-align:center;}
+            table#teacher_group_by_team_id                                  {width:150px; text-align:center;}
         "
         
         output << "</style>"

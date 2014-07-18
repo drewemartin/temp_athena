@@ -1803,7 +1803,6 @@ end
         s_db         = $tables.attach("STUDENT"                      ).data_base
         ta_db        = $tables.attach("STUDENT_TEP_AGREEMENT"        ).data_base
         team_db      = $tables.attach("TEAM"                         ).data_base
-        t_sams_db    = $tables.attach("TEAM_SAMS_IDS"                ).data_base
         
         sql_str =
         "SELECT
@@ -1815,16 +1814,14 @@ end
             student_tep_agreement.goal,
             team.legal_first_name,
             team.legal_last_name,
-            student_tep_agreement.conducted_by,
-            team.primary_id,
+            student_tep_agreement.conducted_by_team_id,
             student_tep_agreement.face_to_face,
             student_tep_agreement.date_conducted,
             student_tep_agreement.created_date,
             student_tep_agreement.created_by
             
         FROM #{ta_db}.student_tep_agreement
-        LEFT JOIN #{t_sams_db    }.team_sams_ids ON team_sams_ids.sams_id  = student_tep_agreement.conducted_by
-        LEFT JOIN #{team_db      }.team          ON team.primary_id        = team_sams_ids.team_id
+        LEFT JOIN #{team_db      }.team          ON team.primary_id        = student_tep_agreement.conducted_by_team_id
         LEFT JOIN #{s_db         }.student       ON student.student_id     = student_tep_agreement.student_id"
         
         headers =
@@ -1837,7 +1834,6 @@ end
             "Goal",
             "Conducted By First Name",
             "Conducted By Last Name",
-            "Conducted By Sams ID",
             "Conducted By Team ID",
             "Face To Face",
             "Date Conducted",

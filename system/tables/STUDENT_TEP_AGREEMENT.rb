@@ -120,12 +120,13 @@ end
     def set_fields(structure_hash)
         field_order = Array.new
         structure_hash["fields"] = Hash.new
-            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",        "file_field"=>"student_id"      } if field_order.push("student_id")
-            structure_hash["fields"]["special_needs"    ] = {"data_type"=>"text",       "file_field"=>"special_needs"   } if field_order.push("special_needs")
-            structure_hash["fields"]["goal"             ] = {"data_type"=>"text",       "file_field"=>"goal"            } if field_order.push("goal")
-            structure_hash["fields"]["conducted_by"     ] = {"data_type"=>"int",        "file_field"=>"conducted_by"    } if field_order.push("conducted_by")
-            structure_hash["fields"]["face_to_face"     ] = {"data_type"=>"bool",       "file_field"=>"face_to_face"    } if field_order.push("face_to_face")
-            structure_hash["fields"]["date_conducted"   ] = {"data_type"=>"datetime",   "file_field"=>"date_conducted"  } if field_order.push("date_conducted")
+            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",        "file_field"=>"student_id"              } if field_order.push("student_id")
+            structure_hash["fields"]["special_needs"            ] = {"data_type"=>"text",       "file_field"=>"special_needs"           } if field_order.push("special_needs")
+            structure_hash["fields"]["goal"                     ] = {"data_type"=>"text",       "file_field"=>"goal"                    } if field_order.push("goal")
+            structure_hash["fields"]["conducted_by"             ] = {"data_type"=>"int",        "file_field"=>"conducted_by"            } if field_order.push("conducted_by")
+            structure_hash["fields"]["face_to_face"             ] = {"data_type"=>"bool",       "file_field"=>"face_to_face"            } if field_order.push("face_to_face")
+            structure_hash["fields"]["date_conducted"           ] = {"data_type"=>"datetime",   "file_field"=>"date_conducted"          } if field_order.push("date_conducted")
+            structure_hash["fields"]["conducted_by_team_id"     ] = {"data_type"=>"int",        "file_field"=>"conducted_by_team_id"    } if field_order.push("conducted_by_team_id")
         structure_hash["field_order"] = field_order
         return structure_hash
     end

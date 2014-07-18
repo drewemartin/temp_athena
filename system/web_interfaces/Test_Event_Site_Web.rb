@@ -684,12 +684,11 @@ end
         }
         </style>"
         
-        user_sams_ids_str = $team_member.sams_ids.field_values("sams_id", where_addon = nil)
-        user_sams_ids_str = user_sams_ids_str ? user_sams_ids_str.join("','") : ""
+        user_team_id = $team_member.primary_id.value
         
         assigned_sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
             field_name      = "test_event_site_id",
-            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}') AND not_attending IS NOT TRUE",
+            where_clause    = "WHERE team_id = '#{user_team_id}' AND not_attending IS NOT TRUE",
             options         = {:value_only=>true}
         )
         
@@ -879,18 +878,17 @@ end
             
         ]
         
-        user_sams_ids_str = $team_member.sams_ids.field_values("sams_id", where_addon = nil)
-        user_sams_ids_str = user_sams_ids_str ? user_sams_ids_str.join("','") : ""
+        user_team_id = $team_member.primary_id.value
         
         pids = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
             field_name      = "test_event_site_id",
-            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
+            where_clause    = "WHERE team_id = '#{user_team_id}'",
             options         = {:value_only=>true}
         )
         
         assigned_sites = $tables.attach("TEST_EVENT_SITE_STAFF").find_fields(
             field_name      = "test_event_site_id",
-            where_clause    = "WHERE staff_id IN ('#{user_sams_ids_str}')",
+            where_clause    = "WHERE team_id = '#{user_team_id}'",
             options         = {:value_only=>true}
         )
         
