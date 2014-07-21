@@ -409,7 +409,7 @@ end
         ")
         
         dd_choices = Array.new
-        results.each{|result| dd_choices.push(    {:name=>result[0],:value=>result[1]}    )}
+        results.each{|result| dd_choices.push(    {:name=>result[0],:value=>result[1]}    )} if results
         return dd_choices
         
         #$tables.attach("TEST_EVENT_SITES").dd_choices("site_name", "primary_id", "#{where_clause} ORDER BY site_name ASC")
