@@ -158,7 +158,8 @@ end
                         {:name=>"Spring Break"                  , :value=>"Spring Break"                  },
                         {:name=>"Teacher Inservice"             , :value=>"Teacher Inservice"             },
                         {:name=>"Thanksgiving"                  , :value=>"Thanksgiving"                  },
-                        {:name=>"Winter Break"                  , :value=>"Winter Break"                  }
+                        {:name=>"Winter Break"                  , :value=>"Winter Break"                  },
+                        {:name=>"Veteran's Day"                 , :value=>"Veteran's Day"                 }
                     ]
                 )
             ]
