@@ -504,6 +504,9 @@ end
         
         div.ILP_ENTRY_TYPE__default_description     textarea{ clear: left; display: block; width: 350px; height: 100px; resize: none; overflow-y: scroll;}
         div.ILP_ENTRY_TYPE__default_solution        textarea{ clear: left; display: block; width: 350px; height: 100px; resize: none; overflow-y: scroll;}
+        div.ILP_ENTRY_TYPE__required                        {text-align: center;}
+        div.ILP_ENTRY_TYPE__max_entries                     {text-align: center;}
+        div.ILP_ENTRY_TYPE__manual                          {text-align: center;}
         
         div.ILP_ENTRY_CATEGORY__name                        {margin-top: 2px; margin-bottom: 2px;}
         div.ILP_ENTRY_CATEGORY__description                 {margin-top: 2px; margin-bottom: 2px; width: 100%;}
