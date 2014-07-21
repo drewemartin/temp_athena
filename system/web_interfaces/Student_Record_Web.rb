@@ -358,8 +358,8 @@ end
         a5, b5 = "Grade:"           , s.grade.value
         a6, b6 = "Birthday:"        , s.birthday.to_user
         a7, b7 = "Age:"             , age
-        a8, b8 = "Is Special Ed:"   , s.isspecialed.value == 1 ? "<div style='color:red;'>Yes</div>" : "No"
-        a9, b9 = "Is Active:"       , s.active == 1 ? "Yes" : "No"
+        a8, b8 = "Is Special Ed:"   , s.isspecialed.value == "1" ? "<div style='color:red;'>Yes</div>" : "No"
+        a9, b9 = "Is Active:"       , s.active.value == "1" ? "Yes" : "No"
         
         id_array = [
             
