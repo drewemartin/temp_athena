@@ -53,6 +53,7 @@ end
         structure_hash["fields"] = Hash.new
             
             structure_hash["fields"]["status"           ] = {"data_type"=>"text", "file_field"=>"status"            } if field_order.push("status"          )
+            structure_hash["fields"]["document_id"      ] = {"data_type"=>"text", "file_field"=>"document_id"       } if field_order.push("document_id"     )
             
         structure_hash["field_order"] = field_order
         return structure_hash
