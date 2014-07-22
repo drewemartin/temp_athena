@@ -42,7 +42,7 @@ end
             
         </style>"
         
-        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>\n"
+        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"+"<div id='sy_warning'><b>Looking for last year's school information? >>>>>>>>></b></div>"
         
         $kit.output << "<div class='menu_buttons_container'>"
         
@@ -447,6 +447,8 @@ end
             #new_pdf_button{margin-bottom:5px; margin-right:10px;}
             
             #refresh__tabs_rri{margin-top:1px; margin:bottom:5px;}
+            
+            #sy_warning{ float:right; margin-right:10px; color:red; border:2px solid red; padding:2px;}
             
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}
