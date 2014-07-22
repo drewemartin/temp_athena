@@ -14,6 +14,9 @@ class Process_Log_Execute < Base
         rows = $tables.attach("Process_Log").by_status("NULL", remote)
         rows.shift(1).each do |row|
             
+            school_year_holder  = $config.school_year
+            $config.school_year = row.fields["school_year"].value
+            
             fields          = row.fields
             
             fields["status"         ].value = "Processing"
@@ -63,6 +66,8 @@ class Process_Log_Execute < Base
                 $base.system_notification("Process Log Failed", "#{e.message}\n\n#{e.backtrace}")
                 
             end
+            
+            $config.school_year = school_year_holder
             
         end if rows
         
