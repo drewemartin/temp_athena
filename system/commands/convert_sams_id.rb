@@ -6,9 +6,8 @@ class Convert_sams_id < Base
     #---------------------------------------------------------------------------
     def initialize(table = nil)
         super()
-        #convert("student_tep_agreement", "conducted_by", "conducted_by_team_id")
-        #convert("student_attendance_ap", "staff_id", "team_id")
-        convert("student_tests", "test_administrator", "test_administrator_team_id")
+        convert("student_tep_agreement", "conducted_by", "conducted_by_team_id")
+        convert("student_attendance_ap", "staff_id", "team_id")
     end
     #---------------------------------------------------------------------------
     

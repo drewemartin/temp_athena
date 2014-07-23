@@ -1086,6 +1086,8 @@ end
             div.STUDENT_RRI_REQUESTS__request_method                   {margin-bottom:10px;}
             div.STUDENT_RRI_REQUESTS__notes                   textarea {width:270px; height:100px; resize:none; overflow-y:scroll; }
             
+            div.STUDENT_RRO_REQUIRED_DOCUMENTS__status                 {text-align: center;}
+            div.STUDENT_RRO_REQUIRED_DOCUMENTS__received_date          {text-align: center;}
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes         textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRI_RECIPIENTS__name                     label {width:110px; display:inline-block;}
