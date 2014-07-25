@@ -1,5 +1,5 @@
 #!/usr/local/bin/ruby
-require 'tv_interface'
+require "#{File.dirname(__FILE__)}/tv_interface"
 
 ################################################################################
 #Description: 
@@ -164,10 +164,32 @@ class TV_Kmail < TV_Interface
     def commit_send
         #this need to take a screenshot, name with appropriate labels (perhaps just the kmail id #) and save the path to @screen_shot_path
         #and catch and report any errors to @error
-        @browser.link(:text, "Send Now").click
-        until @browser.windows.length <= 1
-            sleep 1
+        
+        send_button   = @browser.link(:text, "Send Now")
+        i=0
+        send_button_found = false
+        until send_button_found
+            if send_button.exists?
+                #send_button.click
+                send_button_found = true
+            elsif i >= 15
+                raise "execution expired - No Send Button" 
+            else
+                i+= 1
+                sleep 1
+            end
         end
+	
+	sleep 10        
+
+	#i=0
+        #until @browser.windows.length <= 1
+	#    if i>=15
+	#	raise "execution expired - kmail window timed out after send" 
+	#    end
+        #    sleep 1
+	#    i+=1
+        #end
         #find way to verify success, error etc
         @successfull        = true
         @screenshot_path    = ''
@@ -347,12 +369,17 @@ class TV_Kmail < TV_Interface
         subject_path    = "/html/body/div[2]/div/form/div[2]/table/tbody/tr[2]/td[2]/input"
         #subject_path    = "/html/body/div[2]/div/form/div/table[2]/tbody/tr/td[2]/input"
         subject_field   = @browser.text_field(:xpath, subject_path )
-        
+        i=0
         subject_field_found = false
         until subject_field_found
             if subject_field.exists?
                 subject_field.set @kmail.SUBJECT
                 subject_field_found = true
+            elsif i >= 15
+                raise "execution expired - Subject Field Not Found" 
+            else
+                i+= 1
+                sleep 1
             end
         end
         

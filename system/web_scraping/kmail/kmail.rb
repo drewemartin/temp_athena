@@ -12,7 +12,7 @@ class KMAIL_EXECUTE < Base
         
         super()
         
-        require "TV_Kmail_Agent"
+        require "#{File.dirname(__FILE__)}/TV_Kmail_Agent"
         agent  = TV_Kmail_Agent.new('agent_one')
         
     end

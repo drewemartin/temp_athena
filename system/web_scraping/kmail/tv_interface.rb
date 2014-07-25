@@ -208,7 +208,7 @@ class TV_Interface
                     if @browser.link(:text, "Logout").exists?
                         confirmed = true
                         logged_in = true
-                    elsif j == 30
+                    elsif j >= 30
                         raise exception, "execution expired #{__LINE__}"
                         #@browser.link(:text, "Logout").click #clicking purposefully to produce an error
                     else
