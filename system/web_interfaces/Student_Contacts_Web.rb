@@ -111,8 +111,8 @@ end
                         "Target Time",
                         "WIN",
                         "Other",
-                        "Other Description",
-                        "RTII Behavior"
+                        "Other Description"
+                        #"RTII Behavior"
                     ]
                     
                 ]
@@ -192,7 +192,7 @@ end
                     row.push(f["win"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["win"                           ].to_user()+">/div>")
                     row.push(f["other"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["other"                         ].to_user()+"</div>")
                     row.push(f["other_description"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
-                    row.push(f["rtii_behavior_id"              ].web.select(:disabled=>disabled, :dd_choices=>rtii_dd_options)   )
+                    #row.push(f["rtii_behavior_id"              ].web.select(:disabled=>disabled, :dd_choices=>rtii_dd_options)   )
                     
                     tables_array.push(row)
                     
@@ -294,20 +294,20 @@ end
                 
             output << $tools.legend_close()
             
-            if  $focus_student.rtii_behavior.existing_records
-                
-                output << $tools.legend_open("sub", "RTII - Please select one of the following (only if this contact was RTII related):")
-                    
-                    rtii_table = $tables.attach("student_rtii_behavior")
-                    output << record.fields["rtii_behavior_id" ].web.radio(
-                        {
-                            :radio_choices     => rtii_dd_options
-                        }
-                    )
-                    
-                output << $tools.legend_close()
-                
-            end
+            #if  $focus_student.rtii_behavior.existing_records
+            #    
+            #    output << $tools.legend_open("sub", "RTII - Please select one of the following (only if this contact was RTII related):")
+            #        
+            #        rtii_table = $tables.attach("student_rtii_behavior")
+            #        output << record.fields["rtii_behavior_id" ].web.radio(
+            #            {
+            #                :radio_choices     => rtii_dd_options
+            #            }
+            #        )
+            #        
+            #    output << $tools.legend_close()
+            #    
+            #end
             
         output << $tools.div_close()
         
