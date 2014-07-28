@@ -979,7 +979,7 @@ end
                 "Activity OR Live Sessions"             ,
                 "Classroom Activity (50% or more)"      ,
                 "Live Sessions"                         ,
-                "Manual (default a)"                    ,
+                "Manual (default u)"                    ,
                 "Manual (default p)"                    ,
                 "Not Enrolled"                          ,
                 "Override Procedure"                    
