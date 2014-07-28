@@ -129,6 +129,10 @@ end
         table[:created_date] = arg
     end
     
+    def data_base=(arg)
+        table[:data_base] = arg
+    end
+    
     def file_path=(arg)
         table[:file_path] = arg
     end
