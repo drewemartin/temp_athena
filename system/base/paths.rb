@@ -77,7 +77,7 @@ end
         if !structure.has_key?(:documents_path)
             
             #FNORD - must add addition nodes here if their functions include document handling.
-            if ENV["COMPUTERNAME"] == "ATHENA"
+            #if ENV["COMPUTERNAME"] == "ATHENA"
                 
                 if !File.directory?( "A:/" )
                     require 'win32ole'
@@ -89,11 +89,11 @@ end
                 
                 structure[:documents_path] = $config.init_path("A:/documents")
                 
-            else
+            #else
                 
-                structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")  
+            #    structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")  
                 
-            end
+            #end
             
         end
         
@@ -117,7 +117,7 @@ end
     def htdocs_path
         if !structure.has_key?(:htdocs_path)
             path_array = $config.system_root.split("/")
-            path_array.delete($config.code_set_name)
+            path_array.pop
             new_path = path_array.join("/")+"/"
             structure[:htdocs_path] = new_path
         end
