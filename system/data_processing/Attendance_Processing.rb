@@ -41,58 +41,70 @@ class Attendance_Processing
             retried = 0
             begin
                 
-                case @stu_daily_procedure_type
-                when "Activity"
+                if @stu_daily_mode != "Exempt" && !classrooms_present && !has_activity
                     
-                    @finalize_code = has_activity ? "p" : "u"
-                    
-                when "Activity AND Live Sessions"
-                    
-                    @finalize_code = (has_live && has_activity) ? "p" : "u"
-                    
-                when "Activity OR Live Sessions"
-                    
-                    @finalize_code = (has_live || has_activity) ? "p" : "u"
-                    
-                when "Live Sessions"
-                    
-                    @finalize_code = has_live ? "p" : "u"
-                    
-                when "Classroom Activity (50% or more)"
-                    
-                    tot = classrooms_total
-                    if tot && tot.length > 0
-                        
-                        active = classrooms_active
-                        if active && active.length > 0
-                            @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
-                        else
-                            @finalize_code = "u"
-                        end
-                        
-                    else
-                        
-                        @stu_daily_mode             = "No Live Sessions"
-                        @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
-                        
-                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
-                        
-                        #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
-                        raise "MODE CHANGE"
-                        
-                    end
-                    
-                when "Manual (default p)"
-                    
-                    @finalize_code = "p"
-                    
-                when "Manual (default u)"
+                    @stu_daily_mode             = "Asynchronous"
+                    @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
+                    student_attendance_record.fields["mode"].set(@stu_daily_mode).save
                     
                     @finalize_code = "u"
                     
-                when "Not Enrolled"
+                else
                     
-                    @finalize_code = "NULL"
+                    case @stu_daily_procedure_type
+                    when "Activity"
+                        
+                        @finalize_code = has_activity ? "p" : "u"
+                        
+                    when "Activity AND Live Sessions"
+                        
+                        @finalize_code = (has_live && has_activity) ? "p" : "u"
+                        
+                    when "Activity OR Live Sessions"
+                        
+                        @finalize_code = (has_live || has_activity) ? "p" : "u"
+                        
+                    when "Live Sessions"
+                        
+                        @finalize_code = has_live ? "p" : "u"
+                        
+                    when "Classroom Activity (50% or more)"
+                        
+                        tot = classrooms_total
+                        if tot && tot.length > 0
+                            
+                            active = classrooms_active
+                            if active && active.length > 0
+                                @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                            else
+                                @finalize_code = "u"
+                            end
+                            
+                        else
+                            
+                            @stu_daily_mode             = "No Live Sessions"
+                            @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
+                            
+                            student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                            
+                            #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                            raise "MODE CHANGE"
+                            
+                        end
+                        
+                    when "Manual (default p)"
+                        
+                        @finalize_code = "p"
+                        
+                    when "Manual (default u)"
+                        
+                        @finalize_code = "u"
+                        
+                    when "Not Enrolled"
+                        
+                        @finalize_code = "NULL"
+                        
+                    end
                     
                 end
                 
@@ -146,6 +158,18 @@ end
         
     end
     
+    def classrooms_present
+        
+        @student.attendance_activity.table.primary_ids(
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND code            =   'p'
+            AND code            !=  'asy'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
+        
+    end
+    
     def classrooms_total
         
         @student.attendance_activity.table.primary_ids(
@@ -165,8 +189,8 @@ end
             grade                       = $students.get(@sid).grade.value
             att_date                    = $base.mathable("date", @date)
             
-            eligible_dates_enroll       = $school.school_days_after(student_enroll_date).shift(10)
-            eligible_dates_school       = $school.school_days.shift(10)
+            eligible_dates_enroll       = $school.school_days_after(student_enroll_date).shift(5)
+            eligible_dates_school       = $school.school_days.shift(5)
             
             if (
                 
@@ -194,7 +218,7 @@ end
         end
         
     end
-
+    
     def has_activity
         
         @student.attendance_activity.table.primary_ids(
@@ -230,7 +254,7 @@ end
         return (results || classrooms_active)
         
     end
-
+    
     def orientation_attended
         
         @student.attendance_activity.table.primary_ids(
@@ -334,29 +358,39 @@ end
             grade               = $students.get(@sid).grade.value
             att_date            = $base.mathable("date", @date)
             
-            if (
-                
-                student_enroll_date &&
-                
-                (
-                    (
-                        grade.match(/K|1st|2nd|3rd|4th|5th/) && 
-                        (
-                            (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
-                            (att_date >= @school_start          && att_date <= (@school_start + 4       ))
-                        )
-                    ) ||
-                    (
-                        (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
-                        (att_date >= @school_start          && att_date <= (@school_start + 3       ))
-                    )
-                )
-                
-            )
+            #if (
+            #    
+            #    student_enroll_date &&
+            #    
+            #    (
+            #        (
+            #            grade.match(/K|1st|2nd|3rd|4th|5th/) && 
+            #            (
+            #                (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+            #                (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+            #            )
+            #        ) ||
+            #        (
+            #            (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
+            #            (att_date >= @school_start          && att_date <= (@school_start + 3       ))
+            #        )
+            #    )
+            #    
+            #)
                 
                 if orientation_logged
                     
-                    @finalize_code = (orientation_attended ? "p" : "u")
+                    if orientation_logged.length == orientation_attended.length
+                        
+                        @finalize_code = "p"
+                        
+                    else
+                        
+                        @finalize_code = "u"
+                        
+                    end
+                    
+                    #@finalize_code = (orientation_attended ? "p" : "u")
                     
                     return true
                     
@@ -366,26 +400,26 @@ end
                     
                 end
                 
-            else
-                
-                #WE DON'T WANT THIS CHANGE TO BE IMPLEMENTED ON ANY STUDENT ATTENDANCE RECORDS THAT HAVE ALREADY BEEN REPORTED.
-                if att_date >= $base.mathable("date", "2013-09-20") 
-                    
-                    if o_pids = orientation_logged
-                        
-                        o_pids.each{|pid|
-                            
-                            $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
-                            
-                        }
-                        
-                    end
-                    
-                end
-                
-                return false
-                
-            end
+            #else
+            #    
+            #    #WE DON'T WANT THIS CHANGE TO BE IMPLEMENTED ON ANY STUDENT ATTENDANCE RECORDS THAT HAVE ALREADY BEEN REPORTED.
+            #    if att_date >= $base.mathable("date", "2013-09-20") 
+            #        
+            #        if o_pids = orientation_logged
+            #            
+            #            o_pids.each{|pid|
+            #                
+            #                $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
+            #                
+            #            }
+            #            
+            #        end
+            #        
+            #    end
+            #    
+            #    return false
+            #    
+            #end
             
         end
         
