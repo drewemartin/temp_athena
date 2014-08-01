@@ -53,13 +53,18 @@ end
         
     end
 
-    def queue_kmail(subject, content, sender)
+    def queue_kmail(subject, content, sender, block_reply="1")
+        
         params = Hash.new
-        params[:sender              ] = "#{sender}:tv"
-        params[:subject             ] = subject
-        params[:content             ] = content
-        params[:recipient_studentid ] = @sid
+        
+        params[:sender     ] = sender
+        params[:subject    ] = subject
+        params[:content    ] = content
+        params[:student_id ] = @sid
+        params[:block_reply] = block_reply
+        
         return $base.queue_kmail(params)
+        
     end   
     
     def related_team_records(option = nil)

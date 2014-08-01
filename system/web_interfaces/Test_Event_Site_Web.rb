@@ -1223,7 +1223,7 @@ end
                 
                 csv_path = $reports.save_document({:category_name=>"Athena",:type_name=>"Mass Kmail Students List",:csv_rows=>sids})
                 
-                $base.queue_process("Queue_Kmails", "testing_reminder", "#{test_event_site_id}<,>#{subject}<,>#{message}<,>#{csv_path}")
+                $base.queue_process("Queue_Kmails", "testing_reminder", "#{test_event_site_id}<,>#{subject}<,>#{message}<,>#{csv_path}<,>1")
                 
                 output   = "#{sids.length.to_s} kmails successfully queued.<br>It can take up to 10 minutes for the log to display your k-mail.<br>Actual kmail delivery time to student's inbox varies depending on current queue volume."
                 

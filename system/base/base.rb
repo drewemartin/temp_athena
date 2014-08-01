@@ -1018,14 +1018,15 @@ end
     new_file = File.open( "#{file_path}#{filename}_#{$ifilestamp}.csv", 'w' )
   end
   
-  def queue_kmail(params) # params = {:db=>nil,:sender=>"",:subject=>"",:content=>"",:recipient_studentid=>sid}
+  def queue_kmail(params) # params = {:db=>nil,:sender=>"",:subject=>"",:content=>"",:student_id=>sid,:block_reply=>"0"}
     
-    new_record = $tables.attach("KMAIL").new_row
-    new_record.fields["sender"              ].value = params[:sender    ] 
-    new_record.fields["subject"             ].value = params[:subject   ]
-    new_record.fields["content"             ].value = params[:content   ]
-    new_record.fields["kmail_type"          ].value = 'Student'
-    new_record.fields["recipient_studentid" ].value = params[:recipient_studentid]
+    new_record = $tables.attach("STUDENT_KMAIL").new_row
+    new_record.fields["sender"      ].value = params[:sender     ] 
+    new_record.fields["subject"     ].value = params[:subject    ]
+    new_record.fields["content"     ].value = params[:content    ]
+    new_record.fields["student_id"  ].value = params[:student_id ]
+    new_record.fields["block_reply" ].value = params[:block_reply]
+    new_record.fields["sending"     ].value = "0"
     new_record.save
     
     return new_record.primary_id
