@@ -270,7 +270,142 @@ class Requested_Reports < Base
         end
         
     end
-  
+    
+    def k12_attendance_summary(request_pid)
+        
+        record = $tables.attach("TEAM_REQUESTED_REPORTS").by_primary_id(request_pid)
+        
+        record.fields["status"].value = "Generating"
+        
+        record.save
+        
+        headers =
+        [
+            
+            "student_id"                ,
+            "sum_days_enrolled"         ,
+            "sum_days_present"          ,
+            "sum_days_excused"          ,
+            "sum_days_unexcused"        ,
+            "dates_absent"              ,
+            "dates_excused"             ,
+            "dates_unexcused"           ,
+            "rundate"
+            
+        ]
+        
+        sa_db   = $tables.attach("STUDENT_ATTENDANCE"       ).data_base
+        sam_db  = $tables.attach("STUDENT_ATTENDANCE_MASTER").data_base
+        
+        sql_str = "
+        SELECT 
+            
+            #{sam_db}.student_attendance_master.student_id,
+            
+        #ENROLLED DAYS
+            (
+                SELECT
+                    COUNT(student_id)
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND official_code IS NOT NULL
+            ),
+            
+        #PRESENT DAYS
+            (
+                SELECT
+                    COUNT(student_id)
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (#{official_code_sql("present")})
+            ),
+            
+        #EXCUSED DAYS
+            (
+                SELECT
+                    COUNT(student_id)
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (#{official_code_sql("excused")})
+            ),
+            
+        #UNEXCUSED DAYS
+            (
+                SELECT
+                    COUNT(student_id)
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (#{official_code_sql("unexcused")})
+            ),
+            
+        #DATES ABSENT
+            (
+                SELECT
+                    GROUP_CONCAT(DATE_FORMAT(date,'%m/%d/%Y'))
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (
+                    #{official_code_sql("excused"   )} OR
+                    #{official_code_sql("unexcused" )}
+                )
+                
+            ),
+            
+        #DATES EXCUSED
+            (
+                SELECT
+                    GROUP_CONCAT(DATE_FORMAT(date,'%m/%d/%Y'))
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (
+                    #{official_code_sql("excused"   )}
+                )
+                
+            ),
+            
+        #DATES UNEXCUSED
+            (
+                SELECT
+                    GROUP_CONCAT(DATE_FORMAT(date,'%m/%d/%Y'))
+                FROM #{sa_db}.student_attendance
+                WHERE student_id = student_attendance_master.student_id
+                AND (
+                    #{official_code_sql("unexcused"   )}
+                )
+                
+            ),
+            NOW()
+        "
+        
+        sql_str << " FROM #{sam_db}.student_attendance_master"
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            file_name = "#{request_pid}__requested_reports__attendance_summary_k12"
+            puts file_path = $reports.csv("temp", file_name, results.insert(0, headers))
+            $reports.move_to_k12(file_path)
+            
+            record.fields["status"].value    = "Ready"
+            record.fields["file_name"].value = file_path.split("/").last
+            
+            record.save
+            
+            return true
+            
+        else
+            
+            record.fields["status"].value    = "Failed"
+            
+            record.save
+            
+            return false
+            
+        end
+        
+    end
+
     def student_contacts_complete(request_pid)
         
         record = $tables.attach("TEAM_REQUESTED_REPORTS").by_primary_id(request_pid)
@@ -607,9 +742,9 @@ end
         
         codes.each{|code|
             code_sql_string << (code_sql_string.empty? ? "official_code = '#{code}'" : " OR official_code = '#{code}'")
-        }
+        } if codes
         
-        return code_sql_string
+        return codes ? code_sql_string : "official_code IS FALSE"
         
     end
     
