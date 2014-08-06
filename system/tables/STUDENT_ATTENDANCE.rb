@@ -21,6 +21,29 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+    def before_load_student_attendance #BE SURE TO SCHEDULE THIS IS DB CONFIG
+        
+        report_name = "k12_attendance_summary"
+        
+        request_record  = $tables.attach("TEAM_REQUESTED_REPORTS").new_row
+        request_record.fields["team_id"        ].value = $team.find(:legal_first_name=>"ATHENA-SIS").primary_id.value
+        request_record.fields["report_name"    ].value = report_name
+        request_record.fields["status"         ].value = "Requested"
+        request_record.fields["expiration_date"].value = (DateTime.now+(2.0/24)).strftime("%Y-%m-%d %H:%M:%S")
+        
+        requested_pid   = request_record.save
+        
+        $base.queue_process(
+            "Requested_Reports"     ,
+            report_name             ,
+            requested_pid           , 
+            "0"
+        )
+        
+        return false
+        
+    end
+    
     def DISABLED_after_load_k12_ecollege_activity
         
         source  = "LMS"
