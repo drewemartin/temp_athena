@@ -383,9 +383,11 @@ class Requested_Reports < Base
         
         if results
             
-            file_name = "#{request_pid}__requested_reports__attendance_summary_k12"
-            puts file_path = $reports.csv("temp", file_name, results.insert(0, headers))
-            $reports.move_to_k12(file_path)
+            file_name   = "#{request_pid}__requested_reports__attendance_summary_k12"
+            local_file  = $reports.csv("temp", file_name, results.insert(0, headers))
+            remote_file = "attendance_summary/k12_agoa_attendance_summarry_#{DateTime.now.strftime("%m%d%Y")}.csv"
+            
+            $reports.move_to_k12(local_file, remote_file)
             
             record.fields["status"].value    = "Ready"
             record.fields["file_name"].value = file_path.split("/").last
