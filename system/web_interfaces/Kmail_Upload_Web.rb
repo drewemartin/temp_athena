@@ -161,6 +161,7 @@ class KMAIL_UPLOAD_WEB
             {:name=>"Attendance Office",      :value=>"attendance_reports"},
             {:name=>"ISP",                    :value=>"ispkmail"},
             {:name=>"Nurses",                 :value=>"nursing"},
+            {:name=>"Address Change",         :value=>"address_change"},
             {:name=>"Kristin Walters-Seidel", :value=>"kristin_walters_seidel"},
             {:name=>"Yvette Fleming",         :value=>"yvette_fleming"},
             {:name=>"Stephanie Boon",         :value=>"stephanie_boon"},
