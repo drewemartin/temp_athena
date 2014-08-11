@@ -16,8 +16,6 @@ class KMAIL_EXECUTE < Base
         
         overall_start_time = Time.new
         
-        test_i=1
-        
         url = "https://totalviewschool.k12.com/cgi-bin/WebObjects/TotalViewVA.woa"
         
         @db_name = $tables.attach("STUDENT_KMAIL").data_base
@@ -34,7 +32,7 @@ class KMAIL_EXECUTE < Base
                 pid     = kmail_record.fields["primary_id" ].value
                 sid     = kmail_record.fields["student_id" ].value
                 sender  = kmail_record.fields["sender"     ].value
-                subject = kmail_record.fields["subject"    ].value + "__" + test_i.to_s
+                subject = kmail_record.fields["subject"    ].value
                 content = kmail_record.fields["content"    ].value
                 block   = kmail_record.fields["block_reply"].value
                 
@@ -43,12 +41,11 @@ class KMAIL_EXECUTE < Base
                 no_results_xpath = "/html/body/div/div[2]/div/div/div[2]/div/div[1]/div[2]/div/p"
                 s_checkbox_xpath = "/html/body/div/div[2]/div/div/div[2]/div/div[2]/div/form/div[1]/div/div/table/tbody/tr[2]/td[1]/div/input"
                 new_kmail_xpath  = "/html/body/div/div[2]/div/div/div[2]/div/div[2]/div/form/table/tbody/tr/td/div/ul/li[1]/a"
-                subject_xpath    = "/html/body/div[2]/div/form/div[2]/table/tbody/tr[2]/td[2]/input"
-                block_xpath      = "/html/body/div[2]/div/form/div[2]/table/tbody/tr[5]/td[2]/input"
+                subject_xpath    = "/html/body/div[2]/div/form/div/table/tbody/tr[2]/td[2]/input"
+                block_xpath      = "/html/body/div[2]/div/form/div/input[1]"
                 
                 puts "\n----------------------------------------"
                 puts "SENDING KMAIL ID: #{pid}"
-                puts "i = #{test_i.to_s}"
                 
                 start_time = Time.now
                 
@@ -112,8 +109,9 @@ class KMAIL_EXECUTE < Base
                     #Flag as sent, because if timeout occurs now, the message will still be delivered.
                     sent = true
                     
-                    kmail_record.fields["successful"].value = "1"
-                    kmail_record.fields["sending"   ].value = "0"
+                    kmail_record.fields["successful"    ].value = "1"
+                    kmail_record.fields["sending"       ].value = "0"
+                    kmail_record.fields["date_time_sent"].value = $idatetime
                     kmail_record.save
                     
                     #Wait for kmail window to close
@@ -154,7 +152,6 @@ class KMAIL_EXECUTE < Base
                 if e.message == "Timeout::Error" && sent == false
                     
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                    puts "Failed on try #{test_i.to_s}"
                     puts "Retrying..."
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
                     
@@ -164,11 +161,11 @@ class KMAIL_EXECUTE < Base
                 elsif e.message == "Timeout::Error" && sent == true
                     
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                    puts "Failed to close after send on try #{test_i.to_s}"
+                    puts "Failed to close after send on try #{pid}"
                     puts "Not Retrying. Verify that it was sent. (it should be)"
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
                     
-                    kmail_record.fields["error"].value = "verify"
+                    kmail_record.fields["error"].value = "verify!"
                     kmail_record.save
                     
                     browser.close
@@ -176,12 +173,14 @@ class KMAIL_EXECUTE < Base
                 else
                     
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                    puts "Failed on try #{test_i.to_s}"
+                    puts "Failed on try #{pid}"
                     puts e.message
                     puts e.backtrace
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
                     
-                    kmail_record.fields["error"].value = e.message
+                    kmail_record.fields["error"     ].value = e.message
+                    kmail_record.fields["sending"   ].value = "0"
+                    kmail_record.fields["successful"].value = "0"
                     kmail_record.save
                     
                     browser.close
@@ -189,8 +188,6 @@ class KMAIL_EXECUTE < Base
                 end
                 
             end
-            
-            test_i += 1
             
         end
         
