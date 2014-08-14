@@ -262,35 +262,35 @@ end
             $tools.button_request("unverified_previous_school"),
             "Unverified Previous Schools",
             "List of students whose previous school entry doesn't match the official database of schools."
-        ]) if $team_member.super_user?
+        ]) if $team_member.super_user?  || $team_member.rights.live_reports_unverified_previous_school.is_true?
         
         #RRI Open Nursing Requests
         tables_array.push([
             $tools.button_new_csv("rri_requests_open", "Nursing"),
             "RRI Open Nursing Requests",
             "This report contains all of the open incoming Nursing record requests"
-        ]) if $team_member.super_user?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_rri_requests_open_nursing.is_true?
         
         #RRI Open Transcript Requests
         tables_array.push([
             $tools.button_new_csv("rri_requests_open", "Transcripts"),
             "RRI Open Transcript Requests",
             "This report contains all of the open incoming Transcript record requests"
-        ]) if $team_member.super_user?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_rri_requests_open_transcripts.is_true?
         
         #RRI All Open Requests
         tables_array.push([
             $tools.button_new_csv("rri_requests_open"),
             "RRI All Open Requests",
             "This report contains all of the open incoming record requests from all departments"
-        ]) if $team_member.super_user?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_rri_requests_open.is_true?
         
         #RRI All Requests
         tables_array.push([
             $tools.button_new_csv("rri_requests_open", "all"),
             "RRI All Requests",
             "This report contains all incoming record requests"
-        ]) if $team_member.super_user?
+        ]) if $team_member.super_user? || $team_member.rights.live_reports_rri_requests_open_all.is_true?
         
         output << $kit.tools.data_table(tables_array, "leadership_reports")
         
