@@ -16,6 +16,25 @@ class New_Class < Base #Classes must begin with a capital letter
         #destroy_wormhole("#{$paths.reports_path}Sapphire_Update/New_Students/Sapphire_Update")
         #puts @i
         
+        user_login = "mmarkert2@agora.org"
+        subject = "Athena Log-in Information"
+        content = "An Athena account has been created for you. Please go to http://athena-sis.com to sign in.<br>
+            Your username and password are below.<br><br>
+            Username: #{user_login}<br>
+            Password: blah"
+        $base.email.send(
+            :subject            => subject,
+            :content            => content,
+            :sender             => "donotreply@athena-sis.com",
+            :recipients         => user_login,
+            :attachment_name    => nil,
+            :attachment_path    => nil,
+            :email_relate       => [
+                {:table_name=>nil, :key_field=>nil, :key_field_value=>nil},
+                {:table_name=>nil, :key_field=>nil, :key_field_value=>nil}
+            ]
+        )
+        
     end
     
     def upload_team_member_evaluations

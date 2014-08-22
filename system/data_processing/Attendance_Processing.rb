@@ -41,37 +41,33 @@ class Attendance_Processing
             retried = 0
             begin
                 
-                if @stu_daily_mode != "Exempt" && !classrooms_present && !has_activity
+                case @stu_daily_procedure_type
+                when "Activity"
                     
-                    @stu_daily_mode             = "Asynchronous"
-                    @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
-                    student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                    @finalize_code = has_activity ? "p" : "u"
                     
-                    @finalize_code = "u"
+                when "Activity AND Live Sessions"
                     
-                else
+                    @finalize_code = (has_live && has_activity) ? "p" : "u"
                     
-                    case @stu_daily_procedure_type
-                    when "Activity"
+                when "Activity OR Live Sessions"
+                    
+                    @finalize_code = (has_live || has_activity) ? "p" : "u"
+                    
+                when "Live Sessions"
+                    
+                    @finalize_code = has_live ? "p" : "u"
+                    
+                when "Classroom Activity (50% or more)"
+                    
+                    tot = classrooms_total
+                    if tot && tot.length > 0
                         
-                        @finalize_code = has_activity ? "p" : "u"
-                        
-                    when "Activity AND Live Sessions"
-                        
-                        @finalize_code = (has_live && has_activity) ? "p" : "u"
-                        
-                    when "Activity OR Live Sessions"
-                        
-                        @finalize_code = (has_live || has_activity) ? "p" : "u"
-                        
-                    when "Live Sessions"
-                        
-                        @finalize_code = has_live ? "p" : "u"
-                        
-                    when "Classroom Activity (50% or more)"
-                        
-                        tot = classrooms_total
-                        if tot && tot.length > 0
+                        if classrooms_only_pb_and_u
+                            
+                            @finalize_code = has_activity ? "p" : "u"
+                            
+                        else
                             
                             active = classrooms_active
                             if active && active.length > 0
@@ -80,31 +76,31 @@ class Attendance_Processing
                                 @finalize_code = "u"
                             end
                             
-                        else
-                            
-                            @stu_daily_mode             = "No Live Sessions"
-                            @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
-                            
-                            student_attendance_record.fields["mode"].set(@stu_daily_mode).save
-                            
-                            #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
-                            raise "MODE CHANGE"
-                            
                         end
                         
-                    when "Manual (default p)"
+                    else
                         
-                        @finalize_code = "p"
+                        @stu_daily_mode             = "No Live Sessions"
+                        @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
                         
-                    when "Manual (default u)"
+                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
                         
-                        @finalize_code = "u"
-                        
-                    when "Not Enrolled"
-                        
-                        @finalize_code = "NULL"
+                        #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                        raise "MODE CHANGE"
                         
                     end
+                    
+                when "Manual (default p)"
+                    
+                    @finalize_code = "p"
+                    
+                when "Manual (default u)"
+                    
+                    @finalize_code = "u"
+                    
+                when "Not Enrolled"
+                    
+                    @finalize_code = "NULL"
                     
                 end
                 
@@ -158,18 +154,6 @@ end
         
     end
     
-    def classrooms_present
-        
-        @student.attendance_activity.table.primary_ids(
-            "WHERE student_id   =   '#{@sid}'
-            AND date            =   '#{@date}'
-            AND code            =   'p'
-            AND code            !=  'asy'
-            AND source REGEXP '#{@classroom_sources.join("|")}'"
-        )
-        
-    end
-    
     def classrooms_total
         
         @student.attendance_activity.table.primary_ids(
@@ -178,6 +162,42 @@ end
             AND code            !=  'asy'
             AND source REGEXP '#{@classroom_sources.join("|")}'"
         )
+        
+    end
+    
+    def classrooms_only_pb_and_u
+        
+        classrooms_tot = classrooms_total
+        
+        classrooms_pb = @student.attendance_activity.table.primary_ids(
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND (
+                
+                code = 'pb'
+                
+            )
+            AND code            !=  'asy'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
+        
+        classrooms_u = @student.attendance_activity.table.primary_ids(
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND (
+                
+                code = 'u'
+                
+            )
+            AND code            !=  'asy'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
+        
+        if classrooms_pb && classrooms_u && classrooms_tot.length == (classrooms_pb.length + classrooms_u.length)
+            return true
+        else
+            return false
+        end
         
     end
     

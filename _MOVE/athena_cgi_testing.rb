@@ -1,4 +1,4 @@
-#!C:/Users/Parnassus/athena-sis/Ruby187/bin/ruby.exe
+#!C:/Users/Parnassus/athena-sis/Ruby193/bin/ruby.exe
 require 'cgi'
 
 Dir["#{File.dirname(__FILE__)}/system/web_interfaces/*.rb"].each {|file|
@@ -123,7 +123,12 @@ class ATHENA_CGI_TESTING < Base
                     }
                 end
                 
-                save            unless (load? || fill_select_option?)
+                if params[:multiple_students]
+                    save_multiple_sids
+                else
+                    save unless (load? || fill_select_option?)
+                end
+                
                 search_results  unless (load? || fill_select_option?)
                 
                 if !(web_script.response == false)
@@ -291,7 +296,16 @@ class ATHENA_CGI_TESTING < Base
                         
                     elsif params[:new_row]
                         add_new_record
-                      
+                        
+                    elsif params[:new_row_multiple]
+                        add_new_record_multiple
+                        
+                    elsif params[:add_student_id]
+                        validate_sid
+                        
+                    elsif params[:remove_sid]
+                        remove_sid
+                        
                     elsif params[:get_row]
                         get_row
                         
@@ -1142,6 +1156,95 @@ end
         
     end
     
+    def add_new_record_multiple
+        
+        if table_name = params[:new_row_multiple]
+            
+            function_str = "add_new_record_#{params[:new_row_multiple].downcase}_multiple"
+            
+            if web_script.respond_to?(function_str)
+                
+                new_record_str = web_script.send(function_str) 
+                modify_tag_content("add_new_dialog_#{table_name}", "<input type='hidden' name='save_new_record'>"+new_record_str, type="update")
+                
+            elsif params[:student_page_view] && web_script_alt_page(params[:student_page_view]).respond_to?(function_str)
+                
+                new_record_str  = web_script_alt_page(params[:student_page_view]).send(function_str)
+                css             = web_script_alt_page(params[:student_page_view]).css
+                modify_tag_content("add_new_dialog_#{table_name}", css+new_record_str, type="update")
+                
+            end
+            
+        end
+        
+    end
+    
+    def validate_sid
+        
+        if sid = params[:add_student_id]
+            
+            hidden_list_sids = params[:multiple_students]
+            
+            if this_student = $tables.attach("STUDENT").by_student_id(sid)
+                
+                if !hidden_list_sids.include?("#{sid}")
+                    
+                    first_name = this_student.fields["studentfirstname"].value
+                    last_name = this_student.fields["studentlastname"].value
+                    
+                    updated_list = hidden_list_sids + "#{sid},"
+                    
+                    delete_params = "remove_sid_#{sid},group_student_ids"
+                    delete_button = "<button id='button_remove_student_#{sid}' class='button_remove_this_student' type='button' onclick=\"send('#{delete_params}');$(\'#student_div_#{sid}\').remove();\"></button>"
+                    
+                    modify_tag_content("group_student_ids", "#{updated_list}", type="update")
+                    
+                    output = String.new
+                    output << $tools.div_open("student_div_#{sid}", "student_div_#{sid}")
+                    output << "#{first_name} #{last_name} #{sid} #{delete_button}"
+                    output << "<input id='remove_sid_#{sid}' name='remove_sid' value='remove_#{sid}' type='hidden'>"
+                    output << $tools.div_close()
+                    
+                    modify_tag_content("multiple_student_list", output, type="append")
+                    modify_tag_content("add_student_id", "", type="update")
+                    
+                end
+                
+            end
+            
+        end
+        
+    end
+    
+    def remove_sid
+        
+        if info = params[:remove_sid]
+            
+            sid = info.split("_")[1]
+            
+            hidden_list_sids = params[:multiple_students]
+            
+            split_list = hidden_list_sids.split("#{sid},")
+            
+            if split_list.length == 0
+                updated_list = ""
+            elsif split_list.length == 1
+                updated_list = split_list[0]
+            else
+                updated_list = split_list[0] + split_list[1]
+            end
+            
+            this_student = $tables.attach("STUDENT").by_student_id(sid)
+            
+            first_name = this_student.fields["studentfirstname"].value
+            last_name = this_student.fields["studentlastname"].value
+            
+            modify_tag_content("group_student_ids", "#{updated_list}", type="update")
+            
+        end
+        
+    end
+    
     def get_how_to
         
         if table_name = params[:how_to]
@@ -1385,6 +1488,23 @@ end
     def save
         rows.each_value{|row|
             row.save
+        } if rows
+        return "" #correct and remove this return for error handling
+    end
+    
+    def save_multiple_sids
+        rows.each_value{|row|
+            sid_list = params[:multiple_students]
+            sids = sid_list.split(",")
+            if sids.length != 0
+                sids.each{|sid|
+                    row_copy = Marshal.load(Marshal.dump(row))
+                    row_copy.fields["student_id"].value = sid
+                    row_copy.save
+                }
+            else
+                self.web_error.unexpected_error
+            end
         } if rows
         return "" #correct and remove this return for error handling
     end
