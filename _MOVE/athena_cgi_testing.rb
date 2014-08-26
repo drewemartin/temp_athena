@@ -1350,7 +1350,7 @@ end
             fields["team_id"        ].value = tid
             fields["report_name"    ].value = report_name
             fields["status"         ].value = "Requested"
-            fields["expiration_date"].value = (DateTime.now+(2.0/24)).strftime("%Y-%m-%d %H:%M:%S")
+            fields["expiration_date"].value = (DateTime.now+(8.0/24)).strftime("%Y-%m-%d %H:%M:%S")
             
             requested_pid = new_row.save
             
