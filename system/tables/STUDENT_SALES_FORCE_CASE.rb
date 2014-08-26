@@ -59,7 +59,7 @@ end
             structure_hash["fields"]["idenity_id"]      = {"data_type"=>"int",  "file_field"=>"SAMS_STUDENT_IDENITYID"}  if field_order.push("idenity_id")
             structure_hash["fields"]["created_on_date"] = {"data_type"=>"date", "file_field"=>"CREATED_ON_DATE"}         if field_order.push("created_on_date")
             structure_hash["fields"]["changed_on_date"] = {"data_type"=>"date", "file_field"=>"CHANGED_ON_DATE"}         if field_order.push("changed_on_date")
-            structure_hash["fields"]["case_number"]     = {"data_type"=>"int",  "file_field"=>"CASE_NUMBER"}             if field_order.push("case_number")
+            structure_hash["fields"]["case_number"]     = {"data_type"=>"text",  "file_field"=>"CASE_NUMBER"}            if field_order.push("case_number")
             structure_hash["fields"]["contact_phone"]   = {"data_type"=>"text", "file_field"=>"CONTACT_PHONE"}           if field_order.push("contact_phone")
             structure_hash["fields"]["contact_name"]    = {"data_type"=>"text", "file_field"=>"CONTACT_NAME"}            if field_order.push("contact_name")
             structure_hash["fields"]["description"]     = {"data_type"=>"text", "file_field"=>"DESCRIPTION"}             if field_order.push("description")

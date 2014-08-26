@@ -11,7 +11,7 @@ class STUDENT_SALES_FORCE_WEB
     
     def page_title
         
-        "Sales Force Cases"
+        "Support Calls"
         
     end
     
@@ -48,8 +48,7 @@ end
                 "Resolution",
                 "Status",
                 "Origin",
-                "Created On Date",
-                "Changed On Date"
+                "Date of Call"
             ]
             
             content = Array.new
@@ -67,7 +66,6 @@ end
                     record.fields["resolution"].value,
                     record.fields["status"].value,
                     record.fields["origin"].value,
-                    record.fields["created_on_date"].to_user,
                     record.fields["changed_on_date"].to_user
                 ])
                 
