@@ -117,6 +117,10 @@ end
                         "Progress Monitoring",
                         "Target Time",
                         "WIN",
+                        "Small Group Session",
+                        "IEP Meeting",
+                        "Conference",
+                        "Family Coach Conference",
                         "Other",
                         "Other Description"
                         #"RTII Behavior"
@@ -197,6 +201,10 @@ end
                     row.push(f["progress_monitoring"           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["progress_monitoring"           ].to_user()+">/div>")
                     row.push(f["target_time"                   ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["target_time"                   ].to_user()+">/div>")
                     row.push(f["win"                           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["win"                           ].to_user()+">/div>")
+                    row.push(f["small_group_session"           ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["small_group_session"           ].to_user()+">/div>")
+                    row.push(f["iep_meeting"                   ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["iep_meeting"                   ].to_user()+">/div>")
+                    row.push(f["conference"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["conference"                    ].to_user()+">/div>")
+                    row.push(f["fc_conference"                 ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["fc_conference"                 ].to_user()+">/div>")
                     row.push(f["other"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["other"                         ].to_user()+"</div>")
                     row.push(f["other_description"             ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
                     #row.push(f["rtii_behavior_id"              ].web.select(:disabled=>disabled, :dd_choices=>rtii_dd_options)   )
@@ -255,6 +263,7 @@ end
                     
                     record.fields["aircard"                       ].web.default( :label_option=>"Aircard",                              :div_id=>"blank"),
                     record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank"),
+                    record.fields["conference"                    ].web.default( :label_option=>"Conference",                           :div_id=>"blank"),
                     record.fields["counselor_one_on_one"          ].web.default( :label_option=>"Counselor One-on-One",                 :div_id=>"blank"),
                     record.fields["counselor_face_to_face"        ].web.default( :label_option=>"Counselor Face to Face",               :div_id=>"blank"),
                     record.fields["counselor_graduation_meeting"  ].web.default( :label_option=>"Counselor Graduation Meeting",         :div_id=>"blank"),
@@ -266,9 +275,11 @@ end
                     record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank"),
                     record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank"),
                     record.fields["evaluation_request_psych"      ].web.default( :label_option=>"Evaluation Request - Psychology",      :div_id=>"blank"),
+                    record.fields["fc_conference"                 ].web.default( :label_option=>"Family Coach Conference",              :div_id=>"blank"),
                     record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank"),
                     record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank"),
                     record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank"),
+                    record.fields["iep_meeting"                   ].web.default( :label_option=>"IEP Meeting",                          :div_id=>"blank"),
                     record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank"),
                     record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Face-to-Face",                 :div_id=>"blank"),
                     record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank"),
@@ -280,6 +291,7 @@ end
                     record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank"),
                     record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank"),
                     record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank"),
+                    record.fields["small_group_session"           ].web.default( :label_option=>"Small Group Session",                  :div_id=>"blank"),
                     record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank"),
                     record.fields["target_time"                   ].web.default( :label_option=>"Target Time",                          :div_id=>"blank"),
                     record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank"),
@@ -701,6 +713,10 @@ end
             div#blank.STUDENT_CONTACTS__progress_monitoring{                    width:100%; height:22px; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__target_time{                            width:100%; height:22px; margin-bottom:2px;}
             div#blank.STUDENT_CONTACTS__win{                                    width:100%; height:22px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__small_group_session{                    width:100%; height:22px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__iep_meeting        {                    width:100%; height:22px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__conference         {                    width:100%; height:22px; margin-bottom:2px;}
+            div#blank.STUDENT_CONTACTS__fc_conference      {                    width:100%; height:22px; margin-bottom:2px;}
             
             
             div#blank.STUDENT_CONTACTS__other{                                  float:left; clear:left; width:25%; padding-top:10px;}
@@ -746,6 +762,10 @@ end
             div#blank.STUDENT_CONTACTS__progress_monitoring input{              float:left;}
             div#blank.STUDENT_CONTACTS__target_time         input{              float:left;}
             div#blank.STUDENT_CONTACTS__win                 input{              float:left;}
+            div#blank.STUDENT_CONTACTS__small_group_session input{              float:left;}
+            div#blank.STUDENT_CONTACTS__iep_meeting         input{              float:left;}
+            div#blank.STUDENT_CONTACTS__conference          input{              float:left;}
+            div#blank.STUDENT_CONTACTS__fc_conference       input{              float:left;}
             
             div#blank.STUDENT_CONTACTS__other input{                            float:left;}
             
@@ -780,6 +800,10 @@ end
             div#blank.STUDENT_CONTACTS__homeless label{                         width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__aircard label{                          width:250px; display:inline-block;}
             div#blank.STUDENT_CONTACTS__court_district_go label{                width:250px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__small_group_session label{              width:250px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__iep_meeting label{                      width:250px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__conference label{                       width:250px; display:inline-block;}
+            div#blank.STUDENT_CONTACTS__fc_conference label{                    width:250px; display:inline-block;}
             
             input.STUDENT_CONTACTS__successful{                                 margin-left: 0px;}
             input.datetimepick{                                                 width:145px; font-size:11px;}

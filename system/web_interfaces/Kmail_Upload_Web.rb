@@ -21,14 +21,15 @@ class KMAIL_UPLOAD_WEB
     #--------------------------------------------------------------------------- 
     def response
         
-        subject = $kit.params[:subject]    != "" ? $kit.params[:subject   ] : false
-        account = $kit.params[:account]    != "" ? $kit.params[:account   ] : false
-        content = $kit.params[:content]    != "" ? $kit.params[:content   ] : false
-        csv     = $kit.params[:csv_upload] != "" ? $kit.params[:csv_upload] : false
+        subject = $kit.params[:subject]     != "" ? $kit.params[:subject    ] : false
+        account = $kit.params[:account]     != "" ? $kit.params[:account    ] : false
+        content = $kit.params[:content]     != "" ? $kit.params[:content    ] : false
+        csv     = $kit.params[:csv_upload]  != "" ? $kit.params[:csv_upload ] : false
+        block   = $kit.params[:block_reply] ? "1" : "0"
         
         if subject && account  && content && csv
             
-            queue_kmail_from_upload(subject, content, account, csv)
+            queue_kmail_from_upload(subject, content, account, csv, block)
             
         else
             
@@ -45,8 +46,11 @@ class KMAIL_UPLOAD_WEB
         output << $tools.kmailinput("subject", "Subject Line:")
         output << $tools.newselect("account", credentials_dd, "Account To Send From:")
         output << $tools.kmailtextarea("content", "Message of Kmail:")
+        output << "<div class='http_message'>If your message includes a link, it must contain the complete web address!  This means that the website must start with \"http://\" or \"https://\"<br><br><span style='color:green'>Good: http://www.google.com</span><br><span style='color:red'>Bad: www.google.com<br>Bad: google.com</span><br><br>Failure to add the complete web address will cause the link ot appear as plain text in the student's inbox.</div>"
+        output << $field.new({"type" => "text", "field" => "block_reply", "value"=>"1"}).web.checkbox({:label_option=>"Block Reply", :field_id=>"block_reply", :add_class=>"no_save"})
+        output << "<div class='block_message'>Check this box to block replies to your kmail.</div>"
         output << $tools.newlabel("recipients_label", "Choose A .csv Of Recipients To Kmail")
-        output << $tools.newlabel("csv_info", "(Only checks for valid student id's in the first column of the csv)")
+        output << "<div class='csv_message'>Only valid student id's in the first column of the csv are used.</div>"
         output << $tools.csv_upload(self.class.name, "upload_form", "113")
         output << "<input class='submit_button' type='button' name='action' value='Upload and Queue Kmails' onclick='redirect_submit(\"upload_form\")'/>"
         output << $tools.newlabel("bottom")
@@ -55,7 +59,7 @@ class KMAIL_UPLOAD_WEB
         
     end
     
-    def queue_kmail_from_upload(subject, message, sender, csv_param)
+    def queue_kmail_from_upload(subject, message, sender, csv_param, block)
         
         output = String.new
         
@@ -121,7 +125,7 @@ class KMAIL_UPLOAD_WEB
                 
                 csv_path = $reports.save_document({:category_name=>"Athena",:type_name=>"Mass Kmail Students List",:csv_rows=>recipients})
                 
-                $base.queue_process("Queue_Kmails", "mass_kmail", "#{subject}<,>#{message}<,>#{sender}<,>#{csv_path}")
+                $base.queue_process("Queue_Kmails", "mass_kmail", "#{subject}<,>#{message}<,>#{sender}<,>#{csv_path}<,>#{block}")
                 
                 output << "<br>#{success_count} kmails successfully queued.<br>Actual kmail delivery time to student's inbox varies depending on current queue volume."
                 output << "<success>"
@@ -157,6 +161,7 @@ class KMAIL_UPLOAD_WEB
             {:name=>"Attendance Office",      :value=>"attendance_reports"},
             {:name=>"ISP",                    :value=>"ispkmail"},
             {:name=>"Nurses",                 :value=>"nursing"},
+            {:name=>"Address Change",         :value=>"address_change"},
             {:name=>"Kristin Walters-Seidel", :value=>"kristin_walters_seidel"},
             {:name=>"Yvette Fleming",         :value=>"yvette_fleming"},
             {:name=>"Stephanie Boon",         :value=>"stephanie_boon"},
@@ -212,14 +217,18 @@ end
         div.subject{                            float:left; clear:left; margin-bottom:10px;}
         div.account{                            float:left; clear:left; margin-bottom:10px;}
         div.content{                            float:left; clear:left; margin-bottom:10px;}
+        div.http_message{                       float:right; width:320px; height:190px; font-size:0.9em; border:3px double #2779aa; margin-left: 5px; padding:5px;}
+        div.block_message{                      float:right; width:320px; font-size:0.9em; border:3px double #2779aa; margin-left: 5px; padding:5px;}
+        div.block_reply{                        float:left; clear:left; margin-bottom:20px;}
         div.recipients_label{                   float:left; clear:left; margin-bottom:10px;}
         input.csv_upload{                       float:left; clear:left; margin-bottom:10px;}
-        div.csv_info{                           float:left; margin-top:2px; margin-left:15px; font-size:.8em;}
+        div.csv_message{                        float:right; width:320px; font-size:0.9em; border:3px double #2779aa; margin-left: 5px; padding:5px;}
         input.submit_button{                    float:left; clear:left; margin-bottom:10px;}
         
-        div.subject label{                      display:inline-block; width:175px;}
-        div.account label{                      display:inline-block; width:175px;}
-        div.content label{                      display:inline-block; width:175px; vertical-align:top;}
+        div.subject     label{                  display:inline-block; width:175px;}
+        div.account     label{                  display:inline-block; width:175px;}
+        div.content     label{                  display:inline-block; width:175px; vertical-align:top;}
+        div.block_reply label{                  display:inline-block; width:172px;}
         
         div.subject input{                      width:600px;}
         

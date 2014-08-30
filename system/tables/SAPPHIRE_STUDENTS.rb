@@ -196,7 +196,7 @@ end
             #File.rename(temp_name, file_path)
             #$reports.move_to_athena_reports(file_path)
             $base.email.athena_smtp_email(
-                ["jgowman@agora.org","jhalverson@agora.org","SMcDonnell@agora.org"],
+                ["jgowman@agora.org","jhalverson@agora.org","SMcDonnell@agora.org","sfields@agora.org"],
                 "Sapphire Returning Students",
                 "Please find the attached report",
                 file_path,

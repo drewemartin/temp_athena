@@ -79,8 +79,14 @@ end
             row.push(s.studentfirstname.value                           ) 
             row.push(s.grade.value                                      ) 
             row.push(s.familyid.value                                   ) 
-            row.push(s.birthday.value                                   ) 
-            row.push(s.primaryteacher.value                             ) 
+            row.push(s.birthday.to_user                                 )
+            ftc_name = ""
+            ftc_tid = $tables.attach("STUDENT_RELATE").field_value("team_id","WHERE studentid = '#{sid}' AND role = 'Family Teacher Coach' AND active = '1'")
+            if ftc_tid
+                ftc_t = $team.get(ftc_tid)
+                ftc_name = "#{ftc_t.legal_first_name.value} #{ftc_t.legal_last_name.value}"
+            end
+            row.push(ftc_name) 
             row.push(s.schoolenrolldate.to_user                         ) 
             row.push(s.specialedteacher.value                           ) 
             row.push(s.districtofresidence.value                        )

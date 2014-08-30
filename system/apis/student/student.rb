@@ -814,13 +814,18 @@ def x______________FUNCTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-    def queue_kmail(subject, content, sender)
+    def queue_kmail(subject, content, sender, block_reply="1")
+        
         params = Hash.new
-        params[:sender              ] = "#{sender}:tv"
-        params[:subject             ] = subject
-        params[:content             ] = content
-        params[:recipient_studentid ] = studentid
+        
+        params[:sender      ] = sender
+        params[:subject     ] = subject
+        params[:content     ] = content
+        params[:student_id  ] = studentid
+        params[:block_reply ] = block_reply
+        
         return $base.queue_kmail(params)
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

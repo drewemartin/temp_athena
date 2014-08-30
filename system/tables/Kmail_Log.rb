@@ -58,6 +58,7 @@ end
             structure_hash["fields"]["subject"      ] = {"data_type"=>"text",     "file_field"=>"subject"}       if field_order.push("subject")   
             structure_hash["fields"]["message"      ] = {"data_type"=>"text",     "file_field"=>"message"}       if field_order.push("message")   
             structure_hash["fields"]["credential"   ] = {"data_type"=>"text",     "file_field"=>"credential"}    if field_order.push("credential")
+            structure_hash["fields"]["block_reply"  ] = {"data_type"=>"bool",     "file_field"=>"block_reply"}   if field_order.push("block_reply")
             structure_hash["fields"]["kmail_ids"    ] = {"data_type"=>"text",     "file_field"=>"kmail_ids"}     if field_order.push("kmail_ids") 
             structure_hash["fields"]["identifier"   ] = {"data_type"=>"text",     "file_field"=>"identifier"}    if field_order.push("identifier")
             structure_hash["fields"]["user_message" ] = {"data_type"=>"text",     "file_field"=>"user_message"}  if field_order.push("user_message")

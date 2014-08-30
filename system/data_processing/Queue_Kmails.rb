@@ -7,13 +7,13 @@ class Queue_Kmails < Base
         
     end
 
-    def mass_kmail(subject, message, sender, csv_path)
+    def mass_kmail(subject, message, sender, csv_path, block_reply)
         
-        queue({:subject=>subject,:message=>message, :sender=>sender, :csv_path=>csv_path})
+        queue({:subject=>subject,:message=>message, :sender=>sender, :csv_path=>csv_path, :block_reply=>block_reply})
         
     end
     
-    def testing_reminder(test_event_site_id, subject, message, csv_path)
+    def testing_reminder(test_event_site_id, subject, message, csv_path, block)
         
         kmail_hash = Hash.new
         sender     = "office_admin"
@@ -69,11 +69,11 @@ class Queue_Kmails < Base
             
         end
         
-        queue({:kmail_hash=>kmail_hash, :subject=>subject, :message=>message, :sender=>sender, :log_id=>"test_reminders__test_event_site_id__#{test_event_site_id}"})
+        queue({:kmail_hash=>kmail_hash, :subject=>subject, :message=>message, :sender=>sender, :block_reply=>block, :log_id=>"test_reminders__test_event_site_id__#{test_event_site_id}"})
         
     end
     
-    def queue(a)#subject, message, sender, csv_path, log_id, kmail_hash
+    def queue(a)#subject, message, sender, csv_path, block, log_id, kmail_hash
         
         kmail_ids = Array.new
         
@@ -83,7 +83,7 @@ class Queue_Kmails < Base
                 
                 student = $students.attach(k)
                 content = v
-                kmail_ids << student.queue_kmail(a[:subject], content, a[:sender])
+                kmail_ids << student.queue_kmail(a[:subject], content, a[:sender], a[:block_reply])
                 $students.detach(k)
                 
             end
@@ -94,7 +94,7 @@ class Queue_Kmails < Base
                 
                 sid        = csv_row[0]
                 student    = $students.attach(sid)
-                kmail_ids << student.queue_kmail(a[:subject], a[:message], a[:sender])
+                kmail_ids << student.queue_kmail(a[:subject], a[:message], a[:sender], a[:block_reply])
                 $students.detach(sid)
                 
             end
@@ -115,6 +115,7 @@ class Queue_Kmails < Base
         kmail_log.fields["subject"     ].value = a[:subject]
         kmail_log.fields["message"     ].value = a[:message]
         kmail_log.fields["credential"  ].value = a[:sender]
+        kmail_log.fields["block_reply" ].value = a[:block_reply]
         kmail_log.fields["identifier"  ].value = a[:log_id]
         kmail_log.fields["user_message"].value = "#{duplicate_kmails.length} duplicate k-mail#{duplicate_kmails.length == 1 ? "":"s"} #{duplicate_kmails.length == 1 ? "was":"were"} detected and #{duplicate_kmails.length == 1 ? "was":"were"} not sent."
         

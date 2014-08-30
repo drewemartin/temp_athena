@@ -2777,10 +2777,12 @@ function x___________________UNSORTED(){}
 		s = s.replace(/\u203A/g, ">");
 		// spaces
 		s = s.replace(/(\u02DC|\u00A0)/g, " ");
-		// bullets
-		s = s.replace(/\u2022/g, "*");
+		// bullets:: circle,check
+		s = s.replace(/\u2022|\uF0A7|\uF076|\uF0D8|\uF0FC/g, "*");
 		// verical tab
 		s = s.replace(/\u000B/g, "");
+		// é
+		s = s.replace(/\u00E9/g, "e");
 		return s;
 	}
 	function validate(container){

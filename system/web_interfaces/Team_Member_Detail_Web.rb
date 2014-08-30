@@ -715,6 +715,11 @@ end
             
             [$focus_team_member.rights.live_reports_student_assessment_exemptions.web.checkbox(         :label_option=>"Student Assessment Exemptions",         :disabled=>disabled("live_reports_student_assessment_exemptions"))                        ],
             
+            [$focus_team_member.rights.live_reports_rri_requests_open_nursing.web.checkbox(             :label_option=>"RRI Open Requests - Nursing",           :disabled=>disabled("live_reports_rri_requests_open_nursing"))          ],
+            [$focus_team_member.rights.live_reports_rri_requests_open_transcripts.web.checkbox(         :label_option=>"RRI Open Requests - Transcripts",       :disabled=>disabled("live_reports_rri_requests_open_transcripts"))      ],
+            [$focus_team_member.rights.live_reports_rri_requests_open.web.checkbox(                     :label_option=>"RRI Open Requests",                     :disabled=>disabled("live_reports_rri_requests_open"))                  ],
+            [$focus_team_member.rights.live_reports_rri_requests_open_all.web.checkbox(                 :label_option=>"RRI All Requests",                      :disabled=>disabled("live_reports_rri_requests_open_all"))              ],
+            
             [$focus_team_member.rights.live_reports_student_ilp.web.checkbox(                           :label_option=>"Student ILP Reports",                   :disabled=>disabled("live_reports_student_ilp"))                        ],
             [$focus_team_member.rights.live_reports_student_isp.web.checkbox(                           :label_option=>"Student ISP Reimbursement",             :disabled=>disabled("live_reports_student_isp"))                        ],
             [$focus_team_member.rights.live_reports_student_rtii_behavior.web.checkbox(                 :label_option=>"Student RTII Behavior",                 :disabled=>disabled("live_reports_student_rtii_behavior"))              ],
@@ -725,8 +730,9 @@ end
             [$focus_team_member.rights.live_reports_team_member_evaluations_academic.web.checkbox(      :label_option=>"Team Member Evaluations - Academic",    :disabled=>disabled("live_reports_team_member_evaluations_academic"))   ],
             [$focus_team_member.rights.live_reports_team_member_evaluations_engagement.web.checkbox(    :label_option=>"Team Member Evaluations - Engagement",  :disabled=>disabled("live_reports_team_member_evaluations_engagement")) ],
             [$focus_team_member.rights.live_reports_team_member_testing_events_attendance.web.checkbox( :label_option=>"Team Member Testing Events - Attendance",:disabled=>disabled("live_reports_team_member_testing_events_attendance")) ],
-            [$focus_team_member.rights.live_reports_transcripts_received.web.checkbox(                  :label_option=>"Transcripts Received",                  :disabled=>disabled("live_reports_transcripts_received"))               ]
+            [$focus_team_member.rights.live_reports_transcripts_received.web.checkbox(                  :label_option=>"Transcripts Received",                  :disabled=>disabled("live_reports_transcripts_received"))               ],
             
+            [$focus_team_member.rights.live_reports_unverified_previous_school.web.checkbox(            :label_option=>"Unverified Previous Schools",           :disabled=>disabled("live_reports_unverified_previous_school"))         ]           
         ]
         
         return $tools.table(

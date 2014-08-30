@@ -292,6 +292,7 @@ end
         
         a1, b1 = "Mailing Address:"                   , add_str
         a2, b2 = "County:"                            , s.pcounty.value
+        a7, b7 = "District"                           , s.districtofresidence.value
         a3, b3 = "Phone:"                             , s.studenthomephone.to_phone_number
         a4, b4 = ""                                   , "<div style='color:red;'>#{s.physicalregion.value}</div>"
         a5, b5 = "LC (#{s.lcrelationship.value}):"    , "#{s.lcfirstname.value} #{s.lclastname.value}" 	
@@ -300,6 +301,7 @@ end
         id_array.push([a1.to_s,b1.to_s])
         id_array.push([a4.to_s,b4.to_s]) if !s.physicalregion.value.nil?
         id_array.push([a2.to_s,b2.to_s])
+        id_array.push([a7.to_s,b7.to_s])
         id_array.push([a3.to_s,b3.to_s])
         id_array.push([a5.to_s,b5.to_s])
         id_array.push([a6.to_s,b6.to_s])
@@ -544,6 +546,7 @@ end
         output << $field.new("value"=>"TEP"                             ).web.button(:onclick=>"$('#page').val('Tep_Agreements_Web'                     );send_unsaved();clear_student_record_content();send_covered('sid');",    :field_class=>field_class, :no_div=>true ) if $team_member.super_user? || $team_member.rights.module_tep_agreements.is_true?
         output << $field.new("value"=>"Test Events"                     ).web.button(:onclick=>"$('#page').val('STUDENT_TESTS_WEB'                      );send_unsaved();clear_student_record_content();send_covered('sid');",    :field_class=>field_class, :no_div=>true ) if $team_member.super_user? || $team_member.rights.module_student_tests.is_true?
         output << $field.new("value"=>"Withdraw Records"                ).web.button(:onclick=>"$('#page').val('WITHDRAW_REQUESTS_WEB'                  );send_unsaved();clear_student_record_content();send_covered('sid');",    :field_class=>field_class, :no_div=>true ) if $team_member.super_user? || $team_member.rights.module_withdraw_requests.is_true?
+        
         
         #output << $field.new("value"=>"Documents"               ).web.button(:onclick=>"$('#page').val('Student_Documents_Web'       );send('sid');",    :field_class=>field_class, :no_div=>true )
         #output << $field.new("value"=>"Testing Event"           ).web.button(:onclick=>"$('#page').val('Student_Tests_Web'           );send('sid');",    :field_class=>field_class, :no_div=>true )

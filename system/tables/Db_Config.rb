@@ -64,7 +64,7 @@ end
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("import_schedule", "REGEXP", ".*#{$itime_hm}.*") )
         where_clause = $db.where_clause(params)
-        where_clause << " AND (import_occurance = 'Daily' OR import_occurance = DATE_FORMAT(NOW(),\"%W\")) "
+        where_clause << " AND (import_occurance = 'Daily' OR import_occurance REGEXP DATE_FORMAT(NOW(),\"%W\")) "
         records(where_clause) 
     end
     

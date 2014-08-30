@@ -37,7 +37,7 @@ end
             {:mode=>"Academic Plan",            :description=>nil,      :procedure_type =>"Override Procedure"                  },
             {:mode=>"Activity - Not Enrolled",  :description=>nil,      :procedure_type =>"Not Enrolled"                        },
             {:mode=>"Asynchronous",             :description=>nil,      :procedure_type =>"Activity OR Live Sessions"           },
-            {:mode=>"Exempt",                   :description=>nil,      :procedure_type =>"Manual (default a)"                  },
+            {:mode=>"Exempt",                   :description=>nil,      :procedure_type =>"Manual (default p)"                  },
             {:mode=>"Flex",                     :description=>nil,      :procedure_type =>"Activity OR Live Sessions"           },
             {:mode=>"HS Senior Project",        :description=>nil,      :procedure_type =>"Activity OR Live Sessions"           },
             {:mode=>"SED-Changed",              :description=>nil,      :procedure_type =>"Not Enrolled"                        },

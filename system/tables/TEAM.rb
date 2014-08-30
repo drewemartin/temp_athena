@@ -77,6 +77,7 @@ end
             "module_student_assessments",
             "module_student_ilp",
             "module_student_psychological_evaluation",
+            "module_student_sales_force_case",
             "student_contacts_edit",
             "student_ilp_edit",
             "student_tests_edit"

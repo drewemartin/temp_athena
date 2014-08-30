@@ -59,6 +59,7 @@ end
         pre_reqs.push({:name=>"Bulk Change - Daily Mode"                        , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
         pre_reqs.push({:name=>"Bulk Change - Daily Code"                        , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
         pre_reqs.push({:name=>"changed_sed_report"                              , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
+        pre_reqs.push({:name=>"K12 Attendance Summary"                          , :category_id => cat_id_attendance.value,                      :file_extension=>"csv"}) if cat_id_attendance
 
         cat_id_sapphire_imports         = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Sapphire Imports'")
         pre_reqs.push({:name=>"Sapphire New Students"                           , :category_id => cat_id_sapphire_imports.value,                :file_extension=>"csv"}) if cat_id_sapphire_imports
@@ -82,12 +83,13 @@ end
         pre_reqs.push({:name=>"Scantron Participation Completion Overall Report" , :category_id => cat_id_scantron.value, :file_extension=>"csv"}) if cat_id_scantron
         
         cat_id_athena = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Athena'")
-        pre_reqs.push({:name=>"Converted SID To PID CSV" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
-        pre_reqs.push({:name=>"Mass Kmail Students List" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
+        pre_reqs.push({:name=>"Converted SID To PID CSV" ,          :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
+        pre_reqs.push({:name=>"Mass Kmail Students List" ,          :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
+        pre_reqs.push({:name=>"Student Welcome Activities Report" , :category_id => cat_id_athena.value, :file_extension=>"csv"}) if cat_id_athena
         
         cat_id_verification = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Validation'")
         pre_reqs.push({:name=>"previous_school_verification" , :category_id => cat_id_verification.value, :file_extension=>"csv"}) if cat_id_verification
-
+        
         cat_id_record_requests = $tables.attach("DOCUMENT_CATEGORY").find_field("primary_id", "WHERE name='Student Record Requests'")
         pre_reqs.push({:name=>"Outgoing" , :category_id => cat_id_record_requests.value, :file_extension=>"pdf"}) if cat_id_record_requests
         

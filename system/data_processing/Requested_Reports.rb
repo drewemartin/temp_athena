@@ -418,7 +418,7 @@ class Requested_Reports < Base
         
         sc_db = $tables.attach("student_contacts").data_base
         s_db  = $tables.attach("student").data_base
-        t_db  = $tables.attach("team_temp").data_base
+        t_db  = $tables.attach("team").data_base
         
         sql_str =
         "SELECT
@@ -468,13 +468,17 @@ class Requested_Reports < Base
             student_contacts.progress_monitoring,
             student_contacts.target_time,
             student_contacts.win,
+            student_contacts.small_group_session,
+            student_contacts.iep_meeting,
+            student_contacts.conference,
+            student_contacts.fc_conference,
             student_contacts.other,
             student_contacts.other_description,
-            team_temp.legal_last_name,
-            team_temp.legal_first_name,
+            team.legal_last_name,
+            team.legal_first_name,
             student_contacts.created_by,
-            team_temp.department,
-            team_temp.title,
+            team.department,
+            team.title,
             student_contacts.created_date,
             TIMESTAMPDIFF(DAY,student_contacts.datetime,student_contacts.created_date)
         FROM #{sc_db}.student_contacts
@@ -482,8 +486,8 @@ class Requested_Reports < Base
         ON #{sc_db}.student_contacts.student_id = #{s_db}.student.student_id
         LEFT JOIN #{t_db}.team_email
         ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
-        LEFT JOIN #{t_db}.team_temp
-        ON #{t_db}.team_temp.primary_id = #{t_db}.team_email.team_id"
+        LEFT JOIN #{t_db}.team
+        ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id"
         
         headers =
         [
@@ -533,6 +537,10 @@ class Requested_Reports < Base
             "progress_monitoring",
             "Target Time",
             "WIN",
+            "Small Group Session",
+            "IEP Meeting",
+            "Conference",
+            "Family Coach Conference",
             "other",
             "other_description",
             "Created By Last Name",
@@ -704,6 +712,83 @@ class Requested_Reports < Base
             file_path = $reports.csv("temp", file_name, results.insert(0, headers))
             
             transfer_to_athena_temp(file_path, file_name) 
+            
+            record.fields["status"].value    = "Ready"
+            record.fields["file_name"].value = file_path.split("/").last
+            
+            record.save
+            
+            return true
+            
+        else
+            
+            record.fields["status"].value    = "Failed"
+            
+            record.save
+            
+            return false
+            
+        end
+        
+    end
+    
+    def k12_student_welcome_activites_report(request_pid)
+        
+        record = $tables.attach("TEAM_REQUESTED_REPORTS").by_primary_id(request_pid)
+        
+        record.fields["status"].value = "Generating"
+        
+        record.save
+        
+        headers =
+        [
+            
+            "Student ID",
+            "Date of Contact",
+            "Note",
+            "Successful",
+            "Contact Type",
+            "Created Date",
+            "Created By"
+            
+        ]
+        
+        sc_db   = $tables.attach("STUDENT_CONTACTS").data_base
+        
+        sql_str = "
+        SELECT 
+            
+            student_id,
+            datetime,
+            notes,
+            IFNULL(successful,0),
+            contact_type,
+            created_date,
+            created_by
+            
+        FROM #{sc_db}.student_contacts
+        
+        WHERE notes REGEXP 'Student Welcome Activities'
+        AND welcome_call = '1'
+        "
+        
+        results = $db.get_data(sql_str)
+        
+        if results
+            
+            file_name   = "student_welcome_activites_report_k12"
+            file_path  = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Athena", :type_name=>"Student Welcome Activities Report"})
+            
+            $base.email.athena_smtp_email(
+                ["esaddler@agora.org"],
+                #["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com"],
+                "Agora Student Welcome Activities Notes Bi-Weekly Report",
+                "Please find the attached report",
+                file_path,
+                nil,
+                "#{file_name}_#{$ifilestamp}.csv"
+            )
+            
             
             record.fields["status"].value    = "Ready"
             record.fields["file_name"].value = file_path.split("/").last

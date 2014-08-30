@@ -103,7 +103,8 @@ end
                     ["Reimbursement Amount",    $focus_student.isp_reimbursement_status.fall_check_amount.web.default      ],
                     ["Reimbursement Datetime",  $focus_student.isp_reimbursement_status.fall_run.web.default               ],
                     
-                    ["Notes",                   $focus_student.isp_reimbursement_status.fall_notes.web.default             ]
+                    ["Notes",""],
+                    [$focus_student.isp_reimbursement_status.fall_notes.web.default,""]
                     
                 ],
                 :unique_name    => "fall_reimbursement",
@@ -155,7 +156,8 @@ end
                     ["Reimbursement Amount",    $focus_student.isp_reimbursement_status.spring_check_amount.web.default      ],
                     ["Reimbursement Datetime",  $focus_student.isp_reimbursement_status.spring_run.web.default               ],
                     
-                    ["Notes",                   $focus_student.isp_reimbursement_status.spring_notes.web.default             ]
+                    ["Notes",""],
+                    [$focus_student.isp_reimbursement_status.spring_notes.web.default,""]
                     
                 ],
                 :unique_name    => "spring_reimbursement",
@@ -215,7 +217,7 @@ end
         
         output << "table#Reimbursement                  { width:100%;}"
         output << "table#Reimbursement      caption     { font-size: medium; text-align:center;}"
-        output << "table                    td.column_0 { width: 50%;}"
+        output << "table                    td.column_0 { width: 50%; width:200px;}"
         output << "table                    td.column_1 { width: 50%;}"
         
         output <<
@@ -228,9 +230,11 @@ end
             div.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_req_billed_monthly   {display: inline-block;}
             input.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_req_billed_monthly {width: 123px;}"
         
-        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__fall_notes    {width: 230px; height: 60px; resize: none;}"
-        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_notes  {width: 230px; height: 60px; resize: none;}"
+        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__fall_notes    {width: 450px; height: 200px; resize: none; position:absolute;}"
+        output << "textarea.STUDENT_ISP_REIMBURSEMENT_STATUS__spring_notes  {width: 450px; height: 200px; resize: none; position:absolute;}"
         
+        output << ".spring_reimbursement_container{height:500px;}"
+        output << ".fall_reimbursement_container{height:500px;}"
         output << "</style>"
         return output
         
