@@ -117,6 +117,20 @@ end
         
         output = String.new
         output << "<style>"
+        
+        output << "td.column_0 {text-align:center;}"
+        output << "td.column_1 {text-align:center;}"
+        output << "td.column_2 {text-align:center;}"
+        output << "td.column_3 {text-align:center;}"
+        output << "td.column_4 {text-align:center;}"
+        output << "td.column_5 {text-align:center;}"
+        output << "td.column_6 {text-align:center;}"
+        output << "td.column_7 {text-align:center;}"
+        output << "td.column_8 {text-align:center;}"
+        output << "td.column_9 {text-align:center;}"
+        output << "td.column_10 {text-align:center;}"
+        output << "td.column_11 {text-align:center;}"
+        
         output << "</style>"
         return output
         

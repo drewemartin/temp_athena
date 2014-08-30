@@ -63,11 +63,19 @@ class Attendance_Processing
                     tot = classrooms_total
                     if tot && tot.length > 0
                         
-                        active = classrooms_active
-                        if active && active.length > 0
-                            @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                        if classrooms_only_pb_and_u
+                            
+                            @finalize_code = has_activity ? "p" : "u"
+                            
                         else
-                            @finalize_code = "u"
+                            
+                            active = classrooms_active
+                            if active && active.length > 0
+                                @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                            else
+                                @finalize_code = "u"
+                            end
+                            
                         end
                         
                     else
@@ -157,6 +165,42 @@ end
         
     end
     
+    def classrooms_only_pb_and_u
+        
+        classrooms_tot = classrooms_total
+        
+        classrooms_pb = @student.attendance_activity.table.primary_ids(
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND (
+                
+                code = 'pb'
+                
+            )
+            AND code            !=  'asy'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
+        
+        classrooms_u = @student.attendance_activity.table.primary_ids(
+            "WHERE student_id   =   '#{@sid}'
+            AND date            =   '#{@date}'
+            AND (
+                
+                code = 'u'
+                
+            )
+            AND code            !=  'asy'
+            AND source REGEXP '#{@classroom_sources.join("|")}'"
+        )
+        
+        if classrooms_pb && classrooms_u && classrooms_tot.length == (classrooms_pb.length + classrooms_u.length)
+            return true
+        else
+            return false
+        end
+        
+    end
+    
     def grace_period_check
         
         if @stu_daily_procedure_type == "Classroom Activity (50% or more)"
@@ -165,8 +209,8 @@ end
             grade                       = $students.get(@sid).grade.value
             att_date                    = $base.mathable("date", @date)
             
-            eligible_dates_enroll       = $school.school_days_after(student_enroll_date).shift(10)
-            eligible_dates_school       = $school.school_days.shift(10)
+            eligible_dates_enroll       = $school.school_days_after(student_enroll_date).shift(5)
+            eligible_dates_school       = $school.school_days.shift(5)
             
             if (
                 
@@ -194,7 +238,7 @@ end
         end
         
     end
-
+    
     def has_activity
         
         @student.attendance_activity.table.primary_ids(
@@ -230,7 +274,7 @@ end
         return (results || classrooms_active)
         
     end
-
+    
     def orientation_attended
         
         @student.attendance_activity.table.primary_ids(
@@ -334,29 +378,39 @@ end
             grade               = $students.get(@sid).grade.value
             att_date            = $base.mathable("date", @date)
             
-            if (
-                
-                student_enroll_date &&
-                
-                (
-                    (
-                        grade.match(/K|1st|2nd|3rd|4th|5th/) && 
-                        (
-                            (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
-                            (att_date >= @school_start          && att_date <= (@school_start + 4       ))
-                        )
-                    ) ||
-                    (
-                        (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
-                        (att_date >= @school_start          && att_date <= (@school_start + 3       ))
-                    )
-                )
-                
-            )
+            #if (
+            #    
+            #    student_enroll_date &&
+            #    
+            #    (
+            #        (
+            #            grade.match(/K|1st|2nd|3rd|4th|5th/) && 
+            #            (
+            #                (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 4 )) ||
+            #                (att_date >= @school_start          && att_date <= (@school_start + 4       ))
+            #            )
+            #        ) ||
+            #        (
+            #            (att_date >= student_enroll_date    && att_date <= (student_enroll_date + 3 )) ||
+            #            (att_date >= @school_start          && att_date <= (@school_start + 3       ))
+            #        )
+            #    )
+            #    
+            #)
                 
                 if orientation_logged
                     
-                    @finalize_code = (orientation_attended ? "p" : "u")
+                    if orientation_logged.length == orientation_attended.length
+                        
+                        @finalize_code = "p"
+                        
+                    else
+                        
+                        @finalize_code = "u"
+                        
+                    end
+                    
+                    #@finalize_code = (orientation_attended ? "p" : "u")
                     
                     return true
                     
@@ -366,26 +420,26 @@ end
                     
                 end
                 
-            else
-                
-                #WE DON'T WANT THIS CHANGE TO BE IMPLEMENTED ON ANY STUDENT ATTENDANCE RECORDS THAT HAVE ALREADY BEEN REPORTED.
-                if att_date >= $base.mathable("date", "2013-09-20") 
-                    
-                    if o_pids = orientation_logged
-                        
-                        o_pids.each{|pid|
-                            
-                            $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
-                            
-                        }
-                        
-                    end
-                    
-                end
-                
-                return false
-                
-            end
+            #else
+            #    
+            #    #WE DON'T WANT THIS CHANGE TO BE IMPLEMENTED ON ANY STUDENT ATTENDANCE RECORDS THAT HAVE ALREADY BEEN REPORTED.
+            #    if att_date >= $base.mathable("date", "2013-09-20") 
+            #        
+            #        if o_pids = orientation_logged
+            #            
+            #            o_pids.each{|pid|
+            #                
+            #                $tables.attach("STUDENT_ATTENDANCE_ACTIVITY").by_primary_id(pid).fields["code"].set("asy").save
+            #                
+            #            }
+            #            
+            #        end
+            #        
+            #    end
+            #    
+            #    return false
+            #    
+            #end
             
         end
         

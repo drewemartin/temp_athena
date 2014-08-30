@@ -17,9 +17,16 @@ class STUDENT_CONTACTS_WEB
             save_params             = "sid"
         )
         
+        new_group_contact_button = $tools.button_new_row_multiple(
+            table_name              = "STUDENT_CONTACTS",
+            additional_params_str   = "sid",
+            save_params             = "sid",
+            button_text             = "Add New Group Note"
+        )
+        
         how_to_button_contacts = $tools.button_how_to("How To: Notes")
         
-        "Notes #{how_to_button_contacts}#{new_contact_button}"
+        "Notes #{how_to_button_contacts}#{new_contact_button}#{new_group_contact_button}"
         
     end
     
@@ -284,7 +291,136 @@ end
                     record.fields["win"                           ].web.default( :label_option=>"WIN",                                  :div_id=>"blank"),
                     record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank"),
                     record.fields["504_conference"                ].web.default( :label_option=>"504 Conference",                       :div_id=>"blank")
-
+                    
+                )
+                
+                output << alphabetize_contact_reasons(reasons)
+                
+                output << record.fields["other"                         ].web.default( :label_option=>"'Other'",                              :div_id=>"blank")
+                output << record.fields["other_description"             ].web.text(    :label_option=>"Details (if 'Other')",                 :div_id=>"blank")
+                
+            output << $tools.legend_close()
+            
+            if  $focus_student.rtii_behavior.existing_records
+                
+                output << $tools.legend_open("sub", "RTII - Please select one of the following (only if this contact was RTII related):")
+                    
+                    rtii_table = $tables.attach("student_rtii_behavior")
+                    output << record.fields["rtii_behavior_id" ].web.radio(
+                        {
+                            :radio_choices     => rtii_dd_options
+                        }
+                    )
+                    
+                output << $tools.legend_close()
+                
+            end
+            
+        output << $tools.div_close()
+        
+        return output
+        
+    end
+    
+    def add_new_record_student_contacts_multiple()
+        
+        output = String.new
+        
+        output << $tools.div_open("student_group_contacts_container", "student_group_contacts_container")
+            
+            record = $focus_student.contacts.new_record
+            sid = record.fields["student_id"].value
+            
+            output << $tools.legend_open("sub", "Add Multiple Students")
+                
+                output << "<input id='group_student_ids' name='multiple_students' value='#{sid},' type='hidden' class='validate'>"
+                output << "<label for='add_student_id' autocomplete='off'>Student ID:</label>"
+                output << "<input id='add_student_id' name='add_student_id' value='' label='Student ID:'>"
+                
+                params = "add_student_id,group_student_ids"
+                output << "<button id='button_add_student_id' type='button' onclick=\"send('#{params}');\"></button>"
+                
+                output << "<div id='multiple_student_list' name='group_list'>"
+                    
+                    delete_params = "remove_sid_#{sid},group_student_ids"
+                    delete_button = "<button id='button_remove_student_#{sid}' type='button' class='button_remove_this_student' onclick=\"send('#{delete_params}');$(\'#student_div_#{sid}\').remove();\"></button>"
+                    
+                    s = $students.get(sid)
+                    first_name = s.studentfirstname.value
+                    last_name = s.studentlastname.value
+                    
+                    stu = String.new
+                        stu << $tools.div_open("student_div_#{sid}", "student_div_#{sid}")
+                        stu << "#{first_name} #{last_name} #{sid} #{delete_button}"
+                        stu << "<input id='remove_sid_#{sid}' name='remove_sid' value='remove_#{sid}' type='hidden'>"
+                        stu << $tools.div_close()
+                    output << stu
+                    
+                output << "</div>"
+                
+                output << "<label for='multiple_student_list' autocomplete='off'>You must add at least one student id to this list.</label>"
+                
+            output << $tools.legend_close()
+            
+            output << $tools.legend_open("sub", "Notes")
+                
+                output << record.fields["notes"].web.default(:div_id=>"blank")
+                
+            output << $tools.legend_close()
+            
+            output << $tools.legend_open("sub", "Contact Details")
+                
+                output << record.fields["student_id"                  ].web.hidden()
+                output << record.fields["successful"                  ].web.default( :label_option=>"Live Contact Made?" ,      :div_id=>"blank")
+                output << record.fields["datetime"                    ].web.default( :label_option=>"Contact Attempt Time:",    :div_id=>"blank", :date_range_end=>"#{$iuser}")
+                output << record.fields["contact_type"                ].web.select( {:label_option=>"Contact Type:",            :div_id=>"blank", :dd_choices=>type_dd}, true)
+                
+            output << $tools.legend_close()
+            
+            output << $tools.legend_open("sub", "Reason for Contact - Please select all that apply from the following:")
+                
+                reasons = Array.new
+                reasons.push(
+                    
+                    record.fields["aircard"                       ].web.default( :label_option=>"Aircard",                              :div_id=>"blank"),
+                    record.fields["attendance"                    ].web.default( :label_option=>"Attendance",                           :div_id=>"blank"),
+                    record.fields["counselor_one_on_one"          ].web.default( :label_option=>"Counselor One-on-One",                 :div_id=>"blank"),
+                    record.fields["counselor_face_to_face"        ].web.default( :label_option=>"Counselor Face to Face",               :div_id=>"blank"),
+                    record.fields["counselor_graduation_meeting"  ].web.default( :label_option=>"Counselor Graduation Meeting",         :div_id=>"blank"),
+                    record.fields["counselor_intervention"        ].web.default( :label_option=>"Counselor Intervention",               :div_id=>"blank"),
+                    record.fields["course_progress"               ].web.default( :label_option=>"Course Progress",                      :div_id=>"blank"),
+                    record.fields["court_district_go"             ].web.default( :label_option=>"Court/district/Go",                    :div_id=>"blank"),
+                    record.fields["court_preparation"             ].web.default( :label_option=>"Court Preparation",                    :div_id=>"blank"),
+                    record.fields["cys"                           ].web.default( :label_option=>"CYS",                                  :div_id=>"blank"),
+                    record.fields["ell"                           ].web.default( :label_option=>"ELL",                                  :div_id=>"blank"),
+                    record.fields["escalation"                    ].web.default( :label_option=>"Escalation",                           :div_id=>"blank"),
+                    record.fields["evaluation_request_psych"      ].web.default( :label_option=>"Evaluation Request - Psychology",      :div_id=>"blank"),
+                    record.fields["communications"                ].web.default( :label_option=>"General Communications",               :div_id=>"blank"),
+                    record.fields["grades"                        ].web.default( :label_option=>"Grades",                               :div_id=>"blank"),
+                    record.fields["homeless"                      ].web.default( :label_option=>"Homeless",                             :div_id=>"blank"),
+                    record.fields["ilp_conference"                ].web.default( :label_option=>"ILP Conference",                       :div_id=>"blank"),
+                    record.fields["initial_home_visit"            ].web.default( :label_option=>"Initial Face-to-Face",                 :div_id=>"blank"),
+                    record.fields["low_engagement"                ].web.default( :label_option=>"Low Engagement",                       :div_id=>"blank"),
+                    record.fields["phlote_identification"         ].web.default( :label_option=>"PHLOTE Identification",                :div_id=>"blank"),
+                    record.fields["progress_monitoring"           ].web.default( :label_option=>"Progress Monitoring",                  :div_id=>"blank"),
+                    record.fields["residency"                     ].web.default( :label_option=>"Residency",                            :div_id=>"blank"),
+                    record.fields["retention_risk"                ].web.default( :label_option=>"Retention Risk",                       :div_id=>"blank"),
+                    record.fields["sap_followup"                  ].web.default( :label_option=>"SAP Follow-up",                        :div_id=>"blank"),
+                    record.fields["sap_invitation"                ].web.default( :label_option=>"SAP Invitation",                       :div_id=>"blank"),
+                    record.fields["scantron_performance"          ].web.default( :label_option=>"Scantron",                             :div_id=>"blank"),
+                    record.fields["ses"                           ].web.default( :label_option=>"SES",                                  :div_id=>"blank"),
+                    record.fields["study_island_assessments"      ].web.default( :label_option=>"Study Island",                         :div_id=>"blank"),
+                    record.fields["target_time"                   ].web.default( :label_option=>"Target Time",                          :div_id=>"blank"),
+                    record.fields["tech_issue"                    ].web.default( :label_option=>"Technical Issue",                      :div_id=>"blank"),
+                    record.fields["tep_followup"                  ].web.default( :label_option=>"TEP Follow-up",                        :div_id=>"blank"),
+                    record.fields["tep_initial"                   ].web.default( :label_option=>"TEP Initiated",                        :div_id=>"blank"),
+                    record.fields["test_site_selection"           ].web.default( :label_option=>"Test Site",                            :div_id=>"blank"),
+                    record.fields["truancy_court_outcome"         ].web.default( :label_option=>"Truancy Court Outcome",                :div_id=>"blank"),
+                    record.fields["welcome_call"                  ].web.default( :label_option=>"Welcome Call",                         :div_id=>"blank"),
+                    record.fields["win"                           ].web.default( :label_option=>"WIN",                                  :div_id=>"blank"),
+                    record.fields["work_submission"               ].web.default( :label_option=>"Work Submission",                      :div_id=>"blank"),
+                    record.fields["504_conference"                ].web.default( :label_option=>"504 Conference",                       :div_id=>"blank")
+                    
                 )
                 
                 output << alphabetize_contact_reasons(reasons)
@@ -314,6 +450,7 @@ end
         return output
         
     end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
@@ -504,6 +641,7 @@ end
             
             div.student_contacts_container{                                     width:100%;}
             #new_row_button_STUDENT_CONTACTS{                                   float:right; font-size: xx-small !important;}
+            #new_row_button_STUDENT_CONTACTS1{                                  float:right; font-size: xx-small !important;}
             
             table.dataTable td.column_4{                                        text-align:center;}
             
@@ -653,6 +791,20 @@ end
             
             textarea{resize:none; font-size:11px;}
             fieldset.sub{width:100%;}
+            
+            div#multiple_student_list{
+                clear           :left;
+                width           :350px;
+                height          :200px;
+                padding         :10px;
+                overflow-y      :scroll;
+                border          :1px solid #3baae3;
+                border-radius   :5px;
+                box-shadow      :inset -5px 0px 15px #869bac;
+                background-color:#EDF0F2;
+                margin-top      :10px;
+                margin-bottom   :10px;
+            }
         "
         output << "</style>"
         return output

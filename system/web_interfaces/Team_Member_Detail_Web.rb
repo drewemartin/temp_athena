@@ -189,19 +189,11 @@ end
             
         )
         
-        pids = Array.new
-        relate_records = $focus_team_member.sams_ids.existing_records
-        relate_records.each{|record|
-            
-            these_pids = $tables.attach("STUDENT_RELATE").primary_ids(
-                "WHERE staff_id = '#{record.fields["sams_id"].value}'"
-            )
-            
-            if these_pids
-                pids.concat(these_pids)
-            end
-            
-        }
+        team_id = $focus_team_member.primary_id.value
+        
+        pids = $tables.attach("STUDENT_RELATE").primary_ids(
+            "WHERE team_id = '#{team_id}'"
+        )
         
         pids.each{|pid|
             
@@ -712,6 +704,7 @@ end
             [$focus_team_member.rights.live_reports_attendance_master.web.checkbox(                     :label_option=>"Attendance Master",                     :disabled=>disabled("live_reports_attendance_master"))                  ],
             [$focus_team_member.rights.live_reports_attendance_consecutive_absences.web.checkbox(       :label_option=>"Attendance Consecutive Absences",       :disabled=>disabled("live_reports_attendance_consecutive_absences"))    ],
             [$focus_team_member.rights.live_reports_attendance_activity.web.checkbox(                   :label_option=>"Attendance Activity",                   :disabled=>disabled("live_reports_attendance_activity"))                ],
+            [$focus_team_member.rights.live_reports_dnc_students.web.checkbox(                          :label_option=>"DNC Students",                          :disabled=>disabled("live_reports_dnc_students"))                       ],
             [$focus_team_member.rights.live_reports_ink_orders.web.checkbox(                            :label_option=>"Ink Orders",                            :disabled=>disabled("live_reports_ink_orders"))                         ],
             [$focus_team_member.rights.live_reports_ink_orders_manual.web.checkbox(                     :label_option=>"Ink Orders Manual Mail Merge",          :disabled=>disabled("live_reports_ink_orders_manual"))                  ],
             [$focus_team_member.rights.live_reports_student_attendance_ap.web.checkbox(                 :label_option=>"Student Attendance AP",                 :disabled=>disabled("live_reports_student_attendance_ap"))              ],

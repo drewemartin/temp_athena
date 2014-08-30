@@ -626,6 +626,24 @@ $(function () {
 		
 	})
 	
+	$("#clear_student_search_button").button({
+		
+		text		: true,
+		label		: "Clear"
+		
+	}).bind("click", function() {
+		
+		$(":input[class^='search__STUDENT__student_id']").val("")
+		$(":input[class^='search__STUDENT__studentfirstname']").val("")
+		$(":input[class^='search__STUDENT__studentlastname']").val("")
+		$(":input[class^='search__STUDENT__familyid']").val("")
+		$(":input[class^='search__STUDENT__grade']").val("")
+		$(":input[class^='search__STUDENT__active']").removeAttr('checked')
+		
+	})
+	
+	
+	
 	$(":input[class^='search__STUDENT']").bind("keyup", function(e){
 		
 		if (e.which == 13){
@@ -644,6 +662,18 @@ $(function () {
 	}).bind("click", function() {
 		
 		$("#team_search_results").html("Retrieving Search Results..." + spinner());
+		
+	})
+	
+	$("#clear_team_search_button").button({
+		text		: true,
+		label		: "Clear"
+		
+	}).bind("click", function() {
+		
+		$(":input[class^='search__TEAM__primary_id']").val("")
+		$(":input[class^='search__TEAM__legal_first_name']").val("")
+		$(":input[class^='search__TEAM__legal_last_name']").val("")
 		
 	})
 	
@@ -2328,6 +2358,18 @@ function x___________________UNSORTED(){}
 				
 			});
 			
+			$("#button_add_student_id").button({
+				icons: {primary: "ui-icon-plusthick"}
+			}).css({
+				"height":"16px","width":"28px"
+			})
+			
+			$(".button_remove_this_student").button({
+				icons: {primary: "ui-icon-close"}
+			}).css({
+				"height":"16px","width":"28px"
+			})
+			
 			var select_index = $('#tabs').tabs('option', 'selected')+1
 			var oTable = $('div.dataTables_scrollBody>table.dataTable', $('#tabs-'+select_index)).dataTable();
 			if ( oTable.length > 0 ) {
@@ -2517,6 +2559,75 @@ function x___________________UNSORTED(){}
 		
 	};
 	
+	function get_new_row_multiple(params, table_name, save_params, inner_add_new) {
+		
+		if (inner_add_new == undefined){
+			
+			$('#add_new_dialog_'+table_name).dialog({
+				title		:"Add New Record",
+				position	: ["center",dialog_Ypos()],
+				autoOpen	: false,
+				draggable	: false,
+				resizable	: false,
+				closeOnEscape	: false,
+				modal		: true,
+				height		: "auto",
+				width		: "auto",
+				open		: function(event, ui) {
+					$(this).dialog("option", "position", ["center",dialog_Ypos()]);
+					$(".ui-dialog-titlebar-close", ui.dialog).hide();
+					$(this).html(spinner);
+					$(this).css("height", "auto");
+				},
+				buttons		:[
+					{
+						id	: "commit_save",
+						text	: "Save Record",
+						click	: function() {
+							var field_ids = "add_new_multiple_"+table_name
+							if (save_params != undefined){
+								field_ids = field_ids+","+save_params
+							}
+							if (validate($(this))){
+								$(this).find("[type=text],[type=textarea],[type=checkbox],[type=select],[type=hidden][name!='remove_sid'],[type=radio]:checked").each(function(){
+									var field_id = $(this).attr("id")
+									if(field_id != ""){
+										if(field_ids == ""){
+											field_ids = field_id
+										}else{
+											field_ids = field_ids + "," + field_id
+										}
+									}
+								});
+								if (field_ids){
+									send_covered("student_id,sid," + field_ids)
+									$(this).html(spinner())
+									$(this).dialog( "close" );
+									$(window).scrollTop(0);
+								}
+							}else{
+								alert("Please Fill Out All Required Fields")
+							}
+						}
+					},
+					{
+						id	: "cancel_save",
+						text	: "Cancel",
+						click	: function() {
+							$(this).html(spinner())
+							$(this).dialog( "close" );
+						}
+					}
+				]
+			});
+			
+			$('#add_new_dialog_'+table_name).dialog("open");
+			
+		}
+		send(params);
+		
+	};
+	
 	function get_row(params, table_name, dialog_title) {
 		
 		$('#get_row_dialog').dialog({
@@ -2565,6 +2676,29 @@ function x___________________UNSORTED(){}
 		
 		$('#get_row_dialog_'+table_name).dialog("open");
 		send(params);
+	};
+	
+	function show_history(params) {
+		
+		$('#history').dialog({
+			position	: ["center",dialog_Ypos()],
+			title		: "History",
+			autoOpen	: true,
+			draggable	: true,
+			resizable	: true,
+			closeOnEscape	: false,
+			modal		: true,
+			height		: "auto",
+			width		: "auto",
+			open		: function(event, ui) {
+				$("div[ariaLabelledBy='ui-dialog-title-history']", ui.dialog).show();
+				$(".ui-dialog-titlebar-close", ui.dialog).show();
+				
+				$(this).html(spinner);
+				send(params);
+			}
+			
+		});
 	};
 	
 	function get_new_request(params, table_name, dialog_title) {
@@ -2651,7 +2785,7 @@ function x___________________UNSORTED(){}
 	}
 	function validate(container){
 		var valid = true
-		container.find("[type=text][class~=validate],[type=textarea][class~=validate],[type=checkbox][class~=validate],[type=select][class~=validate],[type=radio][class~=validate]").each(function(){
+		container.find("[type=text][class~=validate],[type=textarea][class~=validate],[type=checkbox][class~=validate],[type=select][class~=validate],[type=radio][class~=validate],[type=hidden][class~=validate]").each(function(){
 			if ($(this).attr("value") == ""){
 				valid = false
 				return false

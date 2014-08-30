@@ -75,7 +75,7 @@ end
             $kit.modify_tag_content("tabs-5", load_tab_5(event_site_id), "update")
         end
         
-        if $kit.rows
+        if $kit.rows && !$kit.rows.empty?
             
             this_row = $kit.rows.first[1]
             

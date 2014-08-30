@@ -22,6 +22,7 @@ end
     def load_testing_file_tree
         $kit.output << $tools.file_tree(:file_path=>"/athena_files/reports/k12_reports/agora_omnibus/")
     end
+    
     def load
         
         $kit.output << "<style>
@@ -367,6 +368,7 @@ end
             search_params   << (search_params.empty? ? html_field_id : ",#{html_field_id}")
         }
         dlg_string << "<button id='student_search_button' type='button' onclick=\"send('#{search_params}');\"></button>"
+        dlg_string << "<button id='clear_student_search_button' type='button'></button>"
         dlg_string << "</div>"
         dlg_string << "<div id='student_search_results'></div>"
         dlg_string << "</div>"
@@ -396,6 +398,7 @@ end
             search_params   << (search_params.empty? ? html_field_id : ",#{html_field_id}")
         }
         dlg_string << "<button id='team_search_button' type='button' onclick=\"send('#{search_params}');\"></button>"
+        dlg_string << "<button id='clear_team_search_button' type='button'></button>"
         dlg_string << "</div>"
         dlg_string << "<div id='team_search_results'></div>"
         dlg_string << "</div>"

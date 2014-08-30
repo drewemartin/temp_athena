@@ -413,7 +413,7 @@ end
         team_records = $focus_student.related_team_records
         team_records.each{|record|
             
-            t = $team.by_sams_id(record.fields["staff_id"].value)
+            t = $team.get(record.fields["team_id"].value)
             if t
                 
                 if !record.fields["role"].value.nil?
@@ -433,7 +433,11 @@ end
                     
                     [
                         record.fields["role"].web.label+
-                        t.preferred_email.to_email_link(:text=>t.legal_first_name.value + " " + t.legal_last_name.value,:subject=>"Student ID: #{$focus_student.student_id.value}",:content=>"")
+                        t.preferred_email.to_email_link(
+                            :text       => t.legal_first_name.value + " " + t.legal_last_name.value,
+                            :subject    => "#{$focus_student.studentfirstname.value} #{$focus_student.studentlastname.initial} #{$focus_student.student_id.value}",
+                            :content    => ""
+                        )
                         
                     ]
                     
@@ -484,7 +488,7 @@ end
         team_records = $focus_student.related_team_records
         team_records.each{|record|
             
-            t = $team.by_sams_id(record.fields["staff_id"].value)
+            t = $team.get(record.fields["team_id"].value)
             if t
                 team_email_addresses.push(t.preferred_email.value) if !team_email_addresses.include?(t.preferred_email.value)
             end 
