@@ -960,6 +960,10 @@ end
             student_contacts.progress_monitoring,
             student_contacts.target_time,
             student_contacts.win,
+            student_contacts.small_group_session,
+            student_contacts.iep_meeting,
+            student_contacts.conference,
+            student_contacts.fc_conference,
             student_contacts.other,
             student_contacts.other_description,
             team.legal_last_name,
@@ -976,7 +980,7 @@ end
         ON #{t_db}.team_email.email_address = #{sc_db}.student_contacts.created_by
         LEFT JOIN #{t_db}.team
         ON #{t_db}.team.primary_id = #{t_db}.team_email.team_id
-        WHERE student_contacts.created_by = '#{$user.email_address_k12.value||$user}'"
+        WHERE student_contacts.created_by = '#{$team_member.preferred_email.value||$user}'"
         
         headers =
         [
