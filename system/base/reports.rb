@@ -275,6 +275,24 @@ end
         
     end
     
+    def move_to_k12(local_file, remote_file)
+        
+        #local_file  = "C:/athena/htdocs/temp/17__requested_reports__attendance_summary_k12_D20140805T102543.csv"
+        #remote_file = "attendance_summary/k12_agoa_attendance_summarry_#{DateTime.now.strftime("%m%d%Y")}.csv"
+        
+        Net::SSH.start('pubftp.k12.com', 'agora') do |ssh|
+            
+            ssh.sftp.connect do |sftp|
+              
+                uploader = sftp.upload(local_file, remote_file)
+                uploader.wait
+                
+            end
+          
+        end
+        
+    end
+    
     def move_to_sapphire_inbox(file_path)
         ftp = login_sapphire_inbox
         transfer_offsite(file_path, ftp)
@@ -369,7 +387,7 @@ end
         return ftp
         
     end
-    
+
     def login_sapphire_inbox
         ftp = Net::FTP.new('support.k12system.com')
         ftp.login("crivera", "3aPreqAt")

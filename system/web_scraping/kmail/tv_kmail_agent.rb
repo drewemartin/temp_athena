@@ -100,13 +100,8 @@ class TV_Kmail_Agent < TV_Kmail
                 primary_id,
                 created_date
             FROM kmail
-            WHERE successfull IS NULL
-            AND primary_id NOT IN
-                (SELECT primary_id
-                FROM kmail
-                WHERE error REGEXP 'ERROR.*')
-            ORDER BY created_date ASC
-            LIMIT 0,1"
+            WHERE PRIMARY_ID < 5
+            ORDER BY created_date ASC"
             
         results = $db.get_data(kmail_sql, @db_name)
         

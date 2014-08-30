@@ -305,7 +305,6 @@ end
         
         s_db     = $tables.attach("student").data_base
         saap_db  = $tables.attach("student_attendance_ap").data_base
-        tsids_db = $tables.attach("team_sams_ids").data_base
         t_db     = $tables.attach("team").data_base
         
         sql_str =
@@ -315,7 +314,7 @@ end
             student_attendance_ap.student_id,
             student.studentfirstname,
             student.studentlastname,
-            student_attendance_ap.staff_id,
+            student_attendance_ap.team_id,
             team.legal_first_name,
             team.legal_last_name,
             student_attendance_ap.live_session_attended_required,
@@ -335,10 +334,8 @@ end
         FROM #{saap_db}.student_attendance_ap
         LEFT JOIN #{s_db}.student
             ON #{saap_db}.student_attendance_ap.student_id = #{s_db}.student.student_id
-        LEFT JOIN #{tsids_db}.team_sams_ids
-            ON #{saap_db}.student_attendance_ap.staff_id = #{tsids_db}.team_sams_ids.sams_id
         LEFT JOIN #{t_db}.team
-            ON #{tsids_db}.team_sams_ids.team_id = #{t_db}.team.primary_id
+            ON team.primary_id = student_attendance_ap.team_id
         WHERE (
             student_attendance_ap.student_id != '5555'
             AND
@@ -352,7 +349,7 @@ end
             "student_id",
             "student_first_name",
             "student_last_name",
-            "teacher_staff_id",
+            "teacher_team_id",
             "teacher_first_name",
             "teacher_last_name",
             "live_session_attended_required",
@@ -732,7 +729,6 @@ end
         
         saa_db   = $tables.attach("student_attendance_activity").data_base
         t_db     = $tables.attach("team").data_base
-        tsids_db = $tables.attach("team_sams_ids").data_base
         
         date = $kit.params[:date_attendance_activity]
         
@@ -1803,7 +1799,6 @@ end
         s_db         = $tables.attach("STUDENT"                      ).data_base
         ta_db        = $tables.attach("STUDENT_TEP_AGREEMENT"        ).data_base
         team_db      = $tables.attach("TEAM"                         ).data_base
-        t_sams_db    = $tables.attach("TEAM_SAMS_IDS"                ).data_base
         
         sql_str =
         "SELECT
@@ -1815,16 +1810,14 @@ end
             student_tep_agreement.goal,
             team.legal_first_name,
             team.legal_last_name,
-            student_tep_agreement.conducted_by,
-            team.primary_id,
+            student_tep_agreement.conducted_by_team_id,
             student_tep_agreement.face_to_face,
             student_tep_agreement.date_conducted,
             student_tep_agreement.created_date,
             student_tep_agreement.created_by
             
         FROM #{ta_db}.student_tep_agreement
-        LEFT JOIN #{t_sams_db    }.team_sams_ids ON team_sams_ids.sams_id  = student_tep_agreement.conducted_by
-        LEFT JOIN #{team_db      }.team          ON team.primary_id        = team_sams_ids.team_id
+        LEFT JOIN #{team_db      }.team          ON team.primary_id        = student_tep_agreement.conducted_by_team_id
         LEFT JOIN #{s_db         }.student       ON student.student_id     = student_tep_agreement.student_id"
         
         headers =
@@ -1837,7 +1830,6 @@ end
             "Goal",
             "Conducted By First Name",
             "Conducted By Last Name",
-            "Conducted By Sams ID",
             "Conducted By Team ID",
             "Face To Face",
             "Date Conducted",

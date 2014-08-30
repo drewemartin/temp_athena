@@ -135,6 +135,7 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
+            structure_hash["fields"]["student_id"       ] = {"data_type"=>"int",  "file_field"=>"student_id"        } if field_order.push("student_id"      )
             structure_hash["fields"]["rri_request_id"   ] = {"data_type"=>"int",  "file_field"=>"rri_request_id"    } if field_order.push("rri_request_id"  )
             structure_hash["fields"]["record_type_id"   ] = {"data_type"=>"int",  "file_field"=>"record_type_id"    } if field_order.push("record_type_id"  )
             structure_hash["fields"]["status"           ] = {"data_type"=>"text", "file_field"=>"status"            } if field_order.push("status"          )

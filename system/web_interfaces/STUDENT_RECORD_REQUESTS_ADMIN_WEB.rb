@@ -17,10 +17,10 @@ end
     def load
         
         $kit.tools.tabs([
-            ["Outgoing Document Types",  load_tab_1],
-            ["Outgoing Settings",        load_tab_2],
-            ["Incoming Document Types",  load_tab_3],
-            ["Incoming Settings",        load_tab_4]
+            ["Outgoing Document Types",     load_tab_1],
+            ["Outgoing Settings",           load_tab_2],
+            ["Incoming Document Types",     load_tab_3],
+            ["Incoming Document Statuses",  load_tab_4]
         ],0)
         
     end
@@ -271,7 +271,7 @@ end
         
     end
     
-    def load_tab_4(arg = nil)#Batch Request Settings
+    def load_tab_4(arg = nil)#RRI STATUS
         
         output = String.new
         
@@ -281,7 +281,10 @@ end
             
             #HEADERS
             [
+                
+                "Document Type",
                 "Status Name"
+                
             ]
             
         ]
@@ -293,7 +296,12 @@ end
             
             row = Array.new
             
-            row.push(record.fields["status"          ].web.text  )
+            row.push(
+                
+                $tables.attach("RRI_DOCUMENT_TYPES").field_value("document_name","WHERE primary_id = '#{record.fields["document_id"].value}'"),
+                record.fields["status"          ].web.text
+                
+            )
             
             tables_array.push(row)
             
@@ -445,6 +453,7 @@ end
             
             #HEADERS
             [
+                "Document Type",
                 "Status Name"
             ]
             
@@ -455,6 +464,14 @@ end
         tables_array.push(
             
             [
+                record.fields["document_id"].web.select(
+                    :dd_choices => $tables.attach("RRI_DOCUMENT_TYPES").dd_choices(
+                        name_field      = "document_name",
+                        value_field     = "primary_id",
+                        clause_string   = "WHERE true"
+                    ),
+                    :validate=>true
+                ),
                 record.fields["status"       ].web.text(:validate=>true)
             ]
             
@@ -530,6 +547,17 @@ end
 
     def document_categories
         $dd.from_array(["Transcripts","Nursing","General","Special Education"])
+    end
+    
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+def x______________FILL_OPTIONS
+end
+#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+    
+    def fill_select_document_name(field_name, field_value, pid)
+        
+        return $tables.attach("RRI_DOCUMENT_TYPES").dd_choices("document_name", "primary_id", "WHERE primary_id = '#{field_value}'")
+        
     end
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

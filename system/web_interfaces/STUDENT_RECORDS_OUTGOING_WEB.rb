@@ -1,7 +1,6 @@
 #!/usr/local/bin/ruby
 
-
-class STUDENT_RECORDS_WEB
+class STUDENT_RECORDS_OUTGOING_WEB
     
     #---------------------------------------------------------------------------
     def initialize()
@@ -13,7 +12,7 @@ class STUDENT_RECORDS_WEB
     
     def page_title
         
-        "Student Records"
+        "Record Requests - Outgoing"
         
     end
     
@@ -98,20 +97,7 @@ end
 
     def student_record()
         
-        tabs = Array.new
-        
-        tabs.push(["Outgoing",  outgoing_records])
-        tabs.push(["Incoming",  incoming_records])
-        tabs.push(["Documents", record_request_files($focus_student.student_id.value)])
-        
-        return $kit.tools.tabs(
-            
-            tabs,
-            selected_tab    = 0,
-            tab_id          = "records",
-            search          = false
-            
-        )
+        outgoing_records
         
     end
     
@@ -228,7 +214,9 @@ end
             
         end
         
-        tabulated_list = $kit.tools.tabs(
+        neww_recipient_div = "<DIV id='add_new_dialog_STUDENT_RRI_RECIPIENTS' style='display:none;' class='add_new_dialog'></DIV>\n"
+        
+        tabulated_list = neww_recipient_div + $kit.tools.tabs(
             
             tabs            = [
                 
@@ -306,9 +294,9 @@ end
         
         output = String.new
         
-        record = $focus_student.rri_recipients.new_record
+        record = $kit.params[:existing_recipient] ? $focus_student.rri_recipients.record("WHERE primary_id = '#{$kit.params[:existing_recipient]}'") : $focus_student.rri_recipients.new_record
         
-        output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() + record.fields["student_id"  ].web.hidden()
+        output << record.fields["rri_request_id"  ].set($kit.params[:rri_request_id]).web.hidden() + record.fields["student_id"  ].set($focus_student.student_id.value).web.hidden()
         
         school_dd = $tables.attach("SCHOOLS").dd_choices(
             name            = "school_name" ,
@@ -822,12 +810,25 @@ end
                     
                     rec_table_array = Array.new
                     
+                    add_new_button = $tools.button_new_row(
+                        
+                        table_name                  = "STUDENT_RRI_RECIPIENTS"                                                              ,
+                        additional_params_str       = "rri_request_id=#{request_id},sid=#{request_rec.fields["student_id"].value}"          ,
+                        save_params                 = nil                                                                                   ,
+                        button_text                 = "Add New"                                                                             ,
+                        i_will_manually_add_the_div = true                                                                                  ,
+                        inner_add_new               = nil                                                                                   ,
+                        return_js_string            = nil
+                        
+                    )
+                    
                     rec_table_array.push(
                         
                         [
                             
-                            "Print?",
-                            "Recipients"               
+                            "Print?"        ,
+                            "Edit"          ,
+                            "Recipients #{add_new_button}"               
                             
                         ]
                         
@@ -863,7 +864,19 @@ end
                             
                             [
                                 
-                                recipient.batch_checkbox                        ,
+                                recipient.batch_checkbox,
+                                $field.new.set_field_name("existing_recipient").set(recipient.primary_id).web.hidden +
+                                $tools.button_new_row(
+                                    
+                                    table_name                  = "STUDENT_RRI_RECIPIENTS"      ,
+                                    additional_params_str       = "existing_recipient"          ,
+                                    save_params                 = "existing_recipient"          ,
+                                    button_text                 = "Edit"                        ,
+                                    i_will_manually_add_the_div = false                         ,
+                                    inner_add_new               = false                         ,
+                                    return_js_string            = false
+                                    
+                                ),
                                 add_table
                               
                             ]
@@ -953,7 +966,9 @@ end
             
             @my_record_requests = @my_record_requests+=1
             
-            return $kit.tools.data_table(tables_array, "my_record_requests_#{@my_record_requests}")
+            output << $kit.tools.data_table(tables_array, "my_record_requests_#{@my_record_requests}")
+            
+            return output
             
         end
         
@@ -1086,8 +1101,6 @@ end
             div.STUDENT_RRI_REQUESTS__request_method                   {margin-bottom:10px;}
             div.STUDENT_RRI_REQUESTS__notes                   textarea {width:270px; height:100px; resize:none; overflow-y:scroll; }
             
-            div.STUDENT_RRO_REQUIRED_DOCUMENTS__status                 {text-align: center;}
-            div.STUDENT_RRO_REQUIRED_DOCUMENTS__received_date          {text-align: center;}
             div.STUDENT_RRO_REQUIRED_DOCUMENTS__notes         textarea {width:220px; height:50px; resize:none; overflow-y:scroll; }
             
             div.STUDENT_RRI_RECIPIENTS__name                     label {width:110px; display:inline-block;}

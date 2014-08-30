@@ -91,10 +91,18 @@ end
             
         )
         
+        whitelist = ["mmarkert2@agora.org", "ghand@agora.org"]
+        
         members_to_mark_inactive.each{|pid|
             
             record = $tables.attach("team").by_primary_id(pid)
-            record.fields["active"].set(false).save
+            email_record = $tables.attach("team_email").by_primary_id(pid)
+            
+            if !whitelist.include?(email_record.fields["email_address"].value)
+                
+                record.fields["active"].set(false).save
+                
+            end
             
         } if members_to_mark_inactive
         

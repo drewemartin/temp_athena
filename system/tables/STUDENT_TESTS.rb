@@ -388,25 +388,26 @@ end
         field_order = Array.new
         structure_hash["fields"] = Hash.new
             
-            structure_hash["fields"]["student_id"               ] = {"data_type"=>"int",  "file_field"=>"student_id"                } if field_order.push("student_id"          )
-            
-            structure_hash["fields"]["test_id"                  ] = {"data_type"=>"int",  "file_field"=>"test_id"                   } if field_order.push("test_id"             )
-            structure_hash["fields"]["test_subject_id"          ] = {"data_type"=>"int",  "file_field"=>"test_subject_id"           } if field_order.push("test_subject_id"     )
-            structure_hash["fields"]["serial_number"            ] = {"data_type"=>"text", "file_field"=>"serial_number"             } if field_order.push("serial_number"       )
-            structure_hash["fields"]["test_administrator"       ] = {"data_type"=>"text", "file_field"=>"test_administrator"        } if field_order.push("test_administrator"  )
-            structure_hash["fields"]["completed"                ] = {"data_type"=>"date", "file_field"=>"completed"                 } if field_order.push("completed"           )
-            structure_hash["fields"]["checked_in"               ] = {"data_type"=>"date", "file_field"=>"checked_in"                } if field_order.push("checked_in"          )
-            structure_hash["fields"]["test_results"             ] = {"data_type"=>"text", "file_field"=>"test_results"              } if field_order.push("test_results"        )
-            
-            structure_hash["fields"]["test_event_id"            ] = {"data_type"=>"int",  "file_field"=>"test_event_id"             } if field_order.push("test_event_id"       )
-            structure_hash["fields"]["test_event_site_id"       ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"        } if field_order.push("test_event_site_id"  )
-            structure_hash["fields"]["assigned"                 ] = {"data_type"=>"bool", "file_field"=>"assigned"                  } if field_order.push("assigned"            )
-            structure_hash["fields"]["drop_off"                 ] = {"data_type"=>"text", "file_field"=>"drop_off"                  } if field_order.push("drop_off"            )
-            structure_hash["fields"]["pick_up"                  ] = {"data_type"=>"text", "file_field"=>"pick_up"                   } if field_order.push("pick_up"             )
-            
-            structure_hash["fields"]["athena_generated"         ] = {"data_type"=>"bool", "file_field"=>"athena_generated"          } if field_order.push("athena_generated"    )
-            structure_hash["fields"]["matches_criteria"         ] = {"data_type"=>"text", "file_field"=>"matches_criteria"          } if field_order.push("matches_criteria"    )
-            structure_hash["fields"]["code_on_site"             ] = {"data_type"=>"bool", "file_field"=>"code_on_site"              } if field_order.push("code_on_site"        )
+            structure_hash["fields"]["student_id"                       ] = {"data_type"=>"int",  "file_field"=>"student_id"                    } if field_order.push("student_id"                      )
+                            
+            structure_hash["fields"]["test_id"                          ] = {"data_type"=>"int",  "file_field"=>"test_id"                       } if field_order.push("test_id"                         )
+            structure_hash["fields"]["test_subject_id"                  ] = {"data_type"=>"int",  "file_field"=>"test_subject_id"               } if field_order.push("test_subject_id"                 )
+            structure_hash["fields"]["serial_number"                    ] = {"data_type"=>"text", "file_field"=>"serial_number"                 } if field_order.push("serial_number"                   )
+            structure_hash["fields"]["test_administrator"               ] = {"data_type"=>"text", "file_field"=>"test_administrator"            } if field_order.push("test_administrator"              )
+            structure_hash["fields"]["test_administrator_team_id"       ] = {"data_type"=>"text", "file_field"=>"test_administrator_team_id"    } if field_order.push("test_administrator_team_id"      )
+            structure_hash["fields"]["completed"                        ] = {"data_type"=>"date", "file_field"=>"completed"                     } if field_order.push("completed"                       )
+            structure_hash["fields"]["checked_in"                       ] = {"data_type"=>"date", "file_field"=>"checked_in"                    } if field_order.push("checked_in"                      )
+            structure_hash["fields"]["test_results"                     ] = {"data_type"=>"text", "file_field"=>"test_results"                  } if field_order.push("test_results"                    )
+                            
+            structure_hash["fields"]["test_event_id"                    ] = {"data_type"=>"int",  "file_field"=>"test_event_id"                 } if field_order.push("test_event_id"                   )
+            structure_hash["fields"]["test_event_site_id"               ] = {"data_type"=>"int",  "file_field"=>"test_event_site_id"            } if field_order.push("test_event_site_id"              )
+            structure_hash["fields"]["assigned"                         ] = {"data_type"=>"bool", "file_field"=>"assigned"                      } if field_order.push("assigned"                        )
+            structure_hash["fields"]["drop_off"                         ] = {"data_type"=>"text", "file_field"=>"drop_off"                      } if field_order.push("drop_off"                        )
+            structure_hash["fields"]["pick_up"                          ] = {"data_type"=>"text", "file_field"=>"pick_up"                       } if field_order.push("pick_up"                         )
+                            
+            structure_hash["fields"]["athena_generated"                 ] = {"data_type"=>"bool", "file_field"=>"athena_generated"              } if field_order.push("athena_generated"                )
+            structure_hash["fields"]["matches_criteria"                 ] = {"data_type"=>"text", "file_field"=>"matches_criteria"              } if field_order.push("matches_criteria"                )
+            structure_hash["fields"]["code_on_site"                     ] = {"data_type"=>"bool", "file_field"=>"code_on_site"                  } if field_order.push("code_on_site"                    )
             
         structure_hash["field_order"] = field_order
         return structure_hash

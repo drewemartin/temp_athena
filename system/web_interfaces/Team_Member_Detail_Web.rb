@@ -189,19 +189,11 @@ end
             
         )
         
-        pids = Array.new
-        relate_records = $focus_team_member.sams_ids.existing_records
-        relate_records.each{|record|
-            
-            these_pids = $tables.attach("STUDENT_RELATE").primary_ids(
-                "WHERE staff_id = '#{record.fields["sams_id"].value}'"
-            )
-            
-            if these_pids
-                pids.concat(these_pids)
-            end
-            
-        }
+        team_id = $focus_team_member.primary_id.value
+        
+        pids = $tables.attach("STUDENT_RELATE").primary_ids(
+            "WHERE team_id = '#{team_id}'"
+        )
         
         pids.each{|pid|
             

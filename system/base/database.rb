@@ -5,10 +5,26 @@ class Database
   #---------------------------------------------------------------------------
   def initialize
     super()
-    
+    @session_query_count = 0
+    @m = nil
   end
   #---------------------------------------------------------------------------
 
+  def m(selected_db)
+    
+    if !@m
+      
+      @m = Mysql::new($config.db_domain, $config.db_user, $config.db_pass)
+      
+    end
+    
+    @m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless selected_db == "information_schema"
+    @m.select_db(selected_db || $config.db_name)
+    
+    return @m
+    
+  end
+  
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
@@ -85,20 +101,19 @@ end
   
   def insert(sql, selected_db = nil)
     query(sql, selected_db)
-    return @last_insert.fetch_row[0]
+    return @last_insert
   end
   
   def query(sql, selected_db = nil)
+    
+    @session_query_count = @session_query_count+=1
+    
     tries = 0
     begin
       
-      m = Mysql::new($config.db_domain, $config.db_user, $config.db_pass)
-      m.query("CREATE DATABASE IF NOT EXISTS `#{selected_db || $config.db_name}`") unless selected_db == "information_schema"
-      m.select_db(selected_db || $config.db_name)
-      
       if false
         
-        m.query(
+        m(selected_db).query(
           "INSERT INTO `agora_20132014`.`temp_query_log` (
             `PRIMARY_ID` ,
             `query_text` 
@@ -108,16 +123,14 @@ end
         
       end
       
-      results         = m.query(sql)
+      results         = m(selected_db).query(sql)
       
-      @last_insert    = m.query("SELECT LAST_INSERT_ID();")
-      
-      m.kill(m.thread_id)
+      @last_insert    = m(selected_db).query("SELECT LAST_INSERT_ID();").fetch_row[0]
       
       return results
       
     rescue Mysql::Error => e
-      
+     
       if (e.errno == 2006 || e.errno == 2003) && tries < 5
         tries+=1
         retry

@@ -17,7 +17,7 @@ class CONVERSION_TOOL < Base
         @mysql_path         = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysql"    )}".gsub("/","\\")
         @mysqldump_path     = "#{File.dirname(__FILE__).gsub("htdocs/#{$config.code_set_name}/system/commands","mysql\\bin\\mysqldump")}".gsub("/","\\")
         
-        @restore_path       = $config.init_path("#{$paths.restore_path}D20130906")
+        @restore_path       = $config.init_path("#{$paths.restore_path}")
         
         if !a.empty?
             
@@ -201,16 +201,19 @@ class CONVERSION_TOOL < Base
                 
                 puts "     RESTORING TABLE"
                 $tables.attach(table).truncate
-                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`
+                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`  
                 
-                restore_file_path = "#{@restore_path}zz_#{table.downcase}.sql"
                 if File.exists?(restore_file_path)
                     
                     if $tables.attach(table).audit
                         
+                        restore_file_path = "#{@restore_path}zz_#{table.downcase}.sql"
+                        
                         puts "     RESTORING AUDIT TABLE"
+                        
                         $tables.attach(table).truncate(audit=true)
                         `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`
+                        
                     end
                     
                 else
@@ -250,9 +253,7 @@ end
 CONVERSION_TOOL.new(
     
     [
-        "restore",
-        "ilp_entry_type",
-        "ilp_entry_category"
+        "restore"
     ]
     
 )

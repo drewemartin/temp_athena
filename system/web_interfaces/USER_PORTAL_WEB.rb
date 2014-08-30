@@ -43,7 +43,7 @@ end
             
         </style>"
         
-        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>\n"
+        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"+"<div id='sy_warning'><b>Looking for last year's school information? >>>>>>>>></b></div>"
         
         $kit.output << "<div class='menu_buttons_container'>"
         
@@ -229,7 +229,7 @@ end
             #"STUDENT_ATTENDANCE_AP_WEB",
             "TEST_EVENT_SITE_WEB",
             #"WITHDRAW_REQUESTS_WEB",
-            "STUDENT_RECORDS_WEB"
+            "STUDENT_RECORDS_INCOMING_WEB"
             
         ]
         #Dir["#{$paths.web_interfaces_path}*.rb"].each {|file|
@@ -267,7 +267,7 @@ end
         
         if $kit.params[:refresh] == "tabs_rri"
             
-            $kit.modify_tag_content("rri_wl",web_script_funtion("STUDENT_RECORDS_WEB", "working_list", "true"), "update")
+            $kit.modify_tag_content("rri_wl",web_script_funtion("STUDENT_RECORDS_INCOMING_WEB", "working_list", "true"), "update")
             
         end
         
@@ -322,6 +322,13 @@ def x______________ADD_NEW_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
+    def add_new_record_student_rri_recipients
+     
+        $kit.web_script(new_page = "STUDENT_RECORDS_INCOMING_WEB")
+        $kit.add_new_record
+        
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________EXPAND_SECTION
 end
@@ -443,6 +450,8 @@ end
             #new_pdf_button{margin-bottom:5px; margin-right:10px;}
             
             #refresh__tabs_rri{margin-top:1px; margin:bottom:5px;}
+            
+            #sy_warning{ float:right; margin-right:10px; color:red; border:2px solid red; padding:2px;}
             
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}

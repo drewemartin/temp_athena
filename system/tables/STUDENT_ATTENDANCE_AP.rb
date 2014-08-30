@@ -16,6 +16,7 @@ def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     
+    #to remove - make sure not used anywhere
     def by_studentid_old(sid, staff_id = nil, date = nil)
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("student_id", "=", sid        ) )
@@ -23,6 +24,19 @@ end
         params.push( Struct::WHERE_PARAMS.new("date",       "=", date       ) ) if date
         where_clause = $db.where_clause(params)
         if !sid.nil? && !staff_id.nil? && !date.nil?
+            record(where_clause)
+        else
+            records(where_clause)
+        end
+    end
+    
+    def by_studentid_old_team_id(sid, team_id = nil, date = nil)
+        params = Array.new
+        params.push( Struct::WHERE_PARAMS.new("student_id", "=", sid        ) )
+        params.push( Struct::WHERE_PARAMS.new("team_id",   "=", team_id   ) ) if team_id
+        params.push( Struct::WHERE_PARAMS.new("date",       "=", date       ) ) if date
+        where_clause = $db.where_clause(params)
+        if !sid.nil? && !team_id.nil? && !date.nil?
             record(where_clause)
         else
             records(where_clause)
@@ -67,6 +81,19 @@ end
             FROM #{data_base}.student_attendance_ap
             #{where_clause}
             GROUP BY staff_id"
+        )
+    end
+    
+    def teamids_by_studentid(student_id)
+        params = Array.new
+        params.push( Struct::WHERE_PARAMS.new("student_id", "=", student_id ) )
+        where_clause = $db.where_clause(params)
+        
+        $db.get_data_single(
+            "SELECT team_id
+            FROM #{data_base}.student_attendance_ap
+            #{where_clause}
+            GROUP BY team_id"
         )
     end
     
@@ -159,6 +186,7 @@ end
         structure_hash["fields"] = Hash.new
             structure_hash["fields"]["student_id"                               ] = {"data_type"=>"int",  "file_field"=>"student_id"                            } if field_order.push("student_id")
             structure_hash["fields"]["staff_id"                                 ] = {"data_type"=>"int",  "file_field"=>"staff_id"                              } if field_order.push("staff_id")
+            structure_hash["fields"]["team_id"                                  ] = {"data_type"=>"int",  "file_field"=>"team_id"                               } if field_order.push("team_id")
             structure_hash["fields"]["date"                                     ] = {"data_type"=>"date", "file_field"=>"date"                                  } if field_order.push("date")
             structure_hash["fields"]["live_session_attended_required"           ] = {"data_type"=>"bool", "file_field"=>"live_session_attended_required"        } if field_order.push("live_session_attended_required")
             structure_hash["fields"]["live_session_attended_engaged"            ] = {"data_type"=>"bool", "file_field"=>"live_session_attended_engaged"         } if field_order.push("live_session_attended_engaged")

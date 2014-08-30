@@ -949,6 +949,59 @@ end
         
     end
     
+    def button_new_row_multiple(table_name, additional_params_str = nil, save_params = nil, button_text="Add New", i_will_manually_add_the_div=false, inner_add_new = false, return_js_string = false)
+        
+        button_text = "<span class=\"ui-icon ui-icon-plusthick\"></span>" if inner_add_new
+        
+        pstr = String.new
+        pstr << "'new_row_multiple_#{table_name}"
+        pstr << (additional_params_str ? ",#{additional_params_str}'" : "'")
+        pstr << ",'#{table_name     }'"
+        pstr << ",'#{save_params    }'" if save_params
+        pstr << (save_params ? ",'#{inner_add_new}'" : ",'','#{inner_add_new}'")  if inner_add_new
+        
+        button_html = String.new
+        
+        button_html << "<input id='new_row_multiple_#{table_name}' name='new_row_multiple' value='#{table_name}' type='hidden'>"
+        
+        button_html << $field.new(
+            {
+                "type"      => "text",
+                :field_id   => "new_row_button_#{table_name}#{@new_row_table_itterator[table_name]||''}",
+                "value"     => button_text
+            }
+        ).web.button(
+            :field_id   => "new_row_button_#{table_name}#{@new_row_table_itterator[table_name]||''}",
+            :no_div     => true,
+            :onclick    => "get_new_row_multiple(#{pstr});",
+            :add_class  => "new_row"
+        )
+        
+        #button_html << "<button name='new_row_button' class='new_row' id='new_row_button_#{table_name}' onclick=\"get_new_row(#{pstr});\">#{button_text}</button>"
+        #button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n" if !i_will_manually_add_the_div && !@new_row_table_itterator[table_name]
+        if i_will_manually_add_the_div
+            
+            self.add_new_dialog = "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n"
+            
+        elsif !@new_row_table_itterator[table_name]
+            
+            button_html << "<DIV id='add_new_dialog_#{table_name}' style='display:none;' class='add_new_dialog'></DIV>\n"
+            
+        end
+        
+        
+        button_html << "<input id='add_new_#{table_name}' name='add_new_#{table_name}' value='#{table_name}' type='hidden'>"
+        
+        @new_row_table_itterator[table_name] = (!@new_row_table_itterator[table_name] ? 1 : @new_row_table_itterator[table_name]+=1)
+        
+        if return_js_string
+            return "get_new_row_multiple(#{pstr});"
+        else
+            return button_html
+        end
+        
+    end
+    
     def button_new_csv(csv_name, additional_params_str = nil, send_field_names = nil, csv_title = "Download")
         
         params_str      = additional_params_str ? "ARGV#{additional_params_str}" : ""
@@ -1311,10 +1364,10 @@ end
                 
                 if $tools
                     
-                    case headers[(a[:head_section]==:left ? td_index-1 : td_index)]
-                    when "Student ID"
+                    case headers[(a[:head_section]==:left ? (td_index==0 ? td_index : td_index-1) : td_index)]
+                    when /Student ID/
                         td_value = student_link(td, a[:student_link]=="name" ? true : false)
-                    when "Team Member ID"
+                    when /Team Member ID/
                         td_value = team_member_link(td)
                     else
                         td_value = td
