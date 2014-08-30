@@ -72,13 +72,28 @@ class CONVERSION_TOOL < Base
         
         start = Time.new
         
-        tables = table_name ? [[table_name]] : $db.query('show tables', @dbname)
+        budir = $config.init_path("#{$paths.backup_path}#{$ifilestamp}")
         
-        puts "#CREATE BACKUP OF OLD DATABASE"
-        tables.each do |table|
-            puts "BACKING UP: #{table}"
-            `#{@mysqldump_path} -u #{$config.db_user} -p#{$config.db_pass} #{@dbname} #{table[0]} > #{@restore_path}#{table[0]}.sql`
-        end
+        dbs = $db.get_data_single("SHOW DATABASES")
+        dbs.each{|db|
+            
+            unless db.match(/information_schema/)
+                
+                tables = $db.get_data_single('show tables', db)
+                
+                tables.each{|table|
+                    
+                    table = table.downcase
+                    
+                    puts "BACKING UP: #{db}.#{table}"
+                    
+                    `#{@mysqldump_path} -u #{$config.db_user} -p#{$config.db_pass} #{db} #{table} > #{budir}#{db}____#{table}.sql`
+                    
+                }
+                
+            end
+            
+        } if dbs
         
         puts "#CONVERSION BACKUP COMPLETED IN #{(Time.new - start)/60} MINUTES"
         puts ">-------------------------------------------------------->"
@@ -187,46 +202,26 @@ class CONVERSION_TOOL < Base
     
     def restore(table_name = nil)
         
-        start = Time.new          
+        start       = Time.new          
         
-        tables = table_name ? [table_name] : $tables.table_names
+        Dir.glob("#{$paths.restore_path}*.{sql}"){|file_path|
+            
+            puts ">>>---RESTORING---> #{file_path.upcase}"
+            
+            file_name                   = file_path.split("/").pop
+            restore_db                  = file_name.split("____")[0]
+            restore_table               = $tables.attach(file_name.split("____")[-1].gsub(".sql",""))
+            default_db                  = restore_table.data_base.dup
+            restore_table.data_base     = restore_db
+            
+            restore_table.truncate
+            `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{restore_table.data_base} < #{file_path}`
+            
+            restore_table.data_base     = default_db
+            
+        }
         
-        puts "#RESTORE INTO CONVERSION DATABASE"
-        tables.each do |table|
-            
-            puts ">>>-----------------------------> #{table.upcase}"
-            
-            restore_file_path = "#{@restore_path}#{table.downcase}.sql"
-            if File.exists?(restore_file_path)
-                
-                puts "     RESTORING TABLE"
-                $tables.attach(table).truncate
-                `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`  
-                
-                if File.exists?(restore_file_path)
-                    
-                    if $tables.attach(table).audit
-                        
-                        restore_file_path = "#{@restore_path}zz_#{table.downcase}.sql"
-                        
-                        puts "     RESTORING AUDIT TABLE"
-                        
-                        $tables.attach(table).truncate(audit=true)
-                        `#{@mysql_path} -u #{$config.db_user} -p#{$config.db_pass} #{$tables.attach(table).data_base} < #{restore_file_path}`
-                        
-                    end
-                    
-                else
-                    puts "     FILE NOT FOUND: #{@restore_path}#{table.downcase}.sql"
-                end
-                
-            else
-                puts "     FILE NOT FOUND: #{@restore_path}#{table.downcase}.sql"
-            end
-            
-        end
-        
-        puts "#CONVERSION RESTORE COMPLETED IN #{(Time.new - start)/60} MINUTES"
+        puts "#RESTORE COMPLETED IN #{(Time.new - start)/60} MINUTES"
         puts ">-------------------------------------------------------->"
         
     end
