@@ -94,13 +94,13 @@ end
             
             #HEADERS
             [
-                "school"                ,
-                "date"                  ,
-                "day"                   ,
-                "non_school_day_type"   ,
-                "day_code"              ,
-                "count_day"             ,
-                "student_attend"         
+                "School"                ,
+                "Date"                  ,
+                "Day"                   ,
+                "Non-School Day Type"   ,
+                "Day Code"              ,
+                "Count Day"             ,
+                "Student Attend"         
             ]
             
         ]
@@ -133,14 +133,14 @@ end
             #HEADERS
             [
                 "School"           ,
-                "period_code"      ,
-                "period_decription",
-                "start_time"       ,
-                "end_time"         ,
-                "sequence"         ,
-                "schedule"         ,
-                "daily_attendance" ,
-                "delete"            
+                "Period Code"      ,
+                "Period Decription",
+                "Start Time"       ,
+                "Dnd Time"         ,
+                "Sequence"         ,
+                "Schedule"         ,
+                "Daily Attendance" ,
+                "Delete"            
             ]
             
         ]
@@ -178,7 +178,7 @@ end
             [
              
                 "Settings",
-                "active"             
+                "Active"             
                 
             ]
             
@@ -256,13 +256,13 @@ end
             
             #HEADERS
             [
-                "school"                ,
-                "date"                  ,
-                "day"                   ,
-                "non_school_day_type"   ,
-                "day_code"              ,
-                "count_day"             ,
-                "student_attend"                        
+                "School"                ,
+                "Date"                  ,
+                "Day"                   ,
+                "Non-School Day Type"   ,
+                "Day Code"              ,
+                "Count Day"             ,
+                "Student Attend"                        
             ]
             
         )
@@ -310,14 +310,14 @@ end
             #HEADERS
             [
                 "School"           ,
-                "period_code"      ,
-                "period_decription",
-                "start_time"       ,
-                "end_time"         ,
-                "sequence"         ,
-                "schedule"         ,
-                "daily_attendance" ,
-                "delete"            
+                "Period Code"      ,
+                "Period Decription",
+                "Start Time"       ,
+                "End Time"         ,
+                "Sequence"         ,
+                "Schedule"         ,
+                "Daily Attendance" ,
+                "Delete"            
             ]
             
         )
@@ -497,7 +497,7 @@ end
             [
              
                 "Settings",
-                "active"             
+                "Active"             
                 
             ]
             
@@ -590,6 +590,26 @@ end
             }
             div.settings_container  select{ width: 600px;}
             div.settings_container  label{  width: 100px; display: inline-block;}
+            
+            div.SAPPHIRE_DICTIONARY_PERIODS__school_type            {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__period_code            {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__period_description     {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__start_time             {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__end_time               {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__sequence               {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__schedule               {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__daily_attendance       {text-align: center;}
+            div.SAPPHIRE_DICTIONARY_PERIODS__delete                 {text-align: center;}
+            
+            div.SAPPHIRE_CALENDARS_CALENDARS__school                {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__date                  {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__day                   {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__non_school_day_type   {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__day_code              {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__count_day             {text-align: center;}
+            div.SAPPHIRE_CALENDARS_CALENDARS__student_attend        {text-align: center;}
+            
+            div.SAPPHIRE_INTERFACE_MAP__active                      {text-align: center;}
         </style>"
         
         return output
