@@ -27,6 +27,15 @@ end
         
     end
     
+    def is_site_coordinator?(sams_id, site_id)
+        params = Array.new
+        params.push( Struct::WHERE_PARAMS.new("staff_id",           "=", sams_id ) )
+        params.push( Struct::WHERE_PARAMS.new("test_event_site_id", "=", site_id ) )
+        params.push( Struct::WHERE_PARAMS.new("role",               "=", "Site Coordinator" ) )
+        where_clause = $db.where_clause(params)
+        record(where_clause) 
+    end
+    
     def by_test_event_site_id(id)
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("test_event_site_id",  "=", id   ) )

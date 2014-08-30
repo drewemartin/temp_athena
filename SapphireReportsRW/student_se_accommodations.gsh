@@ -6,7 +6,7 @@ runReportAndSave(
 	"/Reports/Agora_All_Accommodations",
 	
 	[
-		"SCHOOL_YEAR_1"	: "2014",
+		"SCHOOL_YEAR_1"	: "2015",
 		"STATUS_FLG_1"	: [
 			"E"
 		]

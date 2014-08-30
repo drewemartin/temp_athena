@@ -11,82 +11,39 @@ class Enrollment_Reports
    
     def flag_duplicates(datee = nil)
         
-        date_addon = datee ? " AND enrollreceiveddate = '#{datee}' " : ""
+        date_addon = datee ? " AND k12_enrollment_info_tab_v2.enrollreceiveddate = '#{datee}' " : ""
         
         location    = "Enrollment_Reports"
         filename    = "flag_duplicates"
         rows        = Array.new
-        headers     = [
-            "student_id",
-            "firstname",
-            "lastname",
-            "birthday",
-            "enrollreceiveddate",
-            "enrollapproveddate"
-        ]
+        headers     = Array.new
+     
+        headers.push("student_id","firstname","lastname", "birthday","enrollreceiveddate","enrollapproveddate")
         
         k12_db = $tables.attach("k12_all_students").data_base
         
-        $db.query(
-            "CREATE TABLE IF NOT EXISTS #{k12_db}.x_k12_eitr_concat AS(
-                SELECT
-                    primary_id,
-                    student_id,
-                    CONCAT(firstname, lastname, birthday) AS concat
-                FROM #{k12_db}.k12_enrollment_info_tab_v2
-            )","agora_k12"
-        )
-        $db.query("ALTER TABLE #{k12_db}.x_k12_eitr_concat ENGINE = MYISAM")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_eitr_concat ADD INDEX (`primary_id`)")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_eitr_concat ADD INDEX (`student_id`)")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_eitr_concat ADD FULLTEXT (`concat`)")
-        
-        $db.query(
-            "CREATE TABLE IF NOT EXISTS #{k12_db}.x_k12_all_students_concat AS (
-                SELECT
-                    primary_id,
-                    student_id,
-                    CONCAT(studentfirstname, studentlastname, birthday) AS concat
-                FROM #{k12_db}.k12_all_students
-            )","agora_k12"
-        )
-        
-        $db.query("ALTER TABLE #{k12_db}.x_k12_all_students_concat ENGINE = MYISAM")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_all_students_concat ADD INDEX (`primary_id`)")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_all_students_concat ADD INDEX (`student_id`)")
-        $db.query("ALTER TABLE #{k12_db}.x_k12_all_students_concat ADD FULLTEXT (`concat`)")
-        
-        sql_string_3 =
+        sql_string =
             "SELECT
-                x_k12_eitr_concat.primary_id
-            FROM #{k12_db}.x_k12_eitr_concat
-            LEFT JOIN #{k12_db}.x_k12_all_students_concat
-            ON x_k12_eitr_concat.concat = x_k12_all_students_concat.concat
-            WHERE x_k12_eitr_concat.student_id != x_k12_all_students_concat.student_id
-            GROUP BY x_k12_eitr_concat.student_id
-        "
-        
-        pids = $db.get_data(sql_string_3)
-        
-        sql_string_4 =
-            "SELECT
-                student_id,
-                firstname,
-                lastname,
-                birthday,
-                enrollreceiveddate,
-                enrollapproveddate
+                k12_enrollment_info_tab_v2.student_id,
+                k12_enrollment_info_tab_v2.firstname,
+                k12_enrollment_info_tab_v2.lastname,
+                k12_enrollment_info_tab_v2.birthday,
+                k12_enrollment_info_tab_v2.enrollreceiveddate,
+                k12_enrollment_info_tab_v2.enrollapproveddate
             FROM #{k12_db}.k12_enrollment_info_tab_v2
-            WHERE primary_id IN (#{pids.join(',')})
-            #{date_addon}"
+            JOIN #{k12_db}.K12_all_students ON CONCAT( #{k12_db}.k12_enrollment_info_tab_v2.firstname, #{k12_db}.k12_enrollment_info_tab_v2.lastname, #{k12_db}.k12_enrollment_info_tab_v2.birthday ) = CONCAT( #{k12_db}.K12_all_students.studentfirstname, #{k12_db}.K12_all_students.studentlastname, #{k12_db}.K12_all_students.birthday )
+            WHERE k12_enrollment_info_tab_v2.student_id != K12_all_students.student_id
+            #{date_addon}
+            GROUP BY k12_enrollment_info_tab_v2.student_id"
+        rows = $db.get_data(sql_string)
         
-        rows = pids ? $db.get_data(sql_string_4):[]
-        
-        $db.query("DROP TABLE IF EXISTS #{k12_db}.x_k12_eitr_concat,#{k12_db}.x_k12_all_students_concat")
-        
-        file_path = $reports.save_document({:csv_rows=>rows.insert(0,headers), :category_name=>"Enrollment", :type_name=>"duplicated_students_report"})
-        $reports.move_to_athena_reports_from_docs(file_path, location, filename, false)
-        return file_path
+        if rows
+            file_path = $reports.save_document({:csv_rows=>rows.insert(0,headers), :category_name=>"Enrollment", :type_name=>"duplicated_students_report"})
+            $reports.move_to_athena_reports_from_docs(file_path, location, filename, false)
+            return file_path
+        else
+            return false
+        end
         
     end
 

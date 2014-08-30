@@ -137,11 +137,10 @@ end
     end
     
     def delete_file_fromweb_after_downloading
-        link1 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[4]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/span/table/tbody/tr[2]/td[7]/span/a"
+        link1 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[5]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/span/table/tbody/tr[2]/td[7]/span/a"
       #if browser.text.include? @time_web_format
         browser.cell(:xpath, link1).click
       #end
-        
         link2 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[6]/tbody/tr/td[3]/input"
         browser.cell(:xpath, link2).click
         
@@ -174,7 +173,7 @@ end
     
     def download_file #DOWNLOADS FIRST AVAILABLE FILE
         
-        link = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[4]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/span/table/tbody/tr[2]/td[6]/span/a"
+        link = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[5]/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/span/table/tbody/tr[2]/td[6]/span/a"
         
         #if browser.text.include? @time_web_format
         complete    = false
@@ -365,7 +364,7 @@ end
             end
             i+=1
         end
-        link2 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[3]/tbody/tr/td[10]/a"
+        link2 = "/html/body/form/table[5]/tbody/tr/td/table/tbody/tr/td/table[4]/tbody/tr/td[10]/a"
         if browser.link(:xpath, link2).exists?
           browser.cell(:xpath, link2).click
           #complete = true

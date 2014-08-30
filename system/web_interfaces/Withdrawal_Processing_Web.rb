@@ -7,7 +7,7 @@ class WITHDRAWAL_PROCESSING_WEB
         
         @processors = [
             "epagan@agora.org",
-            "afitzgibbons@agora.org",
+            "sfields@agora.org",
             "kyoung@agora.org",
             "smcdonnell@agora.org",
             "esaddler@agora.org",

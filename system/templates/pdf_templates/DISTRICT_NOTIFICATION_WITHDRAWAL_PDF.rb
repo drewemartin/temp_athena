@@ -168,7 +168,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
       #att_path  = Zip::ZipFile.open(att_path, Zip::ZipFile::CREATE)
       #$reports.move_to_athena_reports(zip_file)
       
-      recipient_email = "afitzgibbons@agora.org"
+      recipient_email = "sfields@agora.org"
       subject         = "Withdrawal Notifications - #{$base.today.to_user}"
       content         = "Please see attached, and have a nice day!"
       #FOR TESTING# recipient_email = "jhalverson@agora.org"
@@ -187,7 +187,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
     ############################################################################
     #NOTIFY REGISTRAR DEPARTMENT ABOUT MISSING DISTRICT/DISTRICT EMAIL ADDRESSES
     if !districts_missing_hash.empty?
-      recipient_email = "afitzgibbons@agora.org"
+      recipient_email = "sfields@agora.org"
       subject         = "District Contact Information Missing"
       content         = "Please update the contact information for the following districts: #{districts_missing_hash.keys.join("\n")}"
       location        = "Withdrawals/District_Notification/To_Registrar"

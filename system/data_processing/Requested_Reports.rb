@@ -374,23 +374,25 @@ class Requested_Reports < Base
                 )
                 
             ),
-            NOW()
+            DATE_FORMAT(NOW(),'%m/%d/%Y %H:%i')
         "
         
         sql_str << " FROM #{sam_db}.student_attendance_master"
+        
+        sql_str << " WHERE student_attendance_master.student_id IN('81353','931068','1424940','548481','1338965')"
         
         results = $db.get_data(sql_str)
         
         if results
             
             file_name   = "#{request_pid}__requested_reports__attendance_summary_k12"
-            local_file  = $reports.csv("temp", file_name, results.insert(0, headers))
-            remote_file = "attendance_summary/k12_agoa_attendance_summarry_#{DateTime.now.strftime("%m%d%Y")}.csv"
+            local_file  = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Attendance", :type_name=>"K12 Attendance Summary"})
+            remote_file = "k12_agora_attendance_summary_#{DateTime.now.strftime("%m%d%Y")}.csv"
             
             $reports.move_to_k12(local_file, remote_file)
             
             record.fields["status"].value    = "Ready"
-            record.fields["file_name"].value = file_path.split("/").last
+            record.fields["file_name"].value = local_file.split("/").last
             
             record.save
             
@@ -780,8 +782,7 @@ class Requested_Reports < Base
             file_path  = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Athena", :type_name=>"Student Welcome Activities Report"})
             
             $base.email.athena_smtp_email(
-                ["esaddler@agora.org"],
-                #["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com"],
+                ["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com"],
                 "Agora Student Welcome Activities Notes Bi-Weekly Report",
                 "Please find the attached report",
                 file_path,

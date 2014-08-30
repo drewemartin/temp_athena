@@ -117,7 +117,7 @@ end
         
         output = Array.new
         
-        nursing_departments     = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'nurse'")
+        nursing_departments     = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'nursing'")
         transcripts_department  = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'transcsript'")
         registrar_department    = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'registrar'")
         speced_department       = $tables.attach("department").field_values("primary_id", "WHERE name REGEXP 'special education'")

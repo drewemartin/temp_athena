@@ -12,7 +12,7 @@ for ( school in ["EL","MS","HS"] ) {
         durations = "FA,YR,YS,S1,Q2"; 
     }
     
-    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "jhalverson", "tBM679p8a", "PAAGC", school, 2014);
+    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "jhalverson", "tBM679p8a", "PAAGC", school, 2015);
     
     def params = [ 
     
