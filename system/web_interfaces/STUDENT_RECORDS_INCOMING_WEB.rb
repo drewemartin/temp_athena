@@ -29,55 +29,33 @@ end
     
     def response
         
-        if $kit.params[:add_rii_document]
+        if $kit.params[:add_new_STUDENT_RRI_REQUESTED_DOCUMENTS]
             
-            request_id = $kit.params[:add_rii_document].split("__").first
-            doc_id     = $kit.params[:add_rii_document].split("__").last
-            
-            new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
-            
-            new_row.fields["rri_request_id" ].value = request_id
-            new_row.fields["record_type_id" ].value = doc_id
-            
-            new_row.save
-            
-            $kit.modify_tag_content("requested_docs_#{request_id}_container", documents_table(request_id, true), "update")
-            
+            save_requested_documents
+         
+            $kit.student_record.content
+         
         end
         
         if $kit.params[:add_new_STUDENT_RRI_REQUESTS]
-            
-            $tables.attach("RRI_DOCUMENT_TYPES").primary_ids.each do |pid|
-                
-                if $kit.params["rri_document_type__#{pid}".to_sym] == "1"
-                    
-                    new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
-                    
-                    new_row.fields["rri_request_id" ].value = $kit.rows.first[1].fields["primary_id"].value
-                    new_row.fields["record_type_id" ].value = pid
-                    new_row.fields["student_id"     ].value = $focus_student.student_id.value
-                    
-                    new_row.save
-                    
-                end
-                
-            end
+         
+            save_requested_documents
             
             js_string = $tools.button_new_row(
                 
-                table_name                  = "STUDENT_RRI_RECIPIENTS",
-                additional_params_str       = "rri_request_id=#{$kit.rows.first[1].primary_id}",
-                save_params                 = "sid",
-                button_text                 = nil,
-                i_will_manually_add_the_div = true,
-                inner_add_new               = false,
+                table_name                  = "STUDENT_RRI_RECIPIENTS"                          ,
+                additional_params_str       = "rri_request_id=#{$kit.rows.first[1].primary_id}" ,
+                save_params                 = "sid"                                             ,
+                button_text                 = nil                                               ,
+                i_will_manually_add_the_div = true                                              ,
+                inner_add_new               = false                                             ,
                 return_js_string            = true
                 
             )
             
-            $kit.output = "<eval_script>#{js_string}</eval_script>" 
+            $kit.output = "<eval_script>#{js_string}</eval_script>"
             
-            return false
+            $kit.student_record.content
             
         end
         
@@ -98,8 +76,8 @@ end
             save_params             = "sid"
         )
         
-        output << "<DIV id='add_new_dialog_STUDENT_RRI_RECIPIENTS' style='display:none;' class='add_new_dialog'></DIV>\n"
-        
+        output << "<DIV id='add_new_dialog_STUDENT_RRI_RECIPIENTS'          style='display:none;' class='add_new_dialog'></DIV>\n"
+        output << "<DIV id='add_new_dialog_STUDENT_RRI_REQUESTED_DOCUMENTS' style='display:none;' class='add_new_dialog'></DIV>\n"
         output << "<input id='new_row_STUDENT_RRI_RECIPIENTS' type='hidden' value='STUDENT_RRI_RECIPIENTS' name='new_row'>"
         
         tables_array = [
@@ -325,21 +303,11 @@ end
             where_clause    = nil
         )
         
-        output << $field.new(
-            "type"  =>  "text",
-            "field" =>  "school_name",
-            "value" =>  nil
-        ).web.select(
+        output << record.fields["primary_id"          ].web.select(
             {
                 :dd_choices => school_dd,
-                :onchange   => "
-                fill_select_option('#{record.fields["name"          ].web.field_id}', this );
-                fill_select_option('#{record.fields["address_1"     ].web.field_id}', this );
-                fill_select_option('#{record.fields["city"          ].web.field_id}', this );
-                fill_select_option('#{record.fields["state"         ].web.field_id}', this );
-                fill_select_option('#{record.fields["zip"           ].web.field_id}', this );"
-                #fill_select_option('#{record.fields["fax_number"    ].web.field_id}', this );
-                #fill_select_option('#{record.fields["email_address" ].web.field_id}', this );"
+                :onchange   => "fill_select_option('#{record.fields["name"          ].web.field_id}', this );",
+                :add_class  => "no_save"
             },
             true
         )
@@ -362,48 +330,8 @@ end
     end
     
     def add_new_record_student_rri_requested_documents()
-        
-        tables_array = [
-            
-            #HEADERS
-            [
-                #"Recipients Test (This form needs cleanup)",
-                "Priority"          ,
-                "Date Requested"    ,
-                "Request Method"    ,
-                "Requested Records" ,
-                "Notes"
-            ]
-            
-        ]
-        
-        doc_pids        = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
-        
-        doc_checkboxes  = String.new
-        
-        doc_pids.each do |doc_pid|
-            
-            record      = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
-            
-            new_field   = $field.new({"type" => "text", "field" => "rri_document_type__#{doc_pid}"})
-            
-            doc_checkboxes << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + doc_pid, :add_class=>"no_save rri_document_type"})
-            
-        end if doc_pids
-        
-        row = Array.new
-        
-        record = $focus_student.rri_requests.new_record
-        
-        row.push(record.fields["priority_level"  ].set("Normal").web.select(:dd_choices=>priority_levels))
-        row.push(record.fields["requested_date"  ].set($idatetime).web.default())
-        row.push(record.fields["request_method"  ].web.select(:dd_choices=>request_method_dd))
-        row.push(doc_checkboxes)
-        row.push(record.fields["notes"           ].web.default())
-        
-        tables_array.push(row)
       
-        return record.fields["student_id"].web.hidden() + $kit.tools.data_table(tables_array, "new_record", type = "NewRecord")
+        return doc_checkboxes(request_pid = $kit.params[:rri_request_id])
         
     end
     
@@ -422,20 +350,6 @@ end
             ]
             
         ]
-        
-        doc_pids        = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
-        
-        doc_checkboxes  = String.new
-        
-        doc_pids.each do |doc_pid|
-            
-            record      = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
-            
-            new_field   = $field.new({"type" => "text", "field" => "rri_document_type__#{doc_pid}"})
-            
-            doc_checkboxes << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + doc_pid, :add_class=>"no_save rri_document_type"})
-            
-        end if doc_pids
         
         row = Array.new
         
@@ -522,7 +436,15 @@ end
 
     def fill_select_option_name(field_name, field_value, pid)
         
-        return $tables.attach("SCHOOLS").field_value("school_name", "WHERE primary_id = '#{field_value}'")
+        recipient_fields    = $base.is_num?(pid) ? $tables.attach("STUDENT_RRI_RECIPIENTS"   ).by_primary_id(pid).fields : $tables.attach("STUDENT_RRI_RECIPIENTS"   ).new_row.fields
+        school_fields       = $tables.attach("SCHOOLS"                  ).record("WHERE primary_id = '#{field_value}'").fields
+        
+        $kit.modify_tag_content(recipient_fields["address_1"].web.field_id, school_fields["street_address"  ].value, "update")
+        $kit.modify_tag_content(recipient_fields["city"     ].web.field_id, school_fields["city"            ].value, "update")
+        $kit.modify_tag_content(recipient_fields["state"    ].web.field_id, school_fields["state"           ].value, "update")
+        $kit.modify_tag_content(recipient_fields["zip"      ].web.field_id, school_fields["zip"             ].value, "update")
+        
+        return school_fields["school_name"].value
         
     end
     
@@ -555,6 +477,40 @@ def x______________SUPPORT_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
    
+    def doc_checkboxes(request_pid = nil)
+     
+        if request_pid
+            
+            requested_docs  = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").field_values("record_type_id", "WHERE rri_request_id = '#{request_pid}'")
+            doc_pids        = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("WHERE primary_id #{requested_docs ? "NOT IN(#{requested_docs.join(',')})" : nil} ORDER BY document_category ASC")
+            
+        else
+            
+            doc_pids        = $tables.attach("RRI_DOCUMENT_TYPES").primary_ids("ORDER BY document_category ASC")
+            
+        end
+        
+        output  = String.new
+        output << $field.new(
+            "type"      =>  "text",
+            "field"     =>  "rri_request_pid",
+            "value"     =>  request_pid
+        ).set(request_pid).web.hidden if request_pid
+        
+        doc_pids.each do |doc_pid|
+            
+            record      = $tables.attach("RRI_DOCUMENT_TYPES").by_primary_id(doc_pid)
+            
+            new_field   = $field.new({"type" => "text", "field" => "rri_document_type__#{doc_pid}"})
+            
+            output << new_field.web.checkbox({:label_option=>record.fields["document_name"].value, :field_id=>"rri_document_type_submit__" + doc_pid, :add_class=>"no_save rri_document_type"})
+            
+        end if doc_pids
+        
+        return output
+        
+    end
+    
     def working_list_tab_contents(open_record_pids)
         
         if open_record_pids
@@ -807,6 +763,26 @@ end
         
     end
     
+    def save_requested_documents
+        
+        $tables.attach("RRI_DOCUMENT_TYPES").primary_ids.each do |pid|
+            
+            if $kit.params["rri_document_type__#{pid}".to_sym] == "1"
+                
+                new_row = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").new_row
+                
+                new_row.fields["rri_request_id" ].value = !$kit.rows.empty? ? $kit.rows.first[1].fields["primary_id"].value : $kit.params[:rri_request_pid]
+                new_row.fields["record_type_id" ].value = pid
+                new_row.fields["student_id"     ].value = $focus_student.student_id.value
+                
+                new_row.save
+                
+            end
+            
+        end
+        
+    end
+    
     def documents_table(rri_request_id, update=false)
         
         requests = [
@@ -909,7 +885,7 @@ end
         output << "<style>"
         output << "
             
-            div.rri_document_type       { width:150px; height:20px;}
+            div.rri_document_type       { width:250px; height:20px;}
             div.rri_document_type label { float:left; display:inline-block; min-width:100px; text-align:left; margin-top:2px;}
             div.rri_document_type input { float:right;}
             
@@ -957,7 +933,7 @@ end
             div.STUDENT_RRI_RECIPIENTS__via_fax                  input {}
             div.STUDENT_RRI_RECIPIENTS__via_email                input {}
             
-            
+            div#add_new_dialog_STUDENT_RRI_REQUESTED_DOCUMENTS         {width:250px !important;}
         "
         
         output << "</style>"
