@@ -52,7 +52,6 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
   
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION
@@ -133,10 +132,15 @@ end
             structure_hash["fields"]["other"                        ] = {"data_type"=>"bool", "file_field"=>"other"                         } if field_order.push("other")
             structure_hash["fields"]["target_time"                  ] = {"data_type"=>"bool", "file_field"=>"target_time"                   } if field_order.push("target_time")
             structure_hash["fields"]["win"                          ] = {"data_type"=>"bool", "file_field"=>"win"                           } if field_order.push("win")
+            structure_hash["fields"]["small_group_session"          ] = {"data_type"=>"bool", "file_field"=>"small_group_session"           } if field_order.push("small_group_session")
+            structure_hash["fields"]["iep_meeting"                  ] = {"data_type"=>"bool", "file_field"=>"iep_meeting"                   } if field_order.push("iep_meeting")
+            structure_hash["fields"]["conference"                   ] = {"data_type"=>"bool", "file_field"=>"conference"                    } if field_order.push("conference")
+            structure_hash["fields"]["fc_conference"                ] = {"data_type"=>"bool", "file_field"=>"fc_conference"                 } if field_order.push("fc_conference")
             structure_hash["fields"]["other_description"            ] = {"data_type"=>"text", "file_field"=>"other_description"             } if field_order.push("other_description")
             
         structure_hash["field_order"] = field_order
         return structure_hash
     end
+    
 
 end
