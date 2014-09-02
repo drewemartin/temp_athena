@@ -235,7 +235,8 @@ end
                                 elsif table.relationship == :one_to_many
                                     
                                     #BUILD SUB-TABLE FIELD/RECORD ACCESSOR METHODS FOR ONE TO MANY RELATIONSHIPS
-                                    create_method(:existing_records) do |where_clause_addon=nil|
+                                    create_method(:existing_records) do |where_clause_addon=nil|   #FOR 1.9.3
+                                    #create_method(:existing_records) do |where_clause_addon|        #FOR 1.8.7
                                         table.by_studentid(@sid, where_clause_addon)
                                     end
                                 end

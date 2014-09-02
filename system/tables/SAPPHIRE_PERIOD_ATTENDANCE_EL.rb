@@ -77,6 +77,8 @@ end
             structure_hash["fields"]["period_el9"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_EL9"                    } if field_order.push("period_el9"              )
             structure_hash["fields"]["period_e10"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_E10"                    } if field_order.push("period_e10"              )
             structure_hash["fields"]["period_e11"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_E11"                    } if field_order.push("period_e11"              )
+            structure_hash["fields"]["period_e12"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_E12"                    } if field_order.push("period_e12"              )
+            structure_hash["fields"]["period_e13"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_E13"                    } if field_order.push("period_e13"              )
             structure_hash["fields"]["period_ela"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_ELA"                    } if field_order.push("period_ela"              )
             structure_hash["fields"]["period_elo"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_ELO"                    } if field_order.push("period_elo"              )
             structure_hash["fields"]["logged"                   ] = {"data_type"=>"bool", "file_field"=>"logged"                        } if field_order.push("logged"                  )

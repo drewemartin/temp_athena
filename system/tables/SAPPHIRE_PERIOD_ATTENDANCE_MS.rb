@@ -70,6 +70,8 @@ end
             structure_hash["fields"]["period_m2"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M2"                     } if field_order.push("period_m2"               )
             structure_hash["fields"]["period_m3"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M3"                     } if field_order.push("period_m3"               )
             structure_hash["fields"]["period_m4"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M4"                     } if field_order.push("period_m4"               )
+            structure_hash["fields"]["period_m5"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M5"                     } if field_order.push("period_m5"               )
+            structure_hash["fields"]["period_m6"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M6"                     } if field_order.push("period_m6"               )
             structure_hash["fields"]["period_m7"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M7"                     } if field_order.push("period_m7"               )
             structure_hash["fields"]["period_m8"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M8"                     } if field_order.push("period_m8"               )
             structure_hash["fields"]["period_m9"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_M9"                     } if field_order.push("period_m9"               )
@@ -78,6 +80,9 @@ end
             structure_hash["fields"]["period_m14"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_M14"                    } if field_order.push("period_m14"              )
             structure_hash["fields"]["period_as1"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS1"                    } if field_order.push("period_as1"              )
             structure_hash["fields"]["period_as2"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS2"                    } if field_order.push("period_as2"              )
+            structure_hash["fields"]["period_as3"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS3"                    } if field_order.push("period_as3"              )
+            structure_hash["fields"]["period_as4"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS4"                    } if field_order.push("period_as4"              )
+            structure_hash["fields"]["period_as5"               ] = {"data_type"=>"text", "file_field"=>"PERIOD_AS5"                    } if field_order.push("period_as5"              )
             structure_hash["fields"]["period_mo"                ] = {"data_type"=>"text", "file_field"=>"PERIOD_MO"                     } if field_order.push("period_mo"               )
             structure_hash["fields"]["logged"                   ] = {"data_type"=>"bool", "file_field"=>"logged"                        } if field_order.push("logged"                  )
             
