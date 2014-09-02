@@ -43,7 +43,7 @@ end
             
         </style>"
         
-        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"+"<div id='sy_warning'><b>Looking for last year's school information? >>>>>>>>></b></div>"
+        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"+"<div id='sy_warning'><b>The new 2014-2015 SY has been created in Athena. If you are looking for information that was entered in last year's database, you will need to change the school year in the drop down to the right >>>>>>>>></b></div>"
         
         $kit.output << "<div class='menu_buttons_container'>"
         
@@ -451,7 +451,7 @@ end
             
             #refresh__tabs_rri{margin-top:1px; margin:bottom:5px;}
             
-            #sy_warning{ float:right; margin-right:10px; color:red; border:2px solid red; padding:2px;}
+            #sy_warning{ float:right; margin-right:10px; color:red; border:2px solid red; padding:2px; width:850px;}
             
         "
         #    div.student_page_view{              background-color:#3BAAE3; border-radius:5px; color:white; padding:5px; margin-bottom:10px;}
