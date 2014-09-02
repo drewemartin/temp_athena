@@ -352,7 +352,6 @@ end
         preload         = preload_id.nil?   ? "" : "setPreSpinner('#{preload_id}');"
         self.options    = {:onclick=>"#{this_onclick}('#{field_id}'); #{select_tab} #{preload}"}
         element = "<label style =\"cursor:pointer; text-decoration:underline; color:#12C;\" #{options} >#{link_text||field.value}</label>"
-        element << options[:row_details] if options[:row_details]
         element << "<input #{identifiers} value='#{field.value}' type ='hidden'></label>"
         div(element)
     end
