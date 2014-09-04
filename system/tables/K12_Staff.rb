@@ -96,9 +96,9 @@ end
         members_to_mark_inactive.each{|pid|
             
             record = $tables.attach("team").by_primary_id(pid)
-            email_record = $tables.attach("team_email").by_primary_id(pid)
+            email_record = $tables.attach("team_email").record("WHERE team_id = '#{pid}' AND preferred = '1'")
             
-            if !whitelist.include?(email_record.fields["email_address"].value)
+            if email_record && !whitelist.include?(email_record.fields["email_address"].value)
                 
                 record.fields["active"].set(false).save
                 
