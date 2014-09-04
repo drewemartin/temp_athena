@@ -52,7 +52,15 @@ class Attendance_Processing
                     
                 when "Activity OR Live Sessions"
                     
-                    @finalize_code = (has_live || has_activity) ? "p" : "u"
+                    if classrooms_only_pb_and_u
+                        
+                        @finalize_code = has_activity ? "p" : "u"
+                        
+                    else
+                        
+                        @finalize_code = (has_live || has_activity) ? "p" : "u"
+                        
+                    end
                     
                 when "Live Sessions"
                     
@@ -218,7 +226,7 @@ end
                 
                 (
                     (
-                        grade.match(/6th|7th|8th|9th|10th|11th|12th/) && 
+                        #grade.match(/6th|7th|8th|9th|10th|11th|12th/) && 
                         (
                             (att_date >= student_enroll_date    && eligible_dates_enroll.include?(@date) ) ||
                             (att_date >= @school_start          && eligible_dates_school.include?(@date) )
