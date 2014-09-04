@@ -61,8 +61,8 @@ class ATTENDANCE_RECORD_PDF
                     995 Old Eagle School Road
                     Suite 315
                     Wayne, PA 19087
-                    ph 610.254.8218
-                    fx 610.254.8939
+                    ph 610.263.8541
+                    fx 484.558.0238
                     www.agora.org"
                 pdf.text address_str, :align => :right, :size => 7.5
             end
@@ -94,7 +94,7 @@ class ATTENDANCE_RECORD_PDF
             
             pdf.grid([15,0], [16,1]).bounding_box do
                 advise_str = "<b><u>Please be advised that the above named student was in attendance at Agora Cyber Charter School."
-                advise_str << " The student attendance is as follows for the #{$school.current_school_year} school year:</u></b>"
+                advise_str << " The student attendance is as follows for the #{$config.school_year} school year:</u></b>"
                 pdf.text advise_str, :align => :left, :size => 12, :inline_format => true
             end
             
