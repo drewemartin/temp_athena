@@ -80,7 +80,8 @@ end
             "module_student_sales_force_case",
             "student_contacts_edit",
             "student_ilp_edit",
-            "student_tests_edit"
+            "student_tests_edit",
+            "tep_agreements_edit"
         ]
         
         tid = this_record.primary_id
