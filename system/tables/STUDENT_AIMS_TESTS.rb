@@ -187,7 +187,7 @@ end
             
             structure_hash["fields"]["k2_skill_check_complete"                  ] = {"data_type"=>"bool", "file_field"=>"k2_skill_check_complete"                } if field_order.push("k2_skill_check_complete"                 )
             structure_hash["fields"]["writing_sample_received"                  ] = {"data_type"=>"bool", "file_field"=>"writing_sample_received"                } if field_order.push("writing_sample_received"                 )
-            structure_hash["fields"]["35_math_open_prompt_complete"             ] = {"data_type"=>"bool", "file_field"=>"35_math_open_prompt_complete"           } if field_order.push("35_math_open_prompt_complete"            )
+            structure_hash["fields"]["35_math_open_prompt_complete"             ] = {"data_type"=>"text", "file_field"=>"35_math_open_prompt_complete"           } if field_order.push("35_math_open_prompt_complete"            )
             
         structure_hash["field_order"] = field_order
         return structure_hash
