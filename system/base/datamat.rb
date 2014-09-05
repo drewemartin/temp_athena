@@ -239,7 +239,7 @@ end
         if self.value.class == String
             self.value = self.value.gsub("'","&#39;")
         end
-        reuturn self
+        return self
     end
     
     def mathable

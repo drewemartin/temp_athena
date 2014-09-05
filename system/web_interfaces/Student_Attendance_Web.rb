@@ -262,6 +262,7 @@ end
         
         addable_days = $school.school_days($base.today.iso_date) || []
         addable_days -= students_days
+        addable_days -= [$base.today.iso_date] #do not include today's date in the drop down
         if !addable_days.empty?
             addable_days.each do |day|
                 addable_days_dd << {:name=>day,:value=>day}
@@ -312,6 +313,12 @@ end
         return $tables.attach("ATTENDANCE_MODES").dd_choices("mode","mode")
     end
     
+    def student_has_attendance
+        sid                     = $focus_student.student_id.value
+        student                 = $students.attach(sid)
+        student.attendance.record
+    end
+    
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x_______________________CSS
 end
@@ -322,9 +329,13 @@ end
         output = String.new
         output << "<style>"
         
-        output << "
-        #new_row_button_STUDENT_ATTENDANCE{                     float:right; font-size: xx-small !important;}
+        if student_has_attendance
+            output << "#new_row_button_STUDENT_ATTENDANCE{float:right; font-size: xx-small !important;}"
+        else
+            output << "#new_row_button_STUDENT_ATTENDANCE{display: none;}"
+        end
         
+        output << "
         div.weekdays_div{                                       clear:left; margin-left:auto; margin-right:auto; margin-bottom:15px; display:table;}
         div.weekday_div{                                        float:left; margin-left:1px; margin-right:1px; width:200px; height:210px; border: 1px solid black; border-radius:5px;}
         div.week{                                               clear:left; margin-left:65px; margin-top:10px; margin-bottom:5px;}

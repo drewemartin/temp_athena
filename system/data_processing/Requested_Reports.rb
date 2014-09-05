@@ -393,6 +393,15 @@ class Requested_Reports < Base
             
             record.save
             
+            $base.email.athena_smtp_email(
+                ["aaruva@k12.com","eseygelman@k12.com"],
+                "Agora attendance summary report completed",
+                "The daily attendance summary for students at
+                Agora Cyber Charter School was completed at
+                #{DateTime.now.strftime("%I:%M %p")} on #{DateTime.now.strftime("%m/%d/%Y")}.\n
+                The report contains #{results.length} rows."
+            )
+            
             return true
             
         else
