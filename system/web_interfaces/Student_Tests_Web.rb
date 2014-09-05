@@ -232,6 +232,21 @@ end
         
     end
     
+    def f2f_or_v_dd
+        return [
+            {:name=>"F2F",       :value=>"F2F"        },
+            {:name=>"Virtual",   :value=>"Virtual"    }
+        ]
+    end
+    
+    def inst_recommend_dd
+        return [
+            {:name=>"Benchmark", :value=>"Student Read"     },
+            {:name=>"Strategic", :value=>"Teacher Read"     },
+            {:name=>"Intensive", :value=>"Intensive"        }
+        ]
+    end
+    
     def reading_comp_read_dd
         return [
             {:name=>"Student Read",       :value=>"Student Read"        },
@@ -363,7 +378,7 @@ end
         
         row.push(test.fields["k2_skill_check_complete"                  ].web.default() )
         row.push(test.fields["writing_sample_received"                  ].web.default() )
-        row.push(test.fields["35_math_open_prompt_complete"             ].web.default() )
+        row.push(test.fields["35_math_open_prompt_complete"             ].web.select(:dd_choices=>f2f_or_v_dd) )
         row.push(test.fields["reading_comprehension"                    ].web.text() )
         row.push(test.fields["reading_comprehension_who_read"           ].web.select(:dd_choices=>reading_comp_read_dd) )
         row.push(test.fields["lnf"                                      ].web.default(:add_class=>"limit_int") )
@@ -376,7 +391,7 @@ end
         row.push(test.fields["nwf_errors"                               ].web.default() )
         row.push(test.fields["rcbm"                                     ].web.default() )
         row.push(test.fields["rcbm_errors"                              ].web.default() )
-        row.push(test.fields["reading_instructional_recommendation"     ].web.default() )
+        row.push(test.fields["reading_instructional_recommendation"     ].web.select(:dd_choices=>inst_recommend_dd) )
         row.push(test.fields["ocm"                                      ].web.default() )
         row.push(test.fields["ocm_errors"                               ].web.default() )
         row.push(test.fields["nim"                                      ].web.default() )
@@ -387,7 +402,7 @@ end
         row.push(test.fields["mnm_errors"                               ].web.default() )
         row.push(test.fields["mcap"                                     ].web.default() )
         row.push(test.fields["math_instructional_recommendation"        ].web.default() )
-        row.push(test.fields["notes"                                    ].web.default() )
+        row.push(test.fields["notes"                                    ].web.select(:dd_choices=>inst_recommend_dd) )
             
         tables_array.push(row)
         

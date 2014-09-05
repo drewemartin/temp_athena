@@ -9,7 +9,7 @@ class STUDENT_ILP_WEB
         @ilp_categories = $tables.attach("ILP_ENTRY_CATEGORY").primary_ids(
             "WHERE #{$focus_student.grade.to_grade_field} IS TRUE
             ORDER BY name ASC"
-        )
+        ) if $focus_student
       
     end
     #---------------------------------------------------------------------------
