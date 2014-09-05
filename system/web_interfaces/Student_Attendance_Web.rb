@@ -97,7 +97,7 @@ end
                             
                             #how_to_button_attendance_modes = $tools.button_how_to("How To: Attendance Modes")
                             
-                            output << fields["mode"].web.select({:label_option=>"Mode", :dd_choices=>modes_dd, :disabled=>disabled, :history=>true}, true)
+                            output << fields["mode"].web.select({:label_option=>"Mode", :dd_choices=>modes_dd, :history=>true}, true)
                             
                             output << $tools.newlabel("activity", "Activity Log")
                             
@@ -168,11 +168,11 @@ end
                     
                     if !date.nil?
                         
-                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :disabled=>disabled, :history=>true}, false, true) if !attendance_code.nil? && attendance_code
+                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :history=>true}, false, true) if !attendance_code.nil? && attendance_code
                         
                     else
                         
-                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code", :disabled=>disabled}, false, true) if !attendance_code.nil? && attendance_code
+                        output << attendance_code.web.select({:label_option=>"Code", :dd_choices=>@code_choices, :add_class=>"code"}, false, true) if !attendance_code.nil? && attendance_code
                         
                     end
                     
