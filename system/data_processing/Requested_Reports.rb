@@ -379,7 +379,7 @@ class Requested_Reports < Base
         
         sql_str << " FROM #{sam_db}.student_attendance_master"
         
-        sql_str << " WHERE student_attendance_master.student_id IN('81353','931068','1424940','548481','1338965')"
+        #sql_str << " WHERE student_attendance_master.student_id IN('81353','931068','1424940','548481','1338965')"
         
         results = $db.get_data(sql_str)
         
@@ -395,6 +395,15 @@ class Requested_Reports < Base
             record.fields["file_name"].value = local_file.split("/").last
             
             record.save
+            
+            $base.email.athena_smtp_email(
+                ["aaruva@k12.com","eseygelman@k12.com"],
+                "Agora attendance summary report completed",
+                "The daily attendance summary for students at
+                Agora Cyber Charter School was completed at
+                #{DateTime.now.strftime("%I:%M %p")} on #{DateTime.now.strftime("%m/%d/%Y")}.\n
+                The report contains #{results.length} rows."
+            )
             
             return true
             
