@@ -18,7 +18,7 @@ end
           error_message  = "Please make sure you're logged in."
           email_subject  = "Athena Support Request - Not Logged In"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           message        = "<h1>#{error_message} If you continue to receive this message contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>.</h1>"
           replacement    = message
@@ -34,7 +34,7 @@ end
           error_message  = "Please refresh your page and try again."
           email_subject  = "Athena Support Request - Authentification"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           message        = "<h1>#{error_message} If you continue to receive this message contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>.</h1>"
           replacement    = message
@@ -56,7 +56,7 @@ end
           error_message  = "The document you were looking for could not be created because it has not been completed. <br><h3>#{additional_info}</h3><br>"
           email_subject  = "Athena Support Request - Document Not Created - Incomplete"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           $kit.error_message(
                "#{error_message} If you continue to receive this message and you believe it is in error, please contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."
@@ -69,7 +69,7 @@ end
           error_message  = "The document you were looking for could not be found."
           email_subject  = "Athena Support Request - Document Not Found"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           $kit.error_message(
                "#{error_message} If you continue to receive this message contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."
@@ -89,7 +89,7 @@ end
           error_message  = "Duplicate Assignment Detected! <BR> #{additional_message}"
           email_subject  = "Athena Support Request - Duplicate Assignment"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           $kit.error_message(
                "#{error_message} If you continue to receive this message, and you believe it is in error, contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."
@@ -102,7 +102,7 @@ end
           error_message  = "Duplicate KMAIL Detected! <BR> #{additional_message}"
           email_subject  = "Athena Support Request - Duplicate KMAIL"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           $kit.error_message(
                "#{error_message} If you continue to receive this message, and you believe it is in error, contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."
@@ -115,7 +115,7 @@ end
           error_message  = "An unexpected error has occurred."
           email_subject  = "Athena Support Request - Unexpected Error"
           email_content  = "REFERENCE NUMBER: #{$kit.user_log_record.primary_id}"
-          support_email  = "jhalverson@agora.org;esaddler@agora.org"
+          support_email  = "drowan@agora.org;esaddler@agora.org"
           
           $kit.error_message(
                "#{error_message} If you continue to receive this message contact <a href='mailto:#{support_email}?Subject=#{email_subject}&Body=#{email_content}'>support</a>."

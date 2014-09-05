@@ -123,7 +123,7 @@ end
             when "districtid"
                 select_str = "(SELECT aun FROM #{daun_db}.districts_aun WHERE K12_Omnibus.districtofresidence = districts_aun.name)"
                 
-            when /[^i]city/
+            when /[^i]city|relationship/
                 select_str = "IF(CHAR_LENGTH(#{field_name})<=20, #{field_name}, LEFT(#{field_name},20))"
                 
             else
@@ -196,7 +196,7 @@ end
             #File.rename(temp_name, file_path)
             #$reports.move_to_athena_reports(file_path)
             $base.email.athena_smtp_email(
-                ["jgowman@agora.org","jhalverson@agora.org","SMcDonnell@agora.org","sfields@agora.org"],
+                ["jgowman@agora.org","drowan@agora.org","SMcDonnell@agora.org","sfields@agora.org"],
                 "Sapphire Returning Students",
                 "Please find the attached report",
                 file_path,
@@ -234,7 +234,7 @@ end
             
             file_path = $reports.save_document({:csv_rows=>rows.insert(0, headers), :category_name=>"Sapphire Reports", :type_name=>"Invalid Districts Report"})
             
-            $base.email.athena_smtp_email(["jgowman@agora.org","jhalverson@agora.org"], "Student with Invalid District of Residence", "Please find the attached report", file_path, nil, "#{filename}_#{$ifilestamp}.csv")
+            $base.email.athena_smtp_email(["jgowman@agora.org","drowan@agora.org"], "Student with Invalid District of Residence", "Please find the attached report", file_path, nil, "#{filename}_#{$ifilestamp}.csv")
             
         end
         
