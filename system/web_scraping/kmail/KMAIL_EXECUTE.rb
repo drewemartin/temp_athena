@@ -149,6 +149,12 @@ class KMAIL_EXECUTE < Base
                 
             rescue => e
                 
+                retry_error_messages = [
+                    "unable to bind to locking port 7054 within 45 seconds",
+                    "missing ; before statement",
+                    "timed out after 30 seconds"
+                ]
+                
                 if e.message == "Timeout::Error" && sent == false
                     
                     puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -169,6 +175,15 @@ class KMAIL_EXECUTE < Base
                     kmail_record.save
                     
                     browser.close
+                    
+                elsif retry_error_messages.include?(e.message) && sent == false
+                    
+                    puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                    puts "Retrying..."
+                    puts "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                    
+                    browser.close
+                    retry
                     
                 else
                     
