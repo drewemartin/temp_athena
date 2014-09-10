@@ -337,9 +337,9 @@ end
         
         output << "
         div.weekdays_div{                                       clear:left; margin-left:auto; margin-right:auto; margin-bottom:15px; display:table;}
-        div.weekday_div{                                        float:left; margin-left:1px; margin-right:1px; width:200px; height:210px; border: 1px solid black; border-radius:5px;}
+        div.weekday_div{                                        float:left; margin-left:1px; margin-right:1px; width:195px; height:210px; border: 1px solid black; border-radius:5px;}
         div.week{                                               clear:left; margin-left:65px; margin-top:10px; margin-bottom:5px;}
-        div.day_header{                                         float:left; clear:left; width:194px; height:18px; padding:3px; background-color:#3BAAE3; border-bottom: 1px solid black; border-top-left-radius:5px; border-top-right-radius:5px;}
+        div.day_header{                                         float:left; clear:left; width:189px; height:18px; padding:3px; background-color:#3BAAE3; border-bottom: 1px solid black; border-top-left-radius:5px; border-top-right-radius:5px;}
         div.dotw{                                               float:left; color:white;}
         div.att_date{                                           float:right; color:white;}
         div.STUDENT_ATTENDANCE_MODE__attendance_mode{           clear:left; margin-bottom:10px; margin-left:65px;}
@@ -362,7 +362,9 @@ end
         div.USER_ACTION_ITEMS__completed{                       float:left; margin-top:-2px;}
         div.student_link{                                       width:250px;}
         body{                                                   line-height:16px;}
+        .show_history_button{                                   margin-left:2px; margin-top:-1px;}
         .activity_container td{                                 font-size:12px;}
+        .ui-icon-clock{                                         background-position:-81px -113px !important;}
         "
         
         output << "</style>"

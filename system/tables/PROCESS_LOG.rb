@@ -41,7 +41,7 @@ end
         record = new_row
         record.fields["class_name"      ].value = class_name
         record.fields["function_name"   ].value = function_name
-        record.fields["args"            ].value = args if args
+        record.fields["args"            ].value = args.gsub("\"","\\\"") if args
         record.fields["remote"          ].value = remote
         record.fields["school_year"     ].value = $config.school_year
         record.save
