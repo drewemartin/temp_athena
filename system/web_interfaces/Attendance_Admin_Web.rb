@@ -565,7 +565,7 @@ end
                 j = 1
                 while j < row.length
                     code_date_header = row[j].split("_")
-                    if code_date_header.length == 2
+                    if code_date_header.length == 2 && code_date_header.first == "code_"
                         if $school.school_days.include?(code_date_header.last)
                             j+=1
                             next
