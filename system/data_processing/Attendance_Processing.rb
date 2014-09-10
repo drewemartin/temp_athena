@@ -408,7 +408,7 @@ end
                 
                 if orientation_logged
                     
-                    if orientation_logged.length == orientation_attended.length
+                    if orientation_attended && orientation_logged.length == orientation_attended.length
                         
                         @finalize_code = "p"
                         
