@@ -149,7 +149,7 @@ end
             storage_location    = "Sapphire_Update/New_Students"
             
             storage_file_path = $reports.save_document({:csv_rows=>student_array, :category_name=>"Sapphire Imports", :type_name=>"Sapphire New Students"})
-            $reports.move_to_athena_reports_from_docs(storage_file_path, storage_location, filename, false)
+            #$reports.move_to_athena_reports_from_docs(storage_file_path, storage_location, filename, false)
             
         end
         
