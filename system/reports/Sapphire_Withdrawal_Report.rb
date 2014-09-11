@@ -101,7 +101,7 @@ class Sapphire_Withdrawal_Report
                 :subject               => "Sapphire - Graduated Students",        
                 :content               => "Please find the attached list of students to be marked as graduated in the Sapphire System.",         
                 :sender                => nil,
-                :additional_recipients => ["Jenifer Halverson"],
+                :additional_recipients => ["drowan@agora.org"],
                 :attachment_name       => "sapphire_graduated_students_#{$ifilestamp}.csv",  
                 :attachment_path       => storage_file_path
             )
