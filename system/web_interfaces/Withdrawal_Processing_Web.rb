@@ -82,7 +82,7 @@ end
         eligible_records.each do |record|
             
             s = $students.get(record.fields["student_id"].value)
-            
+            created_date = record.fields["created_date"].value
             row = Array.new
             
             row.push(s.student_id.value                                          )
@@ -90,7 +90,7 @@ end
             row.push(record.fields["effective_date"    ].to_user!.web.label()    )
             row.push(record.fields["processed"         ]         .web.checkbox   )
             row.push(record.fields["agora_reason"      ]         .web.select(:dd_choices=>agora_reason_dd)    )
-            row.push(record.fields["k12_reason"        ]         .web.select(:dd_choices=>k12_reason_dd)    )
+            row.push(record.fields["k12_reason"        ]         .web.select(:dd_choices=>k12_reason_dd(created_date))    )
             
             tables_array.push(row)
             
@@ -162,9 +162,18 @@ end
         return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)",:value_field=>"code",:clause_string => "WHERE type = 'agora'"})
     end
     
-    def k12_reason_dd
-        return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12'"})
+    def k12_reason_dd(record_created_date_string)
+        
+        record_created_date = DateTime.parse(record_created_date_string)
+        date_k12_codes_changed = DateTime.new(2014,9,11,16,30,0)
+        
+        if record_created_date >= date_k12_codes_changed
+            return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Changed 9-12-2014'"})
+        else
+            return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Original'"})
+        end
     end
+        
     
     def method_dd
         return [
@@ -224,6 +233,9 @@ end
             div.WITHDRAWING__processed_date             { width:140px;}
             div.WITHDRAWING__type                       { width:100px;}
             div.WITHDRAWING__transferring_school        { width:250px;}
+            
+            div.WITHDRAWING__k12_reason select          { width:400px;}
+            div.WITHDRAWING__agora_reason select        { width:400px;}
         "
         output << "</style>"
         return output
