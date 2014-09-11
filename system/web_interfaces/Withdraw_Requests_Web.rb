@@ -632,7 +632,7 @@ end
         
         if record_created_date_string
             record_created_date = DateTime.parse(record_created_date_string)
-            date_k12_codes_changed = DateTime.new(2014,9,11,16,30,0)
+            date_k12_codes_changed = DateTime.new(2014,9,18,16,30,0)
             
             if record_created_date >= date_k12_codes_changed
                 return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Changed 9-12-2014'"})
