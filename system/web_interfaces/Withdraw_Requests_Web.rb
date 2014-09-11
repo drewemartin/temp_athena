@@ -475,6 +475,7 @@ end
     
     def expand_withdrawal(pid)
         record  = $tables.attach("Withdrawing").by_primary_id(pid)
+        created_date = record.fields["created_date"].value
         output  = ""
         output << "<div class='form'>"
         fields  = record.fields
@@ -529,7 +530,7 @@ end
         output << $tools.div_close()
         output << $tools.legend_close()
         output << $tools.div_open("other_container", "other_container")
-        output << fields["k12_reason"         ].web.select({         :label_option=>"K12 Reason:",           :disabled=>disabled,    :dd_choices=>k12_reson_dd,          :validate=>true}, true)
+        output << fields["k12_reason"         ].web.select({         :label_option=>"K12 Reason:",           :disabled=>disabled,    :dd_choices=>k12_reson_dd(created_date),          :validate=>true}, true)
         output << fields["agora_reason"       ].web.select({         :label_option=>"Agora Reason:",         :disabled=>disabled,    :dd_choices=>agora_reson_dd,        :validate=>true}, true)
         output << fields["ftc_action"         ].web.text(            :label_option=>"FTC Action:",           :disabled=>disabled)
         output << fields["transferring_school"].web.text(            :label_option=>"Transferring School:",  :disabled=>disabled)
@@ -627,8 +628,20 @@ end
         return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)",:value_field=>"code",:clause_string => "WHERE type = 'agora'"})
     end
     
-    def k12_reson_dd
-        return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12'"})
+    def k12_reson_dd(record_created_date_string = nil)
+        
+        if record_created_date_string
+            record_created_date = DateTime.parse(record_created_date_string)
+            date_k12_codes_changed = DateTime.new(2014,9,11,16,30,0)
+            
+            if record_created_date >= date_k12_codes_changed
+                return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Changed 9-12-2014'"})
+            else
+                return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Original'"})
+            end
+        else
+            return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Changed 9-12-2014'"})
+        end
     end
     
     def method_dd
