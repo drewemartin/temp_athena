@@ -71,20 +71,33 @@ class Attendance_Processing
                     tot = classrooms_total
                     if tot && tot.length > 0
                         
-                        if classrooms_only_pb_and_u
+                        active = classrooms_active
+                        if active && active.length > 0
+                            percentage_attended = active.length.to_f/classrooms_total.length.to_f
                             
-                            @finalize_code = has_activity ? "p" : "u"
-                            
-                        else
-                            
-                            active = classrooms_active
-                            if active && active.length > 0
-                                @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                            if percentage_attended > 0.5 && classrooms_only_pb_and_u
+                                @finalize_code = has_activity ? "p" : "u"
                             else
-                                @finalize_code = "u"
+                                @finalize_code = percentage_attended > 0.5 ? "p" : "u"
                             end
-                            
+                        else
+                            @finalize_code = "u"
                         end
+                        
+                        #if classrooms_only_pb_and_u
+                        #    
+                        #    @finalize_code = has_activity ? "p" : "u"
+                        #    
+                        #else
+                        #    
+                        #    active = classrooms_active
+                        #    if active && active.length > 0
+                        #        @finalize_code = (active.length.to_f/classrooms_total.length.to_f > 0.5 ? "p" : "u")
+                        #    else
+                        #        @finalize_code = "u"
+                        #    end
+                        #    
+                        #end
                         
                     else
                         

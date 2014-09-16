@@ -2783,6 +2783,8 @@ function x___________________UNSORTED(){}
 		s = s.replace(/\u000B/g, "");
 		// é
 		s = s.replace(/\u00E9/g, "e");
+		
+		s = s.replace(/\u00EF|\U0192/g, ":");
 		return s;
 	}
 	function validate(container){

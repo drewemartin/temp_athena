@@ -515,6 +515,9 @@ end
     def to_phone_number
         if self.value.class == String
             output = self.value
+            if output.length == 11 && output[0] = 1
+                output.slice!(0)
+            end
             output.insert(0, "(") if output.length > 0
             output.insert(4, ") ") if output.length > 4
             output.insert(9, "-") if output.length > 9
