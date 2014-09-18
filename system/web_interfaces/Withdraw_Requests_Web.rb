@@ -189,7 +189,7 @@ end
         output << $tools.div_close()
         output << $tools.legend_close()
         output << $tools.div_open("other_container", "other_container")
-        output << fields["k12_reason"           ].web.select(   :label_option=>"K12 Reason:",       :dd_choices=>k12_reson_dd("2015-01-01"),:validate=>true)
+        output << fields["k12_reason"           ].web.select(   :label_option=>"K12 Reason:",       :dd_choices=>k12_reson_dd("2010-01-01"),:validate=>true)
         output << fields["agora_reason"         ].web.select(   :label_option=>"Agora Reason:",     :dd_choices=>agora_reson_dd,            :validate=>true)
         output << fields["transferring_school"  ].web.text(     :label_option=>"Transferring School:")
         output << fields["effective_date"       ].web.date(     :label_option=>"Effective Date:",                                           :validate=>true)
