@@ -157,17 +157,18 @@ class KMAIL_UPLOAD_WEB
     
     def credentials_dd
         return [
-            {:name=>"Agora Office",           :value=>"office_admin"},
-            {:name=>"Attendance Office",      :value=>"attendance_reports"},
-            {:name=>"ISP",                    :value=>"ispkmail"},
-            {:name=>"Nurses",                 :value=>"nursing"},
-            {:name=>"Address Change",         :value=>"address_change"},
-            {:name=>"Kristin Walters-Seidel", :value=>"kristin_walters_seidel"},
-            {:name=>"Yvette Fleming",         :value=>"yvette_fleming"},
-            {:name=>"Stephanie Boon",         :value=>"stephanie_boon"},
-            {:name=>"Scott Feely",            :value=>"scott_feely"},
-            {:name=>"Bill Koch",              :value=>"bill_koch"},
-            {:name=>"Regan Shebeck",          :value=>"regan_shebeck"}
+            {:name=>"Agora Office",             :value=>"office_admin"},
+            {:name=>"Attendance Office",        :value=>"attendance_reports"},
+            {:name=>"ISP",                      :value=>"ispkmail"},
+            {:name=>"Nurses",                   :value=>"nursing"},
+            {:name=>"Address Change",           :value=>"address_change"},
+            {:name=>"Kristin Walters-Seidel",   :value=>"kristin_walters_seidel"},
+            {:name=>"Yvette Fleming",           :value=>"yvette_fleming"},
+            {:name=>"Stephanie Boon",           :value=>"stephanie_boon"},
+            {:name=>"Scott Feely",              :value=>"scott_feely"},
+            {:name=>"Bill Koch",                :value=>"bill_koch"},
+            {:name=>"Regan Shebeck",            :value=>"regan_shebeck"},
+            {:name=>"Lanore Spearing",          :value=>"learning_center"}
         ]
     end
     
