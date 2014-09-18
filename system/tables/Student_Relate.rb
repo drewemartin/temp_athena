@@ -766,7 +766,11 @@ end
         get_existing_records 
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>school)
         pids = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").primary_ids(
+<<<<<<< HEAD
             "WHERE course_id = 'LC1415'
+=======
+            "WHERE course_id = 'FC1415'
+>>>>>>> upstream/master
             AND section_id >= 150
             AND student_id IN(#{sids.join(',')})"
         ) if sids

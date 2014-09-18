@@ -39,7 +39,7 @@ class Enrollment_Reports
         
         if rows
             file_path = $reports.save_document({:csv_rows=>rows.insert(0,headers), :category_name=>"Enrollment", :type_name=>"duplicated_students_report"})
-            $reports.move_to_athena_reports_from_docs(file_path, location, filename, false)
+            #$reports.move_to_athena_reports_from_docs(file_path, location, filename, false)
             return file_path
         else
             return false

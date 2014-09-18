@@ -1024,13 +1024,15 @@ end
         table_name = info[1]
         field_name = info[2]
         
+        db = $tables.attach(table_name).data_base
+        
         list_info = $db.get_data("
             SELECT
                 `#{field_name}`,
                 modified_date,
                 modified_by,
                 modified_value
-            FROM zz_#{table_name}
+            FROM #{db}.zz_#{table_name}
             WHERE modified_field = '#{field_name}'
             AND modified_pid = '#{primary_id}'
         ")
@@ -1048,20 +1050,23 @@ end
                 modified_by     = item[2]
                 modified_value  = item[3]
                 
-                team_id = $db.get_data_single("SELECT team_id
-                    FROM agora_master.team_email
-                    WHERE email_address = '#{modified_by}'
-                ")
+                first_name = String.new
+                last_name  = String.new
                 
-                first_name = $db.get_data_single("SELECT legal_first_name
-                    FROM agora_master.team
-                    WHERE primary_id = #{team_id}
-                ")
-                
-                last_name = $db.get_data_single("SELECT legal_last_name
-                    FROM agora_master.team
-                    WHERE primary_id = #{team_id}
-                ")
+                if modified_by != "Athena-SIS"
+                    
+                    team_id    = $tables.attach("TEAM_EMAIL").field_value("team_id", "WHERE email_address = '#{modified_by}' AND preferred = '1'")
+                    
+                    first_name = $tables.attach("TEAM").field_value("legal_first_name", "WHERE primary_id = '#{team_id}'")
+                    
+                    last_name  = $tables.attach("TEAM").field_value("legal_last_name", "WHERE primary_id = '#{team_id}'")
+                    
+                else
+                    
+                    first_name = "Athena"
+                    last_name  = "SIS"
+                    
+                end
                 
                 date_time = modified_date.split(" ")
                 date = date_time[0]

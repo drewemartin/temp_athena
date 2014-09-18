@@ -400,7 +400,7 @@ end
         params = "#{field.primary_id}__#{field.table_class}__#{field.field_name}"
         
         button_html << "<input id='show_history__#{params}' name='show_history' value='#{params}' type='hidden'>"
-        button_html << "<button name='show_history_button' class='show_history_button ui-icon ui-icon-bookmark' id='show_history_button__#{params}' onclick=\"show_history('show_history__#{params}');\"></button>"
+        button_html << "<button name='show_history_button' class='show_history_button ui-icon ui-icon-clock' id='show_history_button__#{params}' onclick=\"show_history('show_history__#{params}');\"></button>"
         
         return button_html
         

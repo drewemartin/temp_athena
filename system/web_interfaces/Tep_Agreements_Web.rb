@@ -79,6 +79,11 @@ end
         if $focus_student.tep_agreement.existing_record
             
             #THE STUDENT'S MAIN TEP RECORD
+            
+            output << "<div id='add_new_dialog_STUDENT_TEP_STRENGTHS'   class='add_new_dialog' style='display:none;'></div>"
+            output << "<div id='add_new_dialog_STUDENT_TEP_ASSESSMENTS' class='add_new_dialog' style='display:none;'></div>"
+            output << "<div id='add_new_dialog_STUDENT_TEP_PROSNCONS'   class='add_new_dialog' style='display:none;'></div>"
+            
             output << $tools.div_open("student_tep_agreement_container", "student_tep_agreement_container")
                 
                 output << $tools.legend_open("sub", "Documents")
@@ -157,13 +162,13 @@ end
             #EXPANDABLE LIST OF STUDENT'S STRENGTHS
             tep_strengths_records   = s.tep_strengths.existing_records
             strengths_count         = tep_strengths_records ? tep_strengths_records.length : 0
-            add_new_strength_button = $tools.button_new_row(table_name = "STUDENT_TEP_STRENGTHS", additional_params_str = "sid")
+            add_new_strength_button = $tools.button_new_row(table_name = "STUDENT_TEP_STRENGTHS", additional_params_str = "sid", nil, "Add New", true)
             output << $tools.expandable_section("Strengths"+add_new_strength_button,  strengths_count, arg = sid)
             
             #EXPANDABLE LIST OF STUDENT'S ASSESSMENTS AND SOLUTIONS
             tep_assessment_records      = s.tep_assessments.existing_records
             assessment_count            = tep_assessment_records ? tep_assessment_records.length : 0
-            add_new_assessment_button   = $tools.button_new_row(table_name = "STUDENT_TEP_ASSESSMENTS", additional_params_str = "sid")
+            add_new_assessment_button   = $tools.button_new_row(table_name = "STUDENT_TEP_ASSESSMENTS", additional_params_str = "sid", nil, "Add New", true)
             output << $tools.expandable_section("Assessments and Solutions"+add_new_assessment_button,  assessment_count, arg = sid)
             
             how_to_button_tep_benefits_and_consequences = $tools.button_how_to("How To: TEP Benefits and Consequences")
@@ -171,7 +176,7 @@ end
             #EXPANDABLE LIST OF STUDENT'S BENEFITS FOR COMPLIANS AND CONSEQUENCES FOR NON COMPLIANCE
             tep_proncons_records        = s.tep_prosncons.existing_records
             prosncons_count             = tep_proncons_records ? tep_proncons_records.length : 0
-            add_new_prosncons_button    = $tools.button_new_row(table_name = "STUDENT_TEP_PROSNCONS", additional_params_str = "sid")
+            add_new_prosncons_button    = $tools.button_new_row(table_name = "STUDENT_TEP_PROSNCONS", additional_params_str = "sid", nil, "Add New", true)
             output << $tools.expandable_section("Benefits and Consequences #{how_to_button_tep_benefits_and_consequences}"+add_new_prosncons_button,  prosncons_count, arg = sid)
             
         else
@@ -714,6 +719,7 @@ end
             div.student_tep_strengths_container                             {       width:900px; margin-left:auto; margin-right:auto; clear:left;}    
                 
                 #new_row_button_STUDENT_TEP_STRENGTHS                       {       float:right; font-size: xx-small !important;}
+                #new_row_button_STUDENT_TEP_STRENGTHS1                      {       float:right; font-size: xx-small !important;}
                 
                 div.STUDENT_TEP_STRENGTHS__description                      {       float:left; width:450px; clear:left;}
                 div.STUDENT_TEP_STRENGTHS__relevance                        {       float:left; width:450px;}
@@ -723,6 +729,7 @@ end
             div.student_tep_assessments_container                           {       width:100%; margin-left:auto; margin-right:auto; clear:left; display:inline-block; margin-top:10px;}    
                 
                 #new_row_button_STUDENT_TEP_ASSESSMENTS                     {       float:right; font-size: xx-small !important;}
+                #new_row_button_STUDENT_TEP_ASSESSMENTS1                    {       float:right; font-size: xx-small !important;}
                 #new_pdf_button                                             {       margin-right: 10px; width: 60px; float:right; font-size: xx-small !important;}
                 #upload_pdf_button                                          {       margin-right: 10px; width: 60px; float:right; font-size: xx-small !important;}
                 #upload_doc_button                                          {       margin-right: 10px; width: 60px; float:right; font-size: xx-small !important;}
@@ -745,6 +752,7 @@ end
             div.student_tep_prosncons_container                             {       width:100%; margin-left:auto; margin-right:auto; clear:left;}    
                 
                 #new_row_button_STUDENT_TEP_PROSNCONS                       {       float:right; font-size: xx-small !important;}
+                #new_row_button_STUDENT_TEP_PROSNCONS1                      {       float:right; font-size: xx-small !important;}
                 
                 div#blank.STUDENT_TEP_PROSNCONS__type                       {       float:right;}
                 div.STUDENT_TEP_PROSNCONS__description                      {       float:left;  width:100%; margin-bottom: 30px;}
