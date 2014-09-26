@@ -526,11 +526,11 @@ end
                 "Serial Number",      
                 "Test Completed Date",          
                 "Test Administrator",
-                "Test Notes",
+                "AIMS Notes",
+                "PSSA/Keystone Notes",
+                "Test Results",
                 "Assigned",
                 "Code on Site",
-                "Drop Off",           
-                "Pick Up",
                 "Active/Withdrawn",
                 "Family Coach",
                 "General Ed Teacher",
@@ -623,6 +623,8 @@ end
 
             row.push(test_record.fields["completed"          ].web.default())
             row.push(test_record.fields["test_administrator" ].web.select(:dd_choices=>test_admin_dd(test_record.fields["test_administrator" ].value))  )
+            row.push(test_record.fields["drop_off"].web.default())
+            row.push(test_record.fields["pick_up" ].web.default())
             
             id1 = $tables.attach("tests").find_field("primary_id", "WHERE name='AIMS'").value if $tables.attach("tests").find_field("primary_id", "WHERE name='AIMS'")
             id2 = $tables.attach("tests").find_field("primary_id", "WHERE name='K-6 Face To Face Assessment'").value if $tables.attach("tests").find_field("primary_id", "WHERE name='K-6 Face To Face Assessment'")
@@ -638,9 +640,7 @@ end
             
             row.push(test_record.fields["assigned"           ].web.default()  )
             test_record.fields["code_on_site"].value = 0 if test_record.fields["code_on_site"].value == nil
-            row.push(test_record.fields["code_on_site"       ].to_user)
-            row.push(test_record.fields["drop_off"           ].web.text()  )
-            row.push(test_record.fields["pick_up"            ].web.text()  ) 
+            row.push(test_record.fields["code_on_site"       ].to_user) 
             
             row.push(status)
             row.push(family_coach)
