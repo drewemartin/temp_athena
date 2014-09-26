@@ -1507,7 +1507,18 @@ end
         
         results = $db.get_data(sql_str)
         if results
-            return results.insert(0, headers)
+          results.each do |result|
+            if result[1] == "AIMS Assessment" && result[4] && (result[4] == "Student Read" || result[4] == "Teacher Read")
+              case result[4]
+              when "Student Read"
+                result[4] = "Benchmark"
+              when "Teacher Read"
+                result[4] = "Strategic"
+              end
+            end
+          end
+          
+          return results.insert(0, headers)
             
         else
             return false
@@ -1951,6 +1962,19 @@ end
         results = $db.get_data(sql_str)
         if results
             
+            results.each do |result|
+            
+                [35,46].each do |i|
+                    if result[i]
+                        case result[i]
+                        when "Student Read"
+                            result[i] = "Benchmark"
+                        when "Teacher Read"
+                            result[i] = "Strategic"
+                        end
+                    end
+                end
+            end
             return results.insert(0, headers)
             
         else

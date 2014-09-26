@@ -44,7 +44,7 @@ end
             if withdraws = $tables.attach("Withdrawing").by_studentid_old(sid)
                 withdraws.each do |withdraw|
                     fields = withdraw.fields
-                    if fields["status"].value == "Requested" || fields["status"].value == "Processed"
+                    if fields["status"].value == "Requested"
                         addNewOK = false
                         break
                     end
@@ -189,7 +189,7 @@ end
         output << $tools.div_close()
         output << $tools.legend_close()
         output << $tools.div_open("other_container", "other_container")
-        output << fields["k12_reason"           ].web.select(   :label_option=>"K12 Reason:",       :dd_choices=>k12_reson_dd("2010-01-01"),:validate=>true)
+        output << fields["k12_reason"           ].web.select(   :label_option=>"K12 Reason:",       :dd_choices=>k12_reson_dd,:validate=>true)
         output << fields["agora_reason"         ].web.select(   :label_option=>"Agora Reason:",     :dd_choices=>agora_reson_dd,            :validate=>true)
         output << fields["transferring_school"  ].web.text(     :label_option=>"Transferring School:")
         output << fields["effective_date"       ].web.date(     :label_option=>"Effective Date:",                                           :validate=>true)
@@ -632,7 +632,7 @@ end
         
         if record_created_date_string
             record_created_date = DateTime.parse(record_created_date_string)
-            date_k12_codes_changed = DateTime.new(2014,9,18,16,30,0)
+            date_k12_codes_changed = DateTime.new(2014,9,19,4,0,0)
             
             if record_created_date >= date_k12_codes_changed
                 return $tables.attach("WITHDRAW_REASONS").nva({:name_field=> "CONCAT(code, ' - ', reason)", :value_field=>"code",:clause_string => "WHERE type = 'k12' AND codes_to_use = 'Changed 9-12-2014'"})

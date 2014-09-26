@@ -296,7 +296,7 @@ puts "UPDATE COMPLETE <---"
     zip_file.add(truancy_path.split("/")[-1], truancy_path)
     zip_file.close
     $base.email.athena_smtp_email(
-      recipients    = ["crivera@agora.org","jhalverson@agora.org","apickens@agora.org","hammon@agora.org"],
+      recipients    = ["crivera@agora.org","drowan@agora.org","apickens@agora.org","hammon@agora.org"],
       subject       = "Truancy Report",
       content       = "Please find the attached reports",
       attachments   = zip_truancy_path

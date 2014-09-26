@@ -91,7 +91,7 @@ end
             
         )
         
-        whitelist = ["mmarkert2@agora.org","ghand@agora.org","hquill@agora.org","jtownsend@agora.org"]
+        whitelist = ["mmarkert2@agora.org","ghand@agora.org","hquill@agora.org","jtownsend@agora.org","psteigerwalt@agora.org"]
         
         members_to_mark_inactive.each{|pid|
             
