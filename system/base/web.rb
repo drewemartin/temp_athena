@@ -501,7 +501,17 @@ end
     
     def readonly?
         answer = false
-        answer = true if structure[:readonly] == true
+        
+        if $team_member && $team_member.super_user?
+            
+            answer = false
+          
+        elsif (structure[:readonly] == true || !$team_member)
+            
+            answer = true
+            
+        end
+        
         return answer
     end
     

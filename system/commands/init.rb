@@ -5,7 +5,7 @@ class Init < Base
     
     #---------------------------------------------------------------------------
     def initialize(table = nil)
-        super()
+        super() #pass in school year to set up all tables for that year, ex: "2014-2015"
         start = Time.new
         @init_primary_pre_reqs = false
         if !table.empty?
@@ -43,4 +43,4 @@ class Init < Base
 
 end
 
-Init.new(ARGV)
+Init.new(ARGV) #Only pass in an array here, even for a single table

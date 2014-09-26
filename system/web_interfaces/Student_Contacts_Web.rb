@@ -161,7 +161,7 @@ end
                     row.push(creator_name)
                     row.push(f["datetime"                      ].web.default(:disabled=>disabled, :date_range_end=>"#{$iuser}")+"<div style=\"display:none;\">"+f["datetime"                      ].to_user()+"</div>")
                     row.push(f["successful"                    ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["successful"                    ].to_user()+"</div>")
-                    row.push(f["notes"                         ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">")
+                    row.push(f["notes"                         ].web.default(:readonly=>disabled)+"<div style=\"display:none;\">")
                     row.push(f["contact_type"                  ].web.select( :disabled=>disabled, :dd_choices=>type_dd)) 
                     row.push(f["tep_initial"                   ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["tep_initial"                   ].to_user()+"</div>")
                     row.push(f["tep_followup"                  ].web.default(:disabled=>disabled)+"<div style=\"display:none;\">"+f["tep_followup"                  ].to_user()+"</div>")

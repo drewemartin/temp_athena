@@ -80,4 +80,4 @@ class Load < Base
 
 end
 
-Load.new(ARGV)
+Load.new(ARGV) #make sure to pass in an array here, even for a single table
