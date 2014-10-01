@@ -442,7 +442,7 @@ end
                     
                     $team.find(:full_name=>"Joel Gowman"        ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"})
                     $team.find(:full_name=>"Tim Kreider"        ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
-                    $team.find(:full_name=>"Sharon Williams"    ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
+                    $team.find(:full_name=>"David Rowan"    ).send_email({:subject=>subject, :content=>content, :attachment_path=>overall_incomplete_report, :attachment_name=>"scantron_participation_incomplete_overall_#{$ifilestamp}.csv"}) 
                     
                 end
                 
