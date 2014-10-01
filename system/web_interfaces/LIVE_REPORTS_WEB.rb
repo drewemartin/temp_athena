@@ -1297,6 +1297,18 @@ end
         
         results = $db.get_data(sql_str)
         if results
+          results.each do |result|
+            [30,41].each do |i|
+              if result[i]
+                case result[i]
+                when "Student Read"
+                  result[i] = "Benchmark"
+                when "Teacher Read"
+                  result[i] = "Strategic"
+                end
+              end
+            end
+          end          
             return results.insert(0, headers)
             
         else

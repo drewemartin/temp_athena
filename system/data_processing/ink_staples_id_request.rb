@@ -170,7 +170,7 @@ class Ink_Staples_Id_Request
         
         subject = "Agora Shipto Id Request - Manual Action Needed : #{$idate}"
         content = "The rows in the attached csv need to be manually copied an pasted into the Excel template that Staples needs for adding new students into their system."
-        email   = ["lcraig@agora.org", "esaddler@agora.org"]
+        email   = ["lcraig@agora.org", "drowan@agora.org"]
         
         begin
             

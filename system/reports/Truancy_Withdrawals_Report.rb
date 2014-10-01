@@ -47,7 +47,7 @@ class Truancy_Withdrawals_Report
                                 withdrawal_record.fields["relationship"               ].value = "Admin - Attendance"
                                 withdrawal_record.fields["method"                     ].value = "Attendance Procedure"  
                                 withdrawal_record.fields["agora_reason"               ].value = "6"           
-                                withdrawal_record.fields["k12_reason"                 ].value = "D3"             
+                                withdrawal_record.fields["k12_reason"                 ].value = "SPA9"             
                                 withdrawal_record.fields["type"                       ].value = "Truancy"                         
                                 withdrawal_record.fields["status"                     ].value = "Requested"                               
                                 withdrawal_record.fields["truancy_dates"              ].value = truancy_dates.sort.join(",")               
