@@ -2784,7 +2784,15 @@ function x___________________UNSORTED(){}
 		// é
 		s = s.replace(/\u00E9/g, "e");
 		
-		s = s.replace(/\u00EF|\U0192/g, ":");
+		s = s.replace(/\u00EF|\u0192/g, ":");
+		
+		s = s.replace(/\u00C2/g, "");
+		
+		s = s.replace(/\u00BD/g,"1/2");
+			      
+		s = s.replace(/\u00BC/g, "1/4");
+		
+		s = s.replace(/\u00BE/g, "3/4");
 		return s;
 	}
 	function validate(container){

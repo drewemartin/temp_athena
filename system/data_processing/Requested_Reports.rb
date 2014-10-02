@@ -35,7 +35,7 @@ class Requested_Reports < Base
             "Scantron entrance reading",
             "Scantron exit reading",
             
-            "LEAP Level",
+            "Family Coach Tier",
             
             #"Program Support",
             
@@ -137,7 +137,7 @@ class Requested_Reports < Base
             student_scantron_performance_level.stron_ext_perf_m,
             student_scantron_performance_level.stron_ent_perf_r,
             student_scantron_performance_level.stron_ext_perf_r,
-            IFNULL(student_leap.leap_level,'0'),
+            IFNULL(student_fc_tier.fc_tier,''),
             
             #FAMILY TEACHER COACH SUPPORT
             (
@@ -237,13 +237,13 @@ class Requested_Reports < Base
         s_db        = $tables.attach("STUDENT"                              ).data_base
         sspl_db     = $tables.attach("STUDENT_SCANTRON_PERFORMANCE_LEVEL"   ).data_base
         samo_db     = $tables.attach("STUDENT_ATTENDANCE_MODE"              ).data_base
-        leap_db     = $tables.attach("STUDENT_LEAP"                         ).data_base
+        fc_tier_db  = $tables.attach("STUDENT_FC_TIER"                         ).data_base
         
         sql_str << " FROM #{sam_db}.student_attendance_master
             LEFT JOIN #{s_db}.student                                ON student.student_id                              = student_attendance_master.student_id                       
             LEFT JOIN #{sspl_db}.student_scantron_performance_level  ON student_scantron_performance_level.student_id   = student_attendance_master.student_id
             LEFT JOIN #{samo_db}.student_attendance_mode             ON student_attendance_mode.student_id              = student_attendance_master.student_id
-            LEFT JOIN #{leap_db}.student_leap                        ON student_leap.student_id                         = student_attendance_master.student_id"
+            LEFT JOIN #{fc_tier_db}.student_fc_tier                        ON student_fc_tier.student_id                         = student_attendance_master.student_id"
         
         results = $db.get_data(sql_str)
         
@@ -393,8 +393,12 @@ class Requested_Reports < Base
             
             record.save
             
+            email_list = ["aaruva@k12.com","eseygelman@k12.com","sduke@k12.com","jgruneberg@k12.com"]
+            
+            email_list += $software_team
+            
             $base.email.athena_smtp_email(
-                ["aaruva@k12.com","eseygelman@k12.com","sduke@k12.com","jgruneberg@k12.com"],
+                email_list,
                 "Agora attendance summary report completed",
                 "The daily attendance summary for students at
                 Agora Cyber Charter School was completed at
@@ -753,8 +757,6 @@ class Requested_Reports < Base
             
             "Student ID",
             "Date of Contact",
-            "Note",
-            "Successful",
             "Contact Type",
             "Created Date",
             "Created By"
@@ -767,17 +769,16 @@ class Requested_Reports < Base
         SELECT 
             
             student_id,
-            datetime,
-            notes,
-            IFNULL(successful,0),
+            MIN(datetime),
             contact_type,
             created_date,
             created_by
             
         FROM #{sc_db}.student_contacts
         
-        WHERE notes REGEXP 'Student Welcome Activities'
+        WHERE successful = '1'
         AND welcome_call = '1'
+        GROUP BY student_id
         "
         
         results = $db.get_data(sql_str)
@@ -788,7 +789,7 @@ class Requested_Reports < Base
             file_path  = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Athena", :type_name=>"Student Welcome Activities Report"})
             
             $base.email.athena_smtp_email(
-                ["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com"],
+                ["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com","drowan@agora.org"],
                 "Agora Student Welcome Activities Notes Bi-Weekly Report",
                 "Please find the attached report",
                 file_path,
