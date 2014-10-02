@@ -143,7 +143,7 @@ end
         
         scantron_record     = s.scantron_performance_level
         assessment_record   = s.assessment
-        leap_record         = s.leap
+        fc_tier_record         = s.fc_tier
         
         a1, b1 = "Scantron Math     Ent:"   , ( scantron_record.stron_ent_perf_m ? scantron_record.stron_ent_perf_m.value : "-") 
         a2, b2 = "Scantron Reading  Ent:"   , ( scantron_record.stron_ent_perf_r ? scantron_record.stron_ent_perf_r.value : "-")
@@ -161,7 +161,7 @@ end
             a7, b7 = "Tier Level Reading:"      , ( assessment_record.tier_level_reading ? assessment_record.tier_level_reading.value : "-")
         end
         
-        a8, b8 = "LEAP Level:"   , ( leap_record.existing_record ? leap_record.leap_level.value : "0")
+        a8, b8 = "Family Coach Tier:"   , ( fc_tier_record.existing_record ? fc_tier_record.fc_tier.value : "")
         
         sec_array =[
             
