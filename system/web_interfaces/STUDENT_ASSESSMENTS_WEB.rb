@@ -353,10 +353,10 @@ end
             #ENGAGEMENT TIER
             $tools.table(
                 :table_array    => [
-                    [$focus_student.assessment.tier_level_math.web.select(          :label_option=>"Tier Level Math",    :dd_choices=> $dd.range(1,3)   )],
-                    [$focus_student.assessment.tier_level_reading.web.select(       :label_option=>"Tier Level Reading", :dd_choices=> $dd.range(1,3)   )],
-                    [$focus_student.assessment.engagement_level.web.select(         :label_option=>"Engagement Level",   :dd_choices=> $dd.range(1,3)   )],
-                    [blank],
+                    [$focus_student.fc_tier.fc_tier.web.select(                     :label_option=>"Family Coach Tier Level",   :dd_choices=> fc_tier_dd        )],
+                    [$focus_student.assessment.tier_level_math.web.select(          :label_option=>"Tier Level Math",           :dd_choices=> $dd.range(1,3)    )],
+                    [$focus_student.assessment.tier_level_reading.web.select(       :label_option=>"Tier Level Reading",        :dd_choices=> $dd.range(1,3)    )],
+                    [$focus_student.assessment.engagement_level.web.select(         :label_option=>"Engagement Level",          :dd_choices=> $dd.range(1,3)    )],
                     [blank],
                     [blank]
                 ],
@@ -400,6 +400,12 @@ def x______________DROP_DOWN_OPTIONS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
     
+def fc_tier_dd
+    $dd.from_array(
+        ["Unengaged","Low","Medium","High","Independent","New"]
+    )
+end
+
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________SUPPORT_METHODS
 end
@@ -461,7 +467,7 @@ end
         output << "table#settings table        div{ float:left; width:100%; margin-bottom:2px;}"
         output << "table#settings table      input{ float:left;}"
         output << "table#settings table     select{ float:left; margin-left:4px; margin-right:2px;}"
-        output << "table#settings table      label{ width:80%; display:inline-block;}"
+        output << "table#settings table      label{ width:65%; display:inline-block;}"
         output << "table#settings table .even_row {
             background-color: #AED0EA;
         }"
