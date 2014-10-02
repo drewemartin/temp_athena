@@ -466,10 +466,8 @@ end
         output << "table#settings table         td{ height:30px;}"
         output << "table#settings table        div{ float:left; width:100%; margin-bottom:2px;}"
         output << "table#settings table      input{ float:left;}"
-        output << "table#settings table     select{ float:left; margin-left:4px; margin-right:2px;}"
-        output << "table#settings table      label{ width:80%; display:inline-block;}"
-        output << "table#settings table div.STUDENT_FC_TIER__fc_tier  select{width:33%;}"
-        output << "table#settings table div.STUDENT_FC_TIER__fc_tier   label{width:65%;}"
+        output << "table#settings table     select{ float:left; margin-left:4px; margin-right:2px; width:20%}"
+        output << "table#settings table      label{ width:65%; display:inline-block;}"
         output << "table#settings table .even_row {
             background-color: #AED0EA;
         }"
