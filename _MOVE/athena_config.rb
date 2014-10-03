@@ -11,7 +11,9 @@ class Athena_Config
         
         self.school_name = "agora"
         
-        $sys_admin_email    = "jhalverson@agora.org"
+        $sys_admin_email    = "drowan@agora.org"
+        $dave               = ["drowan@agora.org"]
+        $software_team      = ["drowan@agora.org"]
         self.offsite_root   = "ftp.athena-sis.com"
         
         self.storage_root   = File.exists?("Q:/athena_files") ? "Q:/athena_files" :"#{File.dirname(__FILE__)}/athena_files"
@@ -19,7 +21,7 @@ class Athena_Config
      
         #LOCAL
         self.db_domain      = "localhost"
-        self.db_pass        = "Lemodie"
+        self.db_pass        = "lemodie"
         self.db_user        = "root"
         
     end
