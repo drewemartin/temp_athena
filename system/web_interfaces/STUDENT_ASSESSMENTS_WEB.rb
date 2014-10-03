@@ -311,7 +311,13 @@ end
     
     def settings
         
-        $focus_student.assessment.existing_record || $focus_student.assessment.new_record.save         
+        $focus_student.assessment.existing_record || $focus_student.assessment.new_record.save
+        $focus_student.fc_tier.existing_record || $focus_student.fc_tier.new_record.save
+        
+        directors = $team.directors || []
+        is_director = directors.include?($team_member.primary_id.value)
+        is_fc_support = $team_member.department_id.value == "4" && $team_member.employee_type.value == "Support"
+        disabled = (is_director || is_fc_support) ? false : true
         
         table_array = Array.new
         
@@ -353,7 +359,7 @@ end
             #ENGAGEMENT TIER
             $tools.table(
                 :table_array    => [
-                    [$focus_student.fc_tier.fc_tier.web.select(                     :label_option=>"Family Coach Tier Level",   :dd_choices=> fc_tier_dd        )],
+                    [$focus_student.fc_tier.fc_tier.web.select(                     :label_option=>"Family Coach Tier Level",   :dd_choices=> fc_tier_dd,       :disabled=>disabled        )],
                     [$focus_student.assessment.tier_level_math.web.select(          :label_option=>"Tier Level Math",           :dd_choices=> $dd.range(1,3)    )],
                     [$focus_student.assessment.tier_level_reading.web.select(       :label_option=>"Tier Level Reading",        :dd_choices=> $dd.range(1,3)    )],
                     [$focus_student.assessment.engagement_level.web.select(         :label_option=>"Engagement Level",          :dd_choices=> $dd.range(1,3)    )],
