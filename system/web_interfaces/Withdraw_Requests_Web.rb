@@ -8,10 +8,9 @@ class WITHDRAW_REQUESTS_WEB
             "epagan@agora.org",
             "sfields@agora.org",
             "kyoung@agora.org",
-            "smcdonnell@agora.org",
-            "esaddler@agora.org",
-            "drowan@agora.org"
+            "smcdonnell@agora.org"
         ]
+        @processors += $software_team
         
         @school_wide_results = @processors.include?($kit.user)
     end

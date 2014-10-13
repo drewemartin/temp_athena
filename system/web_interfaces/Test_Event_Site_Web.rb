@@ -11,10 +11,10 @@ class TEST_EVENT_SITE_WEB
         @kmail_log          = $tables.attach("Kmail_Log").new_row
         @subject            = nil
         @administrators     = [
-            "esaddler@agora.org",
-            "drowan@agora.org",
             "dfeldhaus@agora.org"
         ]
+        
+        @administrators += $software_team
         
     end
     #---------------------------------------------------------------------------

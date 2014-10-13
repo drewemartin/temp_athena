@@ -6,7 +6,8 @@ class TEAM_MEMBER_EVALUATIONS_WEB
     #---------------------------------------------------------------------------
     def initialize()
        
-        @temporary_summary_editors = ["jgowman@agora.org","esaddler@agora.org","jhalverson@agora.org"]
+        @temporary_summary_editors = ["jgowman@agora.org"]
+        @temporary_summary_editors += $software_team
         
         if $focus_team_member
             

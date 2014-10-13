@@ -280,8 +280,12 @@ puts "UPDATE COMPLETE <---"
     zip_file            = Zip::ZipFile.open(zip_att_master_path, Zip::ZipFile::CREATE)
     zip_file.add(att_master_path.split("/")[-1], att_master_path)
     zip_file.close
+    
+    email_list = ["crivera@agora.org","apickens@agora.org","hammon@agora.org"]
+    email_list += $software_team
+    
     $base.email.athena_smtp_email(
-      recipients    = ["crivera@agora.org","jhalverson@agora.org","apickens@agora.org","hammon@agora.org"],
+      recipients    = email_list,
       subject       = "Attendance Master Report",
       content       = "Please find the attached reports",
       attachments   = zip_att_master_path
@@ -295,13 +299,17 @@ puts "UPDATE COMPLETE <---"
     zip_file = Zip::ZipFile.open(zip_truancy_path, Zip::ZipFile::CREATE)
     zip_file.add(truancy_path.split("/")[-1], truancy_path)
     zip_file.close
+    
+    email_list = ["crivera@agora.org","apickens@agora.org","hammon@agora.org"]
+    email_list += $software_team
+    
     $base.email.athena_smtp_email(
-      recipients    = ["crivera@agora.org","drowan@agora.org","apickens@agora.org","hammon@agora.org"],
+      recipients    = email_list,
       subject       = "Truancy Report",
       content       = "Please find the attached reports",
       attachments   = zip_truancy_path
     )
-    #$base.email.send(["crivera@agora.org","jhalverson@agora.org","apickens@agora.org"], "Finalize Attendance Results", "Please find the attached reports", priority = nil, attachments = [zip_att_master_path,zip_truancy_path])
+    #$base.email.send(["crivera@agora.org","drowan@agora.org","apickens@agora.org"], "Finalize Attendance Results", "Please find the attached reports", priority = nil, attachments = [zip_att_master_path,zip_truancy_path])
   end
   
   def student_attendance_master_update

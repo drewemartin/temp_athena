@@ -121,7 +121,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
       recipient_email = $tables.attach("districts").field_bydistrict("contact_email", district, contact_department = "Withdrawals").value
       subject         = "Agora Cyber Charter School - Student Withdraw"
       content         = "Please find the attached withdrawal notification form. The following student(s) have been withdrawn from Agora Cyber Charter School: #{students.join("\n")}"
-      #FOR TESTING# recipient_email = "jhalverson@agora.org"
+      #FOR TESTING# recipient_email = "drowan@agora.org"
       #$base.email.smtp_email(sender_email, sender_secret, recipient_email, subject, content, att_path)
       $base.email.athena_smtp_email(
         recipient_email = recipient_email,
@@ -171,7 +171,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
       recipient_email = "sfields@agora.org"
       subject         = "Withdrawal Notifications - #{$base.today.to_user}"
       content         = "Please see attached, and have a nice day!"
-      #FOR TESTING# recipient_email = "jhalverson@agora.org"
+      #FOR TESTING# recipient_email = "drowan@agora.org"
       #$base.email.smtp_email(sender_email, sender_secret, recipient_email, subject, content, att_path)
       $base.email.athena_smtp_email(
         recipient_email = recipient_email,
@@ -193,7 +193,7 @@ class DISTRICT_NOTIFICATION_WITHDRAWAL_PDF
       location        = "Withdrawals/District_Notification/To_Registrar"
       filename        = "districts_not_found_#{$ifilestamp}.csv"
       att_path        = $reports.save_document({:csv_rows=>districts_missing_hash.keys, :category_name=>"Withdrawals", :type_name=>"Missing District Contact Information"})
-      #FOR TESTING# recipient_email = "jhalverson@agora.org"
+      #FOR TESTING# recipient_email = "drowan@agora.org"
       #$base.email.smtp_email(sender_email, sender_secret, recipient_email, subject, content, att_path)
       $base.email.athena_smtp_email(
         recipient_email = recipient_email,

@@ -111,7 +111,7 @@ end
             $team.find(:email_address=>"SMcDonnell@agora.org").send_email(
                 :subject                => "Student Record Requests - Outgoing",        
                 :content                => content,         
-                :additional_recipients  => ["jhalverson@agora.org"],
+                :additional_recipients  => $software_team,
                 :attachment_name        => attachment_name, 
                 :attachment_path        => attachment_path#,
                 #:email_relate           => [
