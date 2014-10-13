@@ -29,7 +29,7 @@ class Requested_Reports < Base
             "Learning Center Classroom Coach",
             "Teacher/Guidance",
             
-            "Family Coach/Comm Cord",
+            "Family Coach",
             "Scantron entrance math",
             "Scantron exit math",
             "Scantron entrance reading",
