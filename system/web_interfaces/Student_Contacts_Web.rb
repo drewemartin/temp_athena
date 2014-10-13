@@ -213,7 +213,7 @@ end
                     
                 }
              
-                output << $kit.tools.data_table(tables_array, "contacts")
+                output << $kit.tools.data_table(tables_array, "contacts", table_type = "default", titles = false, custom_titles = nil, sort_col_header="Date & Time", sort_dir='desc')
                 
             output << $tools.div_close()
             
