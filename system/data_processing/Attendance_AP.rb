@@ -111,10 +111,13 @@ class Attendance_AP < Base
                 
                 if t
                     
+                    email_list = ["crivera@agora.org",t.preferred_email.value]
+                    email_list += $software_team
+                    
                     file_path = $reports.csv("temp", "academic_plan_students", student_table)
                     $base.email.athena_smtp_email(
                         
-                        recipients    = ["crivera@agora.org","jhalverson@agora.org",t.preferred_email.value],
+                        recipients    = email_list,
                         subject       = notification_subject,
                         content       = notification_content,
                         attachments   = file_path

@@ -1790,7 +1790,7 @@ function x___________________JQUERY_UI_DIALOGS(){}
 				"Report This Error": function() {
 					
 					$(this).html("")
-					window.location.href = "mailto:drowan@agora.org;esaddler@agora.org?Subject=Athena Error Report&Body=Reporting Refererence ID: " + $("#student_page_view").attr("value") + "%0D%0A" + "Error Code: " + errorCode + "%0D%0A" + "Error Thrown: " + errorThrown + "%0D%0A" + "Text Status: " + textStatus + "%0D%0A%0D%0A" + "In the space below, please provide any additional information or steps to reproduce the problem:%0D%0A(Please be as detailed as possible, as this allows us to more quickly replicate, and correct the issue)" + "%0D%0A%0D%0A";
+					window.location.href = "mailto:drowan@agora.org?Subject=Athena Error Report&Body=Reporting Refererence ID: " + $("#student_page_view").attr("value") + "%0D%0A" + "Error Code: " + errorCode + "%0D%0A" + "Error Thrown: " + errorThrown + "%0D%0A" + "Text Status: " + textStatus + "%0D%0A%0D%0A" + "In the space below, please provide any additional information or steps to reproduce the problem:%0D%0A(Please be as detailed as possible, as this allows us to more quickly replicate, and correct the issue)" + "%0D%0A%0D%0A";
 					$(this).dialog( "close" );
 					
 				},

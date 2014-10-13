@@ -214,7 +214,7 @@ end
                 )"
             )
           
-        elsif $team_member.preferred_email.value.match(/drowan@agora.org|esaddler@agora.org|mmarkert2@agora.org/)
+        elsif $team_member.preferred_email.value.match(/#{$software_team.join("|")}/)
             
             new_record_pids = $tables.attach("STUDENT_RRI_REQUESTED_DOCUMENTS").primary_ids(
                 "WHERE status IS NULL

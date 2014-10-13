@@ -8,9 +8,8 @@ class Ink_Orders_Email
         
         if ENV["COMPUTERNAME"].match(/ATHENA|HERMES/)
             
-            @staples_email      = ["Rachael.Conner@staples.com", "kyoung@agora.org", "esaddler@agora.org"]
-            @agora_ink_orderer  = ["lcraig@agora.org", "esaddler@agora.org"]
-            @admin_email        = ["esaddler@agora.org"]
+            @staples_email      = ["Rachael.Conner@staples.com", "kyoung@agora.org"]
+            @agora_ink_orderer  = ["lcraig@agora.org"]
             
             @processed          = {:orders=>[], :updates=>[]}
             @processed[:orders].push("\"ship to id\",\"item number\",\"qty\",\"deliver to name\",\"budget center\",\"user id\",\"phone number\"")
@@ -134,6 +133,8 @@ class Ink_Orders_Email
         content = make_table(@processed[:orders])
         
         begin
+            
+            @staples_email += $software_team
             
             $base.email.athena_smtp_email(@staples_email, subject, content, @report_path, nil, "agora_ink_orders.csv")
             

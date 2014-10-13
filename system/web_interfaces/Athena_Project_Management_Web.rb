@@ -5,7 +5,9 @@ class ATHENA_PROJECT_MANAGEMENT_WEB
     
     #---------------------------------------------------------------------------
     def initialize()
-        @disabled = !(["athena-reports@agora.org", "jhalverson@agora.org", "kyoung@agora.org"].include?($kit.user))
+        disabled_list = ["athena-reports@agora.org", "kyoung@agora.org"]
+        disabled_list += $software_team
+        @disabled = !(disabled_list.include?($kit.user))
         @qa_tester = ["1085"]
     end
     #---------------------------------------------------------------------------

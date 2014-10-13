@@ -29,17 +29,13 @@ end
             subject                 = ""
             content                 = ""
             
-            recipient               = "jhalverson@agora.org"
-            additional_recipients   = ["esaddler@agora.org"]
-            
             user_email = $user.class == String ? $user : $user.email_address_k12.value
-            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+            unless $software_team.include?(user_email)
                 
-                $team.find(:email_address=>recipient).send_email(
-                    :subject                => subject,
-                    :content                => content,
-                    :additional_recipients  => additional_recipients
-                )
+                $base.email.send(:recipients => $software_team,
+                                 :subject => subject,
+                                 :content => content
+                                )
                 
             end
             
@@ -60,18 +56,14 @@ end
             
             subject                 = ""
             content                 = ""
-            
-            recipient               = "jhalverson@agora.org"
-            additional_recipients   = ["esaddler@agora.org"]
-            
+
             user_email = $user.class == String ? $user : $user.email_address_k12.value
-            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+            unless $software_team.include?(user_email)
                 
-                $team.find(:email_address=>recipient).send_email(
-                    :subject                => subject,
-                    :content                => content,
-                    :additional_recipients  => additional_recipients
-                )
+                $base.email.send(:recipients => $software_team,
+                                 :subject => subject,
+                                 :content => content
+                                )
                 
             end
             
@@ -84,18 +76,14 @@ end
             
             subject                 = ""
             content                 = ""
-            
-            recipient               = "jhalverson@agora.org"
-            additional_recipients   = ["esaddler@agora.org"]
-            
+
             user_email = $user.class == String ? $user : $user.email_address_k12.value
-            unless additional_recipients.dup.concat([recipient]).include?(user_email)
+            unless $software_team.include?(user_email)
                 
-                $team.find(:email_address=>recipient).send_email(
-                    :subject                => subject,
-                    :content                => content,
-                    :additional_recipients  => additional_recipients
-                )
+                $base.email.send(:recipients => $software_team,
+                                 :subject => subject,
+                                 :content => content
+                                )
                 
             end
             
