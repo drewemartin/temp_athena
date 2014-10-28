@@ -21,7 +21,7 @@ def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-    def after_load_k12_omnibus
+    def DISABLED_after_load_k12_omnibus
         
         sids = $students.enrolled
         sids.each{|sid|
