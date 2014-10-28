@@ -249,15 +249,24 @@ end
                 begin
                     if !self.value.is_a? DateTime
                         datestr = self.value.strip.split(" ")[0]
-                        d = datestr.split(".").first.split('-') if (datestr[-2,1] == "."||datestr[-1,1] == ".") && !d
-                        d = datestr.split('-') if datestr.index('-') && !d
-                        d = datestr.split('/') if datestr.index('/') && !d
-                        d = datestr.split('.') if datestr.index('.') && !d
-                        y = d[0].length > 2 ? Integer(trim_lead(d[0],'0')) : Integer(trim_lead(d[2],'0'))
-                        m = d[0].length > 2 ? Integer( trim_lead(d[1],'0') ) : Integer( trim_lead(d[0],'0') )
-                        d = d[0].length > 2 ? Integer( trim_lead(d[2],'0') ) : Integer( trim_lead(d[1],'0') )
-                        date = DateTime.new(y,m,d)
-                        return date
+                        date_array = datestr.split(".").first.split('-') if (datestr[-2,1] == "."||datestr[-1,1] == ".") && !d
+                        date_array = datestr.split('-') if datestr.index('-') && !date_array
+                        date_array = datestr.split('/') if datestr.index('/') && !date_array
+                        date_array = datestr.split('.') if datestr.index('.') && !date_array
+                        y = date_array[0].length > 2 ? Integer(trim_lead(date_array[0],'0')) : Integer(trim_lead(date_array[2],'0'))
+                        m = date_array[0].length > 2 ? Integer( trim_lead(date_array[1],'0') ) : Integer( trim_lead(date_array[0],'0') )
+                        d = date_array[0].length > 2 ? Integer( trim_lead(date_array[2],'0') ) : Integer( trim_lead(date_array[1],'0') )
+                        begin
+                            date = DateTime.new(y,m,d)
+                        rescue ArgumentError        #for dates that come through formatted as yy-mm-dd
+                            if date_array[0].length == 2
+                                y = Integer("20" + date_array[0])
+                                m = Integer( trim_lead(date_array[1],'0') )
+                                d = Integer( trim_lead(date_array[2],'0') )
+                            end
+                            date = DateTime.new(y,m,d)
+                            return date
+                        end
                     else
                         return self.value
                     end
@@ -515,7 +524,7 @@ end
     def to_phone_number
         if self.value.class == String
             output = self.value
-            if output.length == 11 && output[0] = 1
+            if output.length == 11 && output[(0..0)] == "1" #if output.length == 11 && output[0] == "1"
                 output.slice!(0)
             end
             output.insert(0, "(") if output.length > 0

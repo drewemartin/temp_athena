@@ -788,8 +788,11 @@ class Requested_Reports < Base
             file_name   = "student_welcome_activites_report_k12"
             file_path  = $reports.save_document({:csv_rows=>results.insert(0, headers), :category_name=>"Athena", :type_name=>"Student Welcome Activities Report"})
             
+            email_list = ["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com"]
+            email_list += $software_team
+            
             $base.email.athena_smtp_email(
-                ["amymoore@k12.com","nhofmann@k12.com","kayoung@k12.com","drowan@agora.org"],
+                email_list,
                 "Agora Student Welcome Activities Notes Bi-Weekly Report",
                 "Please find the attached report",
                 file_path,

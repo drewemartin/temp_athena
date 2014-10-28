@@ -238,7 +238,10 @@ end
             
             file_path = $reports.save_document({:csv_rows=>rows.insert(0, headers), :category_name=>"Sapphire Reports", :type_name=>"Invalid Districts Report"})
             
-            $base.email.athena_smtp_email(["jgowman@agora.org","drowan@agora.org"], "Student with Invalid District of Residence", "Please find the attached report", file_path, nil, "#{filename}_#{$ifilestamp}.csv")
+            email_list = ["jgowman@agora.org"]
+            email_list += $software_team
+            
+            $base.email.athena_smtp_email(email_list, "Student with Invalid District of Residence", "Please find the attached report", file_path, nil, "#{filename}_#{$ifilestamp}.csv")
             
         end
         
