@@ -97,7 +97,7 @@ end
         <link type='text/css' href='/#{$config.code_set_name}/javaScript/data_tables/css/jquery.dataTables.css' rel='stylesheet'/>\n
         <link type='text/css' href='/#{$config.code_set_name}/javaScript/data_tables/extras/TableTools/media/css/TableTools.css' rel='stylesheet'/>\n
         
-        <script type='text/javascript' src='/#{$config.code_set_name}/javaScript/system_D20131014.js'>                </script>\n
+        <script type='text/javascript' src='/#{$config.code_set_name}/javaScript/system.js'>                </script>\n
         <script type='text/javascript'>
             var FF = !(window.mozInnerScreenX == null);if(!FF){alert('#{browser_alert}');}
             document.documentElement.className = 'no-fouc';
