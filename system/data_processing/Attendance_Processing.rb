@@ -110,6 +110,32 @@ class Attendance_Processing
                         raise "MODE CHANGE"
                         
                     end
+                 
+                when "Classroom Activity (100%)"
+                    
+                    tot = classrooms_total
+                    if tot && tot.length > 0
+                        
+                        active = classrooms_active
+                        if active && active.length > 0
+                            percentage_attended = active.length.to_f/classrooms_total.length.to_f
+                            
+                            @finalize_code = percentage_attended > 0.99 ? "p" : "u"
+                            
+                        else
+                            @finalize_code = "u"
+                        end
+                    else
+                        
+                        @stu_daily_mode             = "No Live Sessions"
+                        @stu_daily_procedure_type   = $tables.attach("ATTENDANCE_MODES").record("WHERE mode = '#{@stu_daily_mode}'").fields["procedure_type"].value
+                        
+                        student_attendance_record.fields["mode"].set(@stu_daily_mode).save
+                        
+                        #puts "MODE CHANGED - #{@sid} #{@date}" #remove this later - this os for testing only
+                        raise "MODE CHANGE"
+                        
+                    end
                     
                 when "Manual (default p)"
                     
@@ -138,7 +164,7 @@ class Attendance_Processing
         
         if (
             
-            @department_override == "ur" || (@department_override && !@present_codes.include?(@finalize_code))
+            @department_override == "ur" || (@department_override && !@present_codes.include?(@finalize_code) && (@stu_daily_procedure_type != 'Not Enrolled')) 
             
         )
             

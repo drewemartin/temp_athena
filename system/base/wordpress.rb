@@ -10,8 +10,7 @@ class WORDPRESS
         #@full_access_users =
         #    [
         #        "tkreider@agora.org",
-        #        "esaddler@agora.org",
-        #        "jhalverson@agora.org",
+        #        "drowan@agora.org",
         #        "dcambridge@agora.org",
         #        "crivera@agora.org",
         #        "kyoung@agora.org"

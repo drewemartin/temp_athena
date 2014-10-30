@@ -39,6 +39,8 @@ end
         
     end
     
+
+    
     def expand_mystudents_enrolled
         
         tables_array = [
@@ -296,6 +298,10 @@ end
         #
         #$base.email.athena_smtp_email(recipients, subject, content, attachment)
         
+    end
+    
+    def team_id
+        @team_id
     end
     
     
