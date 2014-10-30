@@ -316,8 +316,14 @@ end
         
         directors = $team.directors || []
         is_director = directors.include?($team_member.primary_id.value)
+        
         is_fc_support = $team_member.department_id.value == "4" && $team_member.employee_type.value == "Support"
-        disabled = (is_director || is_fc_support) ? false : true
+        
+        sid = $focus_student.student_id.value        
+        family_coaches = $tables.attach("STUDENT_RELATE").team_ids("WHERE active = '1' AND studentid = '#{sid}' AND role_details = 'Family Coach'") || []
+        is_family_coach = family_coaches.include?($team_member.team_id)
+        
+        disabled = (is_director || is_fc_support || is_family_coach) ? false : true  
         
         table_array = Array.new
         
