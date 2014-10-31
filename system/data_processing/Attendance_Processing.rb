@@ -164,7 +164,7 @@ class Attendance_Processing
         
         if (
             
-            @department_override == "ur" || (@department_override && !@present_codes.include?(@finalize_code) && (@stu_daily_procedure_type != 'Not Enrolled'))
+            (@stu_daily_procedure_type != 'Not Enrolled') && (@department_override == "ur" || (@department_override && !@present_codes.include?(@finalize_code)))
 
         )
             
