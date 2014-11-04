@@ -561,7 +561,7 @@ end
         CSV.parse(@csv) do |row|
             sid = row[0]
             row_length = row.length
-            if i==1 && row[0] == "student_id"
+            if i==1 && row[0] == "student_id"  && row_length == 2
                 j = 1
                 while j < row.length
                     code_date_header = row[j].split("_")
@@ -579,6 +579,8 @@ end
                 end
                 i+=1
                 next
+            elsif row_length > 2
+                output << "Warning: Line #{i} is too long. It may contain empty fields. Please check your CSV and upload again.<br>"
             elsif i==1 && row[0] != "student_id"
                 output << "Header \"student_id\" is required in column 1.<br>"
             elsif row[0].nil?
@@ -590,7 +592,7 @@ end
             elsif !$tables.attach("student_attendance_master").by_studentid(sid)
                 output << "Warning: SID ##{sid} at line #{i} does not have a student attendance master record<br>"
             end
-            if i!=1
+            if i!=1 && row_length == 2
                 j = 1
                 override_codes = $tables.attach("ATTENDANCE_CODES").find_fields("code", "WHERE overrides_procedure IS TRUE", {:value_only=>true}) || []
                 while j < row.length
@@ -645,7 +647,7 @@ end
         CSV.parse(@csv) do |row|
             sid = row[0]
             row_length = row.length
-            if i==1 && row[0] == "student_id"
+            if i==1 && row[0] == "student_id" && row_length == 2 
                 j = 1
                 while j < row.length
                     if $school.school_days.include?(row[j])
@@ -658,6 +660,8 @@ end
                 end
                 i+=1
                 next
+            elsif row_length > 2
+                output << "Warning: Line #{i} is too long. It may contain empty fields. Please check your CSV and upload again.<br>"
             elsif i==1 && row[0] != "student_id"
                 output << "Header \"student_id\" is required in column 1.<br>"
             elsif row[0].nil?
@@ -669,7 +673,7 @@ end
             elsif !$tables.attach("student_attendance_master").by_studentid(sid)
                 output << "Warning: SID ##{sid} at line #{i} does not have a student attendance master record<br>"
             end
-            if i!=1
+            if i!=1 && row_length == 2
                 j = 1
                 while j < row.length
                     if !$tables.attach("Attendance_Modes").modes_array.include?(row[j])
