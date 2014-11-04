@@ -722,12 +722,14 @@ end
         
         CSV.parse(@csv) do |row|
             sid = row[0]
-            if i==1 && row[0] == "student_id"
+            if i==1 && row[0] == "student_id" && row.length == 2
                 if row[1] != "attendance_mode"
                     output << "Header \"attendance_mode\" is required in column 2.<br>"
                 end
                 i+=1
                 next
+            elsif row.length > 2
+                output << "Warning: Line #{i} is too long. It may contain empty fields. Please check your CSV and upload again.<br>"
             elsif i==1 && row[0] != "student_id"
                 output << "Header \"student_id\" is required in column 1.<br>"
             elsif row[0].nil?
@@ -739,7 +741,7 @@ end
             elsif !$tables.attach("student_attendance_mode").by_studentid(sid)
                 output << "Warning: SID ##{sid} at line #{i} does not have a student attendance mode record<br>"
             end
-            if !$tables.attach("Attendance_Modes").modes_array.include?(row[1])
+            if i!=1 && !$tables.attach("Attendance_Modes").modes_array.include?(row[1])
                 output << "Warning: '#{row[1]}' at line #{i} is not a valid mode.<br>"
             end
             i+=1
