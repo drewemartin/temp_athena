@@ -241,8 +241,8 @@ end
     
     def inst_recommend_dd
         return [
-            {:name=>"Benchmark", :value=>"Student Read"     },
-            {:name=>"Strategic", :value=>"Teacher Read"     },
+            {:name=>"Benchmark", :value=>"Benchmark"     },
+            {:name=>"Strategic", :value=>"Strategic"     },
             {:name=>"Intensive", :value=>"Intensive"        }
         ]
     end

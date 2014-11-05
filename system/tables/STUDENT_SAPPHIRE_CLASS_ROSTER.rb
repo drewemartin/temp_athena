@@ -58,8 +58,10 @@ end
             arr2        = arr[2].partition(")")
             days        = arr2[0]
             
-            ilp_cat     = $tables.attach("ilp_entry_category"  ).find_field("primary_id", "WHERE name='Sapphire Course Schedule #{school_id}'")
-            ilp_type    = $tables.attach("ilp_entry_type"      ).find_field("primary_id", "WHERE category_id = '#{ilp_cat.value}' AND name='#{per_code}'")
+            type_table          = $tables.attach("ilp_entry_type"      )
+            ilp_cat             = $tables.attach("ilp_entry_category"  ).find_field("primary_id", "WHERE name='Sapphire Course Schedule #{school_id}'")
+            ilp_type            = type_table.find_field("primary_id", "WHERE category_id = '#{ilp_cat.value}' AND name='#{per_code}'")
+            ilp_type_pdf_order  = type_table.find_field("pdf_order", "WHERE PRIMARY_ID = '#{ilp_type.value}' AND category_id = '#{ilp_cat.value}'") if ilp_type
             
             if ilp_cat && ilp_type
                 
@@ -102,6 +104,7 @@ end
                 ilp_record.fields["day7"                   ].value = (days.include?("7") ? true : false)
                 
                 ilp_record.fields["completed"              ].value = (record.fields["active"].is_true? ? false : true)
+                ilp_record.fields["pdf_order"              ].value = ilp_type_pdf_order.value if ilp_type_pdf_order.value
                 
                 ilp_record.save
                 

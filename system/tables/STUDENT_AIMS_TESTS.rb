@@ -46,8 +46,8 @@ end
             #:mnm                                     => "MNM"                                   ,
             #:mnm_errors                              => "MNM Errors"                            ,
             #:mcap                                    => "MCAP"                                  ,
-            :math_instructional_recommendation       => "Math Instructional Recommendation"     ,
-            #:notes                                   => "Notes"                                 ,
+            #:math_instructional_recommendation       => "Math Instructional Recommendation"     ,
+            :notes                                   => "Math Instructional Recommendation"      ,
             #:mcap_read_to_student                    => "MCAP read to student"
             
         }

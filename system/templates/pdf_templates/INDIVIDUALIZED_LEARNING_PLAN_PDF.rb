@@ -48,7 +48,8 @@ class INDIVIDUALIZED_LEARNING_PLAN_PDF
             student_ilps = @student.ilp.existing_records(
                 "WHERE ilp_entry_category_id = '#{pid}'
                 AND pdf_excluded IS NOT TRUE
-                AND completed IS NOT TRUE"
+                AND completed IS NOT TRUE
+                ORDER BY pdf_order ASC"
             )
             if student_ilps
                 
@@ -743,16 +744,16 @@ end
         
         table_array = Array.new
         table_array.push(["","<b>Monday</b>","<b>Tuesday</b>","<b>Wednesday</b>","<b>Thursday</b>","<b>Friday</b>"])
-        type_names.sort!
+        #type_names.sort!
         
         #Adjust the display of the homeroom period on the ILP schedule to be at the end of the array
         #since this changed for the 14-15 school year.
         #This should be fixed later by adding a row dedicated to ordering the display of items on the schedule
         #to the ILP entry type table.
-        if $config.school_year == "2014-2015"
-            hr = type_names.shift
-            type_names.push(hr)
-        end
+        #if $config.school_year == "2014-2015" && @student.grade.value.match(/9th|10th|11th|12th/)
+        #    hr = type_names.shift
+        #    type_names.push(hr)
+        #end
         
         type_names.each{|type_name|
             
