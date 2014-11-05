@@ -11,9 +11,9 @@ class Fix_ILP_pdf_printouts < Base
   def initialize
     super()
     
-    #enter_pdf_order_for_class_roster_ilps
-    #remove_bad_ilp_entries
-    #convert_aims_test_fields
+    enter_pdf_order_for_class_roster_ilps
+    remove_bad_ilp_entries
+    convert_aims_test_fields
     update_student_ilp
     
     
