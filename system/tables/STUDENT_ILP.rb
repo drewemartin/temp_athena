@@ -98,6 +98,7 @@ end
             
             structure_hash["fields"]["expiration_date"          ] = {"data_type"=>"date",           "file_field"=>"expiration_date"             , :label=>"Re-Evaluation Date"  } if field_order.push("expiration_date"         )
             structure_hash["fields"]["pdf_excluded"             ] = {"data_type"=>"bool",           "file_field"=>"pdf_excluded"                , :label=>"Exclude from PDF?"   } if field_order.push("pdf_excluded"            )
+            structure_hash["fields"]["pdf_order"                ] = {"data_type"=>"int",            "file_field"=>"pdf_excluded"                , :label=>"PDF sort order"      } if field_order.push("pdf_order"               )
             
         structure_hash["field_order"] = field_order
         return structure_hash

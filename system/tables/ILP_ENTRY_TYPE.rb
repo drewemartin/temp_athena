@@ -298,7 +298,7 @@ end
             structure_hash["fields"]["grade_10th"                       ] = {"data_type"=>"bool", "file_field"=>"grade_10th"                    } if field_order.push("grade_10th"                      )
             structure_hash["fields"]["grade_11th"                       ] = {"data_type"=>"bool", "file_field"=>"grade_11th"                    } if field_order.push("grade_11th"                      )
             structure_hash["fields"]["grade_12th"                       ] = {"data_type"=>"bool", "file_field"=>"grade_12th"                    } if field_order.push("grade_12th"                      )
-            
+            structure_hash["fields"]["pdf_order"                        ] = {"data_type"=>"int",  "file_field"=>"pdf_order"                     } if field_order.push("pdf_order"                       )
         structure_hash["field_order"] = field_order
         return structure_hash
     end
