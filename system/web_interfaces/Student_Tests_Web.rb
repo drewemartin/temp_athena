@@ -76,6 +76,22 @@ end
                 
             } if tests
             
+            
+                count = 0
+                aims_element = nil
+                tabs.each do |ele|
+                    if /aims/.match(ele[0].downcase)
+                        aims_element = ele
+                        tabs.delete(tabs[count])
+                    end
+                    count+=1
+                end
+                
+                tabs.insert(0,aims_element)
+            
+            
+            
+                    
             return $kit.tools.tabs(
                 
                 tabs,
