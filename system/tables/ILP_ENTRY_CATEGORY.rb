@@ -34,7 +34,7 @@ end
             {
                 :grade_k=>true, :grade_1st=>false, :grade_2nd=>false, :grade_3rd=>false, :grade_4th=>false, :grade_5th=>false, :grade_6th=>false, :grade_7th=>true, :grade_8th=>true, :grade_9th=>false, :grade_10th=>false, :grade_11th=>false, :grade_12th=>false,
                 :name                       => "Sapphire Course Schedule MS",
-                :display_type               => "7 Day",
+                :display_type               => "Weekly",
                 :manual                     => false
             },
             {
@@ -52,7 +52,7 @@ end
             {
                 :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
                 :name                       => "Scantron Results",
-                :display_type               => "Table",
+                :display_type               => "Table 2",
                 :manual                     => false
             },
             {
@@ -65,7 +65,7 @@ end
                 :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,
                 :name                       => "Student Information Survey",
                 :display_type               => "Table 2",
-                :manual                     => false
+                :manual                     => true
             },
             {
                 :grade_k=>true, :grade_1st=>true, :grade_2nd=>true, :grade_3rd=>true, :grade_4th=>true, :grade_5th=>true, :grade_6th=>true, :grade_7th=>true, :grade_8th=>true, :grade_9th=>true, :grade_10th=>true, :grade_11th=>true, :grade_12th=>true,

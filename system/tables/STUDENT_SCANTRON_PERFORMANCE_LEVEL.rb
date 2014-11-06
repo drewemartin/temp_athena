@@ -60,7 +60,10 @@ end
            
             if row_obj.fields.keys.find{|x|x==field_name.to_s}
                 
-                ilp_type_id = $tables.attach("ILP_ENTRY_TYPE").primary_ids("WHERE name = '#{nice_name}' AND category_id = #{ilp_cat_id}")[0]
+                ilp_type_record = $tables.attach("ILP_ENTRY_TYPE").record("WHERE name = '#{nice_name}' AND category_id = #{ilp_cat_id}")
+                ilp_type_id = ilp_type_record.fields["primary_id"].value if ilp_type_record
+                ilp_type_pdf_order  = ilp_type_record.fields["pdf_order"].value if ilp_type_record
+                
                 if (
                     
                     ilp_records  = student.ilp.existing_records(
@@ -80,7 +83,9 @@ end
                     
                 end
                 
-                ilp_record.fields["description"].value = row_obj.fields[field_name.to_s].value
+                ilp_record.fields["description" ].value = row_obj.fields[field_name.to_s].value
+                ilp_record.fields["pdf_order"   ].value = ilp_type_pdf_order if ilp_type_pdf_order
+                
                 ilp_record.save
                 
             end
@@ -382,9 +387,11 @@ end
                                 completetion_rates_by_ftc.push([ftc, "#{percent_complete}"])
                                 
                                 report_path = $reports.save_document({:category_name=>"Scantron", :type_name=>"Scantron Participation Incomplete Report", :csv_rows=>incomplete})
-                                subject = "#{ftc} Scantron Participation #{percent_complete} Complete - #{$idatetime}"
-                                content = "#{percent_complete} of your Scantron assessment students have completed both their math and reading exams.
-                                Attached is a list of your students with incomplete participation."
+                                subject = "#{ftc} Scantron Participation #{percent_complete} Complete - #{$iuser}"
+                                content = "As of #{$iuser}, #{percent_complete} of your Scantron assessment students have completed both their math and reading exams.
+                                Attached is a list of your students with incomplete participation.
+                                <BR><BR>
+                                Please note that this report may not show the results of tests taken by students on the date indicated above."
                                 t.send_email(:subject=> subject, :content=> content, :attachment_path => report_path)
                                 
                             else
@@ -428,7 +435,9 @@ end
                         :caption        => false
                     )
                     subject = "Overall Scantron Participation - #{percent_complete_overall} Completed"
-                    content = "Attached is a list of students with incomplete participation.
+                    content = "Attached is a list of Family Teacher Coaches and the overall scantron participation of their students as of #{$iuser}.
+                    <BR><BR>
+                    Please note that this information may not show the participation of students who took an exam on the date indicated above.
                     <BR><BR>#{html_table}<BR><BR>"
                     
                     $base.email.athena_smtp_email(

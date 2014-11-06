@@ -11,14 +11,56 @@ class Fix_ILP_pdf_printouts < Base
   def initialize
     super()
     
-    enter_pdf_order_for_class_roster_ilps
-    remove_bad_ilp_entries
-    convert_aims_test_fields
-    update_student_ilp
+    enter_pdf_order_for_scantron_ilps
+    #enter_pdf_order_for_class_roster_ilps
+    #remove_bad_ilp_entries
+    #convert_aims_test_fields
+    #update_student_ilp
     
     
   end
   #---------------------------------------------------------------------------
+  
+  def enter_pdf_order_for_scantron_ilps
+    #Assign a value from the ilp_entry_type table to the student_ilp.pdf_order column
+    #to have more control over how scantron results are displayed in the pdf print out
+    
+    puts "Beginning pdf order update for scantron ILPs"
+    puts Time.now
+    puts
+    
+    ilp_entry_type_table = $tables.attach("ILP_ENTRY_TYPE")
+    student_ilp_table = $tables.attach("STUDENT_ILP")
+    
+    type_table_name = ilp_entry_type_table.table_name
+    s_ilp_table_name = student_ilp_table.table_name
+    s_ilp_db = student_ilp_table.data_base
+    
+    category_ids = ["5"]
+    
+    category_ids.each do |cat_id|
+      type_ids = ilp_entry_type_table.primary_ids("WHERE `#{type_table_name}`.`category_id` = '#{cat_id}'")
+      #puts type_ids.length
+      
+      type_ids.each do |type_id|
+        type_pdf_order = ilp_entry_type_table.field_value("pdf_order","WHERE PRIMARY_ID = #{type_id} AND category_id = #{cat_id}")
+        records = student_ilp_table.primary_ids("WHERE `#{s_ilp_table_name}`.`ilp_entry_category_id` = '#{cat_id}'
+                                                AND `#{s_ilp_table_name}`.`ilp_entry_type_id` = '#{type_id}'")
+        num_affected_records = records ? records.length.to_s : "0"
+        $db.get_data("UPDATE `#{s_ilp_db}`.`#{s_ilp_table_name}`
+                      SET `#{s_ilp_table_name}`.`pdf_order` = '#{type_pdf_order}'
+                      WHERE `#{s_ilp_table_name}`.`ilp_entry_category_id` = '#{cat_id}'
+                      AND `#{s_ilp_table_name}`.`ilp_entry_type_id` = '#{type_id}'",s_ilp_db)
+        puts "Category ID: #{cat_id}, Type ID: #{type_id}, #{num_affected_records} records"
+        puts Time.now
+        puts
+      end
+    end
+    
+    puts "Completed pdf order update for scantron ILPs"
+    puts Time.now
+    puts
+  end
   
   def remove_bad_ilp_entries
     #Remove all entries from student_ilp that come from
