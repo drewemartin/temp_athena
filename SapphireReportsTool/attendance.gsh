@@ -126,7 +126,7 @@ for ( school in ["EL","MS","HS"] ) {
 /* PERIOD ATTENDANCE */
 for ( school in ["EL","MS","HS"] ) {
 
-    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "jhalverson", "tBM679p8a", "PAAGC", school, 2015);
+    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "athena-reports@agora.org", password, "PAAGC", school, 2015);
     
     def params = [ 
     
