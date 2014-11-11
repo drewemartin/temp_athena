@@ -75,7 +75,7 @@ for ( school in ["EL","MS","HS"] ) {
         durations = "${setFallOrSpringAndSemester('FS')},YR,YS,${setFallOrSpringAndSemester('SEM')},${setQuarter()}"; 
     }
     
-    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "athena-reports@agora.org", password, "PAAGC", school, yearInt);
+    loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "athena-reports@agora.org", password, "PAAGC", school, 2015);
     
     def params = [ 
     

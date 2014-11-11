@@ -94,7 +94,7 @@ for ( school in ["MS"] ) {
     for ( grade in grades ) {
         
         
-        loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "athena-reports@agora.org", password, "PAAGC", school, yearInt);
+        loginToSapphire("https://agora-sapphire.k12system.com/Gradebook/main.cfm", "athena-reports@agora.org", password, "PAAGC", school, 2015);
         
         def params = [
         "DISTRICT_ID"           : "PAAGC",
