@@ -111,11 +111,11 @@ for ( school in ["EL","MS","HS"] ) {
 
     runReportAndSave("https://agora-sapphire.k12system.com/Gradebook/CMS/Reports/Reports/ClassRosterRpt.cfm",
         params,
-        "Q:/athena_files/imports/sapphire_class_roster_${school.toLowerCase();}.csv"
+        "C:/athena_files/imports/sapphire_class_roster_${school.toLowerCase();}.csv"
         
     )
 
-    def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_class_roster_${school.toLowerCase();}"""
+    def command = """ruby C:/xampp/htdocs/athena/system/commands/load.rb sapphire_class_roster_${school.toLowerCase();}"""
     def proc    = command.execute()               
     proc.waitFor()  
     
@@ -148,10 +148,10 @@ for ( school in ["EL","MS","HS"] ) {
 
     runReportAndSave("https://agora-sapphire.k12system.com/Gradebook/CMS/Reports/Reports/PeriodAttendRpt.cfm",
         params,
-        "Q:/athena_files/imports/sapphire_period_attendance_${school.toLowerCase();}.csv"
+        "C:/athena_files/imports/sapphire_period_attendance_${school.toLowerCase();}.csv"
     )
 
-    def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb sapphire_period_attendance_${school.toLowerCase();}"""
+    def command = """ruby C:/xampp/htdocs/athena/system/commands/load.rb sapphire_period_attendance_${school.toLowerCase();}"""
     def proc    = command.execute()               
     proc.waitFor() 
 

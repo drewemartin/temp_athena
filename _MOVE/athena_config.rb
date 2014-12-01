@@ -11,12 +11,12 @@ class Athena_Config
         
         self.school_name = "agora"
         
-        $sys_admin_email    = "drowan@agora.org"
+        $sys_admin_email    = ["drowan@agora.org","dmartin@agora.org"]
         $dave               = ["drowan@agora.org"]
-        $software_team      = ["drowan@agora.org"]
+        $software_team      = ["drowan@agora.org","dmartin@agora.org"]
         self.offsite_root   = "ftp.athena-sis.com"
         
-        self.storage_root   = File.exists?("Q:/athena_files") ? "Q:/athena_files" :"#{File.dirname(__FILE__)}/athena_files"
+        self.storage_root   = File.exists?("C:/athena_files") ? "C:/athena_files" :"#{File.dirname(__FILE__)}/athena_files"
         self.system_root    = "#{File.dirname(__FILE__)}/#{@code_set_name}"
      
         #LOCAL
