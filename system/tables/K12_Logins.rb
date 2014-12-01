@@ -50,14 +50,34 @@ end
         
         eval_date = ($instance_DateTime - 1).strftime("%Y-%m-%d")
         
+        puts "beginning k12_logins_students"
+        puts Time.now
+        puts
         $base.process("ATTENDANCE_LOG").k12_logins_students(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins")
+        puts "completed k12_logins_students"
+        puts Time.now
+        puts
         
+        puts "beginning k12_logins_LCs"
+        puts Time.now
+        puts
         $base.process("ATTENDANCE_LOG").k12_logins_learning_coaches(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "k12_logins_lc")
+        puts "completed k12_logins_lcs"
+        puts Time.now
+        puts
         
+        puts "creating attendance records for #{eval_date}"
+        puts Time.now
+        puts
         $tables.attach("STUDENT_ATTENDANCE").create_new_attendance_records(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "completed")
+        puts "attendance records completed"
+        puts Time.now
+        puts
+        puts "k12 logins is complete!"
+        puts Time.now
         
     end
     

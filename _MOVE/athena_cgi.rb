@@ -1,4 +1,4 @@
-#!C:/Users/Parnassus/athena-sis/Ruby193/bin/ruby.exe
+#!C:/Ruby187/bin/ruby.exe
 require 'cgi'
 
 if false
@@ -1743,4 +1743,21 @@ cgi.keys.each{|key|
     end   
 }
 
-ATHENA_CGI.new(params)
+########################################################################
+# DATABASE MAINTENANCE #################################################
+if false && !params[:user_id].match(/drowan/)
+    puts "Content-type: text/html"
+    puts ""
+    content = "<img src='http://athena-sis.com/sitemaintenance.jpg' alt='' title='sitemaintenance' width='700' height='422' />"
+    puts "<html><head><title>Athena SIS - Maintenance</title></head><body>" if params[:page]!="USER_PORTAL_WEB"
+    puts "<contentStart__update__student_page_view_container>
+        <error_communication>
+            <H1>
+                Thank you for waiting while your system is being maintained.
+            </H1>
+        </error_communication>
+        #{content}
+    </contentEnd>"
+else
+    ATHENA_CGI.new(params)
+end

@@ -118,10 +118,10 @@ for ( school in ["MS"] ) {
         
         runReportAndSave("https://agora-sapphire.k12system.com/Gradebook/CMS/Reports/Reports/CurrentClassGradesRpt.cfm",
             params,
-            "Q:/athena_files/imports/student_sapphire_grades.csv"
+            "C:/athena_files/imports/student_sapphire_grades.csv"
         )
         
-        def command = """ruby Q:/athena-sis/htdocs/athena/system/commands/load.rb student_sapphire_grades"""
+        def command = """ruby C:/xampp/htdocs/athena/system/commands/load.rb student_sapphire_grades"""
         def proc    = command.execute()               
         proc.waitFor()  
         

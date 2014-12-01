@@ -62,6 +62,18 @@ class KMAIL_EXECUTE < Base
                 browser.text_field(:name,  "password").set(credentials[:password])
                 browser.button(    :value, "Login"   ).click
                 
+                #Detect if the user's password is about to expire and detail this in the kmail record
+                if browser.span(:text, "Password Expiring Soon!").exists? && !browser.link(:text, "Students").exists?
+                    puts "Sender's password expiring soon!"
+                    browser.close
+                    
+                    kmail_record.fields["successful"    ].value = "0"
+                    kmail_record.fields["sending"       ].value = "0"
+                    kmail_record.fields["error"         ].value = "Sender's password expiring soon, must be updated"
+                    kmail_record.save
+                    break
+                end
+                
                 #Search for student by id
                 browser.wait_until {browser.link(:text, "Students").exists?}
                 
