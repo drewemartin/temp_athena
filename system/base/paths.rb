@@ -79,19 +79,20 @@ end
             #FNORD - must add addition nodes here if their functions include document handling.
             #if ENV["COMPUTERNAME"] == "ATHENA"
                 
-                if !File.directory?( "A:/" )
-                    require 'win32ole'
-                    net = WIN32OLE.new('WScript.Network')
-                    user_name = "Athena"
-                    password  = "YEree77d3ysPQhYE"
-                    net.MapNetworkDrive( 'A:', "\\\\10.1.10.254\\a", nil,  user_name, password )
-                end
+                #if !File.directory?( "A:/" )
+                #    require 'win32ole'
+                #    net = WIN32OLE.new('WScript.Network')
+                #    user_name = "Athena"
+                #    password  = "YEree77d3ysPQhYE"
+                #    net.MapNetworkDrive( 'A:', "\\\\10.1.10.254\\a", nil,  user_name, password )
+                #end
+                #
                 
-                structure[:documents_path] = $config.init_path("A:/documents")
+                structure[:documents_path] = $config.init_path("E:/documents")
                 
             #else
                 
-            #    structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")  
+                #structure[:documents_path] = $config.init_path("#{$config.storage_root}documents")  
                 
             #end
             
