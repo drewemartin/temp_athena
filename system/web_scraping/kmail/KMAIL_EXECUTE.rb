@@ -73,6 +73,7 @@ class KMAIL_EXECUTE < Base
                     kmail_record.save
                     break
                 end
+                
                 #Search for student by id
                 browser.wait_until {browser.link(:text, "Students").exists?}
                 
