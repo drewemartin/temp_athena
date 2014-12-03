@@ -59,6 +59,8 @@ end
         $tables.attach("STUDENT_ATTENDANCE").create_new_attendance_records(eval_date)
         $tables.attach("DAILY_ATTENDANCE_LOG").log_completed(eval_date, "completed")
         
+        $tables.attach("STUDENT_ATTENDANCE").daily_attendance_statistics
+        
     end
     
     def DISABLE_after_load_k12_logins
