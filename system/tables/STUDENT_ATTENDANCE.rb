@@ -414,12 +414,93 @@ end
     #    process_attendance(obj)
     #end
     
+    def daily_attendance_statistics
+        school_days = $tables.attach("school_days").field_values("date")
+        date = (Time.now - 86400).strftime("%Y-%m-%d")
+        
+        if school_days.include?(date)
+            
+            daily_stats = $db.get_data("SELECT CONCAT('Code: ',official_code) 'Code/Mode',
+                                    COUNT(official_code) 'Total Number'
+                                    FROM `student_attendance`
+                                    WHERE date = '#{date}'
+                                    GROUP BY official_code
+                                    UNION ALL
+                                    SELECT CONCAT('Mode: ',mode),
+                                    COUNT(mode) FROM `student_attendance`
+                                    WHERE date = '#{date}'
+                                    GROUP BY mode")
+            
+            if daily_stats
+            
+                table_html = "
+                <style>
+                    table, td, th {
+                    border: 1px solid #B1D4F5;
+                    }
+            
+                    td,th {
+                    text-align: left;
+                    }
+            
+                    th {
+                    height: 50px;
+                    }
+                </style>
+            
+                <table>
+                    <tr>
+                    <th>&nbsp;Code/Mode&nbsp;</th>
+                    <th>&nbsp;Total Number&nbsp;</th>
+                    </tr>" 
+            
+                daily_stats.each do |ele|
+                next if ele.include?(nil) || ele.include?(false) || ele.include?("0")
+                table_html << "<tr><td>&nbsp;#{ele.first}&nbsp;</td><td>&nbsp;#{ele.last}&nbsp;</td></tr>"
+                end
+                
+                table_html << "</table>"
+                
+                
+                date = date.split('-').map!{|ele| ele.to_i}
+                date = Time.gm(date[0], date[1], date[2]).strftime('%A, %B %d %Y')
+                
+                email_html = "
+                <p>Hello,
+                <br>
+                <br>
+                    Below are the daily attendance statistics for #{date}.
+                </p><br>
+                #{table_html}"
+                
+                email_list = ["crivera@agora.org","apickens@agora.org"]
+                email_list += $software_team
+                
+            
+                
+                $base.email.athena_smtp_email(
+                recipients = email_list,
+                subject = "Daily Attendance Statistics",
+                content = email_html,
+                attachments = nil
+                )                
+                
+            end
+            
+        end
+        
+  
+        
+    end
+    
     def process_attendance(obj)
         unless caller.find{|x|x.match(/Attendance_Processing/)}
             record = by_primary_id(obj.primary_id)
             $students.process_attendance(:student_id=>record.fields["student_id"].value,:date=>record.fields["date"].value)
         end
     end
+    
+
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________VALIDATION

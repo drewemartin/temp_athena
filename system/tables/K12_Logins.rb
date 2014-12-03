@@ -79,6 +79,8 @@ end
         puts "k12 logins is complete!"
         puts Time.now
         
+        $tables.attach("STUDENT_ATTENDANCE").daily_attendance_statistics
+        
     end
     
     def DISABLE_after_load_k12_logins
