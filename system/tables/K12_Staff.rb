@@ -173,20 +173,33 @@ end
                 current_phone_number.save     
                 
                 #TEAM EMAIL RECORD
-                old_email_address = t.preferred_email
-                if  old_email_address && (old_email_address.value != sams_email)
-                    
-                    old_email_record = $tables.attach("TEAM_EMAIL").by_primary_id(old_email_address.primary_id)
-                    old_email_record.fields["preferred"].value = false
-                    old_email_record.save
-                    
+                existing_preffered_email_address = t.preferred_email
+                if sams_email != "lkelly@k12.com"   ##there are about 50 staff members associated with Leah Kelly and this messes up their preferred e-mails
+                                                    ##this is a hack around the problem
+                    if  existing_preffered_email_address && (existing_preffered_email_address.value != sams_email)
+                        old_email_record = $tables.attach("TEAM_EMAIL").by_primary_id(existing_preffered_email_address.primary_id)
+                        old_email_record.fields["preferred"].value = false
+                        old_email_record.save
+                        
+                    end
+                    current_email_address = $tables.attach("TEAM_EMAIL").by_email(sams_email, team_id) || t.email.new_record 
+                    current_email_address.fields["email_address" ].value = sams_email
+                    current_email_address.fields["email_type"    ].value = "work"
+                    current_email_address.fields["preferred"     ].value = true
+                    current_email_address.save
+                else ##if the K12 staff list indicates lkelly@k12.com as the person's e-mail address
+                    unless existing_preffered_email_address
+                        ##create a new e-mail record with a sys admin email if
+                        ##there is not a valid preferred e-mail already present
+                        ##and flag it in team_email table to find and fix manually
+                        flag_email_address = t.email.new_record
+                        flag_email_address.fields["email_address"].value = $sys_admin_email[0] ##prevents emails from going to lkelly and sys admin can relay missed emails to staff member until fixed
+                        flag_email_address.fields["email_type"].value = "lkelly flag"
+                        flag_email_address.fields["preferred"].value = true
+                        flag_email_address.save
+                        ##maybe add another method to the K12 staff after load to notify sys admins about these team members with e-mail problems
+                    end
                 end
-                current_email_address = $tables.attach("TEAM_EMAIL").by_email(sams_email, team_id) || t.email.new_record 
-                current_email_address.fields["email_address" ].value = sams_email
-                current_email_address.fields["email_type"    ].value = "work"
-                current_email_address.fields["preferred"     ].value = true
-                current_email_address.save    
-                
                 #TEAM SAMSIDS RECORD
                 if !$tables.attach("TEAM_SAMS_IDS").by_sams_id(sams_id, team_id)
                   
