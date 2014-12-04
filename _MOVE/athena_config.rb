@@ -16,7 +16,7 @@ class Athena_Config
         $software_team      = ["drowan@agora.org","dmartin@agora.org"]
         self.offsite_root   = "ftp.athena-sis.com"
         
-        self.storage_root   = File.exists?("C:/athena_files") ? "C:/athena_files" :"#{File.dirname(__FILE__)}/athena_files"
+        self.storage_root   = File.exists?("C:/athena_files") ? "C:/athena_files" : "#{File.dirname(__FILE__)}/athena_files"
         self.system_root    = "#{File.dirname(__FILE__)}/#{@code_set_name}"
      
         #LOCAL
