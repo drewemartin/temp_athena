@@ -60,6 +60,10 @@ end
     
     def response
         
+        if $kit.params[:fill_select_option_add_new_dialog_STUDENT_ILP]
+            return true
+        end
+        
         if $kit.add_new?
             
             student_record
@@ -94,7 +98,7 @@ def x______________WORKING_LIST_AND_RECORDS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
 
-    def student_record(sid = $kit.params[:sid])
+    def student_record(sid = $kit.params[:student_id])
         
         tabs = Array.new
         
