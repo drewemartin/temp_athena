@@ -15,6 +15,162 @@ public
 def xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPUBLIC_METHODS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def cumulative_and_consecutive_absence_mailer(cumulative_or_consecutive_mode)
+    
+        #method has two parts: a case statement and a loop phrase that sends off emails w/ CSVs
+        
+        sid_date_hash = Hash.new #this hash is populated in the first case statement
+    
+        active_sids = $tables.attach('student').field_values("student_id", "WHERE active = '1'")
+        
+        
+        case cumulative_or_consecutive_mode
+        
+        when "cumulative"
+        if Time.now.strftime("%A").match(/Monday|Thursday/)
+            cumulative_reference_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC")[-5]
+            #date used to find cumulative absences and add info to generated emails
+            cumulative_absence_sids = $tables.attach('student_attendance').field_values("student_id", "WHERE official_code
+                                                                            IN ('u', 'ur', 'uap', 'ut')
+                                                                            AND student_id
+                                                                            IN (#{active_sids.join(',')})
+                                                                            AND date <= '#{cumulative_reference_date}'
+                                                                            GROUP BY student_id
+                                                                            HAVING COUNT(student_id) > 2")
+            tep_sids = $tables.attach("student_tep_agreement").field_values("student_id", "WHERE date_conducted IS NOT NULL")
+            if cumulative_absence_sids
+            cumulative_absence_sids.each do |sid|
+                if !tep_sids.include?(sid)
+                sid_date_hash[sid] = $tables.attach('student_attendance').field_values('date',"WHERE student_id = '#{sid}'
+                                                                                                        AND official_code
+                                                                                                        IN ('u', 'ur', 'uap', 'ut')
+                                                                                                        ORDER BY date ASC")
+                end
+            end
+            end
+        end
+        
+        when "consecutive"
+        if Time.now.strftime("%A").match(/Monday|Tuesday|Wednesday||Thursday|Thursday/)
+            consecutive_end_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC").last
+            consecutive_start_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC")[-7]
+            #dates provide range in which consecutive absnences can be determined
+            
+            
+            consecutive_absence_sids = $tables.attach('student_attendance').field_values('student_id',"WHERE date > '#{consecutive_start_date}'
+                                                                                            AND date < '#{consecutive_end_date}'
+                                                                                            AND student_id
+                                                                                            IN (#{active_sids.join(',')})
+                                                                                            AND official_code 
+                                                                                            IN ('u', 'ur', 'uap', 'ut')
+                                                                                            GROUP BY student_id
+                                                                                            HAVING COUNT(student_id) > 4")
+                                                                                            
+            if consecutive_absence_sids
+            school_days = $tables.attach('school_days').field_values('date',"ORDER BY date ASC")
+    
+            
+            consecutive_dates_five_past = $tables.attach('school_days').field_values('date',"WHERE date > '#{consecutive_start_date}'
+                                                                                            AND date < '#{consecutive_end_date}'
+                                                                                            ORDER BY date DESC")
+            
+            consecutive_absence_sids.each do |sid|
+                        
+                #at this point, consecutive_absence_dates only contains the 5 dates required to be considered consecutive, more dates will be 'pushed' in if valid
+                consecutive_absence_dates = Array.new
+                consecutive_dates_five_past.each do |ele|
+                consecutive_absence_dates << ele
+                end
+                older_absence_dates = $tables.attach('student_attendance').field_values('date',"WHERE date < '#{consecutive_absence_dates.last}'
+                                                                                                AND student_id = #{sid}
+                                                                                                AND official_code
+                                                                                                IN ('u', 'ur', 'uap', 'ut')
+                                                                                                ORDER BY date DESC")
+                if older_absence_dates
+                older_absence_dates.each_with_index do |older_absence, index|
+                    if school_days.index(consecutive_absence_dates.last) - school_days.index(older_absence) == 1
+                    consecutive_absence_dates << older_absence
+                    else
+                    break
+                    end
+                    
+                end
+                end
+    
+                
+                sid_date_hash[sid] = consecutive_absence_dates
+                #end
+            end
+            end
+        end
+        else
+        return
+        end
+        
+        
+        if !sid_date_hash.empty?
+        team_members_with_students = Hash.new
+        #this hash contains Team_ID as keys and multidimensional arrays containing SIDs as values; it will be used to mail family coaches
+        sid_date_hash.each do |sid, dates|
+            team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")[0]      
+            if team_id
+            student_info = Array.new #this array contains [sid, last_name, first_name, and a string that contains all absence dates] in this order
+            student_info << sid
+            student_info << last_name = $tables.attach('student').field_value("studentlastname","WHERE student_id = '#{sid}'")
+            student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
+            formatted_dates = Array.new
+            dates.each do |date|
+                pre_date_holder = Array.new
+                date.split("-").each do |ele|
+                pre_date_holder << ele.to_i
+                end
+                formatted_dates << Time.gm(pre_date_holder[0], pre_date_holder[1], pre_date_holder[2]).strftime("%m/%d/%Y")
+            end
+            student_info << formatted_dates.join(", ")
+            if team_members_with_students.has_key?(team_id)
+                team_members_with_students[team_id] << student_info
+            else
+                team_members_with_students[team_id] = Array.new
+                team_members_with_students[team_id] << student_info
+            end        
+            end
+        end    
+    
+        team_members_with_students.each do |team_id, student_info_arrays|
+            team_member = $team.get(team_id)
+            body_text = String.new
+            file_name = String.new
+            subject_line = String.new
+            
+            rows = [["student id","last name","first name","absences"]]
+            student_info_arrays.each do |indv_student_array|
+                rows << indv_student_array
+            end
+            
+            
+            if cumulative_or_consecutive_mode == "cumulative"
+                subject_line = "Students with 3 or More Absences"
+                body_text = "Please refer to attached file to view students with 3 or more cumulative absences as of #{cumulative_reference_date}"
+                file_name = "#{team_id}_3_cumulative_absences"
+            else
+                subject_line = "Students with 5 or More Consecutive Absences"
+                body_text = "Please refer to attached file to view students with 5 or more consecutive absences as of #{consecutive_end_date}"
+                file_name = "#{team_id}_5_consecutive_absences"        
+            end
+            
+            file_path = $reports.csv("temp", file_name, rows)
+            
+            team_member.send_email({:subject => subject_line, :content => body_text, :attachment_path => file_path})
+            #utilizes $team variable called at the top of this block
+        end
+    end 
+  end
+
+
+
+
+
     
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def x______________TRIGGER_EVENTS
@@ -39,6 +195,9 @@ end
             requested_pid           , 
             "0"
         )
+        
+        cumulative_and_consecutive_absence_mailer("cumulative")
+        cumulative_and_consecutive_absence_mailer("consecutive")
         
         return false
         
