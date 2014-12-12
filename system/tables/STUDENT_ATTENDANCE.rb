@@ -52,7 +52,7 @@ end
         end
         
         when "consecutive"
-        if Time.now.strftime("%A").match(/Monday|Tuesday|Wednesday||Thursday|Friday/)
+        if Time.now.strftime("%A").match(/Monday|Tuesday|Wednesday|Thursday|Friday/)
             consecutive_end_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC").last
             consecutive_start_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC")[-7]
             #dates provide range in which consecutive absnences can be determined
