@@ -52,7 +52,7 @@ end
         end
         
         when "consecutive"
-        if Time.now.strftime("%A").match(/Monday|Tuesday|Wednesday||Thursday|Thursday/)
+        if Time.now.strftime("%A").match(/Monday|Tuesday|Wednesday||Thursday|Friday/)
             consecutive_end_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC").last
             consecutive_start_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC")[-7]
             #dates provide range in which consecutive absnences can be determined
@@ -150,12 +150,34 @@ end
             
             
             if cumulative_or_consecutive_mode == "cumulative"
-                subject_line = "Students with 3 or More Absences"
-                body_text = "Please refer to attached file to view students with 3 or more cumulative absences as of #{cumulative_reference_date}"
+                subject_line = "3 or more unexcused absences and no TEP complete"
+                body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.  At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.  At this time, you should:</p>
+
+                            <ul> 
+                            <li>Initiate a TEP with the family (This can be done via the phone or virtual meeting) within 2 weeks of the 3rd absence.</li>
+                            <li>Incorporate this into your conference meeting as much as possible.</li> 
+                            
+                            <li>If you cannot reach the family, please complete a TEP draft
+                            (start the TEP, but leave the date blank until you discuss the TEP with the family).
+                            Future absent dates can be documented in TEP notes (check the TEP follow-up reason for contact).</li>
+                            </ul>
+                            
+                            <p>
+                            Thank you for your attention to this matter.
+                            </p>"
+                
                 file_name = "#{team_id}_3_cumulative_absences"
             else
-                subject_line = "Students with 5 or More Consecutive Absences"
-                body_text = "Please refer to attached file to view students with 5 or more consecutive absences as of #{consecutive_end_date}"
+                subject_line = "5 or more consecutive unexcused absences"
+                body_text = "<p>These students currently have 5 or more <b><em>consecutive</em></b> unexcused absences.  At this time, you should:</p>
+
+                            <ul>
+                            <li>Contact family immediately.</li>
+                            <li>Consider a face to face meeting if needed.</li>
+                            </ul>
+                            
+                            <p>Thank you for your attention to this matter.</p>"
+                
                 file_name = "#{team_id}_5_consecutive_absences"        
             end
             
