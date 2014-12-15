@@ -63,9 +63,9 @@ end
   
     def after_load_k12_staff
         
-        $base.wordpress.after_load_k12_staff
         team_setup_from_k12_staff
         deactivate_team_members
+        $base.wordpress.after_load_k12_staff
         
     end
     

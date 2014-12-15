@@ -40,14 +40,14 @@ end
                                                                             HAVING COUNT(student_id) > 2")
             tep_sids = $tables.attach("student_tep_agreement").field_values("student_id", "WHERE date_conducted IS NOT NULL")
             if cumulative_absence_sids
-            cumulative_absence_sids.each do |sid|
-                if !tep_sids.include?(sid)
-                sid_date_hash[sid] = $tables.attach('student_attendance').field_values('date',"WHERE student_id = '#{sid}'
-                                                                                                        AND official_code
-                                                                                                        IN ('u', 'ur', 'uap', 'ut')
-                                                                                                        ORDER BY date ASC")
+                cumulative_absence_sids.each do |sid|
+                    if !tep_sids.include?(sid)
+                        sid_date_hash[sid] = $tables.attach('student_attendance').field_values('date',"WHERE student_id = '#{sid}'
+                                                                                                                AND official_code
+                                                                                                                IN ('u', 'ur', 'uap', 'ut')
+                                                                                                                ORDER BY date ASC")
+                    end
                 end
-            end
             end
         end
         
@@ -56,7 +56,6 @@ end
             consecutive_end_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC").last
             consecutive_start_date = $tables.attach("school_days").field_values("date", "WHERE date <= '#{Time.now.strftime("%Y-%m-%d")}' ORDER BY date ASC")[-7]
             #dates provide range in which consecutive absnences can be determined
-            
             
             consecutive_absence_sids = $tables.attach('student_attendance').field_values('student_id',"WHERE date > '#{consecutive_start_date}'
                                                                                             AND date < '#{consecutive_end_date}'
@@ -68,50 +67,45 @@ end
                                                                                             HAVING COUNT(student_id) > 4")
                                                                                             
             if consecutive_absence_sids
-            school_days = $tables.attach('school_days').field_values('date',"ORDER BY date ASC")
-    
-            
-            consecutive_dates_five_past = $tables.attach('school_days').field_values('date',"WHERE date > '#{consecutive_start_date}'
+                school_days = $tables.attach('school_days').field_values('date',"ORDER BY date ASC")
+                consecutive_dates_five_past = $tables.attach('school_days').field_values('date',"WHERE date > '#{consecutive_start_date}'
                                                                                             AND date < '#{consecutive_end_date}'
                                                                                             ORDER BY date DESC")
-            
-            consecutive_absence_sids.each do |sid|
-                        
-                #at this point, consecutive_absence_dates only contains the 5 dates required to be considered consecutive, more dates will be 'pushed' in if valid
-                consecutive_absence_dates = Array.new
-                consecutive_dates_five_past.each do |ele|
-                consecutive_absence_dates << ele
-                end
-                older_absence_dates = $tables.attach('student_attendance').field_values('date',"WHERE date < '#{consecutive_absence_dates.last}'
-                                                                                                AND student_id = #{sid}
-                                                                                                AND official_code
-                                                                                                IN ('u', 'ur', 'uap', 'ut')
-                                                                                                ORDER BY date DESC")
-                if older_absence_dates
-                older_absence_dates.each_with_index do |older_absence, index|
-                    if school_days.index(consecutive_absence_dates.last) - school_days.index(older_absence) == 1
-                    consecutive_absence_dates << older_absence
-                    else
-                    break
-                    end
+                consecutive_absence_sids.each do |sid|
                     
+                    #at this point, consecutive_absence_dates only contains the 5 dates required to be considered consecutive, more dates will be 'pushed' in if valid
+                    consecutive_absence_dates = Array.new
+                    consecutive_dates_five_past.each do |ele|
+                    consecutive_absence_dates << ele
+                    end
+                    older_absence_dates = $tables.attach('student_attendance').field_values('date',"WHERE date < '#{consecutive_absence_dates.last}'
+                                                                                                    AND student_id = #{sid}
+                                                                                                    AND official_code
+                                                                                                    IN ('u', 'ur', 'uap', 'ut')
+                                                                                                    ORDER BY date DESC")
+                    if older_absence_dates
+                        older_absence_dates.each_with_index do |older_absence, index|
+                            if school_days.index(consecutive_absence_dates.last) - school_days.index(older_absence) == 1
+                                consecutive_absence_dates << older_absence
+                            else
+                                break
+                            end
+                            
+                        end
+                    end 
+                    
+                    sid_date_hash[sid] = consecutive_absence_dates
                 end
-                end
-    
-                
-                sid_date_hash[sid] = consecutive_absence_dates
-                #end
             end
-            end
-        end
-        else
-        return
         end
         
+        else  ##from the case statement
+            return
+        end
         
         if !sid_date_hash.empty?
             team_members_with_students = Hash.new
-        #this hash contains Team_ID as keys and multidimensional arrays containing SIDs as values; it will be used to mail family coaches
+            #this hash contains Team_ID as keys and multidimensional arrays containing SIDs as values; it will be used to mail family coaches
             sid_date_hash.each do |sid, dates|
                 team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")      
                 if team_id
@@ -122,22 +116,23 @@ end
                     student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
                     formatted_dates = Array.new
                     dates.each do |date|
-                    pre_date_holder = Array.new
-                    date.split("-").each do |ele|
-                        pre_date_holder << ele.to_i
+                        pre_date_holder = Array.new
+                        date.split("-").each do |ele|
+                            pre_date_holder << ele.to_i
+                        end
+                        formatted_dates << Time.gm(pre_date_holder[0], pre_date_holder[1], pre_date_holder[2]).strftime("%m/%d/%Y")
+                        
+                        student_info << formatted_dates.join(", ")
+                        if team_members_with_students.has_key?(team_id)
+                            team_members_with_students[team_id] << student_info
+                        else
+                            team_members_with_students[team_id] = Array.new
+                            team_members_with_students[team_id] << student_info
+                        end        
                     end
-                    formatted_dates << Time.gm(pre_date_holder[0], pre_date_holder[1], pre_date_holder[2]).strftime("%m/%d/%Y")
-            
-                    student_info << formatted_dates.join(", ")
-                    if team_members_with_students.has_key?(team_id)
-                        team_members_with_students[team_id] << student_info
-                    else
-                        team_members_with_students[team_id] = Array.new
-                        team_members_with_students[team_id] << student_info
-                    end        
                 end
-            end    
-        
+            end
+            
             team_members_with_students.each do |team_id, student_info_arrays|
                 team_member = $team.get(team_id)
                 body_text = String.new
@@ -149,11 +144,11 @@ end
                     rows << indv_student_array
                 end
                 
-                
                 if cumulative_or_consecutive_mode == "cumulative"
                     subject_line = "3 or more unexcused absences and no TEP complete"
-                    body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.  At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.  At this time, you should:</p>
-    
+                    body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.
+                                At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.
+                                At this time, you should:</p>
                                 <ul> 
                                 <li>Initiate a TEP with the family (This can be done via the phone or virtual meeting) within 2 weeks of the 3rd absence.</li>
                                 <li>Incorporate this into your conference meeting as much as possible.</li> 
@@ -171,7 +166,6 @@ end
                 else
                     subject_line = "5 or more consecutive unexcused absences"
                     body_text = "<p>These students currently have 5 or more <b><em>consecutive</em></b> unexcused absences.  At this time, you should:</p>
-    
                                 <ul>
                                 <li>Contact family immediately.</li>
                                 <li>Consider a face to face meeting if needed.</li>
@@ -188,10 +182,81 @@ end
                 #utilizes $team variable called at the top of this block
             end
         end 
-  end
+    end
 
 
-
+    def daily_attendance_statistics
+        school_days = $tables.attach("school_days").field_values("date")
+        date = (Time.now - 86400).strftime("%Y-%m-%d")
+        
+        if school_days.include?(date)
+            
+            daily_stats = $db.get_data("SELECT CONCAT('Code: ',official_code) 'Code/Mode',
+                                    COUNT(official_code) 'Total Number'
+                                    FROM `student_attendance`
+                                    WHERE date = '#{date}'
+                                    GROUP BY official_code
+                                    UNION ALL
+                                    SELECT CONCAT('Mode: ',mode),
+                                    COUNT(mode) FROM `student_attendance`
+                                    WHERE date = '#{date}'
+                                    GROUP BY mode")
+            
+            if daily_stats
+                table_html = "
+                <style>
+                    table, td, th {
+                    border: 1px solid #B1D4F5;
+                    }
+                    
+                    td,th {
+                    text-align: left;
+                    }
+                    
+                    th {
+                    height: 50px;
+                    }
+                </style>
+                
+                <table>
+                    <tr>
+                    <th>&nbsp;Code/Mode&nbsp;</th>
+                    <th>&nbsp;Total Number&nbsp;</th>
+                    </tr>"
+                
+                daily_stats.each do |ele|
+                next if ele.include?(nil) || ele.include?(false) || ele.include?("0")
+                table_html << "<tr><td>&nbsp;#{ele.first}&nbsp;</td><td>&nbsp;#{ele.last}&nbsp;</td></tr>"
+                end
+                
+                table_html << "</table>"
+                
+                date = date.split('-').map!{|ele| ele.to_i}
+                date = Time.gm(date[0], date[1], date[2]).strftime('%A, %B %d %Y')
+                
+                email_html = "
+                <p>Hello,
+                <br>
+                <br>
+                    Below are the daily attendance statistics for #{date}.
+                </p><br>
+                #{table_html}"
+                
+                email_list = ["crivera@agora.org","apickens@agora.org"]
+                email_list += $software_team
+                
+                $base.email.athena_smtp_email(
+                recipients = email_list,
+                subject = "Daily Attendance Statistics",
+                content = email_html,
+                attachments = nil
+                )                
+                
+            end
+            
+        end
+        
+    end
 
 
     
@@ -595,85 +660,6 @@ end
     #def after_save(obj)
     #    process_attendance(obj)
     #end
-    
-    def daily_attendance_statistics
-        school_days = $tables.attach("school_days").field_values("date")
-        date = (Time.now - 86400).strftime("%Y-%m-%d")
-        
-        if school_days.include?(date)
-            
-            daily_stats = $db.get_data("SELECT CONCAT('Code: ',official_code) 'Code/Mode',
-                                    COUNT(official_code) 'Total Number'
-                                    FROM `student_attendance`
-                                    WHERE date = '#{date}'
-                                    GROUP BY official_code
-                                    UNION ALL
-                                    SELECT CONCAT('Mode: ',mode),
-                                    COUNT(mode) FROM `student_attendance`
-                                    WHERE date = '#{date}'
-                                    GROUP BY mode")
-            
-            if daily_stats
-            
-                table_html = "
-                <style>
-                    table, td, th {
-                    border: 1px solid #B1D4F5;
-                    }
-            
-                    td,th {
-                    text-align: left;
-                    }
-            
-                    th {
-                    height: 50px;
-                    }
-                </style>
-            
-                <table>
-                    <tr>
-                    <th>&nbsp;Code/Mode&nbsp;</th>
-                    <th>&nbsp;Total Number&nbsp;</th>
-                    </tr>" 
-            
-                daily_stats.each do |ele|
-                next if ele.include?(nil) || ele.include?(false) || ele.include?("0")
-                table_html << "<tr><td>&nbsp;#{ele.first}&nbsp;</td><td>&nbsp;#{ele.last}&nbsp;</td></tr>"
-                end
-                
-                table_html << "</table>"
-                
-                
-                date = date.split('-').map!{|ele| ele.to_i}
-                date = Time.gm(date[0], date[1], date[2]).strftime('%A, %B %d %Y')
-                
-                email_html = "
-                <p>Hello,
-                <br>
-                <br>
-                    Below are the daily attendance statistics for #{date}.
-                </p><br>
-                #{table_html}"
-                
-                email_list = ["crivera@agora.org","apickens@agora.org"]
-                email_list += $software_team
-                
-            
-                
-                $base.email.athena_smtp_email(
-                recipients = email_list,
-                subject = "Daily Attendance Statistics",
-                content = email_html,
-                attachments = nil
-                )                
-                
-            end
-            
-        end
-        
-  
-        
-    end
     
     def process_attendance(obj)
         unless caller.find{|x|x.match(/Attendance_Processing/)}
