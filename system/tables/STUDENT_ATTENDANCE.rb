@@ -110,84 +110,84 @@ end
         
         
         if !sid_date_hash.empty?
-        team_members_with_students = Hash.new
+            team_members_with_students = Hash.new
         #this hash contains Team_ID as keys and multidimensional arrays containing SIDs as values; it will be used to mail family coaches
-        sid_date_hash.each do |sid, dates|
-            team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")      
-            if team_id
-                team_id = team_id.first
-                student_info = Array.new #this array contains [sid, last_name, first_name, and a string that contains all absence dates] in this order
-                student_info << sid
-                student_info << last_name = $tables.attach('student').field_value("studentlastname","WHERE student_id = '#{sid}'")
-                student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
-                formatted_dates = Array.new
-                dates.each do |date|
-                pre_date_holder = Array.new
-                date.split("-").each do |ele|
-                pre_date_holder << ele.to_i
+            sid_date_hash.each do |sid, dates|
+                team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")      
+                if team_id
+                    team_id = team_id.first
+                    student_info = Array.new #this array contains [sid, last_name, first_name, and a string that contains all absence dates] in this order
+                    student_info << sid
+                    student_info << last_name = $tables.attach('student').field_value("studentlastname","WHERE student_id = '#{sid}'")
+                    student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
+                    formatted_dates = Array.new
+                    dates.each do |date|
+                    pre_date_holder = Array.new
+                    date.split("-").each do |ele|
+                        pre_date_holder << ele.to_i
+                    end
+                    formatted_dates << Time.gm(pre_date_holder[0], pre_date_holder[1], pre_date_holder[2]).strftime("%m/%d/%Y")
+            
+                    student_info << formatted_dates.join(", ")
+                    if team_members_with_students.has_key?(team_id)
+                        team_members_with_students[team_id] << student_info
+                    else
+                        team_members_with_students[team_id] = Array.new
+                        team_members_with_students[team_id] << student_info
+                    end        
                 end
-                formatted_dates << Time.gm(pre_date_holder[0], pre_date_holder[1], pre_date_holder[2]).strftime("%m/%d/%Y")
-            end
-            student_info << formatted_dates.join(", ")
-            if team_members_with_students.has_key?(team_id)
-                team_members_with_students[team_id] << student_info
-            else
-                team_members_with_students[team_id] = Array.new
-                team_members_with_students[team_id] << student_info
-            end        
-            end
-        end    
+            end    
+        
+            team_members_with_students.each do |team_id, student_info_arrays|
+                team_member = $team.get(team_id)
+                body_text = String.new
+                file_name = String.new
+                subject_line = String.new
+                
+                rows = [["student id","last name","first name","absences"]]
+                student_info_arrays.each do |indv_student_array|
+                    rows << indv_student_array
+                end
+                
+                
+                if cumulative_or_consecutive_mode == "cumulative"
+                    subject_line = "3 or more unexcused absences and no TEP complete"
+                    body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.  At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.  At this time, you should:</p>
     
-        team_members_with_students.each do |team_id, student_info_arrays|
-            team_member = $team.get(team_id)
-            body_text = String.new
-            file_name = String.new
-            subject_line = String.new
-            
-            rows = [["student id","last name","first name","absences"]]
-            student_info_arrays.each do |indv_student_array|
-                rows << indv_student_array
-            end
-            
-            
-            if cumulative_or_consecutive_mode == "cumulative"
-                subject_line = "3 or more unexcused absences and no TEP complete"
-                body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.  At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.  At this time, you should:</p>
-
-                            <ul> 
-                            <li>Initiate a TEP with the family (This can be done via the phone or virtual meeting) within 2 weeks of the 3rd absence.</li>
-                            <li>Incorporate this into your conference meeting as much as possible.</li> 
-                            
-                            <li>If you cannot reach the family, please complete a TEP draft
-                            (start the TEP, but leave the date blank until you discuss the TEP with the family).
-                            Future absent dates can be documented in TEP notes (check the TEP follow-up reason for contact).</li>
-                            </ul>
-                            
-                            <p>
-                            Thank you for your attention to this matter.
-                            </p>"
+                                <ul> 
+                                <li>Initiate a TEP with the family (This can be done via the phone or virtual meeting) within 2 weeks of the 3rd absence.</li>
+                                <li>Incorporate this into your conference meeting as much as possible.</li> 
+                                
+                                <li>If you cannot reach the family, please complete a TEP draft
+                                (start the TEP, but leave the date blank until you discuss the TEP with the family).
+                                Future absent dates can be documented in TEP notes (check the TEP follow-up reason for contact).</li>
+                                </ul>
+                                
+                                <p>
+                                Thank you for your attention to this matter.
+                                </p>"
+                    
+                    file_name = "#{team_id}_3_cumulative_absences"
+                else
+                    subject_line = "5 or more consecutive unexcused absences"
+                    body_text = "<p>These students currently have 5 or more <b><em>consecutive</em></b> unexcused absences.  At this time, you should:</p>
+    
+                                <ul>
+                                <li>Contact family immediately.</li>
+                                <li>Consider a face to face meeting if needed.</li>
+                                </ul>
+                                
+                                <p>Thank you for your attention to this matter.</p>"
+                    
+                    file_name = "#{team_id}_5_consecutive_absences"        
+                end
                 
-                file_name = "#{team_id}_3_cumulative_absences"
-            else
-                subject_line = "5 or more consecutive unexcused absences"
-                body_text = "<p>These students currently have 5 or more <b><em>consecutive</em></b> unexcused absences.  At this time, you should:</p>
-
-                            <ul>
-                            <li>Contact family immediately.</li>
-                            <li>Consider a face to face meeting if needed.</li>
-                            </ul>
-                            
-                            <p>Thank you for your attention to this matter.</p>"
+                file_path = $reports.csv("temp", file_name, rows)
                 
-                file_name = "#{team_id}_5_consecutive_absences"        
+                team_member.send_email({:subject => subject_line, :content => body_text, :attachment_path => file_path})
+                #utilizes $team variable called at the top of this block
             end
-            
-            file_path = $reports.csv("temp", file_name, rows)
-            
-            team_member.send_email({:subject => subject_line, :content => body_text, :attachment_path => file_path})
-            #utilizes $team variable called at the top of this block
-        end
-    end 
+        end 
   end
 
 
