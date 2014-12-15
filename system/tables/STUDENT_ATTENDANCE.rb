@@ -113,14 +113,15 @@ end
         team_members_with_students = Hash.new
         #this hash contains Team_ID as keys and multidimensional arrays containing SIDs as values; it will be used to mail family coaches
         sid_date_hash.each do |sid, dates|
-            team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")[0]      
+            team_id = $tables.attach("STUDENT_RELATE").team_ids("WHERE role = 'Family Teacher Coach' AND active IS TRUE AND studentid = '#{sid}'")      
             if team_id
-            student_info = Array.new #this array contains [sid, last_name, first_name, and a string that contains all absence dates] in this order
-            student_info << sid
-            student_info << last_name = $tables.attach('student').field_value("studentlastname","WHERE student_id = '#{sid}'")
-            student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
-            formatted_dates = Array.new
-            dates.each do |date|
+                team_id = team_id.first
+                student_info = Array.new #this array contains [sid, last_name, first_name, and a string that contains all absence dates] in this order
+                student_info << sid
+                student_info << last_name = $tables.attach('student').field_value("studentlastname","WHERE student_id = '#{sid}'")
+                student_info << first_name = $tables.attach('student').field_value("studentfirstname","WHERE student_id = '#{sid}'")
+                formatted_dates = Array.new
+                dates.each do |date|
                 pre_date_holder = Array.new
                 date.split("-").each do |ele|
                 pre_date_holder << ele.to_i
