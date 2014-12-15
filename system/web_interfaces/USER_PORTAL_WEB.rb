@@ -43,7 +43,8 @@ end
             
         </style>"
         
-        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"+"<div id='sy_warning'><b>The new 2014-2015 SY has been created in Athena. If you are looking for information that was entered in last year's database, you will need to change the school year in the drop down to the right >>>>>>>>></b></div>"
+        $kit.output << "<div id='school_year_container' name='school_year_container'>#{$base.school_year_select}</div>"
+        #$kit.output << "<div id='sy_warning'><b>The new 2014-2015 SY has been created in Athena. If you are looking for information that was entered in last year's database, you will need to change the school year in the drop down to the right >>>>>>>>></b></div>"
         
         $kit.output << "<div class='menu_buttons_container'>"
         
@@ -427,7 +428,7 @@ end
             div.DTTT_print_info{                top:300px !important; position:absolute !important;}
             table.dataTable td{                 text-align: center;}
             div.menu_buttons_container{         clear:both;}
-            div#school_year_container{          float:right; margin-bottom:10px; margin-right:10px; size:1.1em;}
+            div#school_year_container{          float:right; margin-bottom:10px; margin-right:10px; size:1.1em; padding-bottom: 2em; padding-right: 2.5em;}
             
             div.STUDENT_RRI_REQUESTS__notes                      textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
             div.STUDENT_RRI_REQUESTED_DOCUMENTS__notes           textarea {width:170px; height:50px; resize:none; overflow-y:scroll; }
