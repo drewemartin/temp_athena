@@ -374,8 +374,8 @@ end
                 "QDM Errors (integer only)",
                 "MNM (integer only)",
                 "MNM Errors (integer only)",
-                "M-COMP (integer only)", #Still M-CAP field
                 "M-CAP",
+                "M-COMP (integer only)", #Still M-CAP field
                 "Math Instructional Recommendation (K - 8)"
             ]
             
@@ -416,8 +416,8 @@ end
         row.push(test.fields["qdm_errors"                               ].web.default() )
         row.push(test.fields["mnm"                                      ].web.default() )
         row.push(test.fields["mnm_errors"                               ].web.default() )
-        row.push(test.fields["mcap"                                     ].web.default() )
         row.push(test.fields["math_instructional_recommendation"        ].web.default() )
+        row.push(test.fields["mcap"                                     ].web.default() )
         row.push(test.fields["notes"                                    ].web.select(:dd_choices=>inst_recommend_dd) )
             
         tables_array.push(row)
