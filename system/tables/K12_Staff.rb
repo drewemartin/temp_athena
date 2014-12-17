@@ -97,7 +97,10 @@ end
                      "ljiang@agora.org",
                      "gpendleton@agora.org",
                      "sburnham@agora.org",
-                     "dherold@agora.org"
+                     "dherold@agora.org",
+                     "sgross@agora.org",            #new staff member to appear of k12_staff later
+                     "llaudenslager@agora.org",     #new staff member to appear on k12_staff later
+                     "jrupert@agora.org"            #new staff member to appear of k12_staff later
                      ]
         
         members_to_mark_inactive.each{|pid|
