@@ -170,7 +170,8 @@ end
                     file_name = "#{team_id}_5_consecutive_absences"        
                 end
                 file_path = $reports.csv("temp", file_name, rows)
-                if team_member = $team.get(team_id) && !track_for_email_duplicates.include?(team_id)
+                team_member = $team.get(team_id)
+                if team_member && !track_for_email_duplicates.include?(team_id)
                     team_member.send_email({:subject => subject_line, :content => body_text, :attachment_path => file_path})
                     track_for_email_duplicates << team_id
                     puts "email for #{cumulative_or_consecutive_mode} absences sent to team_id: #{team_id}"
