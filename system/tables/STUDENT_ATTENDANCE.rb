@@ -45,6 +45,7 @@ end
                             sid_date_hash[sid] = $tables.attach('student_attendance').field_values('date',"WHERE student_id = '#{sid}'
                                                                                                                     AND official_code
                                                                                                                     IN ('u', 'ur', 'uap', 'ut')
+                                                                                                                    AND date <= '#{cumulative_reference_date}'
                                                                                                                     GROUP BY date
                                                                                                                     ORDER BY date ASC")
                         end
