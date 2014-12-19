@@ -113,7 +113,7 @@ def smtp_email(sender_email, sender_secret, recipient_email, subject, content, a
             
         end
         
-        recipient_arr.push("athena-reports@agora.org")
+        recipient_arr.push("athena-reports@agora.org") unless recipient_arr.include?("athena-reports@agora.org")
         
     end
     

@@ -35,7 +35,6 @@ end
     def table
         if !@table_structure
             structure_hash = {
-                :keys               => ["case_number"],
                 :load_type          => :append,
                 :update             => false,
                 "name"              => "student_sales_force_case",
