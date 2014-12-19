@@ -298,7 +298,7 @@ end
                         
                     rescue => e
                         
-                        return load_failed(message = "DOWNLOAD FAILED - #{e.message}", e)
+                        return load_failed(message = "DOWNLOAD FAILED - #{e.message} <br><br>#{e.backtrace}", e)
                         
                     end 
                     
@@ -337,7 +337,10 @@ end
                                         $base.system_notification(
                                             subject = "Intact - all_students.csv Transfer Failed!",
                                             content = "Do something about it. Here's the error:
-                                            #{e.message}"
+                                            #{e.message}
+                                            <br>
+                                            <br>
+                                            #{e.backtrace}"
                                         )
                                         
                                     end                            
@@ -369,7 +372,7 @@ end
                         
                     rescue => e
                         
-                        return load_failed(message = "DOWNLOAD FAILED - #{e.message} - #{csv_text}", e)
+                        return load_failed(message = "DOWNLOAD FAILED - #{e.message} <br><br> #{e.backtrace} <br><br> #{csv_text}", e)
                         
                     end
                     
@@ -391,7 +394,7 @@ end
             
         rescue => e
             
-            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.DOWNLOAD! QUICK! FIX IT!", e)
+            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.DOWNLOAD! QUICK! FIX IT! <br><br> #{e.backtrace}", e)
             
         end
         
@@ -694,7 +697,7 @@ end
                         end
                         
                     rescue => e
-                        load_failed(message = e.message, e)
+                        load_failed(message = "#{e.message} <br><br> #{e.backtrace}", e)
                         raise e
                         
                     end
@@ -743,7 +746,7 @@ end
             
         rescue => e
             
-            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.LOAD! QUICK! FIX IT!", e)
+            return load_failed(message = "DOWNLOAD FAILED - #{e.message} - SOME RANDOM CRAP THAT WE DIDN'T ACCOUNT FOR HAPPENED IN ATHENA_TABLE.LOAD! QUICK! FIX IT! <br><br> #{e.backtrace}", e)
             
         end
         
@@ -1345,7 +1348,10 @@ end
                     $base.system_notification(
                         subject = "BEFORE LOAD FAILED - #{file}",
                         content = "Don't just stand there and shout it; do something about it... Here's the error:
-                        #{e.message}"
+                        #{e.message}
+                        <br>
+                        <br>
+                        #{e.backtrace}"
                     )
                     
                 end
@@ -1396,7 +1402,7 @@ end
                     )
                     
                 rescue=> e
-                    after_load_failed(message = "#{file} - #{e.message}", e)
+                    after_load_failed(message = "#{file} - #{e.message} <br><br> #{e.backtrace}", e)
                     raise e
                 end
                 
@@ -1753,9 +1759,11 @@ end
             table_status = $db.get_data("CHECK TABLE #{@this_table} FAST QUICK;", data_base)
             puts table_status.join(" || ")
             if !(table_status[0][3] == "Table is already up to date")
+                puts "TABLE #{@this_table} NEEDS TO BE REPAIRED"
                 puts "PRESS ANY KEY TO CONTINUE"
                 anykey = $stdin.gets
                 #FNORD - add functionality to handle results of below when there's time.
+                puts "REPAIRING TABLE #{@this_table}"
                 $db.query("REPAIR TABLE #{@this_table}", data_base)
             end
             
@@ -1772,6 +1780,8 @@ end
             indexes_assigned    = indexes ? indexes.length : 0
         end 
         
+        previous_field = "PRIMARY_ID"
+        
         field_order.each {|field|
             
             field_name = field
@@ -1779,7 +1789,7 @@ end
             
             if !field_exists?(field_name)
                 type = details["data_type"]
-                alter_table("ADD `#{field_name}` #{type}")
+                alter_table("ADD `#{field_name}` #{type} AFTER `#{previous_field}`")
                 
                 unless (details.key? "index" && details["index"] == false) || (indexes_assigned >= (64 - reserved_indexes))
                     
@@ -1798,6 +1808,8 @@ end
                     
                 end
             end
+            
+            previous_field = field_name
             
         } unless table_only
         
