@@ -147,9 +147,9 @@ end
             file_path = $reports.csv("temp", file_name, rows)
             subject_line = String.new
             body_text = String.new
-            #email_list = ['fcps@agora.org']
-            #email_list += $sys_admin_email
-            email_list = ['DMartin@agora.org']
+            email_list = ['fcps@agora.org']
+            email_list += $sys_admin_email
+            
             
             if cumulative_or_consecutive_mode == "cumulative"
                 subject_line = "3 or more unexcused absences and no TEP complete - family coaches report"
