@@ -132,10 +132,52 @@ end
                     end
                 end
             end
+            
+            rows = [["team member","student id","last name","first name","absences"]]
+            team_members_with_students.each do |team_id, student_info_arrays|
+                student_info_arrays.each do |indv_student_array|
+                    indv_student_array = indv_student_array.unshift($team.get(team_id).full_name)
+                    if !rows.include?(indv_student_array)
+                        rows << indv_student_array
+                    end
+                end
+            end
+            
+            file_name = "#{cumulative_or_consecutive_mode}_absence_report_for_your_family_coaches_#{Time.now.strftime("%m-%d-%Y")}"
+            file_path = $reports.csv("temp", file_name, rows)
+            subject_line = String.new
+            body_text = String.new
+            #email_list = ['fcps@agora.org']
+            #email_list += $sys_admin_email
+            email_list = ['DMartin@agora.org']
+            
+            if cumulative_or_consecutive_mode == "cumulative"
+                subject_line = "3 or more unexcused absences and no TEP complete - family coaches report"
+                body_text = "<p>These students currently have 3 or more unexcused absences and do not have a completed TEP documented in Athena.
+                    At least three days have passed since the third unexcused absence to allow for the family to submit an excuse.</p>
+                    
+                    <p>Thank you for your attention to this matter.</p>"
+            else
+                subject_line = "5 or more consecutive unexcused absences - family coaches report"
+                body_text = "<p>These students currently have 5 or more <b><em>consecutive</em></b> unexcused absences.</p>
+                    
+                    <p>Thank you for your attention to this matter.</p>"
+            end
+            
+            $base.email.athena_smtp_email(
+                recipients = email_list,
+                subject = subject_line,
+                content = body_text,
+                attachments = file_path
+            )
+            
+            puts "Mass absence reports sent to #{email_list.join(', ')}"
+            
             team_members_with_students.each do |team_id, student_info_arrays|
                 body_text = String.new
                 file_name = String.new
                 subject_line = String.new
+                rows = Array.new
                 rows = [["student id","last name","first name","absences"]]
                 student_info_arrays.each do |indv_student_array|
                     rows << indv_student_array
