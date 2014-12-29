@@ -283,7 +283,7 @@ end
             if roles.include?(this_record.fields["role"].value)
                 puts "SETTING MOST RECENT RELATION TO ALREADY PRESENT RECORD"
                 this_record.fields["most_recent_relation"].value = true #most_recent_relation
-                #set most_recent_relation 
+                #set most_recent_relation to true
             end
             
             this_record.save

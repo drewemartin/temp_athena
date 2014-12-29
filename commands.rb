@@ -48,8 +48,8 @@ end
       counter += 1
     end
     
-    b = Time.now
-    puts "#{counter} rows affected in #{(b - a).round} seconds"
+    c = Time.now
+    puts "#{counter} rows affected in #{(c - a).round} seconds"
     
   end
   
