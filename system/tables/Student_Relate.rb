@@ -247,6 +247,9 @@ end
         GROUP BY #{select_table}.studentlastname, #{select_table}.studentfirstname, #{select_table}.student_id
         #{@search_options[:order_by_addon]}"
         
+        puts "--------------------------------------------"
+        puts select_sql
+        puts "--------------------------------------------"
         $db.get_data_single(select_sql)
         
     end
@@ -255,8 +258,14 @@ end
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    
+
     def active_record
+        
+        roles = [
+            'Learning Center Classroom Coach',
+            'Family Teacher Coach',
+            'Truancy Prevention Coordinator'
+        ]
         
         params = Array.new
         params.push( Struct::WHERE_PARAMS.new("studentid",      "=", @params[:sid               ]       ) )
@@ -270,7 +279,13 @@ end
         
         if this_record
             
-            this_record.fields["active"        ].value = true  
+            this_record.fields["active"].value = true
+            if roles.include?(this_record.fields["role"].value)
+                puts "SETTING MOST RECENT RELATION TO ALREADY PRESENT RECORD"
+                this_record.fields["most_recent_relation"].value = true #most_recent_relation
+                ##set most_recent_relation 
+            end
+            
             this_record.save
             
         else
@@ -282,7 +297,25 @@ end
             blank_record.fields["role"          ].value = @params[:role         ]
             blank_record.fields["role_details"  ].value = @params[:role_details ]  
             blank_record.fields["source"        ].value = @params[:source       ]   
-            blank_record.fields["active"        ].value = true  
+            blank_record.fields["active"        ].value = true
+            
+            #set all previous rows with chosen roles and same
+            if roles.include?(@params[:role])
+                puts "SETTING MOST RECENT RELATION TO NEWLY INSERTED RECORD"
+                blank_record.fields["most_recent_relation"].value = true 
+                #set most_recent_relation to true if it one of those roles
+                #and then, since this record is new, deactive old most_recent_relations
+                pids = field_values("PRIMARY_ID","WHERE studentid = '#{@params[:sid]}' AND role = '#{@params[:role]}'")
+                if pids
+                    pids.each do |pid|
+                        older_record = by_primary_id(pid)
+                        older_record.fields['most_recent_relation'].set(false).save
+                    end
+                    puts "#{@params[:sid]}'s most recent '#{@params[:role]}' has team_id: #{@params[:team_id]}"
+                end
+                
+                
+            end
             blank_record.save
             
         end
@@ -384,6 +417,11 @@ end
         )
         
         if pids
+            roles = [
+                'Learning Center Classroom Coach',
+                'Family Teacher Coach',
+                'Truancy Prevention Coordinator'
+            ]
             
             puts start = Time.new
             puts "Deactivating #{pids.length} records."
@@ -391,11 +429,11 @@ end
             pids.each{|pid|
                 
                 record = by_primary_id(pid)
-                record.fields["active"].value = false
+                record.fields["active"].value = false     
                 record.save
                 
             }
-            
+         
             puts "#{(Time.new - start)/60} minutes"
             
         end
@@ -694,6 +732,7 @@ end
             district        = $students.get(sid).districtofresidence.value
             aun             = $tables.attach("DISTRICTS_AUN"    ).field_value("aun",        "WHERE name = '#{district}'"                                                            )
             team_ids        = $tables.attach("TEAM_DISTRICTS"   ).field_value("team_id",    "WHERE role = 'Truancy Prevention Coordinator' AND aun = '#{aun}' AND active IS TRUE"   )
+            
             team_ids.each{|team_id|
                 
                 params[:team_id ] = team_id
@@ -765,11 +804,13 @@ end
         params[:source          ] = "SAPPHIRE_CLASS_ROSTER_#{school}"
         get_existing_records 
         sids = $students.list(:complete_enrolled=>true, :sapphire_class_roster=>school)
+
         pids = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").primary_ids(
             "WHERE course_id = 'LC1415'
             AND section_id >= 150
             AND student_id IN(#{sids.join(',')})"
         ) if sids
+
         pids.each{|pid|
            
             record          = $tables.attach("SAPPHIRE_CLASS_ROSTER_#{school}").by_primary_id(pid)
@@ -898,6 +939,7 @@ end
             structure_hash["fields"]["active"                   ]= {"data_type"=>"bool", "file_field"=>"active"                     } if field_order.push("active") 
             structure_hash["fields"]["eval_eligible_engagement" ]= {"data_type"=>"bool", "file_field"=>"eval_eligible_engagement"   } if field_order.push("eval_eligible_engagement")
             structure_hash["fields"]["eval_eligible_academic"   ]= {"data_type"=>"bool", "file_field"=>"eval_eligible_academic"     } if field_order.push("eval_eligible_academic")
+            structure_hash["fields"]["most_recent_relation"     ]= {"data_type"=>"bool", "file_field"=>"most_recent_relation"       } if field_order.push("most_recent_relation")
             
         structure_hash["field_order"] = field_order
         return structure_hash
@@ -1063,7 +1105,10 @@ end
             @search_options[:where_clause_addon] = @search_options[:where_clause_addon].nil? ? where_addon : @search_options[:where_clause_addon] + where_addon
         else
             raise("#{arg} is not a valid option")
-        end 
+        end
+        
+
+         
     end
     
     def currently_enrolled(arg)

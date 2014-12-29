@@ -37,7 +37,8 @@ class Requested_Reports < Base
             
             "Family Coach Tier",
             
-            #"Program Support",
+            ##"Program Support",
+            ##
             
             "Family Coach Support",
             "Truancy Prevention",
@@ -96,7 +97,7 @@ class Requested_Reports < Base
                     FROM #{relate_db}.student_relate
                     WHERE studentid = student.student_id
                     AND role = 'Learning Center Classroom Coach'
-                    AND active IS TRUE
+                    AND most_recent_relation IS TRUE
                     LIMIT 0, 1
                 )
             ),
@@ -113,7 +114,7 @@ class Requested_Reports < Base
             #        FROM #{relate_db}.student_relate
             #        WHERE studentid = student.student_id
             #        AND role = 'Primary Teacher'
-            #        AND active IS TRUE
+            #        AND most_recent_relation IS TRUE
             #        LIMIT 0, 1
             #    )
             #),
@@ -129,7 +130,7 @@ class Requested_Reports < Base
                     FROM #{relate_db}.student_relate
                     WHERE studentid = student.student_id
                     AND role = 'Family Teacher Coach'
-                    AND active IS TRUE
+                    AND most_recent_relation IS TRUE
                     LIMIT 0, 1
                 )
             ),
@@ -152,7 +153,7 @@ class Requested_Reports < Base
                     ON team.primary_id = student_relate.team_id
                     WHERE studentid = student.student_id
                     AND role = 'Family Teacher Coach'
-                    AND student_relate.active IS TRUE
+                    AND student_relate.most_recent_relation IS TRUE
                     LIMIT 0, 1
                 )
             ),
@@ -168,7 +169,7 @@ class Requested_Reports < Base
                     FROM #{relate_db}.student_relate
                     WHERE studentid = student.student_id
                     AND role = 'Truancy Prevention Coordinator'
-                    AND active IS TRUE
+                    AND most_recent_relation IS TRUE
                     LIMIT 0, 1
                 )
             ),
