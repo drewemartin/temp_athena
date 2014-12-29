@@ -11,9 +11,6 @@ class Athena_Commands < Base
   #---------------------------------------------------------------------------
   def initialize(args)
     super()
-    
-    puts "Hello!"
-    
   end
   #---------------------------------------------------------------------------
   
@@ -21,6 +18,117 @@ class Athena_Commands < Base
 def x______________TRIGGER_EVENTS
 end
 #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  def set_actives_to_most_recent_relation
+    a = Time.now
+    
+    student_relate = $tables.attach("student_relate")
+    
+    roles_string_formatted = String.new
+    
+    roles = [
+      'Learning Center Classroom Coach',
+      'Family Teacher Coach',
+      'Truancy Prevention Coordinator'
+    ]
+    roles.each_with_index do |role, index|
+      if roles[index] == roles.last
+        roles_string_formatted << "'#{role}'"
+      else
+        roles_string_formatted << "'#{role}',"
+      end
+    end
+    
+    
+    
+    active_pids_without_most_recent_relation = student_relate.field_values("PRIMARY_ID","WHERE active IS TRUE AND role IN (#{roles_string_formatted})")
+    counter = 0
+    active_pids_without_most_recent_relation.each do |pid|
+      student_relate.by_primary_id(pid).fields["most_recent_relation"].set(true).save
+      counter += 1
+    end
+    
+    b = Time.now
+    puts "#{counter} rows affected in #{(b - a).round} seconds"
+    
+  end
+  
+  def set_past_withdrawn_students_most_recent_relations
+    a = Time.now
+    student_relate = $tables.attach("student_relate")
+    
+    roles_string_formatted = String.new
+    
+    roles = [
+      'Learning Center Classroom Coach',
+      'Family Teacher Coach',
+      'Truancy Prevention Coordinator'
+    ]
+    roles.each_with_index do |role, index|
+      if roles[index] == roles.last
+        roles_string_formatted << "'#{role}'"
+      else
+        roles_string_formatted << "'#{role}',"
+      end
+    end
+    
+    currently_active_sids = student_relate.field_values("studentid","WHERE active IS TRUE
+                                                        AND most_recent_relation IS TRUE
+                                                        AND role IN (#{roles_string_formatted})
+                                                        GROUP BY studentid")
+
+    withdrawing_sids = $tables.attach('withdrawing').field_values("student_id","WHERE student_id
+                                                                  NOT IN (#{currently_active_sids.join(',')})
+                                                                  GROUP BY student_id")
+    
+    puts "size of withdrawing_sids: #{withdrawing_sids.size}"
+    
+    
+
+    pids_to_set_to_most_recent_relation = Array.new
+    sids_with_no_selected_roles = Array.new
+    withdrawing_sids.each_with_index do |sid, index|
+      any_roles = $db.get_data("SELECT role
+                                FROM student_relate
+                                WHERE studentid = #{sid}
+                                AND role IN (#{roles_string_formatted})
+                                AND created_date >= '2014-07-01'",
+                                "agora_master")
+      if any_roles
+        roles.each do |role|
+          role_specific_pids = student_relate.field_values("PRIMARY_ID","WHERE studentid = '#{sid}'
+                                                          AND role = '#{role}'
+                                                          AND created_date >= '2014-07-01'
+                                                          ORDER BY created_date DESC")
+          if role_specific_pids
+            this_years_pids_via_zz_table = $db.get_data("SELECT modified_pid
+                                            FROM zz_student_relate
+                                            WHERE modified_pid
+                                            IN (#{role_specific_pids.join(',')})
+                                            AND modified_date > '2014-07-01'
+                                            ORDER BY modified_date DESC","agora_master")
+            if this_years_pids_via_zz_table && !this_years_pids_via_zz_table.first.empty?
+              puts "this_years_pids_via_zz_table structure: #{this_years_pids_via_zz_table}"
+              this_years_pids_via_zz_table = this_years_pids_via_zz_table[0][0]
+              if !pids_to_set_to_most_recent_relation.include?(this_years_pids_via_zz_table)
+                pids_to_set_to_most_recent_relation << this_years_pids_via_zz_table
+                student_relate.by_primary_id(this_years_pids_via_zz_table).fields['most_recent_relation'].set(true).save
+              end 
+            end
+          end
+        end
+        withdrawing_sids.delete_at(index)
+        next
+      else
+        sids_with_no_selected_roles << sid
+        withdrawing_sids.delete_at(index)
+        next
+      end
+    end
+    
+    puts "Total PIDs Affected: #{pids_to_set_to_most_recent_relation.size}"
+    puts "Total Time: #{(Time.now - a).round} seconds"
+  end
   
   def test_hermes_servers
     hermes_servers = ["2"]#["2","3","4","5"]
